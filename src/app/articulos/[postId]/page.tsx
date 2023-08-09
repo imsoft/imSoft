@@ -6,6 +6,7 @@ import {
 import Link from "next/link";
 import { getFormattedDate } from "@/utils";
 import ListItem from "@/components/articles/ListItem";
+import { notFound } from "next/navigation";
 
 export const revalidate = 86400; // un dia en segundos
 
@@ -38,14 +39,14 @@ export const generateMetadata = async ({ params: { postId } }: Props) => {
 };
 
 const Post = async ({ params: { postId } }: Props) => {
-  const recommendationsPosts = await getPostsMetaRandom();
+  const recommendationsPosts = await getPostsMetaRandom(3);
   const post = await getPostByName(`${postId}.mdx`); // deduped!
 
-  // if (!post) notFound();
+  if (!post) notFound();
 
-  // if (!recommendationsPosts) notFound();
+  if (!recommendationsPosts) notFound();
 
-  const { requiredMetatags, content } = post!;
+  const { requiredMetatags, content } = post;
 
   const pubDate = getFormattedDate(requiredMetatags.date);
 
@@ -89,7 +90,7 @@ const Post = async ({ params: { postId } }: Props) => {
 
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
             <div className="mx-auto mt-16 grid max-w-2xl auto-rows-fr grid-cols-1 gap-8 sm:mt-20 lg:mx-0 lg:max-w-none lg:grid-cols-3">
-              {recommendationsPosts!.map((post) => (
+              {recommendationsPosts.map((post) => (
                 <ListItem key={post.title} post={post} />
               ))}
             </div>

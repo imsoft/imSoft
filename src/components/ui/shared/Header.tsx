@@ -1,10 +1,10 @@
 "use client";
 
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
-import { IHeader } from "../../../interfaces";
+import { IHeader, RequiredMetatags } from "../../../interfaces";
 
 import { whatsappBusinessLink } from "../../../data";
 
@@ -29,6 +29,7 @@ import {
   IdentificationIcon,
 } from "@heroicons/react/24/outline";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
+import { getPostsMetaRandom } from "@/lib/posts";
 
 const services: IHeader[] = [
   {

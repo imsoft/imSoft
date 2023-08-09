@@ -124,7 +124,7 @@ export const getPostsMeta = async (): Promise<
   return posts.sort((a, b) => (a.date < b.date ? 1 : -1));
 };
 
-export const getPostsMetaRandom = async (): Promise<RequiredMetatags[] | undefined> => {
+export const getPostsMetaRandom = async (numberOfPosts: number): Promise<RequiredMetatags[] | undefined> => {
   const res = await fetch(
     "https://api.github.com/repos/imsoft/BlogPosts/git/trees/main?recursive=1",
     {
@@ -137,8 +137,12 @@ export const getPostsMetaRandom = async (): Promise<RequiredMetatags[] | undefin
   );
 
   if (!res.ok) return undefined;
-
+  
   const repoFiletree: Filetree = await res.json();
+
+  if (!repoFiletree || !repoFiletree.tree) {
+    return undefined;
+  }
 
   const filesArray = repoFiletree.tree
     .map((obj) => obj.path)
@@ -154,12 +158,10 @@ export const getPostsMetaRandom = async (): Promise<RequiredMetatags[] | undefin
     }
   }
 
-  // Shuffle the posts array
   for (let i = posts.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [posts[i], posts[j]] = [posts[j], posts[i]];
   }
 
-  // Return the first three shuffled posts
-  return posts.slice(0, 3);
+  return posts.slice(0, numberOfPosts);
 };
