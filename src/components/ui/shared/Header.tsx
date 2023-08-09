@@ -241,7 +241,7 @@ export const Header = () => {
                           onMouseLeave={handleShowingServices}
                           className="absolute inset-x-0 top-full z-10 hidden transform bg-white shadow-lg md:block"
                         >
-                          <div className="mx-auto grid max-w-7xl gap-y-6 px-4 py-6 sm:grid-cols-2 sm:gap-8 sm:px-6 sm:py-8 lg:grid-cols-4 lg:px-8 lg:py-12 xl:py-16">
+                          <div className="mx-auto grid max-w-7xl gap-y-6 px-4 py-6 sm:grid-cols-2 sm:gap-8 sm:px-6 sm:py-8 lg:grid-cols-4 lg:px-8 lg:py-12 xl:py-12">
                             {services.map((item) => (
                               <Link
                                 key={item.name}
@@ -487,9 +487,9 @@ export const Header = () => {
             focus
             className="absolute inset-x-0 top-0 z-30 origin-top-right transform p-2 transition md:hidden"
           >
-            <div className="divide-y-2 divide-gray-50 rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5">
+            <div className="divide-y-2 divide-gray-50 rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5 max-h-[37rem] overflow-y-auto">
               <div className="px-5 pt-5 pb-6 sm:pb-8">
-                <div className="flex items-center justify-between">
+                <div className="bg-white flex items-center justify-between sticky top-0 z-50">
                   <div>
                     <Link href={"/"}>
                       <Image
