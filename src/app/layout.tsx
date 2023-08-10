@@ -23,7 +23,7 @@ export const metadata = {
   authors: [
     { name: "Brandon Uriel Garcia Ramos", url: "https://www.imsoft.io/" },
   ],
-  colorScheme: "dark",
+  colorScheme: "white",
   creator: "Brandon Uriel Garcia Ramos",
   publisher: "Brandon Uriel Garcia Ramos",
   formatDetection: {
@@ -138,7 +138,7 @@ export const metadata = {
   },
   appleWebApp: {
     title: 'Apple Web App',
-    statusBarStyle: 'black-translucent',
+    statusBarStyle: 'white-translucent',
     startupImage: [
       '/assets/startup/apple-touch-startup-image-768x1004.png',
       {
