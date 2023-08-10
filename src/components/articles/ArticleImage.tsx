@@ -8,7 +8,7 @@ interface Props {
 const ArticleImage = ({ imageSrc, alt }: Props) => {
   return (
     <>
-      <Image src={imageSrc} alt={alt} width={5760} height={3840} />
+      <Image src={imageSrc} alt={alt} width={650} height={650} />
     </>
   );
 };
