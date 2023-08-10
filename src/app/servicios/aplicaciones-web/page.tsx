@@ -98,7 +98,7 @@ const index = () => {
 
   const callToActionSectionInfo: ICallToActionSection = {
     image:
-      "https://firebasestorage.googleapis.com/v0/b/imsoft-website.appspot.com/o/Servicios%2FAplicacion-web-imSoft.jpg?alt=media&token=bed466bf-ec82-4300-bafd-9bd1a5b3c10d",
+      "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/imsoft/logotipo-imsoft-cuadrado.png",
     topic: "Aplicaciones web",
     title: "Maximiza tu potencial con aplicaciones web personalizadas",
     description:
@@ -114,7 +114,7 @@ const index = () => {
     date: dateMetatagInfo,
     type: "Aplicación web",
     source: "https://www.imsoft.io/aplicaciones-web",
-    image: "https://firebasestorage.googleapis.com/v0/b/imsoft-website.appspot.com/o/Servicios%2FAplicacion-web-imSoft.jpg?alt=media&token=bed466bf-ec82-4300-bafd-9bd1a5b3c10d",
+    image: "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/imsoft/logotipo-imsoft-cuadrado.png",
     url: "https://www.imsoft.io/aplicaciones-web",
     robots: "index,follow",
     _id: "",

@@ -1,8 +1,4 @@
-import { dateMetatagInfo } from "@/data";
-import { RequiredMetatags } from "@/interfaces";
-
-const index = () => {
-
+const TerminosYCondicionesPage = () => {
   return (
     <>
       <main>
@@ -63,4 +59,4 @@ const index = () => {
   );
 };
 
-export default index;
+export default TerminosYCondicionesPage;

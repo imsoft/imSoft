@@ -96,7 +96,7 @@ const index = () => {
 
   const callToActionSectionInfo: ICallToActionSection = {
     image:
-      "https://firebasestorage.googleapis.com/v0/b/imsoft-website.appspot.com/o/Servicios%2FConsultoria%20imSoft.jpg.jpg?alt=media&token=ee427b3a-06b4-40e0-abb6-ad79f0f3b31f",
+      "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/imsoft/logotipo-imsoft-cuadrado.png",
     topic: "Consultoría de sitio web",
     title: "Estamos aquí para ayudar",
     description:
@@ -112,7 +112,7 @@ const index = () => {
     date: dateMetatagInfo,
     type: "Consultoría de sitio web",
     source: "https://www.imsoft.io/consultoria",
-    image: "https://firebasestorage.googleapis.com/v0/b/imsoft-website.appspot.com/o/Servicios%2FConsultoria%20imSoft.jpg.jpg?alt=media&token=ee427b3a-06b4-40e0-abb6-ad79f0f3b31",
+    image: "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/imsoft/logotipo-imsoft-cuadrado.png",
     url: "https://www.imsoft.io/consultoria",
     robots: "index,follow",
     _id: "",

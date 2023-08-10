@@ -141,7 +141,7 @@ const index = () => {
 
   const callToActionSectionInfo: ICallToActionSection = {
     image:
-      "https://firebasestorage.googleapis.com/v0/b/imsoft-website.appspot.com/o/Servicios%2FSitio%20Web%20Pro%20imSoft.jpg?alt=media&token=4f1763f4-fa51-4485-a8f9-d99aa7e23b2a",
+      "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/imsoft/logotipo-imsoft-cuadrado.png",
     topic: "Sitio Web Pro",
     title: "Soluciones web personalizadas y a medida para tu negocio",
     description:
@@ -157,7 +157,7 @@ const index = () => {
     date: dateMetatagInfo,
     type: "Sitio Web Pro",
     source: "https://www.imsoft.io/sitio-web-pro",
-    image: "https://firebasestorage.googleapis.com/v0/b/imsoft-website.appspot.com/o/Servicios%2FSitio%20Web%20Pro%20imSoft.jpg?alt=media&token=4f1763f4-fa51-4485-a8f9-d99aa7e23b2",
+    image: "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/imsoft/logotipo-imsoft-cuadrado.png",
     url: "https://www.imsoft.io/sitio-web-pro",
     robots: "index,follow",
     _id: "",

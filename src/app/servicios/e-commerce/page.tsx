@@ -148,7 +148,7 @@ const index = () => {
 
   const callToActionSectionInfo: ICallToActionSection = {
     image:
-      "https://firebasestorage.googleapis.com/v0/b/imsoft-website.appspot.com/o/Servicios%2FTienda%20en%20linea%20imSoft.jpg?alt=media&token=e712fe2d-418b-4915-87de-f6906f79b588",
+      "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/imsoft/logotipo-imsoft-cuadrado.png",
     topic: "E-Commerce",
     title: "Tu tienda en línea hecha a medida",
     description:
@@ -164,7 +164,7 @@ const index = () => {
     date: dateMetatagInfo,
     type: "E-Commerce",
     source: "https://www.imsoft.io/e-commerce",
-    image: "https://firebasestorage.googleapis.com/v0/b/imsoft-website.appspot.com/o/Servicios%2FTienda%20en%20linea%20imSoft.jpg?alt=media&token=e712fe2d-418b-4915-87de-f6906f79b58",
+    image: "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/imsoft/logotipo-imsoft-cuadrado.png",
     url: "https://www.imsoft.io/e-commerce",
     robots: "index,follow",
     _id: "",

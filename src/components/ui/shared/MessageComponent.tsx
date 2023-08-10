@@ -1,82 +1,83 @@
-import React from 'react'
+import React from "react";
 import Image from "next/image";
-import Link from 'next/link';
+import Link from "next/link";
 
-import { INotificationMessage, Services } from '../../../interfaces'
+import { INotificationMessage, Services } from "../../../interfaces";
 
 import {
-    ChevronRightIcon,
-    ClipboardDocumentCheckIcon,
-    ComputerDesktopIcon,
-    GlobeAltIcon,
-    ShoppingBagIcon,
-    ArrowTrendingUpIcon,
-  } from "@heroicons/react/24/outline";
+  ChevronRightIcon,
+  ClipboardDocumentCheckIcon,
+  ComputerDesktopIcon,
+  GlobeAltIcon,
+  ShoppingBagIcon,
+  ArrowTrendingUpIcon,
+} from "@heroicons/react/24/outline";
 
 const links: Services[] = [
-    {
-      nameOfService: "Consultoria de sitio web 🤓",
-      description:
-        "Un sitio web o tienda en línea siempre cuenta con áreas de oportunidad, nosotros las ubicaremos, analizaremos y las mejoraremos para que así puedas generar mayores ganancias en tu empresa.",
-      href: "/servicios/consultoria",
-      icon: ClipboardDocumentCheckIcon,
-    },
-    {
-      nameOfService: "Sitio Web 👨‍💻",
-      description:
-        "Esta opción es excelente para cualquier emprendedor o empresa que quiera tener presencia en la internet, llegar a más clientes y generar más ingresos.",
-      href: "/servicios/sitio-web",
-      icon: ComputerDesktopIcon,
-    },
-    {
-      nameOfService: "Sitio Web Pro ⚡🧑‍💻🔥",
-      description:
-        "Un sitio web bien administrado es el arma más poderosa de una empresa y con la utilización de estas herramientas podrás hacer de tu empresa algo más profesional.",
-      href: "/servicios/sitio-web-pro",
-      icon: GlobeAltIcon,
-    },
-    {
-      nameOfService: "E-commerce 🛍️",
-      description:
-        "Tu empresa tiene que modernizarse con una tienda en línea para poder llegar a clientes de todas partes, al alcance de un solo clic.",
-      href: "/servicios/e-commerce",
-      icon: ShoppingBagIcon,
-    },
-    {
-      nameOfService: "Posicionamiento SEO 🔝",
-      description:
-        "Las personas únicamente les hace caso a los primeros enlaces de Google.",
-      href: "/servicios/posicionamiento-seo",
-      icon: ArrowTrendingUpIcon,
-    },
-  ];
+  {
+    nameOfService: "Consultoria de sitio web 🤓",
+    description:
+      "Un sitio web o tienda en línea siempre cuenta con áreas de oportunidad, nosotros las ubicaremos, analizaremos y las mejoraremos para que así puedas generar mayores ganancias en tu empresa.",
+    href: "/servicios/consultoria",
+    icon: ClipboardDocumentCheckIcon,
+  },
+  {
+    nameOfService: "Sitio Web 👨‍💻",
+    description:
+      "Esta opción es excelente para cualquier emprendedor o empresa que quiera tener presencia en la internet, llegar a más clientes y generar más ingresos.",
+    href: "/servicios/sitio-web",
+    icon: ComputerDesktopIcon,
+  },
+  {
+    nameOfService: "Sitio Web Pro ⚡🧑‍💻🔥",
+    description:
+      "Un sitio web bien administrado es el arma más poderosa de una empresa y con la utilización de estas herramientas podrás hacer de tu empresa algo más profesional.",
+    href: "/servicios/sitio-web-pro",
+    icon: GlobeAltIcon,
+  },
+  {
+    nameOfService: "E-commerce 🛍️",
+    description:
+      "Tu empresa tiene que modernizarse con una tienda en línea para poder llegar a clientes de todas partes, al alcance de un solo clic.",
+    href: "/servicios/e-commerce",
+    icon: ShoppingBagIcon,
+  },
+  {
+    nameOfService: "Posicionamiento SEO 🔝",
+    description:
+      "Las personas únicamente les hace caso a los primeros enlaces de Google.",
+    href: "/servicios/posicionamiento-seo",
+    icon: ArrowTrendingUpIcon,
+  },
+];
 
 const MessageComponent = ({
-    topic,
-    message,
-    comment,
+  topic,
+  message,
+  comment,
 }: INotificationMessage) => {
   return (
     <>
-    <div className="bg-white">
+      <div className="bg-white">
         <main className="mx-auto w-full max-w-7xl px-6 lg:px-8">
           <div className="flex-shrink-0 pt-16">
             <Image
               className="mx-auto h-24 w-auto"
-              src="https://firebasestorage.googleapis.com/v0/b/imsoft-website.appspot.com/o/Logos%20Empresa%2FimSoft_Transparente_Azul.png?alt=media&token=0a5bf3d6-641b-4d5f-8f17-45e5dab67995"
-              alt="Your Company"
-              height={100} width={100}
+              src="https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/imsoft/logotipo-imsoft-transparente-azul-rectangular.png"
+              alt="imSoft"
+              height={650}
+              width={650}
             />
           </div>
           <div className="mx-auto max-w-xl py-16 sm:pb-24">
             <div className="text-center">
-              <p className="text-base font-semibold text-primary-600">{topic}</p>
+              <p className="text-base font-semibold text-primary-600">
+                {topic}
+              </p>
               <h1 className="mt-2 text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
                 {message}
               </h1>
-              <p className="mt-2 text-lg text-gray-500">
-                {comment}
-              </p>
+              <p className="mt-2 text-lg text-gray-500">{comment}</p>
             </div>
             <div className="mt-12">
               <h2 className="text-base font-semibold text-gray-500">
@@ -138,7 +139,7 @@ const MessageComponent = ({
         </main>
       </div>
     </>
-  )
-}
+  );
+};
 
-export default MessageComponent
+export default MessageComponent;

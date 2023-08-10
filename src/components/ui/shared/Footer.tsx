@@ -37,7 +37,7 @@ export const Footer = () => {
             <div className="space-y-8 xl:col-span-1">
               <Image
                 className="h-auto w-auto"
-                src="https://firebasestorage.googleapis.com/v0/b/imsoft-website.appspot.com/o/Logos%20Empresa%2FimSoft_Transparente_Azul_Optimizado.png?alt=media&token=3c214a9a-25d1-47b4-b594-dfcb61bf14bc"
+                src="https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/imsoft/logotipo-imsoft-transparente-azul-rectangular.png"
                 alt="imSoft"
                 height={296}
                 width={106}

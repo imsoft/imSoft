@@ -102,7 +102,7 @@ const index = () => {
 
   const callToActionSectionInfo: ICallToActionSection = {
     image:
-      "https://firebasestorage.googleapis.com/v0/b/imsoft-website.appspot.com/o/Servicios%2FSitio%20web%20jr-imSoft.jpg?alt=media&token=b9722728-f180-405c-8256-d4f60d9d8493",
+      "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/imsoft/logotipo-imsoft-cuadrado.png",
     topic: "Sitio Web Jr",
     title:
       "Haz que tu negocio sea accesible en línea: ¡permítenos crear tu sitio web!",
@@ -119,7 +119,7 @@ const index = () => {
     date: dateMetatagInfo,
     type: "Sitio Web Jr",
     source: "https://www.imsoft.io/sitio-web-jr",
-    image: "https://firebasestorage.googleapis.com/v0/b/imsoft-website.appspot.com/o/Servicios%2FSitio%20web%20jr-imSoft.jpg?alt=media&token=b9722728-f180-405c-8256-d4f60d9d8493",
+    image: "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/imsoft/logotipo-imsoft-cuadrado.png",
     url: "https://www.imsoft.io/sitio-web-jr",
     robots: "index,follow",
     _id: "",

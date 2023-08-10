@@ -132,7 +132,7 @@ const blogPosts = [
     preview:
       "En la era digital en la que vivimos, tener una presencia en línea es esencial para cualquier empresa que desee alcanzar su máximo potencial. Y aunque puede haber muchas formas de aumentar la visibilidad en línea, una de las más efectivas es a través del desarrollo web. En este post, exploraremos cómo el desarrollo web puede impulsar el crecimiento de tu negocio, y los diferentes tipos de sitios web que pueden ayudarte a alcanzar tus objetivos empresariales.",
     imageUrl:
-      "https://firebasestorage.googleapis.com/v0/b/imsoft-website.appspot.com/o/Imagenes%20Art%C3%ADculos%2Fcomo%20el%20desarrollo%20web%20puede%20impulsar%20el%20crecimiento%20de%20tu%20negocio-imSoft.jpg?alt=media&token=8adb31e4-6798-4bc4-b84e-ac6a46d63922",
+      "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/articles/como-el-desarrollo-web-puede-impulsar-el-crecimiento-de-tu-negocio-imsoft.jpg",
   },
   {
     id: 2,
@@ -141,7 +141,7 @@ const blogPosts = [
     preview:
       "El desarrollo web es una parte crítica del éxito empresarial en la era digital. Un sitio web bien diseñado y funcional puede ayudar a las empresas a aumentar su visibilidad en línea, atraer a nuevos clientes y hacer crecer su negocio. Sin embargo, muchas empresas cometen errores en su enfoque de desarrollo web, lo que puede resultar en sitios web poco efectivos y costosos. En este artículo, exploraremos los errores más comunes que las empresas cometen en su estrategia de desarrollo web y cómo pueden evitarse.",
     imageUrl:
-      "https://firebasestorage.googleapis.com/v0/b/imsoft-website.appspot.com/o/Imagenes%20Art%C3%ADculos%2Flos%20principales%20errores%20que%20las%20empresas%20cometen%20en%20su%20estrategia%20de%20desarrollo%20web-imSoft.jpg?alt=media&token=94871249-4ef3-4c21-b93a-c1a8b43195d1",
+      "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/articles/los-principales-errores-que-las-empresas-cometen-en-su-estrategia-de-desarrollo-web-imsoft.jpg",
   },
 ];
 
@@ -180,7 +180,7 @@ export const Header = () => {
                 <span className="sr-only">imSoft</span>
                 <Image
                   className="h-8 w-auto sm:h-10"
-                  src="https://firebasestorage.googleapis.com/v0/b/imsoft-website.appspot.com/o/Logos%20Empresa%2FimSoft_Transparente_Azul_Optimizado.png?alt=media&token=3c214a9a-25d1-47b4-b594-dfcb61bf14bc"
+                  src="https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/imsoft/logotipo-imsoft-transparente-azul-rectangular.png"
                   alt="imSoft"
                   height={593}
                   width={213}
@@ -494,7 +494,7 @@ export const Header = () => {
                     <Link href={"/"}>
                       <Image
                         className="h-8 w-auto"
-                        src="https://firebasestorage.googleapis.com/v0/b/imsoft-website.appspot.com/o/Logos%20Empresa%2FimSoft_Transparente_Azul_Optimizado.png?alt=media&token=3c214a9a-25d1-47b4-b594-dfcb61bf14bc"
+                        src="https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/imsoft/logotipo-imsoft-transparente-azul-rectangular.png"
                         alt="imSoft"
                         height={593}
                         width={213}

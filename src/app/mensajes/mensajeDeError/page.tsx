@@ -18,7 +18,7 @@ const MensajeDeError = () => {
     date: dateMetatagInfo,
     type: "Mensaje de error",
     source: "https://www.imsoft.io/mensajes/mensajeDeError",
-    image: "https://firebasestorage.googleapis.com/v0/b/imsoft-website.appspot.com/o/Logos%20Empresa%2FLogotipo%20imSoft.png?alt=media&token=4b71448f-4047-402f-8b41-82a6c5e59ec",
+    image: "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/imsoft/logotipo-imsoft-cuadrado.png",
     url: "https://www.imsoft.io/mensajes/mensajeDeError",
     robots: "index,follow",
     _id: "",

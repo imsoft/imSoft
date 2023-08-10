@@ -19,7 +19,7 @@ const Index = () => {
     date: dateMetatagInfo,
     type: "Inicio",
     source: "https://www.imsoft.io/",
-    image: "https://firebasestorage.googleapis.com/v0/b/imsoft-website.appspot.com/o/Logos%20Empresa%2FLogotipo%20imSoft.png?alt=media&token=4b71448f-4047-402f-8b41-82a6c5e59ec4",
+    image: "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/imsoft/logotipo-imsoft-cuadrado.png",
     url: "https://www.imsoft.io/",
     robots: "index,follow",
     _id: "",

@@ -54,9 +54,9 @@ const ListItem = ({ post }: Props) => {
           <div className="flex gap-x-2.5">
             <Image
               src={
-                "https://firebasestorage.googleapis.com/v0/b/imsoft-website.appspot.com/o/Logos%20Empresa%2FIsotipo%20imSoft.png?alt=media&token=3225c6af-e001-4967-ba24-c33009e5c25d"
+                "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/imsoft/isotipo-imsoft-cuadrado.png"
               }
-              alt=""
+              alt={title}
               className="h-6 w-6 flex-none rounded-full bg-white/10"
               width={650}
               height={650}

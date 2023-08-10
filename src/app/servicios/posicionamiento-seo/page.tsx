@@ -97,7 +97,7 @@ const index = () => {
 
   const callToActionSectionInfo: ICallToActionSection = {
     image:
-      "https://firebasestorage.googleapis.com/v0/b/imsoft-website.appspot.com/o/Servicios%2FPosicionamiento%20SEO%20imSoft.jpg?alt=media&token=7b9ea347-50a6-478b-b629-9c67f1f32222",
+      "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/imsoft/logotipo-imsoft-cuadrado.png",
     topic: "Posicionamiento SEO",
     title: "Llevamos tu negocio al top de Google",
     description:
@@ -113,7 +113,7 @@ const index = () => {
     date: dateMetatagInfo,
     type: "Posicionamiento SEO",
     source: "https://www.imsoft.io/posicionamiento-seo",
-    image: "https://firebasestorage.googleapis.com/v0/b/imsoft-website.appspot.com/o/Servicios%2FPosicionamiento%20SEO%20imSoft.jpg?alt=media&token=7b9ea347-50a6-478b-b629-9c67f1f3222",
+    image: "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/imsoft/logotipo-imsoft-cuadrado.png",
     url: "https://www.imsoft.io/posicionamiento-seo",
     robots: "index,follow",
     _id: "",
