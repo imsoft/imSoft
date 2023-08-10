@@ -38,8 +38,8 @@ export const Footer = () => {
                 className="h-auto w-auto"
                 src="https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/imsoft/logotipo-imsoft-transparente-azul-rectangular.png"
                 alt="imSoft"
-                height={296}
-                width={106}
+                width={128}
+                height={46}
               />
               <p className="text-base text-gray-500">
                 Soluciones de software a medida para empresas innovadoras.

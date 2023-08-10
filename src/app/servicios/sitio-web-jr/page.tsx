@@ -102,7 +102,7 @@ const index = () => {
 
   const callToActionSectionInfo: ICallToActionSection = {
     image:
-      "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/imsoft/logotipo-imsoft-cuadrado.png",
+      "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/services/sitio-web-jr-imsoft.jpg",
     topic: "Sitio Web Jr",
     title:
       "Haz que tu negocio sea accesible en línea: ¡permítenos crear tu sitio web!",

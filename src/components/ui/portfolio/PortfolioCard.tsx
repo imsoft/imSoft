@@ -21,8 +21,8 @@ export const PortfolioCard = ({
               className="rounded-lg object-cover shadow-lg"
               src={imageUrl}
               alt={alt}
-              width={2880}
-              height={1572}
+              width={354}
+              height={193}
             />
           </div>
           <div className="space-y-2">

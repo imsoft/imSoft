@@ -79,8 +79,8 @@ const nosotros = () => {
                 className="h-56 w-full object-cover rounded-br-lg lg:absolute lg:h-full"
                 src="https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/pictures/nosotros-imsoft.jpg"
                 alt="Nosotros - imSoft"
-                width={5760}
-                height={3840}
+                width={1004}
+                height={224}
               />
             </div>
           </div>

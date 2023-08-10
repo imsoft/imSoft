@@ -29,6 +29,7 @@ import {
   IdentificationIcon,
 } from "@heroicons/react/24/outline";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
+import { getPostsMetaRandom } from "@/lib/posts";
 
 const services: IHeader[] = [
   {
@@ -181,8 +182,8 @@ export const Header = () => {
                   className="h-8 w-auto sm:h-10"
                   src="https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/imsoft/logotipo-imsoft-transparente-azul-rectangular.png"
                   alt="imSoft"
-                  height={593}
-                  width={213}
+                  width={111}
+                  height={40}
                 />
               </Link>
             </div>
@@ -427,8 +428,8 @@ export const Header = () => {
                                             className="h-20 w-32 rounded-md object-cover"
                                             src={post.imageUrl}
                                             alt={post.name}
-                                            height={100}
-                                            width={100}
+                                            width={128}
+                                            height={80}
                                           />
                                         </div>
                                         <div className="w-0 flex-1 sm:ml-8">
@@ -495,8 +496,8 @@ export const Header = () => {
                         className="h-8 w-auto"
                         src="https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/imsoft/logotipo-imsoft-transparente-azul-rectangular.png"
                         alt="imSoft"
-                        height={593}
-                        width={213}
+                        width={89}
+                        height={32}
                       />
                     </Link>
                   </div>

@@ -97,7 +97,7 @@ const index = () => {
 
   const callToActionSectionInfo: ICallToActionSection = {
     image:
-      "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/imsoft/logotipo-imsoft-cuadrado.png",
+      "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/services/posicionamiento-seo-imsoft.jpg",
     topic: "Posicionamiento SEO",
     title: "Llevamos tu negocio al top de Google",
     description:

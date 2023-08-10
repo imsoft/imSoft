@@ -183,8 +183,8 @@ const ServicesPage = () => {
                       src={serviceCard.imageSrc}
                       alt={serviceCard.imageAlt}
                       className="h-full w-full object-cover object-center"
-                      width={6720}
-                      height={4480}
+                      width={359}
+                      height={256}
                     />
                   </div>
                   <h3 className="mt-6 text-base font-semibold text-gray-900">

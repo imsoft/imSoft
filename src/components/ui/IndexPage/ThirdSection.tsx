@@ -46,10 +46,9 @@ export const ThirdSection = () => {
             className="absolute inset-0 h-full w-full object-cover sm:rounded-tl-lg"
             src="https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/pictures/creamos-sitios-web-para-aumentar-las-ventas-imsoft.jpg"
             alt="Diseñamos sitios web para aumentar las ventas - imSoft"
-            width={6500}
-            height={3789}
-            priority
-            sizes="(min-width: 66em) 60vw, (min-width: 44em) 70vw, 100vw"
+            width={547}
+            height={838}
+            sizes="(min-width: 1040px) 50vw, 100vw"
           />
         </div>
       </div>

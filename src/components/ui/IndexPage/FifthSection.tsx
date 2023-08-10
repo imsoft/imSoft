@@ -36,8 +36,8 @@ export const FifthSection = () => {
               src="https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/pictures/nuestros-valores-imsoft.jpg"
               alt="Nuestros valores - imSoft"
               className="h-full w-full object-cover object-center lg:h-full lg:w-full"
-              width={5760}
-              height={3840}
+              width={869}
+              height={1437}
             />
           </div>
 

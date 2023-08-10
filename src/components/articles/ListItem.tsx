@@ -34,8 +34,8 @@ const ListItem = ({ post }: Props) => {
         src={image}
         alt={title}
         className="absolute inset-0 -z-10 h-full w-full object-cover"
-        width={650}
-        height={650}
+        width={332}
+        height={488}
       />
       <div className="absolute inset-0 -z-10 bg-gradient-to-t from-gray-900 via-gray-900/40" />
       <div className="absolute inset-0 -z-10 rounded-2xl ring-1 ring-inset ring-gray-900/10" />
