@@ -77,7 +77,7 @@ const nosotros = () => {
             <div className="lg:absolute lg:inset-y-0 lg:left-0 lg:w-1/2">
               <Image
                 className="h-56 w-full object-cover rounded-br-lg lg:absolute lg:h-full"
-                src="https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/imsoft/logotipo-imsoft-cuadrado.png"
+                src="https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/pictures/nosotros-imsoft.jpg"
                 alt="Nosotros - imSoft"
                 width={5760}
                 height={3840}

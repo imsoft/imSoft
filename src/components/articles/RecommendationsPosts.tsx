@@ -1,5 +1,3 @@
-import React from "react";
-
 import { IPost } from "../../interfaces";
 import PostCard from "./PostCard";
 
