@@ -1,4 +1,20 @@
-const TerminosYCondicionesPage = () => {
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Términos y Condiciones",
+  description: "Términos y Condiciones, imSoft",
+  keywords: ["imSoft", "Términos y Condiciones"],
+  twitter: {
+    title: "Términos y Condiciones",
+    description: "Términos y Condiciones, imSoft",
+  },
+  openGraph: {
+    title: "Términos y Condiciones",
+    description: "Términos y Condiciones, imSoft",
+  },
+};
+
+const TermsAndConditionsPage = () => {
   return (
     <>
       <main>
@@ -59,4 +75,4 @@ const TerminosYCondicionesPage = () => {
   );
 };
 
-export default TerminosYCondicionesPage;
+export default TermsAndConditionsPage;

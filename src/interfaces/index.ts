@@ -4,7 +4,7 @@ export * from "./featuresSection";
 export * from "./footer";
 export * from "./header";
 export * from "./introductorySection";
-export * from "./metatags";
+export * from "./requiredMetatags";
 export * from "./notificationMessage";
 export * from "./portfolioCard";
 export * from "./post";

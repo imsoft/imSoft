@@ -1,4 +1,4 @@
-import ListItem from "@/components/articles/ListItem";
+import ListItem from "@/components/articles/PostCard";
 import MessageComponent from "@/components/ui/shared/MessageComponent";
 import { getPostsMeta } from "@/lib/posts";
 
@@ -23,10 +23,20 @@ export const generateStaticParams = async () => {
 export const generateMetadata = ({ params: { tag } }: Props) => {
   return {
     title: `Nuestros asesoramientos para ${tag}`,
+    description: "Tags, imSoft",
+    keywords: ["imSoft", "Tags"],
+    twitter: {
+      title: "Tags",
+      description: "Tags, imSoft",
+    },
+    openGraph: {
+      title: "Tags",
+      description: "Tags, imSoft",
+    },
   };
 };
 
-const TagPostList = async ({ params: { tag } }: Props) => {
+const TagPostPage = async ({ params: { tag } }: Props) => {
   const posts = await getPostsMeta();
 
   if (!posts)
@@ -76,4 +86,4 @@ const TagPostList = async ({ params: { tag } }: Props) => {
   );
 };
 
-export default TagPostList;
+export default TagPostPage;

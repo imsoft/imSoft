@@ -3,7 +3,7 @@
     "name": "imSoft",
     "lang": "es",
     "description": "Empresa líder en desarrollo de software. Ofrecemos soluciones personalizadas y tecnológicamente avanzadas para aumentar la eficiencia de su negocio. ¡Mejore su productividad con imSoft! 💻🤓",
-    "start_url": "imsoft.io",
+    "start_url": "https://www.imsoft.io/",
     "background_color": "#1b9cd9",
     "theme_color": "#1b9cd9",
     "dir": "auto",
@@ -14,9 +14,9 @@
       "method": "POST",
       "enctype": "multipart/form-data",
       "params": {
-        "title": "title",
-        "text": "text",
-        "url": "url"
+        "title": "imSoft",
+        "text": "Empresa líder en desarrollo de software. Ofrecemos soluciones personalizadas y tecnológicamente avanzadas para aumentar la eficiencia de su negocio. ¡Mejore su productividad con imSoft! 💻🤓",
+        "url": "https://www.imsoft.io/"
       }
     },
     "icons": [

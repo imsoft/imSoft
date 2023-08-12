@@ -1,12 +1,11 @@
+import Link from "next/link";
+import { notFound } from "next/navigation";
 import {
   getPostByName,
   getPostsMeta,
   getPostsMetaRandom,
 } from "../../../lib/posts";
-import Link from "next/link";
-import { getFormattedDate } from "@/utils";
-import ListItem from "@/components/articles/ListItem";
-import { notFound } from "next/navigation";
+import ListItem from "@/components/articles/PostCard";
 
 export const revalidate = 86400; // un dia en segundos
 
@@ -35,6 +34,33 @@ export const generateMetadata = async ({ params: { postId } }: Props) => {
 
   return {
     title: post.requiredMetatags.title,
+    description: post.requiredMetatags.description,
+    keywords: post.requiredMetatags.keywords,
+    twitter: {
+      card: "summary_large_image",
+      title: post.requiredMetatags.title,
+      description: post.requiredMetatags.description,
+      images: {
+        url: post.requiredMetatags.image,
+        alt: post.requiredMetatags.title,
+      },
+    },
+    openGraph: {
+      title: post.requiredMetatags.title,
+      description: post.requiredMetatags.description,
+      type: "article",
+      publishedTime: post.requiredMetatags.date,
+      authors: [post.requiredMetatags.author],
+      url: post.requiredMetatags.url,
+      images: [
+        {
+          url: post.requiredMetatags.image,
+          width: 783,
+          height: 783,
+          alt: post.requiredMetatags.title,
+        },
+      ],
+    },
   };
 };
 
@@ -48,14 +74,12 @@ const Post = async ({ params: { postId } }: Props) => {
 
   const { requiredMetatags, content } = post;
 
-  const pubDate = getFormattedDate(requiredMetatags.date);
-
   const tags = requiredMetatags.tags.map((tag, i) => (
     <Link
+      key={i}
       className={`inline-flex items-center justify-center gap-x-1 ${
         i === 0 ? "hidden" : ""
       } rounded-full bg-blue-100 px-2 py-2 text-xs font-medium text-blue-700`}
-      key={i}
       href={`/tags/${tag}`}
     >
       <svg

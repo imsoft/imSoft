@@ -3,3 +3,4 @@ export * from './FeaturesSection';
 export * from './IntroductorySection';
 export * from './MonthlyPaymentSection';
 export * from './PricesSection';
+export * from './ContactForm';

@@ -1,6 +1,6 @@
 import { getPostsMeta } from "@/lib/posts";
-import ListItem from "./ListItem";
 import MessageComponent from "../ui/shared/MessageComponent";
+import PostCard from "./PostCard";
 
 const Posts = async () => {
   const posts = await getPostsMeta();
@@ -32,7 +32,7 @@ const Posts = async () => {
           <div className="mx-auto mt-16 grid max-w-2xl auto-rows-fr grid-cols-1 gap-8 sm:mt-20 lg:mx-0 lg:max-w-none lg:grid-cols-3">
             {posts.map((post) => (
               <>
-                <ListItem key={post.title} post={post} />
+                <PostCard key={post.title} post={post} />
               </>
             ))}
           </div>

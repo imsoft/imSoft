@@ -1,75 +1,25 @@
-import { dateMetatagInfo } from "@/data";
-import { RequiredMetatags } from "@/interfaces";
+import { Metadata } from "next";
 
-const avisoDePrivacidad = () => {
-  const metatagsInfo: RequiredMetatags = {
-    title: "Aviso de privacidad | imSoft",
-    description: "imSoft se preocupa por la privacidad de sus clientes y usuarios, por lo que proteger la información personal es una prioridad para nosotros. Este aviso de privacidad explica cómo recopilamos, usamos y protegemos la información personal que se nos proporciona a través de nuestros productos, servicios, sitios web y aplicaciones móviles",
-    keywords: "Aviso de privacidad, imSoft",
-    author: "Brandon Uriel García Ramos",
-    subject: "Aviso de privacidad",
-    date: dateMetatagInfo,
-    type: "Aviso de privacidad",
-    source: "https://www.imsoft.io/avisoDePrivacidad",
-    image: "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/imsoft/logotipo-imsoft-cuadrado.png",
-    url: "https://www.imsoft.io/avisoDePrivacidad",
-    robots: "index,follow",
-    _id: "",
-    tags: []
-  };
+export const metadata: Metadata = {
+  title: "Aviso de privacidad",
+  description:
+    "imSoft se preocupa por la privacidad de sus clientes y usuarios, por lo que proteger la información personal es una prioridad para nosotros. Este aviso de privacidad explica cómo recopilamos, usamos y protegemos la información personal que se nos proporciona a través de nuestros productos, servicios, sitios web y aplicaciones móviles",
+  keywords: ["imSoft", "Aviso de privacidad"],
+  twitter: {
+    title: "Aviso de privacidad",
+    description:
+      "imSoft se preocupa por la privacidad de sus clientes y usuarios, por lo que proteger la información personal es una prioridad para nosotros. Este aviso de privacidad explica cómo recopilamos, usamos y protegemos la información personal que se nos proporciona a través de nuestros productos, servicios, sitios web y aplicaciones móviles",
+  },
+  openGraph: {
+    title: "Aviso de privacidad",
+    description:
+      "imSoft se preocupa por la privacidad de sus clientes y usuarios, por lo que proteger la información personal es una prioridad para nosotros. Este aviso de privacidad explica cómo recopilamos, usamos y protegemos la información personal que se nos proporciona a través de nuestros productos, servicios, sitios web y aplicaciones móviles",
+  },
+};
 
+const PrivacyNoticePage = () => {
   return (
     <>
-      {/* MetaEtiquetas Básicas */}
-      <title>{metatagsInfo.title}</title>
-      <meta name="title" content={metatagsInfo.title} />
-      <meta httpEquiv="title" content={metatagsInfo.title} />
-      <meta name="description" lang="es" content={metatagsInfo.description} />
-      <meta name="keywords" lang="es" content={metatagsInfo.keywords} />
-      <meta name="date" content={metatagsInfo.date} />
-
-      {/* Informacion del autor */}
-      <meta name="author" content={metatagsInfo.author} />
-
-      {/* Dublincore */}
-      <meta name="DC.title" lang="es-MX" content={metatagsInfo.title} />
-      <meta name="DC.creator" lang="es-MX" content={metatagsInfo.author} />
-      <meta name="DC.subject" lang="es-MX" content={metatagsInfo.subject} />
-      <meta
-        name="DC.description"
-        lang="es-MX"
-        content={metatagsInfo.description}
-      />
-      <meta name="DC.publisher" lang="es-MX" content={metatagsInfo.author} />
-      <meta name="DC.date" lang="es-MX" content={metatagsInfo.date} />
-      <meta name="DC.type" lang="es-MX" content={metatagsInfo.type} />
-      <meta name="DC.identifier" lang="es-MX" content={metatagsInfo.title} />
-      <meta name="DC.source" lang="es-MX" content={metatagsInfo.source} />
-      <meta name="DC.relation" lang="es-MX" content={metatagsInfo.source} />
-
-      {/* Twitter */}
-      <meta name="twitter:title" content={metatagsInfo.title} />
-      <meta name="twitter:description" content={metatagsInfo.description} />
-      <meta name="twitter:image:src" content={metatagsInfo.image} />
-      <meta name="twitter:image:alt" content={metatagsInfo.title} />
-
-      {/* Facebook */}
-      <meta property="og:title" content={metatagsInfo.title} />
-      <meta property="og:type" content={metatagsInfo.type} />
-      <meta
-        property="og:url"
-        content={`https://www.imsoft.io${metatagsInfo.url}`}
-      />
-      <meta property="og:image" content={metatagsInfo.image} />
-      <meta property="og:description" content={metatagsInfo.description} />
-
-      {/* Google + / Pinterest */}
-      <meta itemProp="description" content={metatagsInfo.description} />
-      <meta itemProp="image" content={metatagsInfo.image} />
-
-      {/* Robots */}
-      <meta name="robots" content={metatagsInfo.robots} />
-
       <main>
         <div className="relative overflow-hidden bg-white py-16">
           <div className="relative px-6 lg:px-8">
@@ -231,4 +181,4 @@ const avisoDePrivacidad = () => {
   );
 };
 
-export default avisoDePrivacidad;
+export default PrivacyNoticePage;

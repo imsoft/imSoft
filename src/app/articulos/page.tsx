@@ -1,10 +1,25 @@
+import { Metadata } from "next";
 import Posts from "@/components/articles/Posts";
 import { getPostsMeta } from "@/lib/posts";
 import MessageComponent from "@/components/ui/shared/MessageComponent";
 
+export const metadata: Metadata = {
+  title: "Artículos",
+  description: "Artículos, imSoft",
+  keywords: ["imSoft", "Articulos", "Blog"],
+  twitter: {
+    title: "Artículos",
+    description: "Artículos, imSoft",
+  },
+  openGraph: {
+    title: "Artículos",
+    description: "Artículos, imSoft",
+  },
+};
+
 export const revalidate = 86400; // un dia en segundos
 
-const Page = async () => {
+const ArticlesPage = async () => {
   const posts = await getPostsMeta();
 
   if (!posts) {
@@ -24,4 +39,4 @@ const Page = async () => {
   );
 };
 
-export default Page;
+export default ArticlesPage;

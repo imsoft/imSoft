@@ -1,76 +1,39 @@
 import Image from "next/image";
-import { dateMetatagInfo } from "@/data";
-import { RequiredMetatags } from "@/interfaces";
+import { Metadata } from "next";
 
-const nosotros = () => {
-  const metatagsInfo: RequiredMetatags = {
-    title: "Nosotros | imSoft",
-    description: "¿Buscas una empresa experta en software y tecnología para desarrollar tu próximo proyecto? ¡ImSoft es tu mejor opción! Somos una empresa líder en el mercado, especializada en soluciones de software y tecnología para satisfacer las necesidades de nuestros clientes",
-    keywords: "Nosotros, imSoft",
-    author: "Brandon Uriel García Ramos",
-    subject: "Nosotros",
-    date: dateMetatagInfo,
-    type: "Nosotros",
-    source: "https://www.imsoft.io/nosotros",
-    image: "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/imsoft/logotipo-imsoft-cuadrado.png",
-    url: "https://www.imsoft.io/nosotros",
-    robots: "index,follow",
-    _id: "",
-    tags: []
-  };
+export const metadata: Metadata = {
+  title: "Nosotros",
+  description:
+    "¿Buscas una empresa experta en software y tecnología para desarrollar tu próximo proyecto? ¡ImSoft es tu mejor opción! Somos una empresa líder en el mercado, especializada en soluciones de software y tecnología para satisfacer las necesidades de nuestros clientes",
+  keywords: [
+    "imSoft",
+    "Tecnología",
+    "Informática",
+    "Ingeniería informática",
+    "Empresa de desarrollo de software",
+    "Soluciones de software personalizadas",
+    "Desarrollo de software",
+    "Clientes",
+    "Satisfacción del cliente",
+    "Empresa de desarrollo de software de alta calidad",
+    "Servicio excepcional",
+    "Soluciones de software personalizadas y de alta calidad",
+  ],
+  twitter: {
+    title: "Nosotros",
+    description:
+      "¿Buscas una empresa experta en software y tecnología para desarrollar tu próximo proyecto? ¡ImSoft es tu mejor opción! Somos una empresa líder en el mercado, especializada en soluciones de software y tecnología para satisfacer las necesidades de nuestros clientes",
+  },
+  openGraph: {
+    title: "Nosotros",
+    description:
+      "¿Buscas una empresa experta en software y tecnología para desarrollar tu próximo proyecto? ¡ImSoft es tu mejor opción! Somos una empresa líder en el mercado, especializada en soluciones de software y tecnología para satisfacer las necesidades de nuestros clientes",
+  },
+};
 
+const AboutUsPage = () => {
   return (
     <>
-        {/* MetaEtiquetas Básicas */}
-        <title>{metatagsInfo.title}</title>
-        <meta name="title" content={metatagsInfo.title} />
-        <meta httpEquiv="title" content={metatagsInfo.title} />
-        <meta name="description" lang="es" content={metatagsInfo.description} />
-        <meta name="keywords" lang="es" content={metatagsInfo.keywords} />
-        <meta name="date" content={metatagsInfo.date} />
-
-        {/* Informacion del autor */}
-        <meta name="author" content={metatagsInfo.author} />
-
-        {/* Dublincore */}
-        <meta name="DC.title" lang="es-MX" content={metatagsInfo.title} />
-        <meta name="DC.creator" lang="es-MX" content={metatagsInfo.author} />
-        <meta name="DC.subject" lang="es-MX" content={metatagsInfo.subject} />
-        <meta
-          name="DC.description"
-          lang="es-MX"
-          content={metatagsInfo.description}
-        />
-        <meta name="DC.publisher" lang="es-MX" content={metatagsInfo.author} />
-        <meta name="DC.date" lang="es-MX" content={metatagsInfo.date} />
-        <meta name="DC.type" lang="es-MX" content={metatagsInfo.type} />
-        <meta name="DC.identifier" lang="es-MX" content={metatagsInfo.title} />
-        <meta name="DC.source" lang="es-MX" content={metatagsInfo.source} />
-        <meta name="DC.relation" lang="es-MX" content={metatagsInfo.source} />
-
-        {/* Twitter */}
-        <meta name="twitter:title" content={metatagsInfo.title} />
-        <meta name="twitter:description" content={metatagsInfo.description} />
-        <meta name="twitter:image:src" content={metatagsInfo.image} />
-        <meta name="twitter:image:alt" content={metatagsInfo.title} />
-
-        {/* Facebook */}
-        <meta property="og:title" content={metatagsInfo.title} />
-        <meta property="og:type" content={metatagsInfo.type} />
-        <meta
-          property="og:url"
-          content={`https://www.imsoft.io${metatagsInfo.url}`}
-        />
-        <meta property="og:image" content={metatagsInfo.image} />
-        <meta property="og:description" content={metatagsInfo.description} />
-
-        {/* Google + / Pinterest */}
-        <meta itemProp="description" content={metatagsInfo.description} />
-        <meta itemProp="image" content={metatagsInfo.image} />
-
-        {/* Robots */}
-        <meta name="robots" content={metatagsInfo.robots} />
-
       <main>
         <div className="relative bg-white">
           <div className="lg:absolute lg:inset-0">
@@ -145,4 +108,4 @@ const nosotros = () => {
   );
 };
 
-export default nosotros;
+export default AboutUsPage;

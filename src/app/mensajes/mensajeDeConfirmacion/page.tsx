@@ -1,91 +1,33 @@
-'use client';
-
+import { Metadata } from "next";
 import MessageComponent from "@/components/ui/shared/MessageComponent";
-import { dateMetatagInfo } from "@/data";
-import { INotificationMessage, RequiredMetatags } from "@/interfaces";
-import { showConfetti } from "@/utils";
-import { useEffect } from "react";
+import { INotificationMessage } from "@/interfaces";
+import { Confetti } from "@/components/ui/shared";
 
-const MensajeDeConfirmacion = () => {
-  const notificationMessageInfo: INotificationMessage = {
-    topic: "Muchas gracias por tu mensaje",
-    message: "¡Envío exitoso!",
-    comment: "Te responderemos a la brevedad",
-  };
+export const metadata: Metadata = {
+  title: "Mensaje de confirmación",
+  description: "Mensaje de confirmación, imSoft",
+  keywords: ["imSoft", "Mensaje de confirmación"],
+  twitter: {
+    title: "Mensaje de confirmación",
+    description: "Mensaje de confirmación, imSoft",
+  },
+  openGraph: {
+    title: "Mensaje de confirmación",
+    description: "Mensaje de confirmación, imSoft",
+  },
+};
 
-  const metatagsInfo: RequiredMetatags = {
-    title: "Mensaje de confirmación | imSoft",
-    description: "Mensaje de confirmación",
-    keywords: "Mensaje de confirmación, imSoft",
-    author: "Brandon Uriel García Ramos",
-    subject: "Mensaje de confirmación",
-    date: dateMetatagInfo,
-    type: "Mensaje de confirmación",
-    source: "https://www.imsoft.io/mensajes/mensajeDeConfirmacion",
-    image: "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/imsoft/logotipo-imsoft-cuadrado.png",
-    url: "https://www.imsoft.io/mensajes/mensajeDeConfirmacion",
-    robots: "index,follow",
-    _id: "",
-    tags: []
-  };
+const notificationMessageInfo: INotificationMessage = {
+  topic: "Muchas gracias por tu mensaje",
+  message: "¡Envío exitoso!",
+  comment: "Te responderemos a la brevedad",
+};
 
-  useEffect(() => {
-    showConfetti();
-  }, []);
-
+const ConfirmationMessagePage = () => {
   return (
     <>
-      {/* MetaEtiquetas Básicas */}
-      <title>{metatagsInfo.title}</title>
-      <meta name="title" content={metatagsInfo.title} />
-      <meta httpEquiv="title" content={metatagsInfo.title} />
-      <meta name="description" lang="es" content={metatagsInfo.description} />
-      <meta name="keywords" lang="es" content={metatagsInfo.keywords} />
-      <meta name="date" content={metatagsInfo.date} />
-
-      {/* Informacion del autor */}
-      <meta name="author" content={metatagsInfo.author} />
-
-      {/* Dublincore */}
-      <meta name="DC.title" lang="es-MX" content={metatagsInfo.title} />
-      <meta name="DC.creator" lang="es-MX" content={metatagsInfo.author} />
-      <meta name="DC.subject" lang="es-MX" content={metatagsInfo.subject} />
-      <meta
-        name="DC.description"
-        lang="es-MX"
-        content={metatagsInfo.description}
-      />
-      <meta name="DC.publisher" lang="es-MX" content={metatagsInfo.author} />
-      <meta name="DC.date" lang="es-MX" content={metatagsInfo.date} />
-      <meta name="DC.type" lang="es-MX" content={metatagsInfo.type} />
-      <meta name="DC.identifier" lang="es-MX" content={metatagsInfo.title} />
-      <meta name="DC.source" lang="es-MX" content={metatagsInfo.source} />
-      <meta name="DC.relation" lang="es-MX" content={metatagsInfo.source} />
-
-      {/* Twitter */}
-      <meta name="twitter:title" content={metatagsInfo.title} />
-      <meta name="twitter:description" content={metatagsInfo.description} />
-      <meta name="twitter:image:src" content={metatagsInfo.image} />
-      <meta name="twitter:image:alt" content={metatagsInfo.title} />
-
-      {/* Facebook */}
-      <meta property="og:title" content={metatagsInfo.title} />
-      <meta property="og:type" content={metatagsInfo.type} />
-      <meta
-        property="og:url"
-        content={`https://www.imsoft.io${metatagsInfo.url}`}
-      />
-      <meta property="og:image" content={metatagsInfo.image} />
-      <meta property="og:description" content={metatagsInfo.description} />
-
-      {/* Google + / Pinterest */}
-      <meta itemProp="description" content={metatagsInfo.description} />
-      <meta itemProp="image" content={metatagsInfo.image} />
-
-      {/* Robots */}
-      <meta name="robots" content={metatagsInfo.robots} />
-
       <main>
+        <Confetti />
         <MessageComponent
           topic={notificationMessageInfo.topic}
           message={notificationMessageInfo.message}
@@ -96,4 +38,4 @@ const MensajeDeConfirmacion = () => {
   );
 };
 
-export default MensajeDeConfirmacion;
+export default ConfirmationMessagePage;

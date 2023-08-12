@@ -1,6 +1,7 @@
 import { ConversionBar, Footer, Header } from "@/components/ui/shared";
 import { Montserrat } from "next/font/google";
 import "./globals.css";
+import { Metadata } from "next";
 
 const montserrat = Montserrat({ subsets: ["latin"] });
 
@@ -8,30 +9,68 @@ interface Props {
   children: React.ReactNode;
 }
 
-export const metadata = {
+export const metadata: Metadata = {
   title: {
     template: "%s | imSoft",
     default: "imSoft",
   },
   description:
-    "Empresa de desarrollo de software en Guadalajara, Jalisco, México",
-
-  generator: "imSoft",
+    "imSoft: Desarrollo de software, SEO, sitio web, ecommerce, aplicaciones web, consultoria en Guadalajara, Jalisco, México",
+  generator: "Next.js, Tailwind CSS, TypeScript, React",
   applicationName: "imSoft",
   referrer: "origin-when-cross-origin",
-  keywords: ["imSoft", "Sitio web", "Pagina web"],
+  keywords: [
+    "imSoft",
+    "software",
+    "seo",
+    "web",
+    "ecommerce",
+    "apps",
+    "consultoria",
+    "sitio web",
+    "pagina web",
+    "desarrollo de software",
+    "desarrollo web personalizado",
+    "empresa de desarrollo de aplicaciones",
+    "programación a medida",
+    "equipo de ingenieros de software",
+    "soluciones de software empresarial",
+    "desarrollo ágil de software",
+    "consultoría en desarrollo de aplicaciones",
+    "servicios de codificación de calidad",
+    "lenguajes de programación modernos",
+    "arquitectura de software escalable",
+    "mejores prácticas de desarrollo de software",
+    "desarrollo de aplicaciones móviles",
+    "experiencia de usuario (ux) en aplicaciones",
+    "integración de sistemas tecnológicos",
+    "automatización en el desarrollo",
+    "consultores de software altamente calificados",
+    "desarrollo backend y frontend",
+    "optimización de rendimiento de software",
+    "servicios de control de calidad (qa) en software",
+    "mantenimiento y actualización de aplicaciones",
+    "soluciones de software personalizadas",
+    "desarrollo de software para startups",
+    "innovación en desarrollo de aplicaciones",
+    "herramientas de desarrollo de software",
+    "desarrollo de prototipos de aplicaciones",
+    "soluciones de software escalables",
+    "equipo de desarrollo devops",
+    "desarrollo de software basado en la nube",
+    "desarrollo de aplicaciones para plataformas múltiples",
+  ],
   authors: [
     { name: "Brandon Uriel Garcia Ramos", url: "https://www.imsoft.io/" },
   ],
-  colorScheme: "white",
+  colorScheme: "normal",
   creator: "Brandon Uriel Garcia Ramos",
   publisher: "Brandon Uriel Garcia Ramos",
   formatDetection: {
-    email: false,
+    email: true,
     address: false,
-    telephone: false,
+    telephone: true,
   },
-
   metadataBase: new URL("https://www.imsoft.io/"),
   alternates: {
     canonical: "/",
@@ -42,114 +81,96 @@ export const metadata = {
   openGraph: {
     title: "imSoft",
     description:
-      "Empresa de desarrollo de software en Guadalajara, Jalisco, México",
+      "imSoft: Desarrollo de software, SEO, sitio web, ecommerce, aplicaciones web, consultoria en Guadalajara, Jalisco, México",
+    type: "website",
+    // publishedTime: "2023-01-01T00:00:00.000Z",
+    // authors: ["Seb", "Josh"],
     url: "https://www.imsoft.io/",
     siteName: "imSoft",
     images: [
       {
         url: "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/imsoft/logotipo-imsoft-cuadrado.png",
-        width: 800,
-        height: 600,
-        alt: "My custom alt",
-      },
-      {
-        url: "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/imsoft/logotipo-imsoft-cuadrado.png",
-        width: 1800,
-        height: 1600,
-        alt: "My custom alt",
+        width: 783,
+        height: 783,
+        alt: "imSoft",
       },
     ],
     locale: "es_MX",
-    type: "website", //or article
-    publishedTime: "2023-01-01T00:00:00.000Z",
-    authors: ["Brandon Uriel Garcia Ramos"],
   },
-
   robots: {
     index: true,
     follow: true,
     nocache: true,
     googleBot: {
       index: true,
-      follow: false,
+      follow: true,
       noimageindex: true,
       "max-video-preview": -1,
       "max-image-preview": "large",
       "max-snippet": -1,
     },
   },
-
   icons: {
-    icon: [{ url: "/icon.png" }, new URL("/icon.png", "https://example.com")],
-    shortcut: ["/shortcut-icon.png"],
+    icon: [
+      { url: "/favicon-imSoft.png" },
+      new URL("/favicon-imSoft.png", "https://www.imsoft.io/"),
+    ],
+    shortcut: ["/favicon-imSoft.png"],
     apple: [
-      { url: "/apple-icon.png" },
-      { url: "/apple-icon-x3.png", sizes: "180x180", type: "image/png" },
+      { url: "/apple-icon-57x57", sizes: "57x57", type: "image/png" },
+      { url: "/apple-icon-60x60", sizes: "60x60", type: "image/png" },
+      { url: "/apple-icon-72x72", sizes: "72x72", type: "image/png" },
+      { url: "/apple-icon-76x76", sizes: "76x76", type: "image/png" },
+      { url: "/apple-icon-114x114", sizes: "114x114", type: "image/png" },
+      { url: "/apple-icon-120x120", sizes: "120x120", type: "image/png" },
+      { url: "/apple-icon-144x144", sizes: "144x144", type: "image/png" },
+      { url: "/apple-icon-152x152", sizes: "152x152", type: "image/png" },
+      { url: "/apple-icon-180x180", sizes: "180x180", type: "image/png" },
     ],
     other: [
       {
-        rel: "apple-touch-icon-precomposed",
-        url: "/apple-touch-icon-precomposed.png",
+        rel: "android-icon-192x192",
+        url: "/android-icon-192x192.png",
+      },
+      {
+        rel: "favicon-16x16",
+        url: "/favicon-16x16.png",
+      },
+      {
+        rel: "favicon-32x32",
+        url: "/favicon-32x32.png",
+      },
+      {
+        rel: "favicon-96x96",
+        url: "/favicon-96x96.png",
+      },
+      {
+        rel: "favicon-imSoft",
+        url: "/favicon-imSoft.png",
       },
     ],
   },
-
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#1B9CD9' },
-    { media: '(prefers-color-scheme: dark)', color: '#1B9CD9' },
-  ],
-
-  manifest: 'https://www.imsoft.io/manifest.json',
-
+  themeColor: "#1B9CD9",
+  manifest: "https://www.imsoft.io/manifest.json",
   twitter: {
-    card: 'app',
-    title: 'Next.js',
-    description: 'The React Framework for the Web',
-    siteId: '1467726470533754880',
-    creator: '@nextjs',
-    creatorId: '1467726470533754880',
+    card: "summary_large_image",
+    title: "imSoft",
+    description:
+      "imSoft: Desarrollo de software, SEO, sitio web, ecommerce, aplicaciones web, consultoria en Guadalajara, Jalisco, México",
+    creator: "@weareimsoft",
+    // siteId: '1467726470533754880',
+    // creatorId: '1467726470533754880',
     images: {
-      url: 'https://nextjs.org/og.png',
-      alt: 'Next.js Logo',
-    },
-    app: {
-      name: 'twitter_app',
-      id: {
-        iphone: 'twitter_app://iphone',
-        ipad: 'twitter_app://ipad',
-        googleplay: 'twitter_app://googleplay',
-      },
-      url: {
-        iphone: 'https://iphone_url',
-        ipad: 'https://ipad_url',
-      },
+      url: "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/imsoft/logotipo-imsoft-cuadrado.png",
+      alt: "imSoft Logo",
     },
   },
-
   viewport: {
-    width: 'device-width',
+    width: "device-width",
     initialScale: 1,
     maximumScale: 1,
   },
-
-  itunes: {
-    appId: 'myAppStoreID',
-    appArgument: 'myAppArgument',
-  },
-  appleWebApp: {
-    title: 'Apple Web App',
-    statusBarStyle: 'white-translucent',
-    startupImage: [
-      '/assets/startup/apple-touch-startup-image-768x1004.png',
-      {
-        url: '/assets/startup/apple-touch-startup-image-1536x2008.png',
-        media: '(device-width: 768px) and (device-height: 1024px)',
-      },
-    ],
-  },
-
-  category: 'technology',
-
+  category: "technology",
 };
 
 export default function RootLayout({ children }: Props) {
