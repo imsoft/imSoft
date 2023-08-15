@@ -71,6 +71,22 @@ const portfolioInfo: IPortfolioCard[] = [
       "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/portfolio/website/sitio-web-unlimited-imports-imsoft.png",
   },
   {
+    name: "JTP Logistics",
+    type: "Sitio Web 👨‍💻",
+    href: "https://www.jtp.com.mx/",
+    alt: "Sitio Web - JTP Logistics - imSoft",
+    imageUrl:
+      "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/portfolio/website/sitio-web-jtp-logistics-imsoft.png",
+  },
+  {
+    name: "Constructora RM",
+    type: "Sitio Web 👨‍💻",
+    href: "https://constructorarm.mx/",
+    alt: "Sitio Web - Constructora RM - imSoft",
+    imageUrl:
+      "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/portfolio/website/sitio-web-constructorarm-imsoft.png",
+  },
+  {
     name: "Santa Maria Del Oro Jalisco",
     type: "Sitio Web Pro ⚡🧑‍💻🔥",
     href: "http://santamariadelorojal.com/",
