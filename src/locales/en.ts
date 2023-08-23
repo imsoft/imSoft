@@ -1,3 +1,3 @@
 export default {
-    title: 'Hello world'
+    title: 'Hello world!'
 }
