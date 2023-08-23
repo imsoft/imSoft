@@ -29,7 +29,6 @@ import {
   IdentificationIcon,
 } from "@heroicons/react/24/outline";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
-import { getPostsMetaRandom } from "@/lib/posts";
 
 const services: IHeader[] = [
   {
@@ -127,21 +126,21 @@ const articles: IHeader[] = [
 const blogPosts = [
   {
     id: 1,
-    name: "¿Cómo el desarrollo web puede impulsar el crecimiento de tu negocio?",
-    href: "/articulos/como-el-desarrollo-web-puede-impulsar el-crecimiento-de-tu-negocio",
+    name: "Consejos para mejorar la usabilidad de tu sitio web",
+    href: "/articulos/consejos-para-mejorar-la-usabilidad-de-tu-sitio-web",
     preview:
-      "En la era digital en la que vivimos, tener una presencia en línea es esencial para cualquier empresa que desee alcanzar su máximo potencial. Y aunque puede haber muchas formas de aumentar la visibilidad en línea, una de las más efectivas es a través del desarrollo web. En este post, exploraremos cómo el desarrollo web puede impulsar el crecimiento de tu negocio, y los diferentes tipos de sitios web que pueden ayudarte a alcanzar tus objetivos empresariales.",
+      "La usabilidad de un sitio web es esencial para proporcionar una buena experiencia de usuario. Si los visitantes no pueden navegar fácilmente por tu sitio o encontrar lo que están buscando, es probable que se vayan rápidamente. Para ayudarte a mejorar la usabilidad de tu sitio web, aquí te ofrecemos algunos consejos:",
     imageUrl:
-      "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/articles/como-el-desarrollo-web-puede-impulsar-el-crecimiento-de-tu-negocio-imsoft.jpg",
+      "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/articles/consejos-para-mejorar-la-usabilidad-de-tu-sitio-web-imsoft.jpg",
   },
   {
     id: 2,
-    name: "Los principales errores que las empresas cometen en su estrategia de desarrollo web",
-    href: "/articulos/los-principales-errores-que-las-empresas-cometen-en-su-estrategia-de-desarrollo-web",
+    name: "Los principales mitos del SEO que debes conocer",
+    href: "/articulos/los-principales-mitos-del-SEO-que-debes-conocer",
     preview:
-      "El desarrollo web es una parte crítica del éxito empresarial en la era digital. Un sitio web bien diseñado y funcional puede ayudar a las empresas a aumentar su visibilidad en línea, atraer a nuevos clientes y hacer crecer su negocio. Sin embargo, muchas empresas cometen errores en su enfoque de desarrollo web, lo que puede resultar en sitios web poco efectivos y costosos. En este artículo, exploraremos los errores más comunes que las empresas cometen en su estrategia de desarrollo web y cómo pueden evitarse.",
+      "El SEO (Search Engine Optimization) es una disciplina que busca mejorar la visibilidad y el posicionamiento de una página web en los resultados de búsqueda orgánicos de los motores de búsqueda. Sin embargo, a menudo existen ideas erróneas sobre cómo funciona el SEO y cuáles son sus mejores prácticas. En este blog, te mostraremos los principales mitos del SEO que debes conocer para evitar errores comunes y optimizar tu estrategia de SEO.",
     imageUrl:
-      "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/articles/los-principales-errores-que-las-empresas-cometen-en-su-estrategia-de-desarrollo-web-imsoft.jpg",
+      "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/articles/los-principales-mitos-del-SEO-que-debes-conocer.jpg",
   },
 ];
 
