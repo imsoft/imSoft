@@ -136,7 +136,7 @@ const blogPosts = [
   {
     id: 2,
     name: "Los principales mitos del SEO que debes conocer",
-    href: "/articulos/los-principales-mitos-del-SEO-que-debes-conocer",
+    href: "/articulos/los-principales-mitos-del-seo-que-debes-conocer",
     preview:
       "El SEO (Search Engine Optimization) es una disciplina que busca mejorar la visibilidad y el posicionamiento de una página web en los resultados de búsqueda orgánicos de los motores de búsqueda. Sin embargo, a menudo existen ideas erróneas sobre cómo funciona el SEO y cuáles son sus mejores prácticas. En este blog, te mostraremos los principales mitos del SEO que debes conocer para evitar errores comunes y optimizar tu estrategia de SEO.",
     imageUrl:
