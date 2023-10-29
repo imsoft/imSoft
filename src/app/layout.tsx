@@ -1,13 +1,21 @@
 import { ConversionBar, Footer, Header } from "@/components/ui/shared";
 import { Montserrat } from "next/font/google";
 import "./globals.css";
-import { Metadata } from "next";
+import { Metadata, Viewport } from "next";
 
 const montserrat = Montserrat({ subsets: ["latin"] });
 
 interface Props {
   children: React.ReactNode;
 }
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  colorScheme: "normal",
+  themeColor: "#1B9CD9",
+};
 
 export const metadata: Metadata = {
   title: {
@@ -63,7 +71,6 @@ export const metadata: Metadata = {
   authors: [
     { name: "Brandon Uriel Garcia Ramos", url: "https://www.imsoft.io/" },
   ],
-  colorScheme: "normal",
   creator: "Brandon Uriel Garcia Ramos",
   publisher: "Brandon Uriel Garcia Ramos",
   formatDetection: {
@@ -150,7 +157,6 @@ export const metadata: Metadata = {
       },
     ],
   },
-  themeColor: "#1B9CD9",
   manifest: "https://www.imsoft.io/manifest.json",
   twitter: {
     card: "summary_large_image",
@@ -164,11 +170,6 @@ export const metadata: Metadata = {
       url: "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/imsoft/logotipo-imsoft-cuadrado.png",
       alt: "imSoft Logo",
     },
-  },
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 1,
   },
   category: "technology",
 };
