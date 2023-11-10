@@ -2,6 +2,7 @@ import { ConversionBar, Footer, Header } from "@/components/ui/shared";
 import { Montserrat } from "next/font/google";
 import "./globals.css";
 import { Metadata, Viewport } from "next";
+import { GoogleAnalytics } from "@/components/google";
 
 const montserrat = Montserrat({ subsets: ["latin"] });
 
@@ -178,6 +179,7 @@ export default function RootLayout({ children }: Props) {
   return (
     <html lang="es">
       <body className={montserrat.className}>
+        <GoogleAnalytics />
         <header className="sticky top-0 z-50">
           <ConversionBar />
           <Header />
