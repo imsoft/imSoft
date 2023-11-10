@@ -1,6 +1,6 @@
 import confetti from "canvas-confetti";
 
-export const showConfetti = () => {
+const showConfetti = () => {
   const duration: number = 5 * 1000;
   const animationEnd: number = Date.now() + duration;
   const defaults: {
@@ -38,3 +38,5 @@ export const showConfetti = () => {
     );
   }, 250);
 };
+
+export default showConfetti;
