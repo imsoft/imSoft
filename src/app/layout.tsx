@@ -189,6 +189,7 @@ export default function RootLayout({ children }: Props) {
         <Footer />
       </body>
       <GoogleTagManager gtmId={"G-F34MP2JXNX"} />
+      <GoogleTagManager gtmId={"GTM-PXS9JKGT"} />
       <SpeedInsights />
     </html>
   );
