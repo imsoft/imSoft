@@ -3,6 +3,7 @@ import { Montserrat } from "next/font/google";
 import "./globals.css";
 import { Metadata, Viewport } from "next";
 import { GoogleTagManager } from "@next/third-parties/google";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const montserrat = Montserrat({ subsets: ["latin"] });
 
@@ -187,9 +188,8 @@ export default function RootLayout({ children }: Props) {
         {children}
         <Footer />
       </body>
-      <GoogleTagManager
-        gtmId={"G-F34MP2JXNX"}
-      />
+      <GoogleTagManager gtmId={"G-F34MP2JXNX"} />
+      <SpeedInsights />
     </html>
   );
 }
