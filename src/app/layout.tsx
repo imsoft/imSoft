@@ -2,7 +2,7 @@ import { ConversionBar, Footer, Header } from "@/components/ui/shared";
 import { Montserrat } from "next/font/google";
 import "./globals.css";
 import { Metadata, Viewport } from "next";
-import { GoogleAnalytics } from "@/components/google";
+import { GoogleTagManager } from "@next/third-parties/google";
 
 const montserrat = Montserrat({ subsets: ["latin"] });
 
@@ -177,9 +177,9 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Props) {
   return (
-    <html lang="es">
-      <body className={montserrat.className}>
-        <GoogleAnalytics />
+    <html lang="es" className={montserrat.className}>
+      <body>
+        {/* <GoogleAnalytics /> */}
         <header className="sticky top-0 z-50">
           <ConversionBar />
           <Header />
@@ -187,6 +187,9 @@ export default function RootLayout({ children }: Props) {
         {children}
         <Footer />
       </body>
+      <GoogleTagManager
+        gtmId={"G-F34MP2JXNX"}
+      />
     </html>
   );
 }
