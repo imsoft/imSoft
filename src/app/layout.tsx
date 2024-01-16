@@ -1,4 +1,4 @@
-import { ConversionBar, Footer, Header } from "@/components/ui/shared";
+import { ConversionBar, Footer, Header, WhatsappButton } from "@/components/ui/shared";
 import { Montserrat } from "next/font/google";
 import "./globals.css";
 import { Metadata, Viewport } from "next";
@@ -180,17 +180,18 @@ export default function RootLayout({ children }: Props) {
   return (
     <html lang="es" className={montserrat.className}>
       <body>
-        {/* <GoogleAnalytics /> */}
         <header className="sticky top-0 z-50">
           <ConversionBar />
           <Header />
         </header>
         {children}
+        <WhatsappButton />
         <Footer />
+        
+        <GoogleTagManager gtmId={"G-F34MP2JXNX"} />
+        <GoogleTagManager gtmId={"GTM-PXS9JKGT"} />
+        <SpeedInsights />
       </body>
-      <GoogleTagManager gtmId={"G-F34MP2JXNX"} />
-      <GoogleTagManager gtmId={"GTM-PXS9JKGT"} />
-      <SpeedInsights />
     </html>
   );
 }

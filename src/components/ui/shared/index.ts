@@ -4,3 +4,4 @@ export * from './Footer';
 export * from './Header';
 export * from './MessageComponent';
 export * from './Confetti';
+export * from './WhatsAppButton';
