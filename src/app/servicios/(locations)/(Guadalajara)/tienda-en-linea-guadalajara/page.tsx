@@ -21,32 +21,38 @@ import {
 } from "@heroicons/react/24/outline";
 
 export const metadata: Metadata = {
-  title: "E-Commerce",
+  title: "Tienda en Línea en Guadalajara | imSoft",
   description:
-    "Si estás buscando expandir tu negocio y llevar tus productos o servicios a una audiencia más amplia, una tienda en línea es una excelente opción. Si estás listo para llevar tu negocio al siguiente nivel, no dudes en contactarme y solicitar una cotización. Estoy seguro de que podemos ayudarte a alcanzar tus objetivos y a tener éxito en el mundo del e-commerce",
-  keywords: ["imSoft", "E-Commerce"],
+    "Crea y expande tu tienda en línea en Guadalajara con imSoft. Ofrecemos soluciones personalizadas para llevar tu negocio al éxito digital.",
+  keywords: [
+    "imSoft",
+    "Tienda en línea",
+    "Tienda en línea Guadalajara",
+    "Comercio Electrónico Guadalajara",
+  ],
   twitter: {
-    title: "E-Commerce",
+    title: "Tienda en Línea en Guadalajara - imSoft",
     description:
-      "Si estás buscando expandir tu negocio y llevar tus productos o servicios a una audiencia más amplia, una tienda en línea es una excelente opción. Si estás listo para llevar tu negocio al siguiente nivel, no dudes en contactarme y solicitar una cotización. Estoy seguro de que podemos ayudarte a alcanzar tus objetivos y a tener éxito en el mundo del e-commerce",
+      "Descubre cómo imSoft puede transformar tu negocio en Guadalajara con una tienda en línea personalizada. Estamos listos para llevar tu negocio al siguiente nivel en el mundo del comercio electrónico.",
   },
   openGraph: {
-    title: "E-Commerce",
+    title: "Tienda en Línea Personalizada en Guadalajara | imSoft",
     description:
-      "Si estás buscando expandir tu negocio y llevar tus productos o servicios a una audiencia más amplia, una tienda en línea es una excelente opción. Si estás listo para llevar tu negocio al siguiente nivel, no dudes en contactarme y solicitar una cotización. Estoy seguro de que podemos ayudarte a alcanzar tus objetivos y a tener éxito en el mundo del e-commerce",
+      "En imSoft, somos expertos en crear tiendas en línea que se destacan en Guadalajara. Contacta para una solución a medida y lleva tu negocio a nuevos horizontes digitales.",
   },
 };
 
 const introductorySectionInfo: IIntroductorySection = {
-  title: "E-Commerce",
-  description: "Vender en línea es como tener una sucursal 24/7",
+  title: "Expande tu Negocio en Guadalajara con Nuestra Tienda en Línea",
+  description:
+    "Una tienda en línea es tu sucursal abierta 24/7 en Guadalajara y más allá. Descubre el poder del comercio electrónico con imSoft.",
 };
 
 const featuresSectionInfo: IFeaturesSection = {
-  topic: "E-Commerce",
-  title: "Caracteristicas del servicio",
+  topic: "Tienda en Línea para Guadalajara",
+  title: "Características de Nuestra Tienda en Línea",
   description:
-    "Tu empresa tiene que modernizarse con una tienda en línea para poder llegar a clientes de todas partes, al alcance de un solo clic",
+    "Adapta tu empresa a la era digital con una tienda en línea diseñada para el mercado de Guadalajara, ofreciendo accesibilidad y crecimiento global.",
   serviceFeatures: [
     {
       title: "Generación de competitividad",
@@ -87,14 +93,14 @@ const featuresSectionInfo: IFeaturesSection = {
 };
 
 const pricesSectionInfo: IPricesSection = {
-  topic: "E-Commerce",
+  topic: "Soluciones de Tienda en Línea para Guadalajara",
   description:
-    "Un e-commerce escalable es la mejor inversión para tu negocio en línea",
+    "Ofrecemos paquetes de tienda en línea escalables y asequibles, ideales para negocios emergentes y establecidos en Guadalajara.",
   listOfPackages: [
     {
-      title: "Paquete de E-Commerce #1",
+      title: "Paquete de Tienda en línea #1",
       description:
-        "Con un e-commerce escalable, tu tienda en línea está preparada para el futuro.",
+        "Con una tienda en línea escalable, tu tienda en línea está preparada para el futuro.",
       featuresOfPackage: [
         "Hasta cuatro páginas",
         "Hasta tres productos",
@@ -113,7 +119,7 @@ const pricesSectionInfo: IPricesSection = {
       price: "9,999",
     },
     {
-      title: "Paquete de E-Commerce #2",
+      title: "Paquete de Tienda en línea #2",
       description:
         "Nuestro equipo de desarrolladores de ecommerce te llevará al éxito.",
       featuresOfPackage: [
@@ -135,7 +141,7 @@ const pricesSectionInfo: IPricesSection = {
       price: "12,999",
     },
     {
-      title: "Paquete de E-Commerce #3",
+      title: "Paquete de Tienda en línea #3",
       description:
         "Hacemos que tus compras en línea sean fáciles y seguras para tus clientes.",
       featuresOfPackage: [
@@ -164,10 +170,10 @@ const pricesSectionInfo: IPricesSection = {
 const callToActionSectionInfo: ICallToActionSection = {
   image:
     "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/services/tienda-en-linea-imsoft.jpg",
-  topic: "E-Commerce",
-  title: "Tu tienda en línea hecha a medida",
+  topic: "Crea tu Tienda en Línea en Guadalajara",
+  title: "Lanza tu Tienda Online con imSoft",
   description:
-    "Si estás buscando expandir tu negocio y llevar tus productos o servicios a una audiencia más amplia, una tienda en línea es una excelente opción. Si estás listo para llevar tu negocio al siguiente nivel, no dudes en contactarme y solicitar una cotización. Estoy seguro de que podemos ayudarte a alcanzar tus objetivos y a tener éxito en el mundo del e-commerce.",
+    "Únete al mundo digital en Guadalajara con una tienda en línea personalizada de imSoft. Contacta ahora y da el primer paso hacia el éxito en comercio electrónico.",
 };
 
 const EcommercePage = () => {

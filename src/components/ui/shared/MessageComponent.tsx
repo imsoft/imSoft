@@ -35,10 +35,10 @@ const links: Services[] = [
     icon: GlobeAltIcon,
   },
   {
-    nameOfService: "E-commerce 🛍️",
+    nameOfService: "Tienda en línea 🛍️",
     description:
       "Tu empresa tiene que modernizarse con una tienda en línea para poder llegar a clientes de todas partes, al alcance de un solo clic.",
-    href: "/servicios/e-commerce",
+    href: "/servicios/tienda-en-linea",
     icon: ShoppingBagIcon,
   },
   {

@@ -91,7 +91,7 @@ export const PricesSection = ({
                         href="/contacto"
                         className="flex items-center justify-center rounded-md border border-transparent bg-primary-500 px-5 py-3 text-base font-medium text-white hover:bg-primary-900"
                       >
-                        Contactanos
+                        Contáctanos
                       </Link>
                     </div>
                   </div>

@@ -39,10 +39,10 @@ const services: IHeader[] = [
     icon: PresentationChartBarIcon,
   },
   {
-    name: "Sitio Web Jr 🥇",
+    name: "Sitio Web Básico 🥇",
     description:
       "Tu negocio merece un sitio web profesional: déjanos ayudarte a crear uno.",
-    href: "/servicios/sitio-web-jr",
+    href: "/servicios/sitio-web-basico",
     icon: IdentificationIcon,
   },
   {
@@ -60,10 +60,10 @@ const services: IHeader[] = [
     icon: CodeBracketIcon,
   },
   {
-    name: "E-commerce 🛍️",
+    name: "Tienda en línea 🛍️",
     description:
       "Tu empresa tiene que modernizarse con una tienda en línea para poder llegar a clientes de todas partes, al alcance de un solo clic.",
-    href: "/servicios/e-commerce",
+    href: "/servicios/tienda-en-linea",
     icon: ShoppingBagIcon,
   },
   {
@@ -94,7 +94,7 @@ const callsToAction: IHeader[] = [
     icon: RectangleStackIcon,
   },
   {
-    name: "Contactanos",
+    name: "Contáctanos",
     href: `${whatsappBusinessLink}`,
     icon: ChatBubbleLeftRightIcon,
   },

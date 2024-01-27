@@ -19,10 +19,10 @@ const infoServices: Services[] = [
     icon: PresentationChartBarIcon,
   },
   {
-    nameOfService: "Sitio Web Jr 🥇",
+    nameOfService: "Sitio Web Básico 🥇",
     description:
       "En nuestro servicio de creación de sitios web, nos aseguramos de proporcionar una solución completa y personalizada para cada uno de nuestros clientes.",
-    href: "/servicios/sitio-web-jr",
+    href: "/servicios/sitio-web-basico",
     icon: CodeBracketSquareIcon,
   },
   {
@@ -40,10 +40,10 @@ const infoServices: Services[] = [
     icon: CodeBracketIcon,
   },
   {
-    nameOfService: "E-commerce 🛍️",
+    nameOfService: "Tienda en línea 🛍️",
     description:
       "Tu empresa tiene que modernizarse con una tienda en línea para poder llegar a clientes de todas partes, al alcance de un solo clic.",
-    href: "/servicios/e-commerce",
+    href: "/servicios/tienda-en-linea",
     icon: ShoppingBagIcon,
   },
   {

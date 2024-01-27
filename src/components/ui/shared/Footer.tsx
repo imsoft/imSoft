@@ -8,10 +8,10 @@ import ContactInfo from "./ContactInfo";
 const footerNavigation: IFooter = {
   services: [
     { name: "Consultoría de sitio web 🤓", href: "/servicios/consultoria" },
-    { name: "Sitio Web Jr 🥇", href: "/servicios/sitio-web-jr" },
+    { name: "Sitio Web Básico 🥇", href: "/servicios/sitio-web-basico" },
     { name: "Sitio Web 👨‍💻", href: "/servicios/sitio-web" },
     { name: "Sitio Web Pro ⚡🧑‍💻🔥", href: "/servicios/sitio-web-pro" },
-    { name: "E-commerce 🛍️", href: "/servicios/e-commerce" },
+    { name: "Tienda en línea 🛍️", href: "/servicios/tienda-en-linea" },
     { name: "Posicionamiento SEO 🔝", href: "/servicios/posicionamiento-seo" },
     { name: "Aplicación Web 💻", href: "/servicios/aplicaciones-web" },
   ],

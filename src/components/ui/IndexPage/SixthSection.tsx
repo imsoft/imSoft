@@ -21,7 +21,7 @@ export const SixthSection = () => {
             target="_blank"
             className="mt-8 inline-flex w-full items-center justify-center rounded-md border border-transparent bg-white px-5 py-3 text-base font-medium text-primary-500 sm:w-auto hover:bg-primary-900 hover:text-white"
           >
-            Contactanos
+            Contáctanos
           </Link>
         </div>
       </div>

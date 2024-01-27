@@ -31,6 +31,30 @@ export const metadata: Metadata = {
 
 const portfolioInfo: IPortfolioCard[] = [
   {
+    name: "Dental Welt",
+    type: "Sitio Web 👨‍💻",
+    href: "https://dentalwelt.com.mx/",
+    alt: "Sitio Web - Dental Welt - imSoft",
+    imageUrl:
+      "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/portfolio/website/sitio-web-dental-welt.png",
+  },
+  {
+    name: "Infinito Empresarial y Aduanero",
+    type: "Sitio Web 👨‍💻",
+    href: "http://clubdeestirpe.com/",
+    alt: "Sitio Web - Infinito Empresarial y Aduanero  - imSoft",
+    imageUrl:
+      "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/portfolio/website/sitio-web-infinito-empresarial-y-aduanero.png",
+  },
+  {
+    name: "Profibra",
+    type: "Sitio Web 👨‍💻",
+    href: "http://clubdeestirpe.com/",
+    alt: "Sitio Web - Profibra - imSoft",
+    imageUrl:
+      "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/portfolio/website/sitio-web-profibra.png",
+  },
+  {
     name: "Club De Estirpe",
     type: "Sitio Web 👨‍💻",
     href: "http://clubdeestirpe.com/",
@@ -87,6 +111,22 @@ const portfolioInfo: IPortfolioCard[] = [
       "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/portfolio/website/sitio-web-constructorarm-imsoft.png",
   },
   {
+    name: "Cursumi",
+    type: "Sitio Web Pro ⚡🧑‍💻🔥",
+    href: "http://santamariadelorojal.com/",
+    alt: "Sitio Web Pro - Cursumi - imSoft",
+    imageUrl:
+      "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/portfolio/website-pro/sitio-web-pro-cursumi.png",
+  },
+  {
+    name: "The Gaming Corps",
+    type: "Sitio Web Pro ⚡🧑‍💻🔥",
+    href: "http://santamariadelorojal.com/",
+    alt: "Sitio Web Pro - The Gaming Corps - imSoft",
+    imageUrl:
+      "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/portfolio/website-pro/sitio-web-pro-the-gaming-corps.png",
+  },
+  {
     name: "Santa Maria Del Oro Jalisco",
     type: "Sitio Web Pro ⚡🧑‍💻🔥",
     href: "http://santamariadelorojal.com/",
@@ -127,10 +167,10 @@ const portfolioInfo: IPortfolioCard[] = [
       "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/portfolio/mobile-apps/club-de-estirpe-aplicacion-movil-imsoft.png",
   },
   {
-    name: "¡Contactanos!",
+    name: "¡Contáctanos!",
     type: "¡Sigues tu! 💻🏆",
     href: "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/portfolio/others/aqui-va-el-siguiente-paso-para-tu-negocio-imsoft.png",
-    alt: "Contactanos - imSoft",
+    alt: "Contáctanos - imSoft",
     imageUrl:
       "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/portfolio/others/aqui-va-el-siguiente-paso-para-tu-negocio-imsoft.png",
   },

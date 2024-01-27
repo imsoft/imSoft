@@ -41,13 +41,13 @@ const serviceCardInfo: IServiceCard[] = [
     href: "/servicios/consultoria",
   },
   {
-    name: "Sitio Web Jr 🥇",
+    name: "Sitio Web Básico 🥇",
     description:
       "Nos aseguramos de proporcionar una solución completa y personalizada para cada uno de nuestros clientes. Diseñamos sitios web atractivos y funcionales que se adaptan a las necesidades de cada negocio o proyecto.",
     imageSrc:
       "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/services/sitio-web-jr-imsoft.jpg",
-    imageAlt: "Sitio Web Jr 🥇 - imSoft",
-    href: "/servicios/sitio-web-jr",
+    imageAlt: "Sitio Web Básico 🥇 - imSoft",
+    href: "/servicios/sitio-web-Básico",
   },
   {
     name: "Sitio Web 👨‍💻",
@@ -68,13 +68,13 @@ const serviceCardInfo: IServiceCard[] = [
     href: "/servicios/sitio-web-pro",
   },
   {
-    name: "E-commerce 🛍️",
+    name: "Tienda en línea 🛍️",
     description:
       "Tu empresa tiene que modernizarse con una tienda en línea para poder llegar a clientes de todas partes, al alcance de un solo clic.",
     imageSrc:
       "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/services/tienda-en-linea-imsoft.jpg",
-    imageAlt: "E-commerce 🛍️ - imSoft",
-    href: "/servicios/e-commerce",
+    imageAlt: "Tienda en línea 🛍️ - imSoft",
+    href: "/servicios/tienda-en-linea",
   },
   {
     name: "Posicionamiento SEO 🔝",

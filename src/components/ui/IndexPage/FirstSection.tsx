@@ -26,7 +26,7 @@ export const FirstSection = () => {
                   target="_blank"
                   className="flex w-full items-center justify-center rounded-md border border-transparent bg-primary-500 px-8 py-3 text-base font-medium text-white hover:bg-primary-900 md:py-4 md:px-10 md:text-lg"
                 >
-                  Contactanos
+                  Contáctanos
                 </Link>
               </div>
               <div className="mt-3 rounded-md shadow sm:mt-0 sm:ml-3">

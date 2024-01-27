@@ -40,7 +40,7 @@ export const IntroductorySection = ({
                   href="/contacto"
                   className="inline-block rounded-lg bg-primary-500 px-4 py-1.5 text-base font-semibold leading-7 text-white shadow-sm ring-1 ring-primary-500 hover:bg-primary-900 hover:ring-primary-900"
                 >
-                  Contactanos
+                  Contáctanos
                 </Link>
                 <Link
                   href="/articulos"

@@ -32,7 +32,7 @@ export const SecondSection = () => {
                       Proyectos
                     </dt>
                     <dd className="order-1 text-5xl font-bold tracking-tight text-primary-500">
-                      +10
+                      +20
                     </dd>
                   </div>
                   <div className="flex flex-col border-t border-gray-100 p-6 text-center sm:border-0 sm:border-l">

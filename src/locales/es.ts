@@ -7,10 +7,10 @@ export default {
   },
   services: {
     webSiteConsulting: "Consultoria de sitio web 🤓",
-    webSiteJr: "Sitio Web Jr 🥇",
+    webSiteJr: "Sitio Web Básico 🥇",
     webSite: "Sitio Web 👨‍💻",
     webSitePro: "Sitio Web Pro ⚡🧑‍💻🔥",
-    ecommerce: "E-commerce 🛍️",
+    ecommerce: "Tienda en línea 🛍️",
     seoPositioning: "Posicionamiento SEO 🔝",
     webApp: "Aplicación Web 💻",
   },
@@ -44,10 +44,10 @@ export default {
           href: "/servicios/consultoria",
         },
         {
-          nameOfService: "Sitio Web Jr 🥇",
+          nameOfService: "Sitio Web Básico 🥇",
           description:
             "En nuestro servicio de creación de sitios web, nos aseguramos de proporcionar una solución completa y personalizada para cada uno de nuestros clientes.",
-          href: "/servicios/sitio-web-jr",
+          href: "/servicios/sitio-web-basico",
         },
         {
           nameOfService: "Sitio Web 👨‍💻",
@@ -62,10 +62,10 @@ export default {
           href: "/servicios/sitio-web-pro",
         },
         {
-          nameOfService: "E-commerce 🛍️",
+          nameOfService: "Tienda en línea 🛍️",
           description:
             "Tu empresa tiene que modernizarse con una tienda en línea para poder llegar a clientes de todas partes, al alcance de un solo clic.",
-          href: "/servicios/e-commerce",
+          href: "/servicios/tienda-en-linea",
         },
         {
           nameOfService: "Posicionamiento SEO 🔝",
@@ -139,9 +139,9 @@ export default {
         href: "/servicios/consultoria",
       },
       {
-        title: "Sitio Web Jr 🥇",
+        title: "Sitio Web Básico 🥇",
         text: "Nos aseguramos de proporcionar una solución completa y personalizada para cada uno de nuestros clientes. Diseñamos sitios web atractivos y funcionales que se adaptan a las necesidades de cada negocio o proyecto.",
-        href: "/servicios/sitio-web-jr",
+        href: "/servicios/sitio-web-basico",
       },
       {
         title: "Sitio Web 👨‍💻",
@@ -154,9 +154,9 @@ export default {
         href: "/servicios/sitio-web-pro",
       },
       {
-        title: "E-commerce 🛍️",
+        title: "Tienda en línea 🛍️",
         text: "Tu empresa tiene que modernizarse con una tienda en línea para poder llegar a clientes de todas partes, al alcance de un solo clic.",
-        href: "/servicios/e-commerce",
+        href: "/servicios/tienda-en-linea",
       },
       {
         title: "Posicionamiento SEO 🔝",

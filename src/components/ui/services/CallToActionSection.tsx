@@ -18,7 +18,7 @@ export const CallToActionSection = ({
           <Image
             className="h-full w-full object-cover"
             src={image}
-            alt="contactanos - imSoft"
+            alt="Contáctanos - imSoft"
             width={595}
             height={438}
           />
@@ -36,7 +36,7 @@ export const CallToActionSection = ({
                   href="/contacto"
                   className="inline-flex items-center justify-center rounded-md border border-transparent bg-white px-5 py-3 text-base font-medium text-gray-500 hover:bg-primary-900 group-hover:text-white"
                 >
-                  Contactanos
+                  Contáctanos
                   <ArrowTopRightOnSquareIcon
                     className="-mr-1 ml-3 h-5 w-5 text-gray-400 group-hover:text-white"
                     aria-hidden="true"

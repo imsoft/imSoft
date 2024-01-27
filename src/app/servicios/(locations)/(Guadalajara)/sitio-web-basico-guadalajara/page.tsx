@@ -21,33 +21,38 @@ import {
 } from "@heroicons/react/24/outline";
 
 export const metadata: Metadata = {
-  title: "Sitio Web Jr",
+  title: "Sitio Web Básico en Guadalajara | imSoft",
   description:
-    "En nuestro servicio de creación de sitios web, nos aseguramos de proporcionar una solución completa y personalizada para cada uno de nuestros clientes. Diseñamos sitios web atractivos y funcionales que se adaptan a las necesidades de cada negocio o proyecto.",
-  keywords: ["imSoft", "Sitio web Jr"],
+    "Ofrecemos soluciones de sitios web básicos en Guadalajara, perfectos para pequeños negocios o emprendedores que buscan una presencia online efectiva.",
+  keywords: [
+    "imSoft",
+    "Sitio web Básico",
+    "Sitio web Guadalajara",
+    "Web design Guadalajara",
+  ],
   twitter: {
-    title: "Sitio Web Jr",
+    title: "Sitio Web Básico en Guadalajara | imSoft",
     description:
-      "En nuestro servicio de creación de sitios web, nos aseguramos de proporcionar una solución completa y personalizada para cada uno de nuestros clientes. Diseñamos sitios web atractivos y funcionales que se adaptan a las necesidades de cada negocio o proyecto.",
+      "Descubre nuestro servicio de creación de sitios web básicos en Guadalajara. Diseños atractivos y funcionales adaptados a tus necesidades empresariales.",
   },
   openGraph: {
-    title: "Sitio Web Jr",
+    title: "Desarrollo de Sitio Web Básico en Guadalajara | imSoft",
     description:
-      "En nuestro servicio de creación de sitios web, nos aseguramos de proporcionar una solución completa y personalizada para cada uno de nuestros clientes. Diseñamos sitios web atractivos y funcionales que se adaptan a las necesidades de cada negocio o proyecto.",
+      "Inicia tu presencia online en Guadalajara con un sitio web básico de imSoft. Soluciones personalizadas para cada negocio o proyecto.",
   },
 };
 
 const introductorySectionInfo: IIntroductorySection = {
-  title: "Sitio Web Jr",
+  title: "Desarrollo de Sitio Web Básico en Guadalajara",
   description:
-    "Un sitio web es la clave del éxito en línea: ¡deja que te ayudemos a tener uno!",
+    "Comienza tu viaje digital en Guadalajara con un sitio web básico. Perfecto para emprendedores y pequeños negocios que quieren marcar la diferencia online.",
 };
 
 const featuresSectionInfo: IFeaturesSection = {
-  topic: "Sitio Web Jr",
-  title: "Caracteristicas del servicio",
+  topic: "Sitio Web Básico para Guadalajara",
+  title: "Características de Nuestros Sitios Web Básicos",
   description:
-    "¿Quieres destacarte en línea? ¡Permítenos crear tu sitio web!",
+    "Nuestros sitios web básicos están diseñados para brindar una presencia online efectiva y asequible para negocios en Guadalajara.",
   serviceFeatures: [
     {
       title: "Diseño personalizado",
@@ -89,12 +94,12 @@ const featuresSectionInfo: IFeaturesSection = {
 };
 
 const pricesSectionInfo: IPricesSection = {
-  topic: "Sitio Web Jr",
+  topic: "Paquetes de Sitio Web Básico para Negocios en Guadalajara",
   description:
-    "Llegó la hora de tener tu propio espacio en la web: ¡contáctanos ahora mismo!",
+    "Explora nuestros paquetes asequibles para sitios web básicos, ideales para iniciar tu presencia digital en Guadalajara.",
   listOfPackages: [
     {
-      title: "Paquete de Sitio Web Jr #1",
+      title: "Paquete de Sitio Web Básico #1",
       description:
         "Un sitio web es la mejor inversión para tu negocio: ¡permítenos ayudarte a tener uno!.",
       featuresOfPackage: [
@@ -118,11 +123,10 @@ const pricesSectionInfo: IPricesSection = {
 const callToActionSectionInfo: ICallToActionSection = {
   image:
     "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/services/sitio-web-jr-imsoft.jpg",
-  topic: "Sitio Web Jr",
-  title:
-    "Haz que tu negocio sea accesible en línea: ¡permítenos crear tu sitio web!",
+  topic: "Sitio Web Básico en Guadalajara",
+  title: "Inicia tu Presencia Online con un Sitio Web Básico",
   description:
-    "En nuestro servicio de creación de sitios web, nos aseguramos de proporcionar una solución completa y personalizada para cada uno de nuestros clientes. Diseñamos sitios web atractivos y funcionales que se adaptan a las necesidades de cada negocio o proyecto.",
+    "Lanza tu negocio en Guadalajara con un sitio web básico de imSoft. Contáctanos para soluciones web atractivas, funcionales y adaptadas a tus necesidades.",
 };
 
 const WebPageJrPage = () => {
