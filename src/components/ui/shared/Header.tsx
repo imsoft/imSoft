@@ -35,7 +35,7 @@ const services: IHeader[] = [
     name: "Consultoría de sitio web 🤓",
     description:
       "Un sitio web o tienda en línea siempre cuenta con áreas de oportunidad, nosotros las ubicaremos, analizaremos y las mejoraremos para que así puedas generar mayores ganancias en tu empresa.",
-    href: "/servicios/consultoria",
+    href: "/servicios/consultoria-web",
     icon: PresentationChartBarIcon,
   },
   {

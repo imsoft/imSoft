@@ -38,7 +38,7 @@ const serviceCardInfo: IServiceCard[] = [
     imageSrc:
       "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/services/consultoria-imSoft.jpg",
     imageAlt: "Consultoria de sitio web 🤓 - imSoft",
-    href: "/servicios/consultoria",
+    href: "/servicios/consultoria-web",
   },
   {
     name: "Sitio Web Básico 🥇",
