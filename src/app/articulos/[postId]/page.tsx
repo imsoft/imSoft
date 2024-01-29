@@ -68,6 +68,8 @@ const Post = async ({ params: { postId } }: Props) => {
   const recommendationsPosts = await getPostsMetaRandom(3);
   const post = await getPostByName(`${postId}.mdx`); // deduped!
 
+  console.log('Post: ', post);
+
   if (!post) notFound();
 
   if (!recommendationsPosts) notFound();

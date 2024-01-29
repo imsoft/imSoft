@@ -7,7 +7,7 @@ import ContactInfo from "./ContactInfo";
 
 const footerNavigation: IFooter = {
   services: [
-    { name: "Consultoría de sitio web 🤓", href: "/servicios/consultoria" },
+    { name: "Consultoría de sitio web 🤓", href: "/servicios/consultoria-web" },
     { name: "Sitio Web Básico 🥇", href: "/servicios/sitio-web-basico" },
     { name: "Sitio Web 👨‍💻", href: "/servicios/sitio-web" },
     { name: "Sitio Web Pro ⚡🧑‍💻🔥", href: "/servicios/sitio-web-pro" },
