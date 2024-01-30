@@ -36,7 +36,7 @@ export const Footer = () => {
             <div className="space-y-8 xl:col-span-1">
               <Image
                 className="h-auto w-auto"
-                src="https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/imsoft/logotipo-imsoft-transparente-azul-rectangular.png"
+                src="https://res.cloudinary.com/https-imsoft-io/image/upload/v1706594671/imsoft-images/imsoft/logotipo-imsoft-transparente-azul-rectangular.png"
                 alt="imSoft"
                 width={128}
                 height={46}

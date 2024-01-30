@@ -155,7 +155,7 @@ const pricesSectionInfo: IPricesSection = {
 
 const callToActionSectionInfo: ICallToActionSection = {
   image:
-    "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/services/sitio-web-pro-imsoft.jpg",
+    "https://res.cloudinary.com/https-imsoft-io/image/upload/v1706595027/imsoft-images/services/sitio-web-pro-imsoft.jpg",
   topic: "Sitio Web Pro en Guadalajara",
   title: "Eleva tu Negocio en Guadalajara con un Sitio Web Pro",
   description:

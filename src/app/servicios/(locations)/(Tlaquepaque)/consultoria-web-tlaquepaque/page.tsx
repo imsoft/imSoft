@@ -116,7 +116,7 @@ const pricesSectionInfo: IPricesSection = {
 
 const callToActionSectionInfo: ICallToActionSection = {
   image:
-    "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/services/consultoria-imSoft.jpg",
+    "https://res.cloudinary.com/https-imsoft-io/image/upload/v1706595026/imsoft-images/services/consultoria-imSoft.jpg",
   topic: "Consultoría Web Profesional en Tlaquepaque",
   title: "Eleva tu Negocio en Tlaquepaque con Nuestra Consultoría Web",
   description:

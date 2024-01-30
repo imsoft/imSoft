@@ -54,7 +54,7 @@ const PostCard = ({ post }: Props) => {
           <div className="flex gap-x-2.5">
             <Image
               src={
-                "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/imsoft/isotipo-imsoft-cuadrado.png"
+                "https://res.cloudinary.com/https-imsoft-io/image/upload/v1706594670/imsoft-images/imsoft/isotipo-imsoft-cuadrado.png"
               }
               alt={title}
               className="h-6 w-6 flex-none rounded-full bg-white/10"

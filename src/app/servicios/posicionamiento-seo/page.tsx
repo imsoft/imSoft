@@ -116,7 +116,7 @@ const pricesSectionInfo: IPricesSection = {
 
 const callToActionSectionInfo: ICallToActionSection = {
   image:
-    "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/services/posicionamiento-seo-imsoft.jpg",
+    "https://res.cloudinary.com/https-imsoft-io/image/upload/v1706595026/imsoft-images/services/posicionamiento-seo-imsoft.jpg",
   topic: "Posicionamiento SEO",
   title: "Llevamos tu negocio al top de Google",
   description:

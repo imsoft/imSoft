@@ -18,7 +18,7 @@ const NotFound = () => {
     date: dateMetatagInfo,
     type: "404",
     source: "https://www.imsoft.io/404",
-    image: "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/imsoft/logotipo-imsoft-cuadrado.png",
+    image: "https://res.cloudinary.com/https-imsoft-io/image/upload/v1706594670/imsoft-images/imsoft/logotipo-imsoft-cuadrado.png",
     url: "https://www.imsoft.io/404",
     robots: "index,follow",
     _id: "",

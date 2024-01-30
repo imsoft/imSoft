@@ -33,7 +33,7 @@ export const FifthSection = () => {
         <section aria-labelledby="features-heading" className="relative">
           <div className="h-auto w-auto aspect-w-3 aspect-h-2 overflow-hidden sm:aspect-w-5 lg:aspect-none lg:absolute lg:h-full lg:w-1/2 lg:pr-4 xl:pr-16">
             <Image
-              src="https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/pictures/nuestros-valores-imsoft.jpg"
+              src="https://res.cloudinary.com/https-imsoft-io/image/upload/v1706594951/imsoft-images/pictures/nuestros-valores-imsoft.jpg"
               alt="Nuestros valores - imSoft"
               className="h-full w-full object-cover object-center lg:h-full lg:w-full"
               width={869}

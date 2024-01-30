@@ -169,7 +169,7 @@ const pricesSectionInfo: IPricesSection = {
 
 const callToActionSectionInfo: ICallToActionSection = {
   image:
-    "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/services/tienda-en-linea-imsoft.jpg",
+    "https://res.cloudinary.com/https-imsoft-io/image/upload/v1706595027/imsoft-images/services/tienda-en-linea-imsoft.jpg",
   topic: "Crea tu Tienda en Línea en Zapopan",
   title: "Lanza tu Tienda Online con imSoft",
   description:

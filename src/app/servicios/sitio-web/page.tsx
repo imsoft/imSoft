@@ -162,7 +162,7 @@ const pricesSectionInfo: IPricesSection = {
 
 const callToActionSectionInfo: ICallToActionSection = {
   image:
-    "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/services/sitio-web-imsoft.jpg",
+    "https://res.cloudinary.com/https-imsoft-io/image/upload/v1706595026/imsoft-images/services/sitio-web-imsoft.jpg",
   topic: "Sitio Web",
   title:
     "Hacemos que tu negocio tenga presencia en línea con nuestros sitios web",

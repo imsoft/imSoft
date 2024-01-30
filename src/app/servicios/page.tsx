@@ -36,7 +36,7 @@ const serviceCardInfo: IServiceCard[] = [
     description:
       "Un sitio web o tienda en línea siempre cuenta con áreas de oportunidad, nosotros las ubicaremos, analizaremos y las mejoraremos para que así puedas generar mayores ganancias en tu empresa.",
     imageSrc:
-      "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/services/consultoria-imSoft.jpg",
+      "https://res.cloudinary.com/https-imsoft-io/image/upload/v1706595026/imsoft-images/services/consultoria-imSoft.jpg",
     imageAlt: "Consultoria de sitio web 🤓 - imSoft",
     href: "/servicios/consultoria-web",
   },
@@ -45,7 +45,7 @@ const serviceCardInfo: IServiceCard[] = [
     description:
       "Nos aseguramos de proporcionar una solución completa y personalizada para cada uno de nuestros clientes. Diseñamos sitios web atractivos y funcionales que se adaptan a las necesidades de cada negocio o proyecto.",
     imageSrc:
-      "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/services/sitio-web-jr-imsoft.jpg",
+      "https://res.cloudinary.com/https-imsoft-io/image/upload/v1706595026/imsoft-images/services/sitio-web-jr-imsoft.jpg",
     imageAlt: "Sitio Web Básico 🥇 - imSoft",
     href: "/servicios/sitio-web-Básico",
   },
@@ -54,7 +54,7 @@ const serviceCardInfo: IServiceCard[] = [
     description:
       "Esta opción es excelente para cualquier emprendedor o empresa que quiera tener presencia en la internet, llegar a más clientes y generar más ingresos.",
     imageSrc:
-      "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/services/sitio-web-imsoft.jpg",
+      "https://res.cloudinary.com/https-imsoft-io/image/upload/v1706595026/imsoft-images/services/sitio-web-imsoft.jpg",
     imageAlt: "Sitio Web 👨‍💻 - imSoft",
     href: "/servicios/sitio-web",
   },
@@ -63,7 +63,7 @@ const serviceCardInfo: IServiceCard[] = [
     description:
       "Un sitio web bien administrado es el arma más poderosa de una empresa y con la utilización de estas herramientas podrás hacer de tu empresa algo más profesional.",
     imageSrc:
-      "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/services/sitio-web-pro-imsoft.jpg",
+      "https://res.cloudinary.com/https-imsoft-io/image/upload/v1706595027/imsoft-images/services/sitio-web-pro-imsoft.jpg",
     imageAlt: "Sitio Web Pro ⚡🧑‍💻🔥 - imSoft",
     href: "/servicios/sitio-web-pro",
   },
@@ -72,7 +72,7 @@ const serviceCardInfo: IServiceCard[] = [
     description:
       "Tu empresa tiene que modernizarse con una tienda en línea para poder llegar a clientes de todas partes, al alcance de un solo clic.",
     imageSrc:
-      "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/services/tienda-en-linea-imsoft.jpg",
+      "https://res.cloudinary.com/https-imsoft-io/image/upload/v1706595027/imsoft-images/services/tienda-en-linea-imsoft.jpg",
     imageAlt: "Tienda en línea 🛍️ - imSoft",
     href: "/servicios/tienda-en-linea",
   },
@@ -81,7 +81,7 @@ const serviceCardInfo: IServiceCard[] = [
     description:
       "Las personas únicamente les hace caso a los primeros enlaces de Google.",
     imageSrc:
-      "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/services/posicionamiento-seo-imsoft.jpg",
+      "https://res.cloudinary.com/https-imsoft-io/image/upload/v1706595026/imsoft-images/services/posicionamiento-seo-imsoft.jpg",
     imageAlt: "Posicionamiento SEO 🔝 - imSoft",
     href: "/servicios/posicionamiento-seo",
   },
@@ -90,7 +90,7 @@ const serviceCardInfo: IServiceCard[] = [
     description:
       "Nuestros servicios de aplicaciones web personalizadas están diseñados para ayudar a las empresas a mejorar su eficiencia al proporcionar soluciones hechas a medida.",
     imageSrc:
-      "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/services/aplicacion-web-imsoft.jpg",
+      "https://res.cloudinary.com/https-imsoft-io/image/upload/v1706595026/imsoft-images/services/aplicacion-web-imsoft.jpg",
     imageAlt: "Aplicación Web 💻 - imSoft",
     href: "/servicios/aplicaciones-web",
   },

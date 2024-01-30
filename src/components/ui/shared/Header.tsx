@@ -131,7 +131,7 @@ const blogPosts = [
     preview:
       "La usabilidad de un sitio web es esencial para proporcionar una buena experiencia de usuario. Si los visitantes no pueden navegar fácilmente por tu sitio o encontrar lo que están buscando, es probable que se vayan rápidamente. Para ayudarte a mejorar la usabilidad de tu sitio web, aquí te ofrecemos algunos consejos:",
     imageUrl:
-      "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/articles/consejos-para-mejorar-la-usabilidad-de-tu-sitio-web-imsoft.jpg",
+      "https://res.cloudinary.com/https-imsoft-io/image/upload/v1706594888/imsoft-images/articles/consejos-para-mejorar-la-usabilidad-de-tu-sitio-web-imsoft.jpg",
   },
   {
     id: 2,
@@ -140,7 +140,7 @@ const blogPosts = [
     preview:
       "El SEO (Search Engine Optimization) es una disciplina que busca mejorar la visibilidad y el posicionamiento de una página web en los resultados de búsqueda orgánicos de los motores de búsqueda. Sin embargo, a menudo existen ideas erróneas sobre cómo funciona el SEO y cuáles son sus mejores prácticas. En este blog, te mostraremos los principales mitos del SEO que debes conocer para evitar errores comunes y optimizar tu estrategia de SEO.",
     imageUrl:
-      "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/articles/los-principales-mitos-del-SEO-que-debes-conocer.jpg",
+      "https://res.cloudinary.com/https-imsoft-io/image/upload/v1706594888/imsoft-images/articles/los-principales-mitos-del-SEO-que-debes-conocer.jpg",
   },
 ];
 
@@ -179,7 +179,7 @@ export const Header = () => {
                 <span className="sr-only">imSoft</span>
                 <Image
                   className="h-8 w-auto sm:h-10"
-                  src="https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/imsoft/logotipo-imsoft-transparente-azul-rectangular.png"
+                  src="https://res.cloudinary.com/https-imsoft-io/image/upload/v1706594671/imsoft-images/imsoft/logotipo-imsoft-transparente-azul-rectangular.png"
                   alt="imSoft"
                   width={111}
                   height={40}
@@ -493,7 +493,7 @@ export const Header = () => {
                     <Link href={"/"}>
                       <Image
                         className="h-8 w-auto"
-                        src="https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/imsoft/logotipo-imsoft-transparente-azul-rectangular.png"
+                        src="https://res.cloudinary.com/https-imsoft-io/image/upload/v1706594671/imsoft-images/imsoft/logotipo-imsoft-transparente-azul-rectangular.png"
                         alt="imSoft"
                         width={89}
                         height={32}

@@ -98,7 +98,7 @@ export const metadata: Metadata = {
     siteName: "imSoft",
     images: [
       {
-        url: "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/imsoft/logotipo-imsoft-cuadrado.png",
+        url: "https://res.cloudinary.com/https-imsoft-io/image/upload/v1706594670/imsoft-images/imsoft/logotipo-imsoft-cuadrado.png",
         width: 783,
         height: 783,
         alt: "imSoft",
@@ -169,7 +169,7 @@ export const metadata: Metadata = {
     // siteId: '1467726470533754880',
     // creatorId: '1467726470533754880',
     images: {
-      url: "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/imsoft/logotipo-imsoft-cuadrado.png",
+      url: "https://res.cloudinary.com/https-imsoft-io/image/upload/v1706594670/imsoft-images/imsoft/logotipo-imsoft-cuadrado.png",
       alt: "imSoft Logo",
     },
   },

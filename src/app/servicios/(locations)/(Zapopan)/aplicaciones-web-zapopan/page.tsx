@@ -119,7 +119,7 @@ const pricesSectionInfo: IPricesSection = {
 
 const callToActionSectionInfo: ICallToActionSection = {
   image:
-    "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/services/aplicacion-web-imsoft.jpg",
+    "https://res.cloudinary.com/https-imsoft-io/image/upload/v1706595026/imsoft-images/services/aplicacion-web-imsoft.jpg",
   topic: "Soluciones Web Personalizadas en Zapopan",
   title: "Impulsa tu Negocio en Zapopan con Aplicaciones Web a Medida",
   description:

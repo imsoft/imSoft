@@ -36,7 +36,7 @@ const portfolioInfo: IPortfolioCard[] = [
     href: "https://dentalwelt.com.mx/",
     alt: "Sitio Web - Dental Welt - imSoft",
     imageUrl:
-      "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/portfolio/website/sitio-web-dental-welt.png",
+      "https://res.cloudinary.com/https-imsoft-io/image/upload/v1706595313/imsoft-images/portfolio/website/sitio-web-dental-welt.png",
   },
   {
     name: "Infinito Empresarial y Aduanero",
@@ -44,7 +44,7 @@ const portfolioInfo: IPortfolioCard[] = [
     href: "http://clubdeestirpe.com/",
     alt: "Sitio Web - Infinito Empresarial y Aduanero  - imSoft",
     imageUrl:
-      "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/portfolio/website/sitio-web-infinito-empresarial-y-aduanero.png",
+      "https://res.cloudinary.com/https-imsoft-io/image/upload/v1706595314/imsoft-images/portfolio/website/sitio-web-infinito-empresarial-y-aduanero.png",
   },
   {
     name: "Profibra",
@@ -52,7 +52,7 @@ const portfolioInfo: IPortfolioCard[] = [
     href: "http://clubdeestirpe.com/",
     alt: "Sitio Web - Profibra - imSoft",
     imageUrl:
-      "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/portfolio/website/sitio-web-profibra.png",
+      "https://res.cloudinary.com/https-imsoft-io/image/upload/v1706595314/imsoft-images/portfolio/website/sitio-web-profibra.png",
   },
   {
     name: "Club De Estirpe",
@@ -60,7 +60,7 @@ const portfolioInfo: IPortfolioCard[] = [
     href: "http://clubdeestirpe.com/",
     alt: "Sitio Web - Club de Estirpe - imSoft",
     imageUrl:
-      "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/portfolio/website/sitio-web-club-de-estirpe-imsoft.png",
+      "https://res.cloudinary.com/https-imsoft-io/image/upload/v1706595311/imsoft-images/portfolio/website/sitio-web-club-de-estirpe-imsoft.png",
   },
   {
     name: "Construcción Inteligente",
@@ -68,7 +68,7 @@ const portfolioInfo: IPortfolioCard[] = [
     href: "https://construccioninteligente.mx/",
     alt: "Sitio Web - Construccion Inteligente - imSoft",
     imageUrl:
-      "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/portfolio/website/sitio-web-construccion-inteligente-imsoft.png",
+      "https://res.cloudinary.com/https-imsoft-io/image/upload/v1706595313/imsoft-images/portfolio/website/sitio-web-construccion-inteligente-imsoft.png",
   },
   {
     name: "Ferreacabados Jalisco",
@@ -76,7 +76,7 @@ const portfolioInfo: IPortfolioCard[] = [
     href: "https://ferrejalisco.mx/",
     alt: "Sitio Web - Ferreacabdos Jalisco - imSoft",
     imageUrl:
-      "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/portfolio/website/sitio-web-ferreacabdos-jalisco-imsoft.png",
+      "https://res.cloudinary.com/https-imsoft-io/image/upload/v1706595314/imsoft-images/portfolio/website/sitio-web-ferreacabdos-jalisco-imsoft.png",
   },
   {
     name: "Red Municipal de Abogados",
@@ -84,7 +84,7 @@ const portfolioInfo: IPortfolioCard[] = [
     href: "https://redmunicipaldeabogados.com/",
     alt: "Sitio Web - Red Municipal de Abogados - imSoft",
     imageUrl:
-      "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/portfolio/website/sitio-web-red-municipal-de-abogados-imsoft.png",
+      "https://res.cloudinary.com/https-imsoft-io/image/upload/v1706595315/imsoft-images/portfolio/website/sitio-web-red-municipal-de-abogados-imsoft.png",
   },
   {
     name: "Unlimited Imports",
@@ -92,7 +92,7 @@ const portfolioInfo: IPortfolioCard[] = [
     href: "https://unlimitedimports.com.mx/",
     alt: "Sitio Web - Unlimited Imports - imSoft",
     imageUrl:
-      "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/portfolio/website/sitio-web-unlimited-imports-imsoft.png",
+      "https://res.cloudinary.com/https-imsoft-io/image/upload/v1706595315/imsoft-images/portfolio/website/sitio-web-unlimited-imports-imsoft.png",
   },
   {
     name: "JTP Logistics",
@@ -100,7 +100,7 @@ const portfolioInfo: IPortfolioCard[] = [
     href: "https://www.jtp.com.mx/",
     alt: "Sitio Web - JTP Logistics - imSoft",
     imageUrl:
-      "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/portfolio/website/sitio-web-jtp-logistics-imsoft.png",
+      "https://res.cloudinary.com/https-imsoft-io/image/upload/v1706595314/imsoft-images/portfolio/website/sitio-web-jtp-logistics-imsoft.png",
   },
   {
     name: "Constructora RM",
@@ -108,7 +108,7 @@ const portfolioInfo: IPortfolioCard[] = [
     href: "https://constructorarm.mx/",
     alt: "Sitio Web - Constructora RM - imSoft",
     imageUrl:
-      "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/portfolio/website/sitio-web-constructorarm-imsoft.png",
+      "https://res.cloudinary.com/https-imsoft-io/image/upload/v1706595312/imsoft-images/portfolio/website/sitio-web-constructorarm-imsoft.png",
   },
   {
     name: "Cursumi",
@@ -116,7 +116,7 @@ const portfolioInfo: IPortfolioCard[] = [
     href: "http://santamariadelorojal.com/",
     alt: "Sitio Web Pro - Cursumi - imSoft",
     imageUrl:
-      "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/portfolio/website-pro/sitio-web-pro-cursumi.png",
+      "https://res.cloudinary.com/https-imsoft-io/image/upload/v1706595491/imsoft-images/portfolio/website-pro/sitio-web-pro-cursumi.png",
   },
   {
     name: "The Gaming Corps",
@@ -124,7 +124,7 @@ const portfolioInfo: IPortfolioCard[] = [
     href: "http://santamariadelorojal.com/",
     alt: "Sitio Web Pro - The Gaming Corps - imSoft",
     imageUrl:
-      "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/portfolio/website-pro/sitio-web-pro-the-gaming-corps.png",
+      "https://res.cloudinary.com/https-imsoft-io/image/upload/v1706595491/imsoft-images/portfolio/website-pro/sitio-web-pro-the-gaming-corps.png",
   },
   {
     name: "Santa Maria Del Oro Jalisco",
@@ -132,7 +132,7 @@ const portfolioInfo: IPortfolioCard[] = [
     href: "http://santamariadelorojal.com/",
     alt: "Sitio Web Pro - Santa Maria Del Oro Jalisco - imSoft",
     imageUrl:
-      "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/portfolio/website-pro/sitio-web-pro-santa-maria-del-oro-jalisco-imsoft.png",
+      "https://res.cloudinary.com/https-imsoft-io/image/upload/v1706595492/imsoft-images/portfolio/website-pro/sitio-web-pro-santa-maria-del-oro-jalisco-imsoft.png",
   },
   {
     name: "San Sebastián Del Oeste",
@@ -140,7 +140,7 @@ const portfolioInfo: IPortfolioCard[] = [
     href: "https://sansebastiandeloeste.gob.mx/#/",
     alt: "Sitio Web Pro - Santa Sebastian Del Oeste - imSoft",
     imageUrl:
-      "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/portfolio/website-pro/sitio-web-pro-santa-sebastian-del-oeste-imsoft.png",
+      "https://res.cloudinary.com/https-imsoft-io/image/upload/v1706595491/imsoft-images/portfolio/website-pro/sitio-web-pro-santa-sebastian-del-oeste-imsoft.png",
   },
   {
     name: "Tuxcacuesco",
@@ -148,31 +148,31 @@ const portfolioInfo: IPortfolioCard[] = [
     href: "https://tuxcacuesco.gob.mx/#/",
     alt: "Sitio Web Pro - Tuxcacuesco - imSoft",
     imageUrl:
-      "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/portfolio/website-pro/sitio-web-pro-tuxcacuesco-imsoft.png",
+      "https://res.cloudinary.com/https-imsoft-io/image/upload/v1706595493/imsoft-images/portfolio/website-pro/sitio-web-pro-tuxcacuesco-imsoft.png",
   },
   {
     name: "Pastería La Hidalguense",
     type: "Aplicación Web 🖥️📊",
-    href: "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/portfolio/web-application/aplicaciones-web-pasteria-la-hidalguense-imsoft.png",
+    href: "https://res.cloudinary.com/https-imsoft-io/image/upload/v1706595207/imsoft-images/portfolio/web-application/aplicaciones-web-pasteria-la-hidalguense-imsoft.png",
     alt: "Aplicación Web - Pastería La Hidalguense - imSoft",
     imageUrl:
-      "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/portfolio/web-application/aplicaciones-web-pasteria-la-hidalguense-imsoft.png",
+      "https://res.cloudinary.com/https-imsoft-io/image/upload/v1706595207/imsoft-images/portfolio/web-application/aplicaciones-web-pasteria-la-hidalguense-imsoft.png",
   },
   {
     name: "Club De Estirpe",
     type: "Aplicación Móvil 📱📊",
-    href: "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/portfolio/mobile-apps/club-de-estirpe-aplicacion-movil-imsoft.png",
+    href: "https://res.cloudinary.com/https-imsoft-io/image/upload/v1706595385/imsoft-images/portfolio/mobile-apps/club-de-estirpe-aplicacion-movil-imsoft.png",
     alt: "Aplicación Móvil - Club De Estirpe - imSoft",
     imageUrl:
-      "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/portfolio/mobile-apps/club-de-estirpe-aplicacion-movil-imsoft.png",
+      "https://res.cloudinary.com/https-imsoft-io/image/upload/v1706595385/imsoft-images/portfolio/mobile-apps/club-de-estirpe-aplicacion-movil-imsoft.png",
   },
   {
     name: "¡Contáctanos!",
     type: "¡Sigues tu! 💻🏆",
-    href: "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/portfolio/others/aqui-va-el-siguiente-paso-para-tu-negocio-imsoft.png",
+    href: "https://res.cloudinary.com/https-imsoft-io/image/upload/v1706595141/imsoft-images/portfolio/others/aqui-va-el-siguiente-paso-para-tu-negocio-imsoft.png",
     alt: "Contáctanos - imSoft",
     imageUrl:
-      "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/portfolio/others/aqui-va-el-siguiente-paso-para-tu-negocio-imsoft.png",
+      "https://res.cloudinary.com/https-imsoft-io/image/upload/v1706595141/imsoft-images/portfolio/others/aqui-va-el-siguiente-paso-para-tu-negocio-imsoft.png",
   },
 ];
 

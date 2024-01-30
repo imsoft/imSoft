@@ -117,7 +117,7 @@ const pricesSectionInfo: IPricesSection = {
 
 const callToActionSectionInfo: ICallToActionSection = {
   image:
-    "https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/services/sitio-web-jr-imsoft.jpg",
+    "https://res.cloudinary.com/https-imsoft-io/image/upload/v1706595026/imsoft-images/services/sitio-web-jr-imsoft.jpg",
   topic: "Sitio Web Básico",
   title:
     "Haz que tu negocio sea accesible en línea: ¡permítenos crear tu sitio web!",

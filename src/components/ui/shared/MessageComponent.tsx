@@ -62,7 +62,7 @@ const MessageComponent = ({
           <div className="flex-shrink-0 pt-16">
             <Image
               className="mx-auto h-24 w-auto"
-              src="https://raw.githubusercontent.com/imsoft/BlogPosts/main/images/imsoft/logotipo-imsoft-transparente-azul-rectangular.png"
+              src="https://res.cloudinary.com/https-imsoft-io/image/upload/v1706594671/imsoft-images/imsoft/logotipo-imsoft-transparente-azul-rectangular.png"
               alt="imSoft"
               height={650}
               width={650}

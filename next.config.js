@@ -8,6 +8,12 @@ const nextConfig = {
         port: '',
         pathname: '/imsoft/BlogPosts/main/images/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+        port: '',
+        pathname: '/https-imsoft-io/image/upload/**',
+      },
     ],
   },
 }
