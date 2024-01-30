@@ -4,6 +4,7 @@ import "./globals.css";
 import { Metadata, Viewport } from "next";
 import { GoogleTagManager } from "@next/third-parties/google";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from '@vercel/analytics/react';
 
 const montserrat = Montserrat({ subsets: ["latin"] });
 
@@ -191,6 +192,7 @@ export default function RootLayout({ children }: Props) {
         <GoogleTagManager gtmId={"G-F34MP2JXNX"} />
         <GoogleTagManager gtmId={"GTM-PXS9JKGT"} />
         <SpeedInsights />
+        <Analytics />
       </body>
     </html>
   );
