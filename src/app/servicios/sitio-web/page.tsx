@@ -2,8 +2,8 @@ import { Metadata } from "next";
 import {
   IntroductorySection,
   FeaturesSection,
-  PricesSection,
   CallToActionSection,
+  MonthlyPaymentSection,
 } from "@/components/ui/services";
 import {
   ICallToActionSection,
@@ -94,68 +94,18 @@ const pricesSectionInfo: IPricesSection = {
     "Hacemos que tu negocio tenga presencia en línea con nuestros sitios web",
   listOfPackages: [
     {
-      title: "Paquete de Sitio Web #1",
+      title: "Paquete de Sitio Web",
       description:
         "Diseñamos y desarrollamos sitios web personalizados a tu medida.",
       featuresOfPackage: [
-        "Hasta cuatro páginas",
-        "Adaptación de dispositivos móviles",
-        "Formulario de contacto",
-        "Mapa de ubicación",
-        "Enlaces a redes sociales",
-        "Enlace a número de WhatsApp",
-        "Dos Correos electrónicos",
-        "Certificado de seguridad",
-        "Un solo idioma",
-        "Dominio",
-        "Hosting",
-        "Alta en Google negocios",
+        "Garantiza una experiencia de usuario óptima en todos los dispositivos, incluyendo móviles, tabletas y desktops.",
+        "Mejora la visibilidad del sitio web en motores de búsqueda, lo que puede aumentar el tráfico orgánico.",
+        "Implementa características de seguridad como HTTPS, protección contra malware y backups regulares para proteger la información del sitio y de los usuarios.",
+        "Asegura tiempos de carga rápidos para mejorar la experiencia del usuario y contribuir positivamente al SEO.",
+        "Facilita la compartición de contenido y aumenta la visibilidad en plataformas sociales.",
+        "Ofrece asistencia continua para resolver problemas técnicos y mantener el sitio web actualizado.",
       ],
       price: "8,999",
-    },
-    {
-      title: "Paquete de Sitio Web #2",
-      description:
-        "Brindamos soluciones de desarrollo web profesionales y eficientes.",
-      featuresOfPackage: [
-        "Hasta seis páginas",
-        "Adaptación de dispositivos móviles",
-        "Formulario de contacto",
-        "Mapa de ubicación",
-        "Enlaces a redes sociales",
-        "Enlace a número de WhatsApp",
-        "Cuatro Correos electrónicos",
-        "Certificado de seguridad",
-        "Un solo idioma",
-        "Dominio",
-        "Hosting",
-        "SEO básico",
-        "Alta en Google negocios",
-      ],
-      price: "10,999",
-    },
-    {
-      title: "Paquete de Sitio Web #3",
-      description:
-        "Nuestros sitios web son atractivos, responsivos y fáciles de usar.",
-      featuresOfPackage: [
-        "Hasta ocho páginas",
-        "Adaptación de dispositivos móviles",
-        "Formulario de contacto",
-        "Mapa de ubicación",
-        "Enlaces a redes sociales",
-        "Enlace a número de WhatsApp",
-        "Seis Correos electrónicos",
-        "Certificado de seguridad",
-        "Un solo idioma",
-        "Escaneo de amenazas “SG Site Scanner”",
-        "Dominio",
-        "Hosting",
-        "SEO básico",
-        "Generación de código de Google Analytics",
-        "Alta en Google negocios",
-      ],
-      price: "12,999",
     },
   ],
 };
@@ -186,7 +136,7 @@ const WebPagePage = () => {
           serviceFeatures={featuresSectionInfo.serviceFeatures}
         />
 
-        <PricesSection
+        <MonthlyPaymentSection
           topic={pricesSectionInfo.topic}
           description={pricesSectionInfo.description}
           listOfPackages={pricesSectionInfo.listOfPackages}

@@ -8,12 +8,15 @@ import ContactInfo from "./ContactInfo";
 const footerNavigation: IFooter = {
   services: [
     { name: "Consultoría de sitio web 🤓", href: "/servicios/consultoria-web" },
-    { name: "Sitio Web Básico 🥇", href: "/servicios/sitio-web-basico" },
     { name: "Sitio Web 👨‍💻", href: "/servicios/sitio-web" },
-    { name: "Sitio Web Pro ⚡🧑‍💻🔥", href: "/servicios/sitio-web-pro" },
     { name: "Tienda en línea 🛍️", href: "/servicios/tienda-en-linea" },
     { name: "Posicionamiento SEO 🔝", href: "/servicios/posicionamiento-seo" },
     { name: "Aplicación Web 💻", href: "/servicios/aplicaciones-web" },
+    { name: "Análisis de datos 📊", href: "/servicios/analisis-de-datos" },
+    { name: "Aplicaciones Móviles 📱", href: "/servicios/aplicaciones-moviles" },
+    { name: "Campañas de redes sociales 📲", href: "/servicios/campanas-en-redes-sociales" },
+    { name: "Gestión de redes sociales 🖼️", href: "/servicios/gestion-de-redes-sociales" },
+    { name: "Campañas de Google Ads 📣", href: "/servicios/campanas-en-google-ads" },
   ],
   company: [
     { name: "Historia de imSoft", href: "/nosotros" },

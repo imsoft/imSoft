@@ -18,7 +18,7 @@ export const CallToActionSection = ({
           <Image
             className="h-full w-full object-cover"
             src={image}
-            alt="Contáctanos - imSoft"
+            alt={topic}
             width={595}
             height={438}
           />

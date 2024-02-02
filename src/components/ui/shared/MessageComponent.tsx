@@ -7,9 +7,9 @@ import {
   ChevronRightIcon,
   ClipboardDocumentCheckIcon,
   ComputerDesktopIcon,
-  GlobeAltIcon,
   ShoppingBagIcon,
   ArrowTrendingUpIcon,
+  DevicePhoneMobileIcon,
 } from "@heroicons/react/24/outline";
 
 const links: Services[] = [
@@ -28,11 +28,11 @@ const links: Services[] = [
     icon: ComputerDesktopIcon,
   },
   {
-    nameOfService: "Sitio Web Pro ⚡🧑‍💻🔥",
+    nameOfService: "Aplicaciones Móviles 📱",
     description:
-      "Un sitio web bien administrado es el arma más poderosa de una empresa y con la utilización de estas herramientas podrás hacer de tu empresa algo más profesional.",
-    href: "/servicios/sitio-web-pro",
-    icon: GlobeAltIcon,
+      "Creación de aplicaciones móviles a medida que capturan la esencia de tu marca y conectan con tus usuarios de manera significativa.",
+    href: "/servicios/aplicaciones-moviles",
+    icon: DevicePhoneMobileIcon,
   },
   {
     nameOfService: "Tienda en línea 🛍️",

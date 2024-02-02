@@ -112,7 +112,7 @@ const portfolioInfo: IPortfolioCard[] = [
   },
   {
     name: "Cursumi",
-    type: "Sitio Web Pro ⚡🧑‍💻🔥",
+    type: "Sitio Web 👨‍💻",
     href: "http://santamariadelorojal.com/",
     alt: "Sitio Web Pro - Cursumi - imSoft",
     imageUrl:
@@ -120,7 +120,7 @@ const portfolioInfo: IPortfolioCard[] = [
   },
   {
     name: "The Gaming Corps",
-    type: "Sitio Web Pro ⚡🧑‍💻🔥",
+    type: "Sitio Web 👨‍💻",
     href: "http://santamariadelorojal.com/",
     alt: "Sitio Web Pro - The Gaming Corps - imSoft",
     imageUrl:
@@ -128,7 +128,7 @@ const portfolioInfo: IPortfolioCard[] = [
   },
   {
     name: "Santa Maria Del Oro Jalisco",
-    type: "Sitio Web Pro ⚡🧑‍💻🔥",
+    type: "Sitio Web 👨‍💻",
     href: "http://santamariadelorojal.com/",
     alt: "Sitio Web Pro - Santa Maria Del Oro Jalisco - imSoft",
     imageUrl:
@@ -136,7 +136,7 @@ const portfolioInfo: IPortfolioCard[] = [
   },
   {
     name: "San Sebastián Del Oeste",
-    type: "Sitio Web Pro ⚡🧑‍💻🔥",
+    type: "Sitio Web 👨‍💻",
     href: "https://sansebastiandeloeste.gob.mx/#/",
     alt: "Sitio Web Pro - Santa Sebastian Del Oeste - imSoft",
     imageUrl:
@@ -144,7 +144,7 @@ const portfolioInfo: IPortfolioCard[] = [
   },
   {
     name: "Tuxcacuesco",
-    type: "Sitio Web Pro ⚡🧑‍💻🔥",
+    type: "Sitio Web 👨‍💻",
     href: "https://tuxcacuesco.gob.mx/#/",
     alt: "Sitio Web Pro - Tuxcacuesco - imSoft",
     imageUrl:

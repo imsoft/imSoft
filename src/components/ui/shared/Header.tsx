@@ -13,7 +13,6 @@ import { Popover, Transition } from "@headlessui/react";
 import {
   Bars3Icon,
   PresentationChartBarIcon,
-  CodeBracketIcon,
   PlayIcon,
   CodeBracketSquareIcon,
   MagnifyingGlassIcon,
@@ -26,59 +25,74 @@ import {
   DocumentTextIcon,
   DocumentDuplicateIcon,
   ComputerDesktopIcon,
-  IdentificationIcon,
+  CircleStackIcon,
+  DevicePhoneMobileIcon,
+  MegaphoneIcon,
+  UsersIcon,
+  Square3Stack3DIcon,
 } from "@heroicons/react/24/outline";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 
 const services: IHeader[] = [
   {
     name: "Consultoría de sitio web 🤓",
-    description:
-      "Un sitio web o tienda en línea siempre cuenta con áreas de oportunidad, nosotros las ubicaremos, analizaremos y las mejoraremos para que así puedas generar mayores ganancias en tu empresa.",
+    description: "Mejoramos tu sitio para aumentar ganancias.",
     href: "/servicios/consultoria-web",
     icon: PresentationChartBarIcon,
   },
   {
-    name: "Sitio Web Básico 🥇",
-    description:
-      "Tu negocio merece un sitio web profesional: déjanos ayudarte a crear uno.",
-    href: "/servicios/sitio-web-basico",
-    icon: IdentificationIcon,
-  },
-  {
     name: "Sitio Web 👨‍💻",
-    description:
-      "Esta opción es excelente para cualquier emprendedor o empresa que quiera tener presencia en la internet, llegar a más clientes y generar más ingresos.",
+    description: "Presencia online para atraer más clientes y generar ingresos.",
     href: "/servicios/sitio-web",
     icon: CodeBracketSquareIcon,
   },
   {
-    name: "Sitio Web Pro ⚡🧑‍💻🔥",
-    description:
-      "Un sitio web bien administrado es el arma más poderosa de una empresa y con la utilización de estas herramientas podrás hacer de tu empresa algo más profesional.",
-    href: "/servicios/sitio-web-pro",
-    icon: CodeBracketIcon,
-  },
-  {
     name: "Tienda en línea 🛍️",
-    description:
-      "Tu empresa tiene que modernizarse con una tienda en línea para poder llegar a clientes de todas partes, al alcance de un solo clic.",
+    description: "Vende en línea y alcanza clientes globalmente.",
     href: "/servicios/tienda-en-linea",
     icon: ShoppingBagIcon,
   },
   {
     name: "Posicionamiento SEO 🔝",
-    description:
-      "Las personas únicamente les hace caso a los primeros enlaces de Google.",
+    description: "Posiciona tu sitio en los primeros lugares de Google.",
     href: "/servicios/posicionamiento-seo",
     icon: MagnifyingGlassIcon,
   },
   {
     name: "Aplicación Web 💻",
-    description:
-      "Nuestros servicios de aplicaciones web personalizadas están diseñados para ayudar a las empresas a mejorar su eficiencia al proporcionar soluciones hechas a medida.",
+    description: "Soluciones web personalizadas para mejorar eficiencia.",
     href: "/servicios/aplicaciones-web",
     icon: ComputerDesktopIcon,
+  },
+  {
+    name: "Análisis de datos 📊",
+    description: "Convierte datos en insights para decisiones informadas.",
+    href: "/servicios/analisis-de-datos",
+    icon: CircleStackIcon,
+  },
+  {
+    name: "Aplicaciones Móviles 📱",
+    description: "Aplicaciones que reflejan tu marca y enganchan usuarios.",
+    href: "/servicios/aplicaciones-moviles",
+    icon: DevicePhoneMobileIcon,
+  },
+  {
+    name: "Campañas de redes sociales 📲",
+    description: "Conecta efectivamente con tu audiencia online.",
+    href: "/servicios/campanas-en-redes-sociales",
+    icon: MegaphoneIcon,
+  },
+  {
+    name: "Gestión de redes sociales 🖼️",
+    description: "Estrategias para destacar y crecer tu comunidad.",
+    href: "/servicios/gestion-de-redes-sociales",
+    icon: UsersIcon,
+  },
+  {
+    name: "Campañas de Google Ads 📣",
+    description: "Maximiza tu visibilidad online y atrae a tu público.",
+    href: "/servicios/campanas-en-google-ads",
+    icon: Square3Stack3DIcon,
   },
 ];
 
@@ -240,7 +254,7 @@ export const Header = () => {
                           onMouseLeave={handleShowingServices}
                           className="absolute inset-x-0 top-full z-10 hidden transform bg-white shadow-lg md:block"
                         >
-                          <div className="mx-auto grid max-w-7xl gap-y-6 px-4 py-6 sm:grid-cols-2 sm:gap-8 sm:px-6 sm:py-8 lg:grid-cols-4 lg:px-8 lg:py-12 xl:py-12">
+                          <div className="mx-auto grid max-w-7xl gap-y-6 px-4 py-6 sm:grid-cols-2 sm:gap-8 sm:px-6 sm:py-8 lg:grid-cols-5 lg:px-8 lg:py-12 xl:py-12">
                             {services.map((item) => (
                               <Link
                                 key={item.name}

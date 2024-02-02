@@ -16,7 +16,7 @@ export const PricesSection = ({
           <div className="text-center">
             <h2 className="text-lg font-semibold text-primary-300">{topic}</h2>
             <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl lg:text-5xl">
-              Paquetes del servicio
+              Paquete del servicio
             </h2>
             <p className="mt-4 text-xl text-gray-600">{description}</p>
           </div>

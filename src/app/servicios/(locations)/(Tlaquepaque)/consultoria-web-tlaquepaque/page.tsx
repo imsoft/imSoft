@@ -94,7 +94,7 @@ const featuresSectionInfo: IFeaturesSection = {
 };
 
 const pricesSectionInfo: IPricesSection = {
-  topic: "Paquetes de Consultoría Web en Tlaquepaque",
+  topic: "Paquete de Consultoría Web en Tlaquepaque",
   description:
     "Soluciones personalizadas de consultoría web para impulsar el crecimiento de tu negocio en Tlaquepaque.",
   listOfPackages: [

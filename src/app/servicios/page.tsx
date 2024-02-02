@@ -41,15 +41,6 @@ const serviceCardInfo: IServiceCard[] = [
     href: "/servicios/consultoria-web",
   },
   {
-    name: "Sitio Web Básico 🥇",
-    description:
-      "Nos aseguramos de proporcionar una solución completa y personalizada para cada uno de nuestros clientes. Diseñamos sitios web atractivos y funcionales que se adaptan a las necesidades de cada negocio o proyecto.",
-    imageSrc:
-      "https://res.cloudinary.com/https-imsoft-io/image/upload/v1706595026/imsoft-images/services/sitio-web-jr-imsoft.jpg",
-    imageAlt: "Sitio Web Básico 🥇 - imSoft",
-    href: "/servicios/sitio-web-Básico",
-  },
-  {
     name: "Sitio Web 👨‍💻",
     description:
       "Esta opción es excelente para cualquier emprendedor o empresa que quiera tener presencia en la internet, llegar a más clientes y generar más ingresos.",
@@ -57,15 +48,6 @@ const serviceCardInfo: IServiceCard[] = [
       "https://res.cloudinary.com/https-imsoft-io/image/upload/v1706595026/imsoft-images/services/sitio-web-imsoft.jpg",
     imageAlt: "Sitio Web 👨‍💻 - imSoft",
     href: "/servicios/sitio-web",
-  },
-  {
-    name: "Sitio Web Pro ⚡🧑‍💻🔥",
-    description:
-      "Un sitio web bien administrado es el arma más poderosa de una empresa y con la utilización de estas herramientas podrás hacer de tu empresa algo más profesional.",
-    imageSrc:
-      "https://res.cloudinary.com/https-imsoft-io/image/upload/v1706595027/imsoft-images/services/sitio-web-pro-imsoft.jpg",
-    imageAlt: "Sitio Web Pro ⚡🧑‍💻🔥 - imSoft",
-    href: "/servicios/sitio-web-pro",
   },
   {
     name: "Tienda en línea 🛍️",
@@ -93,6 +75,51 @@ const serviceCardInfo: IServiceCard[] = [
       "https://res.cloudinary.com/https-imsoft-io/image/upload/v1706595026/imsoft-images/services/aplicacion-web-imsoft.jpg",
     imageAlt: "Aplicación Web 💻 - imSoft",
     href: "/servicios/aplicaciones-web",
+  },
+  {
+    name: "Análisis de datos 📊",
+    description:
+      "Ofrecemos servicios de análisis de datos de vanguardia para convertir tus grandes volúmenes de información en insights accionables.",
+    imageSrc:
+      "https://res.cloudinary.com/https-imsoft-io/image/upload/v1706898185/imsoft-images/services/analisis-de-datos-imsoft.jpg",
+    imageAlt: "Análisis de datos 📊 - imSoft",
+    href: "/servicios/analisis-de-datos",
+  },
+  {
+    name: "Aplicaciones Móviles 📱",
+    description:
+      "Creación de aplicaciones móviles a medida que capturan la esencia de tu marca y conectan con tus usuarios de manera significativa.",
+    imageSrc:
+      "https://res.cloudinary.com/https-imsoft-io/image/upload/v1706898396/imsoft-images/services/aplicaciones-moviles-imsoft.jpg",
+    imageAlt: "Aplicaciones Móviles 📱 - imSoft",
+    href: "/servicios/aplicaciones-moviles",
+  },
+  {
+    name: "Campañas de redes sociales 📲",
+    description:
+      "Impulsa tu presencia en línea y conecta de manera más efectiva con tu audiencia a través de nuestras campañas de redes sociales estratégicamente diseñadas.",
+    imageSrc:
+      "https://res.cloudinary.com/https-imsoft-io/image/upload/v1706899599/imsoft-images/services/campan%CC%83as-de-redes-sociales-imsoft.jpg",
+    imageAlt: "Campañas de redes sociales 📲 - imSoft",
+    href: "/servicios/campanas-en-redes-sociales",
+  },
+  {
+    name: "Gestión de redes sociales 🖼️",
+    description:
+      "Desde la creación de contenido atractivo hasta la estrategia de publicación y análisis de rendimiento, nos aseguramos de que tu marca no solo sea vista, sino también escuchada y seguida.",
+    imageSrc:
+      "https://res.cloudinary.com/https-imsoft-io/image/upload/v1706899598/imsoft-images/services/gestion-de-redes-sociales-imsoft.jpg",
+    imageAlt: "Gestión de redes sociales 🖼️ - imSoft",
+    href: "/servicios/gestion-de-redes-sociales",
+  },
+  {
+    name: "Campañas de Google Ads 📣",
+    description:
+      "Nuestro servicio de gestión de campañas en Google Ads te ayuda a maximizar tu presencia en línea y atraer a tu audiencia objetivo de manera eficiente.",
+    imageSrc:
+      "https://res.cloudinary.com/https-imsoft-io/image/upload/v1706902047/imsoft-images/services/campan%CC%83as-google-ads-imsoft.jpg",
+    imageAlt: "Campañas de Google Ads 📣 - imSoft",
+    href: "/servicios/campanas-en-google-ads",
   },
 ];
 

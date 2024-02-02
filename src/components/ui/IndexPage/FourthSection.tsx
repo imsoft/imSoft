@@ -3,55 +3,78 @@ import Link from "next/link";
 import { Services } from "../../../interfaces";
 
 import {
-  CodeBracketIcon,
+  CircleStackIcon,
   CodeBracketSquareIcon,
+  ComputerDesktopIcon,
+  DevicePhoneMobileIcon,
   MagnifyingGlassIcon,
+  MegaphoneIcon,
   PresentationChartBarIcon,
   ShoppingBagIcon,
+  Square3Stack3DIcon,
+  UsersIcon,
 } from "@heroicons/react/24/outline";
 
 const infoServices: Services[] = [
   {
     nameOfService: "Consultoría de sitio web 🤓",
-    description:
-      "Un sitio web o tienda en línea siempre cuenta con áreas de oportunidad, nosotros las ubicaremos, analizaremos y las mejoraremos para que así puedas generar mayores ganancias en tu empresa.",
+    description: "Mejoramos tu sitio para aumentar ganancias.",
     href: "/servicios/consultoria-web",
     icon: PresentationChartBarIcon,
   },
   {
-    nameOfService: "Sitio Web Básico 🥇",
-    description:
-      "En nuestro servicio de creación de sitios web, nos aseguramos de proporcionar una solución completa y personalizada para cada uno de nuestros clientes.",
-    href: "/servicios/sitio-web-basico",
-    icon: CodeBracketSquareIcon,
-  },
-  {
     nameOfService: "Sitio Web 👨‍💻",
-    description:
-      "Esta opción es excelente para cualquier emprendedor o empresa que quiera tener presencia en la internet, llegar a más clientes y generar más ingresos.",
+    description: "Presencia online para atraer más clientes y generar ingresos.",
     href: "/servicios/sitio-web",
     icon: CodeBracketSquareIcon,
   },
   {
-    nameOfService: "Sitio Web Pro ⚡🧑‍💻🔥",
-    description:
-      "Un sitio web bien administrado es el arma más poderosa de una empresa y con la utilización de estas herramientas podrás hacer de tu empresa algo más profesional.",
-    href: "/servicios/sitio-web-pro",
-    icon: CodeBracketIcon,
-  },
-  {
     nameOfService: "Tienda en línea 🛍️",
-    description:
-      "Tu empresa tiene que modernizarse con una tienda en línea para poder llegar a clientes de todas partes, al alcance de un solo clic.",
+    description: "Vende en línea y alcanza clientes globalmente.",
     href: "/servicios/tienda-en-linea",
     icon: ShoppingBagIcon,
   },
   {
     nameOfService: "Posicionamiento SEO 🔝",
-    description:
-      "Las personas únicamente les hace caso a los primeros enlaces de Google.",
+    description: "Posiciona tu sitio en los primeros lugares de Google.",
     href: "/servicios/posicionamiento-seo",
     icon: MagnifyingGlassIcon,
+  },
+  {
+    nameOfService: "Aplicación Web 💻",
+    description: "Soluciones web personalizadas para mejorar eficiencia.",
+    href: "/servicios/aplicaciones-web",
+    icon: ComputerDesktopIcon,
+  },
+  {
+    nameOfService: "Análisis de datos 📊",
+    description: "Convierte datos en insights para decisiones informadas.",
+    href: "/servicios/analisis-de-datos",
+    icon: CircleStackIcon,
+  },
+  {
+    nameOfService: "Aplicaciones Móviles 📱",
+    description: "Aplicaciones que reflejan tu marca y enganchan usuarios.",
+    href: "/servicios/aplicaciones-moviles",
+    icon: DevicePhoneMobileIcon,
+  },
+  {
+    nameOfService: "Campañas de redes sociales 📲",
+    description: "Conecta efectivamente con tu audiencia online.",
+    href: "/servicios/campanas-en-redes-sociales",
+    icon: MegaphoneIcon,
+  },
+  {
+    nameOfService: "Gestión de redes sociales 🖼️",
+    description: "Estrategias para destacar y crecer tu comunidad.",
+    href: "/servicios/gestion-de-redes-sociales",
+    icon: UsersIcon,
+  },
+  {
+    nameOfService: "Campañas de Google Ads 📣",
+    description: "Maximiza tu visibilidad online y atrae a tu público.",
+    href: "/servicios/campanas-en-google-ads",
+    icon: Square3Stack3DIcon,
   },
 ];
 
@@ -68,7 +91,7 @@ export const FourthSection = () => {
             mano con nuestros clientes para asegurar que el software cumpla con
             sus objetivos de negocio.
           </p>
-          <div className="mt-20 grid grid-cols-1 gap-16 sm:grid-cols-2 lg:grid-cols-4 lg:gap-x-8 lg:gap-y-16">
+          <div className="mt-20 grid grid-cols-1 gap-16 sm:grid-cols-2 lg:grid-cols-5 lg:gap-x-8 lg:gap-y-16">
             {infoServices.map((service) => (
               <div key={service.nameOfService}>
                 <div>

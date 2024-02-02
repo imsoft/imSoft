@@ -2,8 +2,8 @@ import { Metadata } from "next";
 import {
   IntroductorySection,
   FeaturesSection,
-  PricesSection,
   CallToActionSection,
+  MonthlyPaymentSection,
 } from "@/components/ui/services";
 import {
   IIntroductorySection,
@@ -92,71 +92,18 @@ const pricesSectionInfo: IPricesSection = {
     "Una tienda en línea escalable es la mejor inversión para tu negocio en línea",
   listOfPackages: [
     {
-      title: "Paquete de Tienda en línea #1",
+      title: "Paquete de Tienda en línea",
       description:
         "Con una tienda en línea escalable, tu tienda en línea está preparada para el futuro.",
       featuresOfPackage: [
-        "Hasta cuatro páginas",
-        "Hasta tres productos",
-        "Adaptación de dispositivos móviles",
-        "Formulario de contacto",
-        "Mapa de ubicación",
-        "Enlaces a redes sociales",
-        "Enlace a número de WhatsApp",
-        "Dos Correos electrónicos",
-        "Certificado de seguridad",
-        "Un solo idioma",
-        "Dominio",
-        "Hosting",
-        "Alta en Google negocios",
+        "Diseño claro y fácil de navegar que guía a los usuarios a través del proceso de compra de forma intuitiva.",
+        "Asegura una experiencia de compra fluida en todos los dispositivos, especialmente en móviles, que es donde se realiza una gran cantidad de compras en línea.",
+        "Páginas de producto y catálogos que cargan rápidamente para reducir la tasa de abandono.",
+        "Imágenes claras y descripciones detalladas que ayudan a los clientes a tomar decisiones de compra informadas.",
+        "Un proceso de checkout fácil y rápido, con la menor cantidad de pasos posible para finalizar una compra.",
+        "Implementación de SSL para asegurar las transacciones y proteger la información personal y financiera de los clientes.",
       ],
       price: "9,999",
-    },
-    {
-      title: "Paquete de Tienda en línea #2",
-      description:
-        "Nuestro equipo de desarrolladores de ecommerce te llevará al éxito.",
-      featuresOfPackage: [
-        "Hasta seis páginas",
-        "Hasta cinco productos",
-        "Adaptación de dispositivos móviles",
-        "Formulario de contacto",
-        "Mapa de ubicación",
-        "Enlaces a redes sociales",
-        "Enlace a número de WhatsApp",
-        "Cuatro Correos electrónicos",
-        "Certificado de seguridad",
-        "Un solo idioma",
-        "Dominio",
-        "Hosting",
-        "SEO básico",
-        "Alta en Google negocios",
-      ],
-      price: "12,999",
-    },
-    {
-      title: "Paquete de Tienda en línea #3",
-      description:
-        "Hacemos que tus compras en línea sean fáciles y seguras para tus clientes.",
-      featuresOfPackage: [
-        "Hasta ocho páginas",
-        "Hasta siete productos",
-        "Adaptación de dispositivos móviles",
-        "Formulario de contacto",
-        "Mapa de ubicación",
-        "Enlaces a redes sociales",
-        "Enlace a número de WhatsApp",
-        "Seis Correos electrónicos",
-        "Certificado de seguridad",
-        "Un solo idioma",
-        "Escaneo de amenazas “SG Site Scanner”",
-        "Dominio",
-        "Hosting",
-        "SEO básico",
-        "Generación de código de Google Analytics",
-        "Alta en Google negocios",
-      ],
-      price: "15,999",
     },
   ],
 };
@@ -186,7 +133,7 @@ const EcommercePage = () => {
           serviceFeatures={featuresSectionInfo.serviceFeatures}
         />
 
-        <PricesSection
+        <MonthlyPaymentSection
           topic={pricesSectionInfo.topic}
           description={pricesSectionInfo.description}
           listOfPackages={pricesSectionInfo.listOfPackages}
