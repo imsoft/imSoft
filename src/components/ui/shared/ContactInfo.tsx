@@ -9,12 +9,25 @@ interface Props {
 const ContactInfo = ({ textStyle }: Props) => {
   return (
     <>
-      <dl className={`mt-8 text-base ${textStyle}`}>
+      <dl className={`text-base ${textStyle}`}>
         <div>
           <dt className="sr-only">Ubicación</dt>
-          <dd>
-            <p>Guadalajara, Jalisco</p>
-            <p>México</p>
+          <dd className="flex flex-col">
+            <Link href={"/servicios/cdmx"} target="_blank">
+              📍 CDMX
+            </Link>
+            <Link href={"/servicios/guadalajara"} target="_blank">
+              📍 Guadalajara
+            </Link>
+            <Link href={"/servicios/monterrey"} target="_blank">
+              📍 Monterrey
+            </Link>
+            <Link href={"/servicios/tlaquepaque"} target="_blank">
+              📍 Tlaquepaque
+            </Link>
+            <Link href={"/servicios/zapopan"} target="_blank">
+              📍 Zapopan
+            </Link>
           </dd>
         </div>
         <div className="mt-6">
