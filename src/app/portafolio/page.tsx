@@ -41,7 +41,7 @@ const portfolioInfo: IPortfolioCard[] = [
   {
     name: "Infinito Empresarial y Aduanero",
     type: "Sitio Web 👨‍💻",
-    href: "http://clubdeestirpe.com/",
+    href: "http://infinitoad.com/",
     alt: "Sitio Web - Infinito Empresarial y Aduanero  - imSoft",
     imageUrl:
       "https://res.cloudinary.com/https-imsoft-io/image/upload/v1706595314/imsoft-images/portfolio/website/sitio-web-infinito-empresarial-y-aduanero.png",
@@ -49,7 +49,7 @@ const portfolioInfo: IPortfolioCard[] = [
   {
     name: "Profibra",
     type: "Sitio Web 👨‍💻",
-    href: "http://clubdeestirpe.com/",
+    href: "http://profibra.com.mx/",
     alt: "Sitio Web - Profibra - imSoft",
     imageUrl:
       "https://res.cloudinary.com/https-imsoft-io/image/upload/v1706595314/imsoft-images/portfolio/website/sitio-web-profibra.png",
@@ -113,7 +113,7 @@ const portfolioInfo: IPortfolioCard[] = [
   {
     name: "Cursumi",
     type: "Sitio Web 👨‍💻",
-    href: "http://santamariadelorojal.com/",
+    href: "https://cursumi.com/",
     alt: "Sitio Web Pro - Cursumi - imSoft",
     imageUrl:
       "https://res.cloudinary.com/https-imsoft-io/image/upload/v1706595491/imsoft-images/portfolio/website-pro/sitio-web-pro-cursumi.png",
@@ -121,10 +121,10 @@ const portfolioInfo: IPortfolioCard[] = [
   {
     name: "The Gaming Corps",
     type: "Sitio Web 👨‍💻",
-    href: "http://santamariadelorojal.com/",
+    href: "https://thegamingcorps.com/",
     alt: "Sitio Web Pro - The Gaming Corps - imSoft",
     imageUrl:
-      "https://res.cloudinary.com/https-imsoft-io/image/upload/v1706595491/imsoft-images/portfolio/website-pro/sitio-web-pro-the-gaming-corps.png",
+      "https://res.cloudinary.com/https-imsoft-io/image/upload/v1709919081/imsoft-images/portfolio/website-pro/sitio-web-pro-the-gaming-corps.png",
   },
   {
     name: "Santa Maria Del Oro Jalisco",
@@ -165,6 +165,14 @@ const portfolioInfo: IPortfolioCard[] = [
     alt: "Aplicación Móvil - Club De Estirpe - imSoft",
     imageUrl:
       "https://res.cloudinary.com/https-imsoft-io/image/upload/v1706595385/imsoft-images/portfolio/mobile-apps/club-de-estirpe-aplicacion-movil-imsoft.png",
+  },
+  {
+    name: "Steridental",
+    type: "Aplicación Web 🖥️📊",
+    href: "https://res.cloudinary.com/https-imsoft-io/image/upload/v1709918898/imsoft-images/portfolio/web-application/aplicaciones-web-steridental-imsoft.png",
+    alt: "Aplicación Móvil - Steridental - imSoft",
+    imageUrl:
+      "https://res.cloudinary.com/https-imsoft-io/image/upload/v1709918898/imsoft-images/portfolio/web-application/aplicaciones-web-steridental-imsoft.png",
   },
   {
     name: "¡Contáctanos!",
