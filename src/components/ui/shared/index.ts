@@ -5,3 +5,4 @@ export * from './Header';
 export * from './MessageComponent';
 export * from './Confetti';
 export * from './WhatsAppButton';
+export * from './LocaleSwitcher';

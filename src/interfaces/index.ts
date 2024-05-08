@@ -13,3 +13,4 @@ export * from "./pricesSection";
 export * from "./services";
 export * from "./social";
 export * from "./serviceCard";
+export * from "./languageProp";

@@ -32,6 +32,7 @@ import {
   Square3Stack3DIcon,
 } from "@heroicons/react/24/outline";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
+import { LocaleSwitcher } from ".";
 
 const services: IHeader[] = [
   {
@@ -42,7 +43,8 @@ const services: IHeader[] = [
   },
   {
     name: "Sitio Web 👨‍💻",
-    description: "Presencia online para atraer más clientes y generar ingresos.",
+    description:
+      "Presencia online para atraer más clientes y generar ingresos.",
     href: "/servicios/sitio-web",
     icon: CodeBracketSquareIcon,
   },
@@ -481,6 +483,8 @@ export const Header = () => {
                 >
                   Contacto
                 </Link>
+
+                <LocaleSwitcher />
               </Popover.Group>
             </div>
           </div>
@@ -600,6 +604,8 @@ export const Header = () => {
                   >
                     Contacto
                   </Link>
+                  
+                  <LocaleSwitcher />
                 </div>
               </div>
             </div>
