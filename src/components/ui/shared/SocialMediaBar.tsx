@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { ISocial } from "../../../interfaces";
+import type { Social } from "../../../interfaces";
 
 import {
   facebookLink,
@@ -14,7 +14,7 @@ import {
   spotifyLink,
 } from "../../../data";
 
-const socialMedia: ISocial[] = [
+const socialMedia: Social[] = [
   {
     name: "Facebook",
     href: `${facebookLink}`,

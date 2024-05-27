@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { RequiredMetatags } from "@/interfaces";
+import type { RequiredMetatags } from "@/interfaces";
 import { getFormattedDate } from "@/utils/getFormattedDate";
 
 interface Props {
@@ -11,17 +11,9 @@ const PostCard = ({ post }: Props) => {
   const {
     _id,
     title,
-    description,
-    keywords,
     author,
-    subject,
     date,
-    type,
-    source,
     image,
-    url,
-    robots,
-    tags,
   } = post;
   const formattedDate = getFormattedDate(date);
 

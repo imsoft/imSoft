@@ -1,32 +1,30 @@
 import Image from "next/image";
-import Link from "next/link";
 
 import { whatsappBusinessLink } from "../../../data";
+import { CustomLink } from "../shared";
 
-const features = [
-  {
-    name: "Innovación",
-    description:
-      "imSoft siempre busca nuevas formas de mejorar sus productos y servicios, además de satisfacer las necesidades de sus clientes.",
-  },
-  {
-    name: "Trabajo en equipo",
-    description:
-      "Esencial para imSoft, ya que permite a los miembros del equipo compartir conocimientos, colaborar en la solución de problemas y mejorar la calidad del trabajo.",
-  },
-  {
-    name: "Responsabilidad",
-    description:
-      "imSoft debe ser responsable de sus acciones, cumplir con sus obligaciones y asumir la responsabilidad de los resultados de sus productos y servicios.",
-  },
-  {
-    name: "Mejora continua",
-    description:
-      "imSoft siempre busca formas de mejorar sus procesos, productos y servicios, con el objetivo de brindar un mejor servicio a sus clientes y crecer como empresa.",
-  },
-];
+export interface Props {
+  title: string;
+  description: string;
+  features: Feature[];
+  callToAction1: string;
+  callToAction2: string;
+  lang: string;
+}
 
-export const FifthSection = () => {
+export interface Feature {
+  name: string;
+  description: string;
+}
+
+export const FifthSection = ({
+  title,
+  description,
+  features,
+  callToAction1,
+  callToAction2,
+  lang,
+}: Props) => {
   return (
     <>
       <div className="bg-white">
@@ -50,13 +48,9 @@ export const FifthSection = () => {
                 imSoft
               </h2>
               <p className="mt-4 text-4xl font-bold tracking-tight text-gray-900">
-                Nuestros valores
+                {title}
               </p>
-              <p className="mt-4 text-gray-500">
-                Esto establece las bases para una cultura empresarial positiva,
-                para así garantizar la satisfacción de los clientes y el
-                cumplimiento de sus necesidades.
-              </p>
+              <p className="mt-4 text-gray-500">{description}</p>
 
               <dl className="mt-10 grid grid-cols-1 gap-y-10 gap-x-8 text-sm sm:grid-cols-2">
                 {features.map((feature) => (
@@ -72,21 +66,23 @@ export const FifthSection = () => {
               </dl>
               <div className="mt-10 sm:flex sm:justify-center lg:justify-start">
                 <div className="rounded-md shadow">
-                  <Link
+                  <CustomLink
                     href={`${whatsappBusinessLink}`}
                     target="_blank"
                     className="flex w-full items-center justify-center rounded-md border border-transparent bg-primary-500 px-8 py-3 text-base font-medium text-white hover:bg-primary-900 md:py-4 md:px-10 md:text-lg"
+                    lang={lang}
                   >
-                    Contáctanos
-                  </Link>
+                    {callToAction1}
+                  </CustomLink>
                 </div>
                 <div className="mt-3 rounded-md shadow sm:mt-0 sm:ml-3">
-                  <Link
+                  <CustomLink
                     href="/servicios"
                     className="flex w-full items-center justify-center rounded-md border border-transparent bg-white px-8 py-3 text-base font-medium text-primary-500 hover:bg-gray-50 md:py-4 md:px-10 md:text-lg"
+                    lang={lang}
                   >
-                    Servicios
-                  </Link>
+                    {callToAction2}
+                  </CustomLink>
                 </div>
               </div>
             </div>

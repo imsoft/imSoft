@@ -12,7 +12,9 @@ export const WhatsappButton = () => {
         <div className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"></div>
         <Image
           className="relative"
-          src={"/icons/WhatsApp-Icon.svg"}
+          src={
+            "https://res.cloudinary.com/https-imsoft-io/image/upload/v1706596339/imsoft-images/social-media/WhatsApp-Icon.svg"
+          }
           alt={"Boton de WhatsApp imSoft"}
           width={80}
           height={80}

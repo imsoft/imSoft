@@ -3,7 +3,7 @@ import { compileMDX } from "next-mdx-remote/rsc";
 import YouTube from "../components/articles/YouTube";
 import ArticleImage from "../components/articles/ArticleImage";
 import Spotify from "../components/articles/Spotify";
-import { RequiredMetatags } from "@/interfaces";
+import type { RequiredMetatags } from "@/interfaces";
 
 type Filetree = {
   tree: [

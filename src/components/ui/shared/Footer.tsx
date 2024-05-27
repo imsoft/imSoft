@@ -1,33 +1,39 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import { IFooter } from "../../../interfaces";
 import SocialMediaBar from "./SocialMediaBar";
 import ContactInfo from "./ContactInfo";
+import { CustomLink } from "./CustomLink";
 
-const footerNavigation: IFooter = {
-  services: [
-    { name: "Consultoría de sitio web 🤓", href: "/servicios/consultoria-web" },
-    { name: "Sitio Web 👨‍💻", href: "/servicios/sitio-web" },
-    { name: "Tienda en línea 🛍️", href: "/servicios/tienda-en-linea" },
-    { name: "Posicionamiento SEO 🔝", href: "/servicios/posicionamiento-seo" },
-    { name: "Aplicación Web 💻", href: "/servicios/aplicaciones-web" },
-    { name: "Análisis de datos 📊", href: "/servicios/analisis-de-datos" },
-    { name: "Aplicaciones Móviles 📱", href: "/servicios/aplicaciones-moviles" },
-    { name: "Campañas de redes sociales 📲", href: "/servicios/campanas-en-redes-sociales" },
-    { name: "Gestión de redes sociales 🖼️", href: "/servicios/gestion-de-redes-sociales" },
-    { name: "Campañas de Google Ads 📣", href: "/servicios/campanas-en-google-ads" },
-  ],
-  company: [
-    { name: "Historia de imSoft", href: "/nosotros" },
-    { name: "Clientes", href: "/portafolio" },
-    { name: "¿Tienes alguna duda?", href: "/contacto" },
-  ],
-  articles: [{ name: "Nuestros Artículos", href: "/articulos" }],
-  legal: [{ name: "Aviso de privacidad", href: "/avisoDePrivacidad" }],
-};
+export interface FooterProps {
+  description: string;
+  firstColumn: Column;
+  secondColumn: Column;
+  thirdColumn: Column;
+  fourthColumn: Column;
+  copyRight: string;
+  lang: string;
+}
 
-export const Footer = () => {
+export interface Column {
+  title: string;
+  links: Link[];
+}
+
+export interface Link {
+  name: string;
+  href: string;
+}
+
+export const Footer = ({
+  description,
+  firstColumn,
+  secondColumn,
+  thirdColumn,
+  fourthColumn,
+  copyRight,
+  lang,
+}: FooterProps) => {
   return (
     <>
       <footer className="bg-white" aria-labelledby="footer-heading">
@@ -44,11 +50,9 @@ export const Footer = () => {
                 width={128}
                 height={46}
               />
-              <p className="text-base text-gray-500">
-                Soluciones de software a medida para empresas innovadoras.
-              </p>
+              <p className="text-base text-gray-500">{description}</p>
 
-              <ContactInfo textStyle={"text-gray-500"} />
+              <ContactInfo textStyle={"text-gray-500"} lang={lang} />
 
               <SocialMediaBar
                 iconStyle={"text-gray-400 hover:text-primary-500"}
@@ -58,34 +62,36 @@ export const Footer = () => {
               <div className="md:grid md:grid-cols-2 md:gap-8">
                 <div>
                   <h3 className="text-base font-medium text-primary-500">
-                    Servicios
+                    {firstColumn.title}
                   </h3>
                   <ul role="list" className="mt-4 space-y-4">
-                    {footerNavigation.services.map((item) => (
+                    {firstColumn.links.map((item) => (
                       <li key={item.name}>
-                        <Link
-                          href={item.href}
+                        <CustomLink
+                          href={`/${lang}/${item.href}`}
                           className="text-base text-gray-500 hover:text-gray-900"
+                          lang={lang}
                         >
                           {item.name}
-                        </Link>
+                        </CustomLink>
                       </li>
                     ))}
                   </ul>
                 </div>
                 <div className="mt-12 md:mt-0">
                   <h3 className="text-base font-medium text-primary-500">
-                    Empresa
+                    {secondColumn.title}
                   </h3>
                   <ul role="list" className="mt-4 space-y-4">
-                    {footerNavigation.company.map((item) => (
+                    {secondColumn.links.map((item) => (
                       <li key={item.name}>
-                        <Link
-                          href={item.href}
+                        <CustomLink
+                          href={`/${lang}/${item.href}`}
                           className="text-base text-gray-500 hover:text-gray-900"
+                          lang={lang}
                         >
                           {item.name}
-                        </Link>
+                        </CustomLink>
                       </li>
                     ))}
                   </ul>
@@ -94,34 +100,36 @@ export const Footer = () => {
               <div className="md:grid md:grid-cols-2 md:gap-8">
                 <div>
                   <h3 className="text-base font-medium text-primary-500">
-                    Artículos
+                    {thirdColumn.title}
                   </h3>
                   <ul role="list" className="mt-4 space-y-4">
-                    {footerNavigation.articles.map((item) => (
+                    {thirdColumn.links.map((item) => (
                       <li key={item.name}>
-                        <Link
-                          href={item.href}
+                        <CustomLink
+                          href={`/${lang}/${item.href}`}
                           className="text-base text-gray-500 hover:text-gray-900"
+                          lang={lang}
                         >
                           {item.name}
-                        </Link>
+                        </CustomLink>
                       </li>
                     ))}
                   </ul>
                 </div>
                 <div className="mt-12 md:mt-0">
                   <h3 className="text-base font-medium text-primary-500">
-                    Legal
+                    {fourthColumn.title}
                   </h3>
                   <ul role="list" className="mt-4 space-y-4">
-                    {footerNavigation.legal.map((item) => (
+                    {fourthColumn.links.map((item) => (
                       <li key={item.name}>
-                        <Link
-                          href={item.href}
+                        <CustomLink
+                          href={`/${lang}/${item.href}`}
                           className="text-base text-gray-500 hover:text-gray-900"
+                          lang={lang}
                         >
                           {item.name}
-                        </Link>
+                        </CustomLink>
                       </li>
                     ))}
                   </ul>
@@ -131,7 +139,7 @@ export const Footer = () => {
           </div>
           <div className="mt-12 border-t border-gray-200 pt-8">
             <p className="text-base text-gray-400 xl:text-center">
-              &copy; 2024 imSoft. Todos los derechos reservados.
+              &copy; {copyRight}
             </p>
           </div>
         </div>

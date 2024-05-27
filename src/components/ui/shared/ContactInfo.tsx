@@ -1,33 +1,35 @@
 import Link from "next/link";
 
 import { EnvelopeIcon, PhoneIcon } from "@heroicons/react/24/outline";
+import { CustomLink } from "./CustomLink";
 
 interface Props {
   textStyle: string;
+  lang: string;
 }
 
-const ContactInfo = ({ textStyle }: Props) => {
+const ContactInfo = ({ textStyle, lang }: Props) => {
   return (
     <>
       <dl className={`text-base ${textStyle}`}>
         <div>
           <dt className="sr-only">Ubicación</dt>
           <dd className="flex flex-col">
-            <Link href={"/servicios/cdmx"} target="_blank">
+            <CustomLink href={"/servicios/cdmx"} lang={lang} target="_blank">
               📍 CDMX
-            </Link>
-            <Link href={"/servicios/guadalajara"} target="_blank">
+            </CustomLink>
+            <CustomLink href={"/servicios/guadalajara"} lang={lang} target="_blank">
               📍 Guadalajara
-            </Link>
-            <Link href={"/servicios/monterrey"} target="_blank">
+            </CustomLink>
+            <CustomLink href={"/servicios/monterrey"} lang={lang} target="_blank">
               📍 Monterrey
-            </Link>
-            <Link href={"/servicios/tlaquepaque"} target="_blank">
+            </CustomLink>
+            <CustomLink href={"/servicios/tlaquepaque"} lang={lang} target="_blank">
               📍 Tlaquepaque
-            </Link>
-            <Link href={"/servicios/zapopan"} target="_blank">
+            </CustomLink>
+            <CustomLink href={"/servicios/zapopan"} lang={lang} target="_blank">
               📍 Zapopan
-            </Link>
+            </CustomLink>
           </dd>
         </div>
         <div className="mt-6">

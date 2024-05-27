@@ -1,11 +1,24 @@
-import { IFeaturesSection } from "../../../interfaces";
+import type { HeroIcon } from "@/interfaces";
+
+interface FeaturesSectionProps {
+  topic: string;
+  title: string;
+  description: string;
+  serviceFeatures: ServiceFeatures[];
+}
+
+export interface ServiceFeatures {
+  title: string;
+  description: string;
+  icon: HeroIcon;
+}
 
 export const FeaturesSection = ({
   topic,
   title,
   description,
   serviceFeatures,
-}: IFeaturesSection) => {
+}: FeaturesSectionProps) => {
   return (
     <>
       <div className="relative bg-primary-500 py-16">

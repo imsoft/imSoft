@@ -6,3 +6,4 @@ export * from './MessageComponent';
 export * from './Confetti';
 export * from './WhatsAppButton';
 export * from './LocaleSwitcher';
+export * from './CustomLink';

@@ -5,7 +5,29 @@ import { useRouter } from "next/navigation";
 import { sendEmail } from "@/lib";
 import { ExclamationCircleIcon } from "@heroicons/react/24/outline";
 
-export const ContactForm = () => {
+interface Props {
+  name: string;
+  email: string;
+  phone: string;
+  message: string;
+  errorInputName: string;
+  errorInputEmail: string;
+  errorInputPhone: string;
+  errorInputMessage: string;
+  send: string;
+}
+
+export const ContactForm = ({
+  name,
+  email,
+  phone,
+  message,
+  errorInputName,
+  errorInputEmail,
+  errorInputPhone,
+  errorInputMessage,
+  send,
+}: Props) => {
   const router = useRouter();
 
   const [inputName, setInputName] = useState("");
@@ -75,7 +97,7 @@ export const ContactForm = () => {
       <form className="grid grid-cols-1 gap-y-6" method="post">
         <div className="relative mt-1 rounded-md shadow-sm">
           <label htmlFor="full-name" className="sr-only">
-            Nombre Completo
+            {name}
           </label>
           <input
             type="text"
@@ -83,7 +105,7 @@ export const ContactForm = () => {
             id="full-name"
             autoComplete="name"
             className="block w-full rounded-md border-gray-300 py-3 px-4 placeholder-gray-500 shadow-sm focus:border-primary-500 focus:ring-primary-500"
-            placeholder="Nombre Completo"
+            placeholder={name}
             onChange={onTextFieldChangedName}
             onBlur={() => setTouchedName(true)}
           />
@@ -98,13 +120,13 @@ export const ContactForm = () => {
         </div>
         {!inputName && touchedName && (
           <p className="-mt-4 ml-4 text-sm text-red-600" id="email-error">
-            No nos escribiste tu nombre 👆
+            {errorInputName}
           </p>
         )}
 
         <div className="relative mt-1 rounded-md shadow-sm">
           <label htmlFor="email" className="sr-only">
-            Correo Electrónico
+            {email}
           </label>
           <input
             id="email"
@@ -112,7 +134,7 @@ export const ContactForm = () => {
             type="email"
             autoComplete="email"
             className="block w-full rounded-md border-gray-300 py-3 px-4 placeholder-gray-500 shadow-sm focus:border-primary-500 focus:ring-primary-500"
-            placeholder="Correo Electrónico"
+            placeholder={email}
             onChange={onTextFieldChangedEMail}
             onBlur={() => setTouchedEMail(true)}
           />
@@ -127,13 +149,13 @@ export const ContactForm = () => {
         </div>
         {!inputEMail && touchedEMail && (
           <p className="-mt-4 ml-4 text-sm text-red-600" id="email-error">
-            No nos escribiste tu correo electrónico 👆
+            {errorInputEmail}
           </p>
         )}
 
         <div className="relative mt-1 rounded-md shadow-sm">
           <label htmlFor="phone" className="sr-only">
-            Número teléfonico
+            {phone}
           </label>
           <input
             type="tel"
@@ -141,7 +163,7 @@ export const ContactForm = () => {
             id="phone"
             autoComplete="tel"
             className="block w-full rounded-md border-gray-300 py-3 px-4 placeholder-gray-500 shadow-sm focus:border-primary-500 focus:ring-primary-500"
-            placeholder="Número teléfonico"
+            placeholder={phone}
             onChange={onTextFieldChangedPhoneNumber}
             onBlur={() => setTouchedPhoneNumber(true)}
           />
@@ -156,20 +178,20 @@ export const ContactForm = () => {
         </div>
         {!inputPhoneNumber && touchedPhoneNumber && (
           <p className="-mt-4 ml-4 text-sm text-red-600" id="email-error">
-            No nos escribiste tu número teléfonico 👆
+            {errorInputPhone}
           </p>
         )}
 
         <div className="relative mt-1 rounded-md shadow-sm">
           <label htmlFor="message" className="sr-only">
-            Mensaje
+            {message}
           </label>
           <textarea
             id="message"
             name="message"
             rows={4}
             className="block w-full rounded-md border-gray-300 py-3 px-4 placeholder-gray-500 shadow-sm focus:border-primary-500 focus:ring-primary-500"
-            placeholder="Mensaje"
+            placeholder={message}
             defaultValue={""}
             onChange={onTextFieldChangedMessage}
             onBlur={() => setTouchedMessage(true)}
@@ -185,7 +207,7 @@ export const ContactForm = () => {
         </div>
         {!inputMessage && touchedMessage && (
           <p className="-mt-4 ml-4 text-sm text-red-600" id="email-error">
-            No nos escribiste tu mensaje 👆
+            {errorInputMessage}
           </p>
         )}
 
@@ -195,7 +217,7 @@ export const ContactForm = () => {
             className="inline-flex justify-center rounded-md border border-transparent bg-primary-500 py-3 px-6 text-base font-medium text-white shadow-sm hover:bg-primary-900 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
             onClick={onSend}
           >
-            Enviar
+            {send}
           </button>
         </div>
       </form>

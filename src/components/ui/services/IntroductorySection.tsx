@@ -1,13 +1,23 @@
-import Link from "next/link";
-
-import { IIntroductorySection } from "../../../interfaces";
-
 import { youtubeLink } from "../../../data";
+import { CustomLink } from "../shared";
+
+interface Props {
+  title: string;
+  description: string;
+  callToAction1: string;
+  callToAction2: string;
+  callToAction3: string;
+  lang: string;
+}
 
 export const IntroductorySection = ({
   title,
   description,
-}: IIntroductorySection) => {
+  callToAction1,
+  callToAction2,
+  callToAction3,
+  lang,
+}: Props) => {
   return (
     <>
       <div className="isolate bg-white">
@@ -16,15 +26,16 @@ export const IntroductorySection = ({
             <div className="hidden sm:mb-8 sm:flex sm:justify-center">
               <div className="relative overflow-hidden rounded-full py-1.5 px-4 text-sm leading-6 ring-1 ring-gray-900/10 hover:ring-gray-900/20">
                 <span className="text-gray-600">
-                  Ve nuestro ultimo video{" "}
-                  <Link
+                  {callToAction1}{" "}
+                  <CustomLink
                     href={`${youtubeLink}`}
                     className="font-semibold text-primary-600"
                     target={"_blank"}
+                    lang={lang}
                   >
                     <span className="absolute inset-0" aria-hidden="true" />
-                    Ir <span aria-hidden="true">&rarr;</span>
-                  </Link>
+                    <span aria-hidden="true">&rarr;</span>
+                  </CustomLink>
                 </span>
               </div>
             </div>
@@ -36,18 +47,20 @@ export const IntroductorySection = ({
                 {description}
               </p>
               <div className="mt-8 flex gap-x-4 sm:justify-center">
-                <Link
+                <CustomLink
                   href="/contacto"
                   className="inline-block rounded-lg bg-primary-500 px-4 py-1.5 text-base font-semibold leading-7 text-white shadow-sm ring-1 ring-primary-500 hover:bg-primary-900 hover:ring-primary-900"
+                  lang={lang}
                 >
-                  Contáctanos
-                </Link>
-                <Link
+                  {callToAction2}
+                </CustomLink>
+                <CustomLink
                   href="/articulos"
                   className="inline-block rounded-lg px-4 py-1.5 text-base font-semibold leading-7 text-gray-500 ring-1 ring-gray-900/10 hover:ring-gray-900/20"
+                  lang={lang}
                 >
-                  Artículos
-                </Link>
+                  {callToAction3}
+                </CustomLink>
               </div>
             </div>
           </div>

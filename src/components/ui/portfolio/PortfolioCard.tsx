@@ -1,9 +1,16 @@
 import Image from "next/image";
-import Link from "next/link";
-
-import { IPortfolioCard } from "../../../interfaces";
 
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
+import { CustomLink } from "../shared";
+
+interface PortfolioCardProps {
+  name: string;
+  type: string;
+  href: string;
+  alt: string;
+  imageUrl: string;
+  lang: string;
+}
 
 export const PortfolioCard = ({
   name,
@@ -11,7 +18,8 @@ export const PortfolioCard = ({
   href,
   alt,
   imageUrl,
-}: IPortfolioCard) => {
+  lang,
+}: PortfolioCardProps) => {
   return (
     <>
       <li key={name}>
@@ -27,7 +35,7 @@ export const PortfolioCard = ({
           </div>
           <div className="space-y-2">
             <div className="space-y-1 text-lg font-medium leading-6">
-              <Link href={href} target="_blank">
+              <CustomLink href={href} lang={lang} target="_blank">
                 <div className="inline-flex">
                   <h3 className="text-gray-600">{name}</h3>
                   <ArrowTopRightOnSquareIcon
@@ -35,7 +43,7 @@ export const PortfolioCard = ({
                     aria-hidden="true"
                   />
                 </div>
-              </Link>
+              </CustomLink>
               <p className="text-primary-600 text-xs">{type}</p>
             </div>
           </div>

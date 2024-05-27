@@ -2,9 +2,6 @@
 
 import { Fragment, useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
-
-import { IHeader } from "../../../interfaces";
 
 import { whatsappBusinessLink } from "../../../data";
 
@@ -32,139 +29,110 @@ import {
   Square3Stack3DIcon,
 } from "@heroicons/react/24/outline";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
-import { LocaleSwitcher } from ".";
+import { CustomLink, LocaleSwitcher } from ".";
 
-const services: IHeader[] = [
-  {
-    name: "Consultoría de sitio web 🤓",
-    description: "Mejoramos tu sitio para aumentar ganancias.",
-    href: "/servicios/consultoria-web",
-    icon: PresentationChartBarIcon,
-  },
-  {
-    name: "Sitio Web 👨‍💻",
-    description:
-      "Presencia online para atraer más clientes y generar ingresos.",
-    href: "/servicios/sitio-web",
-    icon: CodeBracketSquareIcon,
-  },
-  {
-    name: "Tienda en línea 🛍️",
-    description: "Vende en línea y alcanza clientes globalmente.",
-    href: "/servicios/tienda-en-linea",
-    icon: ShoppingBagIcon,
-  },
-  {
-    name: "Posicionamiento SEO 🔝",
-    description: "Posiciona tu sitio en los primeros lugares de Google.",
-    href: "/servicios/posicionamiento-seo",
-    icon: MagnifyingGlassIcon,
-  },
-  {
-    name: "Aplicación Web 💻",
-    description: "Soluciones web personalizadas para mejorar eficiencia.",
-    href: "/servicios/aplicaciones-web",
-    icon: ComputerDesktopIcon,
-  },
-  {
-    name: "Análisis de datos 📊",
-    description: "Convierte datos en insights para decisiones informadas.",
-    href: "/servicios/analisis-de-datos",
-    icon: CircleStackIcon,
-  },
-  {
-    name: "Aplicaciones Móviles 📱",
-    description: "Aplicaciones que reflejan tu marca y enganchan usuarios.",
-    href: "/servicios/aplicaciones-moviles",
-    icon: DevicePhoneMobileIcon,
-  },
-  {
-    name: "Campañas de redes sociales 📲",
-    description: "Conecta efectivamente con tu audiencia online.",
-    href: "/servicios/campanas-en-redes-sociales",
-    icon: MegaphoneIcon,
-  },
-  {
-    name: "Gestión de redes sociales 🖼️",
-    description: "Estrategias para destacar y crecer tu comunidad.",
-    href: "/servicios/gestion-de-redes-sociales",
-    icon: UsersIcon,
-  },
-  {
-    name: "Campañas de Google Ads 📣",
-    description: "Maximiza tu visibilidad online y atrae a tu público.",
-    href: "/servicios/campanas-en-google-ads",
-    icon: Square3Stack3DIcon,
-  },
-];
+export interface HeaderProps {
+  firstColumn: string;
+  secondColumn: string;
+  thirdColumn: string;
+  fourthColumn: string;
+  fifthColumn: string;
+  sixthColumn: string;
+  callToActionServices: string;
+  moreTitle1: string;
+  moreTitle2: string;
+  moreTitle3: string;
+  moreCallToAction: string;
+  titleResponsive1: string;
+  titleResponsive2: string;
+  titleResponsive3: string;
+  titleResponsive4: string;
+  titleResponsive5: string;
+  titleResponsive6: string;
+  callToActionResponsive: string;
+  services: Article[];
+  callsToAction: Article[];
+  company: Article[];
+  articles: Article[];
+  blogPosts: BlogPost[];
+  lang: string;
+}
 
-const callsToAction: IHeader[] = [
-  {
-    name: "¿Eres nuevo?",
-    href: "https://www.youtube.com/@weareimsoft",
-    icon: PlayIcon,
-  },
-  {
-    name: "Ver todos los servicios",
-    href: "/servicios",
-    icon: RectangleStackIcon,
-  },
-  {
-    name: "Contáctanos",
-    href: `${whatsappBusinessLink}`,
-    icon: ChatBubbleLeftRightIcon,
-  },
-];
+export interface Article {
+  name: string;
+  href: string;
+  icon: string;
+  description?: string;
+}
 
-const company: IHeader[] = [
-  { name: "Historia de imSoft", href: "/nosotros", icon: BookOpenIcon },
-  { name: "Portafolio", href: "/portafolio", icon: RectangleStackIcon },
-  {
-    name: "¿Tienes alguna duda?",
-    href: "/contacto",
-    icon: QuestionMarkCircleIcon,
-  },
-  {
-    name: "Aviso de privacidad",
-    href: "/avisoDePrivacidad",
-    icon: DocumentTextIcon,
-  },
-];
-
-const articles: IHeader[] = [
-  {
-    name: "Nuestros Artículos",
-    href: "/articulos",
-    icon: DocumentDuplicateIcon,
-  },
-];
-
-const blogPosts = [
-  {
-    id: 1,
-    name: "Consejos para mejorar la usabilidad de tu sitio web",
-    href: "/articulos/consejos-para-mejorar-la-usabilidad-de-tu-sitio-web",
-    preview:
-      "La usabilidad de un sitio web es esencial para proporcionar una buena experiencia de usuario. Si los visitantes no pueden navegar fácilmente por tu sitio o encontrar lo que están buscando, es probable que se vayan rápidamente. Para ayudarte a mejorar la usabilidad de tu sitio web, aquí te ofrecemos algunos consejos:",
-    imageUrl:
-      "https://res.cloudinary.com/https-imsoft-io/image/upload/v1706594888/imsoft-images/articles/consejos-para-mejorar-la-usabilidad-de-tu-sitio-web-imsoft.jpg",
-  },
-  {
-    id: 2,
-    name: "Los principales mitos del SEO que debes conocer",
-    href: "/articulos/los-principales-mitos-del-seo-que-debes-conocer",
-    preview:
-      "El SEO (Search Engine Optimization) es una disciplina que busca mejorar la visibilidad y el posicionamiento de una página web en los resultados de búsqueda orgánicos de los motores de búsqueda. Sin embargo, a menudo existen ideas erróneas sobre cómo funciona el SEO y cuáles son sus mejores prácticas. En este blog, te mostraremos los principales mitos del SEO que debes conocer para evitar errores comunes y optimizar tu estrategia de SEO.",
-    imageUrl:
-      "https://res.cloudinary.com/https-imsoft-io/image/upload/v1706594888/imsoft-images/articles/los-principales-mitos-del-SEO-que-debes-conocer.jpg",
-  },
-];
+export interface BlogPost {
+  id: number;
+  name: string;
+  href: string;
+  preview: string;
+  imageUrl: string;
+}
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
 
-export const Header = () => {
+const iconMappingServices: { [key: string]: React.ElementType } = {
+  PresentationChartBarIcon,
+  CodeBracketSquareIcon,
+  ShoppingBagIcon,
+  MagnifyingGlassIcon,
+  ComputerDesktopIcon,
+  CircleStackIcon,
+  DevicePhoneMobileIcon,
+  MegaphoneIcon,
+  UsersIcon,
+  Square3Stack3DIcon,
+};
+
+const iconMappingCompany: { [key: string]: React.ElementType } = {
+  BookOpenIcon,
+  RectangleStackIcon,
+  QuestionMarkCircleIcon,
+  DocumentTextIcon,
+};
+
+const iconMappingCallsToAction: { [key: string]: React.ElementType } = {
+  PlayIcon,
+  RectangleStackIcon,
+  ChatBubbleLeftRightIcon,
+};
+
+const iconMappingArticles: { [key: string]: React.ElementType } = {
+  DocumentDuplicateIcon,
+};
+
+export const Header = ({
+  firstColumn,
+  secondColumn,
+  thirdColumn,
+  fourthColumn,
+  fifthColumn,
+  sixthColumn,
+  callToActionServices,
+  moreTitle1,
+  moreTitle2,
+  moreTitle3,
+  moreCallToAction,
+  titleResponsive1,
+  titleResponsive2,
+  titleResponsive3,
+  titleResponsive4,
+  titleResponsive5,
+  titleResponsive6,
+  callToActionResponsive,
+  services,
+  callsToAction,
+  company,
+  articles,
+  blogPosts,
+  lang,
+}: HeaderProps) => {
   const [isShowingServices, setIsShowingServices] = useState(false);
   const [isShowingMore, setIsShowingMore] = useState(false);
   const [isShowingResponsiveMenu, setIsShowingResponsiveMenu] = useState(false);
@@ -191,7 +159,7 @@ export const Header = () => {
         <div className="relative z-20">
           <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-5 sm:px-6 sm:py-4 md:justify-start md:space-x-10 lg:px-8">
             <div>
-              <Link href="/" className="flex">
+              <CustomLink href="/" className="flex" lang={lang}>
                 <span className="sr-only">imSoft</span>
                 <Image
                   className="h-8 w-auto sm:h-10"
@@ -200,7 +168,7 @@ export const Header = () => {
                   width={111}
                   height={40}
                 />
-              </Link>
+              </CustomLink>
             </div>
             <div className="flex-1" />
             <div className="-my-2 -mr-2 md:hidden">
@@ -214,12 +182,13 @@ export const Header = () => {
             </div>
             <div className="hidden md:flex md:flex-1 md:items-center md:justify-center">
               <Popover.Group as="nav" className="flex space-x-10">
-                <Link
+                <CustomLink
                   href="/"
                   className="text-base font-medium text-gray-500 hover:text-gray-900"
+                  lang={lang}
                 >
-                  Inicio
-                </Link>
+                  {firstColumn}
+                </CustomLink>
                 <Popover>
                   {({ open }) => (
                     <>
@@ -231,7 +200,7 @@ export const Header = () => {
                         onMouseEnter={handleShowingServices}
                         onMouseLeave={handleShowingServices}
                       >
-                        <span>Servicios</span>
+                        <span>{secondColumn}</span>
                         <ChevronDownIcon
                           className={classNames(
                             open ? "text-gray-600" : "text-gray-400",
@@ -257,58 +226,68 @@ export const Header = () => {
                           className="absolute inset-x-0 top-full z-10 hidden transform bg-white shadow-lg md:block"
                         >
                           <div className="mx-auto grid max-w-7xl gap-y-6 px-4 py-6 sm:grid-cols-2 sm:gap-8 sm:px-6 sm:py-8 lg:grid-cols-5 lg:px-8 lg:py-12 xl:py-12">
-                            {services.map((item) => (
-                              <Link
-                                key={item.name}
-                                href={item.href}
-                                className="-m-3 flex flex-col justify-between rounded-lg p-3 hover:bg-gray-50"
-                                onClick={handleShowingServices}
-                              >
-                                <div className="flex md:h-full lg:flex-col">
-                                  <div className="flex-shrink-0">
-                                    <span className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-primary-500 text-white sm:h-12 sm:w-12">
-                                      <item.icon
-                                        className="h-6 w-6"
-                                        aria-hidden="true"
-                                      />
-                                    </span>
-                                  </div>
-                                  <div className="ml-4 md:flex md:flex-1 md:flex-col md:justify-between lg:ml-0 lg:mt-4">
-                                    <div>
-                                      <p className="text-xl font-medium text-gray-900">
-                                        {item.name}
-                                      </p>
-                                      <p className="mt-1 text-sm text-gray-500">
-                                        {item.description}
+                            {services.map((item) => {
+                              const IconComponent =
+                                iconMappingServices[item.icon];
+                              return (
+                                <CustomLink
+                                  key={item.name}
+                                  href={item.href}
+                                  className="-m-3 flex flex-col justify-between rounded-lg p-3 hover:bg-gray-50"
+                                  onClick={handleShowingServices}
+                                  lang={lang}
+                                >
+                                  <div className="flex md:h-full lg:flex-col">
+                                    <div className="flex-shrink-0">
+                                      <span className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-primary-500 text-white sm:h-12 sm:w-12">
+                                        <IconComponent
+                                          className="h-6 w-6"
+                                          aria-hidden="true"
+                                        />
+                                      </span>
+                                    </div>
+                                    <div className="ml-4 md:flex md:flex-1 md:flex-col md:justify-between lg:ml-0 lg:mt-4">
+                                      <div>
+                                        <p className="text-xl font-medium text-gray-900">
+                                          {item.name}
+                                        </p>
+                                        <p className="mt-1 text-sm text-gray-500">
+                                          {item.description}
+                                        </p>
+                                      </div>
+                                      <p className="mt-2 text-sm font-medium text-primary-600 lg:mt-4">
+                                        {callToActionServices}
+                                        <span aria-hidden="true"> &rarr;</span>
                                       </p>
                                     </div>
-                                    <p className="mt-2 text-sm font-medium text-primary-600 lg:mt-4">
-                                      Conoce más
-                                      <span aria-hidden="true"> &rarr;</span>
-                                    </p>
                                   </div>
-                                </div>
-                              </Link>
-                            ))}
+                                </CustomLink>
+                              );
+                            })}
                           </div>
                           <div className="bg-gray-50">
                             <div className="mx-auto max-w-7xl space-y-6 px-4 py-5 sm:flex sm:space-y-0 sm:space-x-10 sm:px-6 lg:px-8">
-                              {callsToAction.map((item) => (
-                                <div key={item.name} className="flow-root">
-                                  <Link
-                                    href={item.href}
-                                    target="_blank"
-                                    className="-m-3 flex items-center rounded-md p-3 text-base font-medium text-gray-900 hover:bg-gray-100"
-                                    onClick={handleShowingServices}
-                                  >
-                                    <item.icon
-                                      className="h-6 w-6 flex-shrink-0 text-gray-400"
-                                      aria-hidden="true"
-                                    />
-                                    <span className="ml-3">{item.name}</span>
-                                  </Link>
-                                </div>
-                              ))}
+                              {callsToAction.map((item) => {
+                                const IconComponent =
+                                  iconMappingCallsToAction[item.icon];
+                                return (
+                                  <div key={item.name} className="flow-root">
+                                    <CustomLink
+                                      href={item.href}
+                                      target="_blank"
+                                      className="-m-3 flex items-center rounded-md p-3 text-base font-medium text-gray-900 hover:bg-gray-100"
+                                      onClick={handleShowingServices}
+                                      lang={lang}
+                                    >
+                                      <IconComponent
+                                        className="h-6 w-6 flex-shrink-0 text-gray-400"
+                                        aria-hidden="true"
+                                      />
+                                      <span className="ml-3">{item.name}</span>
+                                    </CustomLink>
+                                  </div>
+                                );
+                              })}
                             </div>
                           </div>
                         </Popover.Panel>
@@ -316,18 +295,20 @@ export const Header = () => {
                     </>
                   )}
                 </Popover>
-                <Link
+                <CustomLink
                   href="/nosotros"
-                  className="text-base font-medium text-gray-500 hover:text-gray-900"
+                  className="text-base whitespace-nowrap font-medium text-gray-500 hover:text-gray-900"
+                  lang={lang}
                 >
-                  Conócenos
-                </Link>
-                <Link
+                  {thirdColumn}
+                </CustomLink>
+                <CustomLink
                   href="/portafolio"
                   className="text-base font-medium text-gray-500 hover:text-gray-900"
+                  lang={lang}
                 >
-                  Portafolio
-                </Link>
+                  {fourthColumn}
+                </CustomLink>
                 <Popover>
                   {({ open }) => (
                     <>
@@ -339,7 +320,7 @@ export const Header = () => {
                         onMouseEnter={handleShowingMore}
                         onMouseLeave={handleShowingMore}
                       >
-                        <span>Más</span>
+                        <span>{fifthColumn}</span>
                         <ChevronDownIcon
                           className={classNames(
                             open ? "text-gray-600" : "text-gray-400",
@@ -372,71 +353,83 @@ export const Header = () => {
                             <nav className="grid gap-y-10 bg-white px-4 py-8 sm:grid-cols-2 sm:gap-x-8 sm:py-12 sm:px-6 lg:px-8 xl:pr-12">
                               <div>
                                 <h3 className="text-base font-medium text-gray-500">
-                                  Empresa
+                                  {moreTitle1}
                                 </h3>
                                 <ul role="list" className="mt-5 space-y-6">
-                                  {company.map((item) => (
-                                    <li
-                                      key={item.name}
-                                      className="flow-root"
-                                      onClick={handleShowingMore}
-                                    >
-                                      <Link
-                                        href={item.href}
-                                        className="-m-3 flex items-center rounded-md p-3 text-base font-medium text-gray-900 hover:bg-gray-50"
+                                  {company.map((item) => {
+                                    const IconComponent =
+                                      iconMappingCompany[item.icon];
+                                    return (
+                                      <li
+                                        key={item.name}
+                                        className="flow-root"
+                                        onClick={handleShowingMore}
                                       >
-                                        <item.icon
-                                          className="h-6 w-6 flex-shrink-0 text-gray-400"
-                                          aria-hidden="true"
-                                        />
-                                        <span className="ml-4">
-                                          {item.name}
-                                        </span>
-                                      </Link>
-                                    </li>
-                                  ))}
+                                        <CustomLink
+                                          href={item.href}
+                                          className="-m-3 flex items-center rounded-md p-3 text-base font-medium text-gray-900 hover:bg-gray-50"
+                                          lang={lang}
+                                        >
+                                          <IconComponent
+                                            className="h-6 w-6 flex-shrink-0 text-gray-400"
+                                            aria-hidden="true"
+                                          />
+                                          <span className="ml-4">
+                                            {item.name}
+                                          </span>
+                                        </CustomLink>
+                                      </li>
+                                    );
+                                  })}
                                 </ul>
                               </div>
                               <div>
                                 <h3 className="text-base font-medium text-gray-500">
-                                  Artículos
+                                  {moreTitle2}
                                 </h3>
                                 <ul role="list" className="mt-5 space-y-6">
-                                  {articles.map((item) => (
-                                    <li
-                                      key={item.name}
-                                      className="flow-root"
-                                      onClick={handleShowingMore}
-                                    >
-                                      <Link
-                                        href={item.href}
-                                        className="-m-3 flex items-center rounded-md p-3 text-base font-medium text-gray-900 hover:bg-gray-50"
+                                  {articles.map((item) => {
+                                    const IconComponent =
+                                      iconMappingArticles[item.icon];
+
+                                    return (
+                                      <li
+                                        key={item.name}
+                                        className="flow-root"
+                                        onClick={handleShowingMore}
                                       >
-                                        <item.icon
-                                          className="h-6 w-6 flex-shrink-0 text-gray-400"
-                                          aria-hidden="true"
-                                        />
-                                        <span className="ml-4">
-                                          {item.name}
-                                        </span>
-                                      </Link>
-                                    </li>
-                                  ))}
+                                        <CustomLink
+                                          href={item.href}
+                                          className="-m-3 flex items-center rounded-md p-3 text-base font-medium text-gray-900 hover:bg-gray-50"
+                                          lang={lang}
+                                        >
+                                          <IconComponent
+                                            className="h-6 w-6 flex-shrink-0 text-gray-400"
+                                            aria-hidden="true"
+                                          />
+                                          <span className="ml-4">
+                                            {item.name}
+                                          </span>
+                                        </CustomLink>
+                                      </li>
+                                    );
+                                  })}
                                 </ul>
                               </div>
                             </nav>
                             <div className="bg-gray-50 px-4 py-8 sm:py-12 sm:px-6 lg:px-8 xl:pl-12">
                               <div>
                                 <h3 className="text-base font-medium text-gray-500">
-                                  Nuestros Artículos
+                                  {moreTitle3}
                                 </h3>
                                 <ul role="list" className="mt-6 space-y-6">
                                   {blogPosts.map((post) => (
                                     <li key={post.id} className="flow-root">
-                                      <Link
+                                      <CustomLink
                                         href={post.href}
                                         className="-m-3 flex rounded-lg p-3 hover:bg-gray-100"
                                         onClick={handleShowingMore}
+                                        lang={lang}
                                       >
                                         <div className="hidden flex-shrink-0 sm:block">
                                           <Image
@@ -455,20 +448,21 @@ export const Header = () => {
                                             {post.preview}
                                           </p>
                                         </div>
-                                      </Link>
+                                      </CustomLink>
                                     </li>
                                   ))}
                                 </ul>
                               </div>
                               <div className="mt-6 text-sm font-medium">
-                                <Link
+                                <CustomLink
                                   href="/articulos"
                                   className="text-primary-600 hover:text-primary-500"
                                   onClick={handleShowingMore}
+                                  lang={lang}
                                 >
-                                  Ver los artículos
+                                  {moreCallToAction}
                                   <span aria-hidden="true"> &rarr;</span>
-                                </Link>
+                                </CustomLink>
                               </div>
                             </div>
                           </div>
@@ -477,12 +471,13 @@ export const Header = () => {
                     </>
                   )}
                 </Popover>
-                <Link
+                <CustomLink
                   href="/contacto"
                   className="text-base font-medium text-gray-500 hover:text-gray-900"
+                  lang={lang}
                 >
-                  Contacto
-                </Link>
+                  {sixthColumn}
+                </CustomLink>
 
                 <LocaleSwitcher />
               </Popover.Group>
@@ -508,7 +503,7 @@ export const Header = () => {
               <div className="px-5 pt-5 pb-6 sm:pb-8">
                 <div className="bg-white flex items-center justify-between sticky top-0 z-50">
                   <div>
-                    <Link href={"/"}>
+                    <CustomLink href={"/"} lang={lang}>
                       <Image
                         className="h-8 w-auto"
                         src="https://res.cloudinary.com/https-imsoft-io/image/upload/v1706594671/imsoft-images/imsoft/logotipo-imsoft-transparente-azul-rectangular.png"
@@ -516,7 +511,7 @@ export const Header = () => {
                         width={89}
                         height={32}
                       />
-                    </Link>
+                    </CustomLink>
                   </div>
                   <div className="-mr-2">
                     <Popover.Button
@@ -531,80 +526,94 @@ export const Header = () => {
                 <div className="mt-6 sm:mt-8">
                   <nav>
                     <div className="grid gap-7 sm:grid-cols-2 sm:gap-y-8 sm:gap-x-4">
-                      {services.map((item) => (
-                        <Link
-                          key={item.name}
-                          href={item.href}
-                          className="-m-3 flex items-center rounded-lg p-3 hover:bg-gray-50"
-                          onClick={handleShowingResponsiveMenu}
-                        >
-                          <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-md bg-primary-500 text-white sm:h-12 sm:w-12">
-                            <item.icon className="h-6 w-6" aria-hidden="true" />
-                          </div>
-                          <div className="ml-4 text-base font-medium text-gray-900">
-                            {item.name}
-                          </div>
-                        </Link>
-                      ))}
+                      {services.map((item) => {
+                        const IconComponent = iconMappingServices[item.icon];
+                        return (
+                          <CustomLink
+                            key={item.name}
+                            href={item.href}
+                            className="-m-3 flex items-center rounded-lg p-3 hover:bg-gray-50"
+                            onClick={handleShowingResponsiveMenu}
+                            lang={lang}
+                          >
+                            <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-md bg-primary-500 text-white sm:h-12 sm:w-12">
+                              <IconComponent
+                                className="h-6 w-6"
+                                aria-hidden="true"
+                              />
+                            </div>
+                            <div className="ml-4 text-base font-medium text-gray-900">
+                              {item.name}
+                            </div>
+                          </CustomLink>
+                        );
+                      })}
                     </div>
                     <div className="mt-8 text-base">
-                      <Link
+                      <CustomLink
                         href="/servicios"
                         className="font-medium text-primary-600 hover:text-primary-500"
                         onClick={handleShowingResponsiveMenu}
+                        lang={lang}
                       >
-                        Ver todos los servicios
+                        {callToActionResponsive}
                         <span aria-hidden="true"> &rarr;</span>
-                      </Link>
+                      </CustomLink>
                     </div>
                   </nav>
                 </div>
               </div>
               <div className="py-6 px-5">
                 <div className="grid grid-cols-2 gap-4">
-                  <Link
+                  <CustomLink
                     href="/nosotros"
                     className="rounded-md text-base font-medium text-gray-900 hover:text-gray-700"
                     onClick={handleShowingResponsiveMenu}
+                    lang={lang}
                   >
-                    Conócenos
-                  </Link>
-                  <Link
+                    {titleResponsive1}
+                  </CustomLink>
+                  <CustomLink
                     href="/portafolio"
                     className="rounded-md text-base font-medium text-gray-900 hover:text-gray-700"
                     onClick={handleShowingResponsiveMenu}
+                    lang={lang}
                   >
-                    Portafolio
-                  </Link>
-                  <Link
+                    {titleResponsive2}
+                  </CustomLink>
+                  <CustomLink
                     href="/articulos"
                     className="rounded-md text-base font-medium text-gray-900 hover:text-gray-700"
                     onClick={handleShowingResponsiveMenu}
+                    lang={lang}
                   >
-                    Artículos
-                  </Link>
-                  <Link
+                    {titleResponsive3}
+                  </CustomLink>
+                  <CustomLink
                     href="/avisoDePrivacidad"
                     className="rounded-md text-base font-medium text-gray-900 hover:text-gray-700"
                     onClick={handleShowingResponsiveMenu}
+                    lang={lang}
                   >
-                    Aviso de privacidad
-                  </Link>
-                  <Link
+                    {titleResponsive4}
+                  </CustomLink>
+                  <CustomLink
                     href={`${whatsappBusinessLink}`}
                     className="rounded-md text-base font-medium text-gray-900 hover:text-gray-700"
                     onClick={handleShowingResponsiveMenu}
+                    lang={lang}
                   >
-                    WhatsApp
-                  </Link>
-                  <Link
+                    {titleResponsive5}
+                  </CustomLink>
+                  <CustomLink
                     href="/contacto"
                     className="rounded-md text-base font-medium text-gray-900 hover:text-gray-700"
                     onClick={handleShowingResponsiveMenu}
+                    lang={lang}
                   >
-                    Contacto
-                  </Link>
-                  
+                    {titleResponsive6}
+                  </CustomLink>
+
                   <LocaleSwitcher />
                 </div>
               </div>

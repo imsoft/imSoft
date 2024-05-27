@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import { INotificationMessage, Services } from "../../../interfaces";
+import type { HeroIcon, NotificationMessage } from "../../../interfaces";
 
 import {
   ChevronRightIcon,
@@ -11,6 +11,13 @@ import {
   ArrowTrendingUpIcon,
   DevicePhoneMobileIcon,
 } from "@heroicons/react/24/outline";
+
+interface Services {
+  nameOfService: string;
+  description: string;
+  href: string;
+  icon: HeroIcon;
+}
 
 const links: Services[] = [
   {
@@ -50,11 +57,7 @@ const links: Services[] = [
   },
 ];
 
-const MessageComponent = ({
-  topic,
-  message,
-  comment,
-}: INotificationMessage) => {
+const MessageComponent = ({ topic, message, comment }: NotificationMessage) => {
   return (
     <>
       <div className="bg-white">

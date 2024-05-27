@@ -2,13 +2,18 @@ import Link from "next/link";
 
 import { whatsappBusinessLink } from "../../../data";
 
-export const ConversionBar = () => {
+interface Props {
+  title: string;
+  callToAction: string;
+}
+
+export const ConversionBar = ({ title, callToAction }: Props) => {
   return (
     <>
       <div className="md:flex md:justify-around bg-primary-500 py-1.5">
         <div className="">
           <h5 className="flex justify-center items-center text-white font-medium">
-            ¡Bienvenido a imSoft 👨‍💻!
+            {title}
           </h5>
         </div>
         <div className="">
@@ -17,7 +22,7 @@ export const ConversionBar = () => {
             target="_blank"
             className="flex justify-center items-center gap-2"
           >
-            <h5 className="text-white">Contactate con nosotros</h5>
+            <h5 className="text-white">{callToAction}</h5>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"

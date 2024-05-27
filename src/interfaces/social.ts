@@ -1,4 +1,4 @@
-export interface ISocial {
+export interface Social {
   name: string;
   href: string;
   icon: () => JSX.Element;
