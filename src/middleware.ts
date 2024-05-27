@@ -20,6 +20,19 @@ function getLocale(request: NextRequest): string | undefined {
 
 export function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
+
+  // Exclude sitemap.xml, robots.txt, manifest.json and other static files
+  const staticFiles = [
+    "/sitemap.xml",
+    "/robots.txt",
+    "/manifest.json",
+    "/favicon.ico",
+  ];
+
+  if (staticFiles.some((file) => pathname === file)) {
+    return;
+  }
+
   const pathnameIsMissingLocale = i18n.locales.every(
     (locale) => !pathname.startsWith(`/${locale}/`) && pathname !== `/${locale}`
   );
