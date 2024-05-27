@@ -171,6 +171,9 @@ export const Header = ({
               </CustomLink>
             </div>
             <div className="flex-1" />
+            <div className="md:hidden">
+              <LocaleSwitcher />
+            </div>
             <div className="-my-2 -mr-2 md:hidden">
               <Popover.Button
                 onClick={handleShowingResponsiveMenu}
@@ -613,8 +616,6 @@ export const Header = ({
                   >
                     {titleResponsive6}
                   </CustomLink>
-
-                  <LocaleSwitcher />
                 </div>
               </div>
             </div>
