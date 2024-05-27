@@ -13,9 +13,9 @@ yarn dev
 If you want to update NextJs you must run this command:
 
 ```bash
-npm i next@latest react@latest react-dom@latest eslint-config-next@latest typescript@latest
+npm i next@latest react@latest react-dom@latest eslint-config-next@latest typescript@latest next-sitemap@latest
 # or
-yarn add next@latest react@latest react-dom@latest eslint-config-next@latest typescript@latest
+yarn add next@latest react@latest react-dom@latest eslint-config-next@latest typescript@latest next-sitemap@latest
 ```
 
 ## Eliminar Archivo .DS_Store
