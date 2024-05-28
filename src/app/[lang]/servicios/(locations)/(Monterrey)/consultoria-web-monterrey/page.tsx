@@ -19,26 +19,27 @@ import {
 import { Locale } from "../../../../../../../i18n.config";
 import { getDictionary } from "@/lib/dictionary";
 
-export const metadata: Metadata = {
-  title: "Consultoría Web en Monterrey | imSoft",
-  description:
-    "Expertos en consultoría web en Monterrey, ofreciendo soluciones personalizadas para el desarrollo de sitios y aplicaciones web. Nuestro equipo experto está listo para elevar la presencia online de tu negocio.",
-  keywords: [
-    "imSoft",
-    "Consultoría web",
-    "Consultoría web Monterrey",
-    "Desarrollo web Monterrey",
-  ],
-  twitter: {
-    title: "Consultoría Web en Monterrey por imSoft",
-    description:
-      "Descubre cómo nuestra consultoría web en Monterrey puede transformar tu negocio, optimizando tu sitio y aplicaciones web para el éxito.",
-  },
-  openGraph: {
-    title: "Servicios de Consultoría Web en Monterrey | imSoft",
-    description:
-      "En imSoft, brindamos consultoría web especializada en Monterrey, asegurando que tu sitio web y aplicaciones estén alineados con tus objetivos empresariales.",
-  },
+export const generateMetadata = async ({
+  params: { lang },
+}: {
+  params: { lang: Locale };
+}): Promise<Metadata> => {
+  const { metadata } = await getDictionary(lang);
+  return {
+    title: metadata.service.location.monterrey.webConsulting.title,
+    description: metadata.service.location.monterrey.webConsulting.description,
+    keywords: metadata.service.location.monterrey.webConsulting.keywords,
+    twitter: {
+      title: metadata.service.location.monterrey.webConsulting.twitter.title,
+      description:
+        metadata.service.location.monterrey.webConsulting.twitter.description,
+    },
+    openGraph: {
+      title: metadata.service.location.monterrey.webConsulting.openGraph.title,
+      description:
+        metadata.service.location.monterrey.webConsulting.openGraph.description,
+    },
+  };
 };
 
 const iconMapping: { [key: string]: HeroIcon } = {

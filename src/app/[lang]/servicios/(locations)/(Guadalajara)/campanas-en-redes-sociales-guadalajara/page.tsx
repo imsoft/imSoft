@@ -19,26 +19,27 @@ import { Metadata } from "next";
 import { Locale } from "../../../../../../../i18n.config";
 import { getDictionary } from "@/lib/dictionary";
 
-export const metadata: Metadata = {
-  title: "Gestión de Campañas de Redes Sociales en Guadalajara | imSoft",
-  description:
-    "Maximiza tu impacto en Guadalajara con nuestras campañas de redes sociales personalizadas. Aumenta la visibilidad y el engagement de tu marca localmente.",
-  keywords: [
-    "imSoft",
-    "Campañas de Redes Sociales en Guadalajara",
-    "Marketing Digital Guadalajara",
-    "Engagement Guadalajara",
-  ],
-  twitter: {
-    title: "Gestión de Campañas de Redes Sociales",
-    description:
-      "Impulsa tu presencia en línea con estrategias de redes sociales que capturan y retienen la atención de tu audiencia. Con imSoft, transforma tus redes en canales de crecimiento.",
-  },
-  openGraph: {
-    title: "Gestión de Campañas de Redes Sociales",
-    description:
-      "Eleva tu estrategia de marketing con campañas de redes sociales que conectan, convierten y retienen. Descubre el poder de una comunicación efectiva con imSoft.",
-  },
+export const generateMetadata = async ({
+  params: { lang },
+}: {
+  params: { lang: Locale };
+}): Promise<Metadata> => {
+  const { metadata } = await getDictionary(lang);
+  return {
+    title: metadata.service.location.guadalajara.campaignsOnSocialNetworks.title,
+    description: metadata.service.location.guadalajara.campaignsOnSocialNetworks.description,
+    keywords: metadata.service.location.guadalajara.campaignsOnSocialNetworks.keywords,
+    twitter: {
+      title: metadata.service.location.guadalajara.campaignsOnSocialNetworks.twitter.title,
+      description:
+        metadata.service.location.guadalajara.campaignsOnSocialNetworks.twitter.description,
+    },
+    openGraph: {
+      title: metadata.service.location.guadalajara.campaignsOnSocialNetworks.openGraph.title,
+      description:
+        metadata.service.location.guadalajara.campaignsOnSocialNetworks.openGraph.description,
+    },
+  };
 };
 
 const iconMapping: { [key: string]: HeroIcon } = {

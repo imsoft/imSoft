@@ -5,21 +5,25 @@ import { ContactForm } from "@/components/ui/services";
 import { Locale } from "../../../../i18n.config";
 import { getDictionary } from "@/lib/dictionary";
 
-export const metadata: Metadata = {
-  title: "Contacto",
-  description:
-    "¿Necesitas contactarnos para resolver una duda, solicitar información o contratar nuestros servicios? ¡No dudes en hacerlo! En nuestro sitio web encontrarás un formulario de contacto diseñado específicamente para que puedas comunicarte con nosotros de manera sencilla y eficaz",
-  keywords: ["imSoft", "Contacto"],
-  twitter: {
-    title: "Contacto",
-    description:
-      "¿Necesitas contactarnos para resolver una duda, solicitar información o contratar nuestros servicios? ¡No dudes en hacerlo! En nuestro sitio web encontrarás un formulario de contacto diseñado específicamente para que puedas comunicarte con nosotros de manera sencilla y eficaz",
-  },
-  openGraph: {
-    title: "Contacto",
-    description:
-      "¿Necesitas contactarnos para resolver una duda, solicitar información o contratar nuestros servicios? ¡No dudes en hacerlo! En nuestro sitio web encontrarás un formulario de contacto diseñado específicamente para que puedas comunicarte con nosotros de manera sencilla y eficaz",
-  },
+export const generateMetadata = async ({
+  params: { lang },
+}: {
+  params: { lang: Locale };
+}): Promise<Metadata> => {
+  const { metadata } = await getDictionary(lang);
+  return {
+    title: metadata.contact.title,
+    description: metadata.contact.description,
+    keywords: metadata.contact.keywords,
+    twitter: {
+      title: metadata.contact.twitter.title,
+      description: metadata.contact.twitter.description,
+    },
+    openGraph: {
+      title: metadata.contact.openGraph.title,
+      description: metadata.contact.openGraph.description,
+    },
+  };
 };
 
 const ContactPage = async ({

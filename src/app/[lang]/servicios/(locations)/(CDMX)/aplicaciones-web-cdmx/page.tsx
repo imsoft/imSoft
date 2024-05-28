@@ -5,9 +5,7 @@ import {
   CallToActionSection,
   PriceSection,
 } from "@/components/ui/services";
-import type {
-  HeroIcon,
-} from "@/interfaces";
+import type { HeroIcon } from "@/interfaces";
 import {
   PaintBrushIcon,
   ChartBarIcon,
@@ -19,26 +17,27 @@ import {
 import { Locale } from "../../../../../../../i18n.config";
 import { getDictionary } from "@/lib/dictionary";
 
-export const metadata: Metadata = {
-  title: "Desarrollo de Aplicaciones Web en CDMX | imSoft",
-  description:
-    "En imSoft, creamos aplicaciones web personalizadas en CDMX para potenciar tu negocio. Mejora tu presencia online, interactúa eficazmente con tus clientes y automatiza tus procesos de negocio con nuestras soluciones web. Diseñamos aplicaciones escalables y adaptables para el futuro de tu empresa en CDMX.",
-  keywords: [
-    "imSoft",
-    "Aplicaciones web CDMX",
-    "Desarrollo web CDMX",
-    "Soluciones web personalizadas",
-  ],
-  twitter: {
-    title: "Desarrollo de Aplicaciones Web en CDMX por imSoft",
-    description:
-      "Descubre cómo imSoft puede transformar tu negocio en CDMX con aplicaciones web personalizadas. Aumenta tu presencia en línea y mejora la interacción con tus clientes con nuestras soluciones innovadoras.",
-  },
-  openGraph: {
-    title: "Aplicaciones Web Personalizadas en CDMX | imSoft",
-    description:
-      "Con imSoft, lleva tu negocio en CDMX al siguiente nivel con aplicaciones web adaptadas a tus necesidades. Experiencia de usuario mejorada, escalabilidad y adaptabilidad para el futuro de tu empresa.",
-  },
+export const generateMetadata = async ({
+  params: { lang },
+}: {
+  params: { lang: Locale };
+}): Promise<Metadata> => {
+  const { metadata } = await getDictionary(lang);
+  return {
+    title: metadata.service.location.cdmx.webApplications.title,
+    description: metadata.service.location.cdmx.webApplications.description,
+    keywords: metadata.service.location.cdmx.webApplications.keywords,
+    twitter: {
+      title: metadata.service.location.cdmx.webApplications.twitter.title,
+      description:
+        metadata.service.location.cdmx.webApplications.twitter.description,
+    },
+    openGraph: {
+      title: metadata.service.location.cdmx.webApplications.openGraph.title,
+      description:
+        metadata.service.location.cdmx.webApplications.openGraph.description,
+    },
+  };
 };
 
 const iconMapping: { [key: string]: HeroIcon } = {

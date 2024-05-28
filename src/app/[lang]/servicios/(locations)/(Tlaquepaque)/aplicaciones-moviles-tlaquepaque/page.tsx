@@ -19,28 +19,28 @@ import {
 import { Locale } from "../../../../../../../i18n.config";
 import { getDictionary } from "@/lib/dictionary";
 
-export const metadata: Metadata = {
-  title: "Desarrollo de Aplicaciones Móviles en Tlaquepaque | imSoft",
-  description:
-    "Especialistas en desarrollo de aplicaciones móviles a medida en Tlaquepaque, diseñadas para impulsar la engagement de los usuarios y optimizar la experiencia móvil.",
-  keywords: [
-    "imSoft",
-    "Aplicaciones móviles Tlaquepaque",
-    "Desarrollo móvil Tlaquepaque",
-    "Apps Tlaquepaque",
-  ],
-  twitter: {
-    title: "Desarrollo de Aplicaciones Móviles",
-    description:
-      "Impulsa tu negocio con aplicaciones móviles a medida. Mejora la experiencia de tus usuarios y abre nuevas vías de interacción y crecimiento con imSoft.",
-  },
-  openGraph: {
-    title: "Desarrollo de Aplicaciones Móviles",
-    description:
-      "Transforma tu estrategia digital con nuestras soluciones móviles personalizadas. Escalabilidad, seguridad y diseño centrado en el usuario con imSoft.",
-  },
+export const generateMetadata = async ({
+  params: { lang },
+}: {
+  params: { lang: Locale };
+}): Promise<Metadata> => {
+  const { metadata } = await getDictionary(lang);
+  return {
+    title: metadata.service.location.tlaquepaque.mobileApps.title,
+    description: metadata.service.location.tlaquepaque.mobileApps.description,
+    keywords: metadata.service.location.tlaquepaque.mobileApps.keywords,
+    twitter: {
+      title: metadata.service.location.tlaquepaque.mobileApps.twitter.title,
+      description:
+        metadata.service.location.tlaquepaque.mobileApps.twitter.description,
+    },
+    openGraph: {
+      title: metadata.service.location.tlaquepaque.mobileApps.openGraph.title,
+      description:
+        metadata.service.location.tlaquepaque.mobileApps.openGraph.description,
+    },
+  };
 };
-
 const iconMapping: { [key: string]: HeroIcon } = {
   ChevronDoubleDownIcon,
   DevicePhoneMobileIcon,

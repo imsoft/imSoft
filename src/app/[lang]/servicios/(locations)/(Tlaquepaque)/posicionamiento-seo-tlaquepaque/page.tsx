@@ -19,27 +19,27 @@ import {
 import { Locale } from "../../../../../../../i18n.config";
 import { getDictionary } from "@/lib/dictionary";
 
-export const metadata: Metadata = {
-  title: "Servicios de SEO en Tlaquepaque | imSoft",
-  description:
-    "Optimiza tu presencia online en Tlaquepaque con nuestros servicios de SEO. Estrategias personalizadas para impulsar tu negocio en los resultados de búsqueda de Google.",
-  keywords: [
-    "imSoft",
-    "SEO Tlaquepaque",
-    "Posicionamiento SEO Tlaquepaque",
-    "Servicios SEO Tlaquepaque",
-    "Análisis de palabras clave",
-  ],
-  twitter: {
-    title: "SEO en Tlaquepaque | imSoft",
-    description:
-      "Aumenta la visibilidad de tu negocio en Tlaquepaque con nuestro SEO especializado. Estrategias y técnicas para dominar los resultados de Google.",
-  },
-  openGraph: {
-    title: "Optimización SEO en Tlaquepaque | imSoft",
-    description:
-      "Con nuestros servicios de SEO en Tlaquepaque, tu negocio alcanzará nuevas alturas en el mundo digital. Contáctanos para mejorar tu ranking en Google.",
-  },
+export const generateMetadata = async ({
+  params: { lang },
+}: {
+  params: { lang: Locale };
+}): Promise<Metadata> => {
+  const { metadata } = await getDictionary(lang);
+  return {
+    title: metadata.service.location.tlaquepaque.positioningSeo.title,
+    description: metadata.service.location.tlaquepaque.positioningSeo.description,
+    keywords: metadata.service.location.tlaquepaque.positioningSeo.keywords,
+    twitter: {
+      title: metadata.service.location.tlaquepaque.positioningSeo.twitter.title,
+      description:
+        metadata.service.location.tlaquepaque.positioningSeo.twitter.description,
+    },
+    openGraph: {
+      title: metadata.service.location.tlaquepaque.positioningSeo.openGraph.title,
+      description:
+        metadata.service.location.tlaquepaque.positioningSeo.openGraph.description,
+    },
+  };
 };
 
 const iconMapping: { [key: string]: HeroIcon } = {

@@ -2,21 +2,25 @@ import { Metadata } from "next";
 import { Locale } from "../../../../i18n.config";
 import { getDictionary } from "@/lib/dictionary";
 
-export const metadata: Metadata = {
-  title: "Aviso de privacidad",
-  description:
-    "imSoft se preocupa por la privacidad de sus clientes y usuarios, por lo que proteger la información personal es una prioridad para nosotros. Este aviso de privacidad explica cómo recopilamos, usamos y protegemos la información personal que se nos proporciona a través de nuestros productos, servicios, sitios web y aplicaciones móviles",
-  keywords: ["imSoft", "Aviso de privacidad"],
-  twitter: {
-    title: "Aviso de privacidad",
-    description:
-      "imSoft se preocupa por la privacidad de sus clientes y usuarios, por lo que proteger la información personal es una prioridad para nosotros. Este aviso de privacidad explica cómo recopilamos, usamos y protegemos la información personal que se nos proporciona a través de nuestros productos, servicios, sitios web y aplicaciones móviles",
-  },
-  openGraph: {
-    title: "Aviso de privacidad",
-    description:
-      "imSoft se preocupa por la privacidad de sus clientes y usuarios, por lo que proteger la información personal es una prioridad para nosotros. Este aviso de privacidad explica cómo recopilamos, usamos y protegemos la información personal que se nos proporciona a través de nuestros productos, servicios, sitios web y aplicaciones móviles",
-  },
+export const generateMetadata = async ({
+  params: { lang },
+}: {
+  params: { lang: Locale };
+}): Promise<Metadata> => {
+  const { metadata } = await getDictionary(lang);
+  return {
+    title: metadata.privacyNotice.title,
+    description: metadata.privacyNotice.description,
+    keywords: metadata.privacyNotice.keywords,
+    twitter: {
+      title: metadata.privacyNotice.twitter.title,
+      description: metadata.privacyNotice.twitter.description,
+    },
+    openGraph: {
+      title: metadata.privacyNotice.openGraph.title,
+      description: metadata.privacyNotice.openGraph.description,
+    },
+  };
 };
 
 const PrivacyNoticePage = async ({

@@ -19,26 +19,27 @@ import {
 import { Locale } from "../../../../../../../i18n.config";
 import { getDictionary } from "@/lib/dictionary";
 
-export const metadata: Metadata = {
-  title: "Desarrollo de Aplicaciones Web en Guadalajara | imSoft",
-  description:
-    "En imSoft, creamos aplicaciones web personalizadas en Guadalajara para potenciar tu negocio. Mejora tu presencia online, interactúa eficazmente con tus clientes y automatiza tus procesos de negocio con nuestras soluciones web. Diseñamos aplicaciones escalables y adaptables para el futuro de tu empresa en Guadalajara.",
-  keywords: [
-    "imSoft",
-    "Aplicaciones web Guadalajara",
-    "Desarrollo web Guadalajara",
-    "Soluciones web personalizadas",
-  ],
-  twitter: {
-    title: "Desarrollo de Aplicaciones Web en Guadalajara por imSoft",
-    description:
-      "Descubre cómo imSoft puede transformar tu negocio en Guadalajara con aplicaciones web personalizadas. Aumenta tu presencia en línea y mejora la interacción con tus clientes con nuestras soluciones innovadoras.",
-  },
-  openGraph: {
-    title: "Aplicaciones Web Personalizadas en Guadalajara | imSoft",
-    description:
-      "Con imSoft, lleva tu negocio en Guadalajara al siguiente nivel con aplicaciones web adaptadas a tus necesidades. Experiencia de usuario mejorada, escalabilidad y adaptabilidad para el futuro de tu empresa.",
-  },
+export const generateMetadata = async ({
+  params: { lang },
+}: {
+  params: { lang: Locale };
+}): Promise<Metadata> => {
+  const { metadata } = await getDictionary(lang);
+  return {
+    title: metadata.service.location.guadalajara.webApplications.title,
+    description: metadata.service.location.guadalajara.webApplications.description,
+    keywords: metadata.service.location.guadalajara.webApplications.keywords,
+    twitter: {
+      title: metadata.service.location.guadalajara.webApplications.twitter.title,
+      description:
+        metadata.service.location.guadalajara.webApplications.twitter.description,
+    },
+    openGraph: {
+      title: metadata.service.location.guadalajara.webApplications.openGraph.title,
+      description:
+        metadata.service.location.guadalajara.webApplications.openGraph.description,
+    },
+  };
 };
 
 const iconMapping: { [key: string]: HeroIcon } = {

@@ -5,9 +5,7 @@ import {
   CallToActionSection,
   PriceSection,
 } from "@/components/ui/services";
-import type {
-  HeroIcon,
-} from "@/interfaces";
+import type { HeroIcon } from "@/interfaces";
 import {
   EyeIcon,
   DocumentTextIcon,
@@ -19,26 +17,27 @@ import {
 import { Locale } from "../../../../../../../i18n.config";
 import { getDictionary } from "@/lib/dictionary";
 
-export const metadata: Metadata = {
-  title: "Consultoría Web en Zapopan | imSoft",
-  description:
-    "Expertos en consultoría web en Zapopan, ofreciendo soluciones personalizadas para el desarrollo de sitios y aplicaciones web. Nuestro equipo experto está listo para elevar la presencia online de tu negocio.",
-  keywords: [
-    "imSoft",
-    "Consultoría web",
-    "Consultoría web Zapopan",
-    "Desarrollo web Zapopan",
-  ],
-  twitter: {
-    title: "Consultoría Web en Zapopan por imSoft",
-    description:
-      "Descubre cómo nuestra consultoría web en Zapopan puede transformar tu negocio, optimizando tu sitio y aplicaciones web para el éxito.",
-  },
-  openGraph: {
-    title: "Servicios de Consultoría Web en Zapopan | imSoft",
-    description:
-      "En imSoft, brindamos consultoría web especializada en Zapopan, asegurando que tu sitio web y aplicaciones estén alineados con tus objetivos empresariales.",
-  },
+export const generateMetadata = async ({
+  params: { lang },
+}: {
+  params: { lang: Locale };
+}): Promise<Metadata> => {
+  const { metadata } = await getDictionary(lang);
+  return {
+    title: metadata.service.location.zapopan.webConsulting.title,
+    description: metadata.service.location.zapopan.webConsulting.description,
+    keywords: metadata.service.location.zapopan.webConsulting.keywords,
+    twitter: {
+      title: metadata.service.location.zapopan.webConsulting.twitter.title,
+      description:
+        metadata.service.location.zapopan.webConsulting.twitter.description,
+    },
+    openGraph: {
+      title: metadata.service.location.zapopan.webConsulting.openGraph.title,
+      description:
+        metadata.service.location.zapopan.webConsulting.openGraph.description,
+    },
+  };
 };
 
 const iconMapping: { [key: string]: HeroIcon } = {

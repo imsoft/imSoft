@@ -19,27 +19,27 @@ import {
 import { Locale } from "../../../../../i18n.config";
 import { getDictionary } from "@/lib/dictionary";
 
-export const metadata: Metadata = {
-  title: "Gestión de Campañas en Google Ads",
-  description:
-    "Optimiza tu inversión publicitaria con nuestras campañas personalizadas en Google Ads. Nos especializamos en crear y gestionar campañas efectivas que mejoran la visibilidad, atraen tráfico de calidad y aumentan las conversiones, asegurando que obtengas el máximo retorno de tu inversión. Nuestra estrategia se basa en un profundo análisis de datos y en la optimización continua para alcanzar y superar tus objetivos de marketing.",
-  keywords: [
-    "imSoft",
-    "Google Ads",
-    "Campañas PPC",
-    "Publicidad en línea",
-    "SEM",
-  ],
-  twitter: {
-    title: "Gestión de Campañas en Google Ads",
-    description:
-      "Maximiza el ROI de tu publicidad en línea con campañas de Google Ads diseñadas para el éxito. Atrae más clientes y aumenta tus conversiones con imSoft.",
-  },
-  openGraph: {
-    title: "Gestión de Campañas en Google Ads",
-    description:
-      "Alcanza tus objetivos de marketing con campañas de Google Ads optimizadas para rendimiento. Visibilidad mejorada, tráfico de calidad y más conversiones con imSoft.",
-  },
+export const generateMetadata = async ({
+  params: { lang },
+}: {
+  params: { lang: Locale };
+}): Promise<Metadata> => {
+  const { metadata } = await getDictionary(lang);
+  return {
+    title: metadata.service.main.campaignsInGoogleAds.title,
+    description: metadata.service.main.campaignsInGoogleAds.description,
+    keywords: metadata.service.main.campaignsInGoogleAds.keywords,
+    twitter: {
+      title: metadata.service.main.campaignsInGoogleAds.twitter.title,
+      description:
+        metadata.service.main.campaignsInGoogleAds.twitter.description,
+    },
+    openGraph: {
+      title: metadata.service.main.campaignsInGoogleAds.openGraph.title,
+      description:
+        metadata.service.main.campaignsInGoogleAds.openGraph.description,
+    },
+  };
 };
 
 const iconMapping: { [key: string]: HeroIcon } = {

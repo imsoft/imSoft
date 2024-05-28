@@ -4,31 +4,25 @@ import { Locale } from "../../../../i18n.config";
 import { getDictionary } from "@/lib/dictionary";
 import { CustomLink } from "@/components/ui/shared";
 
-export const metadata: Metadata = {
-  title: "Servicios",
-  description:
-    "Diseñamos y desarrollamos sitios web que se adaptan a tus necesidades y a las de tu audiencia, y que reflejan la esencia de tu negocio. Además, utilizamos tecnología de vanguardia para garantizar que tu sitio web sea atractivo, responsivo y fácil de usar. Si quieres que tu negocio tenga presencia en línea y alcance nuevos clientes, no dudes en contactarme y solicitar una cotización. Con mi experiencia y conocimientos en el campo del desarrollo web, estoy seguro de que podemos ayudarte a alcanzar tus objetivos y a tener éxito en el mundo digital",
-  keywords: [
-    "imSoft",
-    "Servicios",
-    "Clientes",
-    "Clientes satisfechos",
-    "Sitio web",
-    "Aplicación web",
-    "Ecommerce",
-    "SEO",
-    "Consultoria",
-  ],
-  twitter: {
-    title: "Servicios",
-    description:
-      "Diseñamos y desarrollamos sitios web que se adaptan a tus necesidades y a las de tu audiencia, y que reflejan la esencia de tu negocio. Además, utilizamos tecnología de vanguardia para garantizar que tu sitio web sea atractivo, responsivo y fácil de usar. Si quieres que tu negocio tenga presencia en línea y alcance nuevos clientes, no dudes en contactarme y solicitar una cotización. Con mi experiencia y conocimientos en el campo del desarrollo web, estoy seguro de que podemos ayudarte a alcanzar tus objetivos y a tener éxito en el mundo digital",
-  },
-  openGraph: {
-    title: "Servicios",
-    description:
-      "Diseñamos y desarrollamos sitios web que se adaptan a tus necesidades y a las de tu audiencia, y que reflejan la esencia de tu negocio. Además, utilizamos tecnología de vanguardia para garantizar que tu sitio web sea atractivo, responsivo y fácil de usar. Si quieres que tu negocio tenga presencia en línea y alcance nuevos clientes, no dudes en contactarme y solicitar una cotización. Con mi experiencia y conocimientos en el campo del desarrollo web, estoy seguro de que podemos ayudarte a alcanzar tus objetivos y a tener éxito en el mundo digital",
-  },
+export const generateMetadata = async ({
+  params: { lang },
+}: {
+  params: { lang: Locale };
+}): Promise<Metadata> => {
+  const { metadata } = await getDictionary(lang);
+  return {
+    title: metadata.service.title,
+    description: metadata.service.description,
+    keywords: metadata.service.keywords,
+    twitter: {
+      title: metadata.service.twitter.title,
+      description: metadata.service.twitter.description,
+    },
+    openGraph: {
+      title: metadata.service.openGraph.title,
+      description: metadata.service.openGraph.description,
+    },
+  };
 };
 
 const ServicesPage = async ({

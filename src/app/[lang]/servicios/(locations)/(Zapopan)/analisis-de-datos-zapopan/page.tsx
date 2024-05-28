@@ -19,27 +19,27 @@ import {
 import { Locale } from "../../../../../../../i18n.config";
 import { getDictionary } from "@/lib/dictionary";
 
-export const metadata: Metadata = {
-  title: "Análisis de Datos en Zapopan | imSoft",
-  description:
-    "Descubre patrones y obtén insights valiosos en Zapopan con nuestro servicio de análisis de datos. Ayudamos a tu negocio a tomar decisiones estratégicas basadas en datos claros y accionables.",
-  keywords: [
-    "imSoft",
-    "Análisis de datos Zapopan",
-    "Big Data Zapopan",
-    "Business Intelligence Zapopan",
-    "Análisis predictivo Zapopan",
-  ],
-  twitter: {
-    title: "Análisis de Datos",
-    description:
-      "Descubre cómo nuestro análisis de datos puede impulsar tu estrategia empresarial, optimizar operaciones y predecir tendencias futuras. Convierte datos en decisiones con imSoft.",
-  },
-  openGraph: {
-    title: "Análisis de Datos",
-    description:
-      "Transforma datos en decisiones con nuestro análisis. Optimiza tu estrategia empresarial y anticipa tendencias con imSoft.",
-  },
+export const generateMetadata = async ({
+  params: { lang },
+}: {
+  params: { lang: Locale };
+}): Promise<Metadata> => {
+  const { metadata } = await getDictionary(lang);
+  return {
+    title: metadata.service.location.zapopan.dataAnalytics.title,
+    description: metadata.service.location.zapopan.dataAnalytics.description,
+    keywords: metadata.service.location.zapopan.dataAnalytics.keywords,
+    twitter: {
+      title: metadata.service.location.zapopan.dataAnalytics.twitter.title,
+      description:
+        metadata.service.location.zapopan.dataAnalytics.twitter.description,
+    },
+    openGraph: {
+      title: metadata.service.location.zapopan.dataAnalytics.openGraph.title,
+      description:
+        metadata.service.location.zapopan.dataAnalytics.openGraph.description,
+    },
+  };
 };
 
 const iconMapping: { [key: string]: HeroIcon } = {

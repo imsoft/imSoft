@@ -17,26 +17,27 @@ import {
 import { Locale } from "../../../../../i18n.config";
 import { getDictionary } from "@/lib/dictionary";
 
-export const metadata: Metadata = {
-  title: "SEO",
-  description:
-    "Si quieres que tu negocio tenga éxito en línea, es esencial que tenga una buena presencia en los resultados de búsqueda de Google. El posicionamiento SEO no es algo que se logre de la noche a la mañana, sino que requiere de una estrategia bien planificada y de técnicas especializadas. Es aquí donde entran mis servicios de desarrollo de posicionamiento SEO. Si quieres que tu negocio alcance nuevos clientes y aumente sus ventas en línea, no dudes en contactarme y solicitar una cotización. Estoy seguro de que podemos ayudarte a alcanzar tus objetivos y a tener éxito en el mundo digital",
-  keywords: [
-    "imSoft",
-    "SEO",
-    "Posicionamiento SEO",
-    "Análisis de palabras clave",
-  ],
-  twitter: {
-    title: "SEO",
-    description:
-      "Si quieres que tu negocio tenga éxito en línea, es esencial que tenga una buena presencia en los resultados de búsqueda de Google. El posicionamiento SEO no es algo que se logre de la noche a la mañana, sino que requiere de una estrategia bien planificada y de técnicas especializadas. Es aquí donde entran mis servicios de desarrollo de posicionamiento SEO. Si quieres que tu negocio alcance nuevos clientes y aumente sus ventas en línea, no dudes en contactarme y solicitar una cotización. Estoy seguro de que podemos ayudarte a alcanzar tus objetivos y a tener éxito en el mundo digital",
-  },
-  openGraph: {
-    title: "SEO",
-    description:
-      "Si quieres que tu negocio tenga éxito en línea, es esencial que tenga una buena presencia en los resultados de búsqueda de Google. El posicionamiento SEO no es algo que se logre de la noche a la mañana, sino que requiere de una estrategia bien planificada y de técnicas especializadas. Es aquí donde entran mis servicios de desarrollo de posicionamiento SEO. Si quieres que tu negocio alcance nuevos clientes y aumente sus ventas en línea, no dudes en contactarme y solicitar una cotización. Estoy seguro de que podemos ayudarte a alcanzar tus objetivos y a tener éxito en el mundo digital",
-  },
+export const generateMetadata = async ({
+  params: { lang },
+}: {
+  params: { lang: Locale };
+}): Promise<Metadata> => {
+  const { metadata } = await getDictionary(lang);
+  return {
+    title: metadata.service.main.positioningSeo.title,
+    description: metadata.service.main.positioningSeo.description,
+    keywords: metadata.service.main.positioningSeo.keywords,
+    twitter: {
+      title: metadata.service.main.positioningSeo.twitter.title,
+      description:
+        metadata.service.main.positioningSeo.twitter.description,
+    },
+    openGraph: {
+      title: metadata.service.main.positioningSeo.openGraph.title,
+      description:
+        metadata.service.main.positioningSeo.openGraph.description,
+    },
+  };
 };
 
 const iconMapping: { [key: string]: HeroIcon } = {

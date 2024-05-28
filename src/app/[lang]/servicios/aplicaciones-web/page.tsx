@@ -19,21 +19,27 @@ import {
 import { Locale } from "../../../../../i18n.config";
 import { getDictionary } from "@/lib/dictionary";
 
-export const metadata: Metadata = {
-  title: "Aplicaciones web",
-  description:
-    "Nuestras aplicaciones web pueden ayudarte a mejorar tu presencia en línea, aumentar la interacción con tus clientes, mejorar la automatización de tus procesos de negocio, y proporcionar una experiencia de usuario mejorada. También puedes estar seguro de que tu aplicación web será escalable y adaptable para satisfacer las necesidades futuras de tu negocio.",
-  keywords: ["imSoft", "Aplicacines web"],
-  twitter: {
-    title: "Aplicaciones web",
-    description:
-      "Nuestras aplicaciones web pueden ayudarte a mejorar tu presencia en línea, aumentar la interacción con tus clientes, mejorar la automatización de tus procesos de negocio, y proporcionar una experiencia de usuario mejorada. También puedes estar seguro de que tu aplicación web será escalable y adaptable para satisfacer las necesidades futuras de tu negocio.",
-  },
-  openGraph: {
-    title: "Aplicaciones web",
-    description:
-      "Nuestras aplicaciones web pueden ayudarte a mejorar tu presencia en línea, aumentar la interacción con tus clientes, mejorar la automatización de tus procesos de negocio, y proporcionar una experiencia de usuario mejorada. También puedes estar seguro de que tu aplicación web será escalable y adaptable para satisfacer las necesidades futuras de tu negocio.",
-  },
+export const generateMetadata = async ({
+  params: { lang },
+}: {
+  params: { lang: Locale };
+}): Promise<Metadata> => {
+  const { metadata } = await getDictionary(lang);
+  return {
+    title: metadata.service.main.webApplications.title,
+    description: metadata.service.main.webApplications.description,
+    keywords: metadata.service.main.webApplications.keywords,
+    twitter: {
+      title: metadata.service.main.webApplications.twitter.title,
+      description:
+        metadata.service.main.webApplications.twitter.description,
+    },
+    openGraph: {
+      title: metadata.service.main.webApplications.openGraph.title,
+      description:
+        metadata.service.main.webApplications.openGraph.description,
+    },
+  };
 };
 
 const iconMapping: { [key: string]: HeroIcon } = {

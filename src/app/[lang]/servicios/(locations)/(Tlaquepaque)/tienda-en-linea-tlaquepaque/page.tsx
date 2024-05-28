@@ -19,26 +19,27 @@ import {
 import { Locale } from "../../../../../../../i18n.config";
 import { getDictionary } from "@/lib/dictionary";
 
-export const metadata: Metadata = {
-  title: "Tienda en Línea en Tlaquepaque | imSoft",
-  description:
-    "Crea y expande tu tienda en línea en Tlaquepaque con imSoft. Ofrecemos soluciones personalizadas para llevar tu negocio al éxito digital.",
-  keywords: [
-    "imSoft",
-    "Tienda en línea",
-    "Tienda en línea Tlaquepaque",
-    "Comercio Electrónico Tlaquepaque",
-  ],
-  twitter: {
-    title: "Tienda en Línea en Tlaquepaque - imSoft",
-    description:
-      "Descubre cómo imSoft puede transformar tu negocio en Tlaquepaque con una tienda en línea personalizada. Estamos listos para llevar tu negocio al siguiente nivel en el mundo del comercio electrónico.",
-  },
-  openGraph: {
-    title: "Tienda en Línea Personalizada en Tlaquepaque | imSoft",
-    description:
-      "En imSoft, somos expertos en crear tiendas en línea que se destacan en Tlaquepaque. Contacta para una solución a medida y lleva tu negocio a nuevos horizontes digitales.",
-  },
+export const generateMetadata = async ({
+  params: { lang },
+}: {
+  params: { lang: Locale };
+}): Promise<Metadata> => {
+  const { metadata } = await getDictionary(lang);
+  return {
+    title: metadata.service.location.tlaquepaque.ecommerce.title,
+    description: metadata.service.location.tlaquepaque.ecommerce.description,
+    keywords: metadata.service.location.tlaquepaque.ecommerce.keywords,
+    twitter: {
+      title: metadata.service.location.tlaquepaque.ecommerce.twitter.title,
+      description:
+        metadata.service.location.tlaquepaque.ecommerce.twitter.description,
+    },
+    openGraph: {
+      title: metadata.service.location.tlaquepaque.ecommerce.openGraph.title,
+      description:
+        metadata.service.location.tlaquepaque.ecommerce.openGraph.description,
+    },
+  };
 };
 
 const iconMapping: { [key: string]: HeroIcon } = {

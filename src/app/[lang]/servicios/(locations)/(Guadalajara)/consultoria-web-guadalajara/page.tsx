@@ -19,26 +19,27 @@ import {
 import { Locale } from "../../../../../../../i18n.config";
 import { getDictionary } from "@/lib/dictionary";
 
-export const metadata: Metadata = {
-  title: "Consultoría Web en Guadalajara | imSoft",
-  description:
-    "Expertos en consultoría web en Guadalajara, ofreciendo soluciones personalizadas para el desarrollo de sitios y aplicaciones web. Nuestro equipo experto está listo para elevar la presencia online de tu negocio.",
-  keywords: [
-    "imSoft",
-    "Consultoría web",
-    "Consultoría web Guadalajara",
-    "Desarrollo web Guadalajara",
-  ],
-  twitter: {
-    title: "Consultoría Web en Guadalajara por imSoft",
-    description:
-      "Descubre cómo nuestra consultoría web en Guadalajara puede transformar tu negocio, optimizando tu sitio y aplicaciones web para el éxito.",
-  },
-  openGraph: {
-    title: "Servicios de Consultoría Web en Guadalajara | imSoft",
-    description:
-      "En imSoft, brindamos consultoría web especializada en Guadalajara, asegurando que tu sitio web y aplicaciones estén alineados con tus objetivos empresariales.",
-  },
+export const generateMetadata = async ({
+  params: { lang },
+}: {
+  params: { lang: Locale };
+}): Promise<Metadata> => {
+  const { metadata } = await getDictionary(lang);
+  return {
+    title: metadata.service.location.guadalajara.webConsulting.title,
+    description: metadata.service.location.guadalajara.webConsulting.description,
+    keywords: metadata.service.location.guadalajara.webConsulting.keywords,
+    twitter: {
+      title: metadata.service.location.guadalajara.webConsulting.twitter.title,
+      description:
+        metadata.service.location.guadalajara.webConsulting.twitter.description,
+    },
+    openGraph: {
+      title: metadata.service.location.guadalajara.webConsulting.openGraph.title,
+      description:
+        metadata.service.location.guadalajara.webConsulting.openGraph.description,
+    },
+  };
 };
 
 const iconMapping: { [key: string]: HeroIcon } = {

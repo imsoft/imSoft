@@ -19,26 +19,27 @@ import {
 import { Locale } from "../../../../../../../i18n.config";
 import { getDictionary } from "@/lib/dictionary";
 
-export const metadata: Metadata = {
-  title: "Desarrollo de Sitio Web en Zapopan | imSoft",
-  description:
-    "En imSoft, creamos sitios web atractivos y funcionales para negocios en Zapopan. Contáctanos para darle a tu negocio una sólida presencia en línea.",
-  keywords: [
-    "imSoft",
-    "Sitio web",
-    "Desarrollo web Zapopan",
-    "Diseño web Zapopan",
-  ],
-  twitter: {
-    title: "Sitio Web en Zapopan | imSoft",
-    description:
-      "Lleva tu negocio en Zapopan al mundo digital con un sitio web atractivo y funcional. En imSoft, estamos listos para ayudarte a alcanzar tus objetivos digitales.",
-  },
-  openGraph: {
-    title: "Desarrollo de Sitio Web en Zapopan | imSoft",
-    description:
-      "¿Necesitas un sitio web para tu negocio en Zapopan? En imSoft, diseñamos y desarrollamos soluciones web que se adaptan a tus necesidades.",
-  },
+export const generateMetadata = async ({
+  params: { lang },
+}: {
+  params: { lang: Locale };
+}): Promise<Metadata> => {
+  const { metadata } = await getDictionary(lang);
+  return {
+    title: metadata.service.location.zapopan.website.title,
+    description: metadata.service.location.zapopan.website.description,
+    keywords: metadata.service.location.zapopan.website.keywords,
+    twitter: {
+      title: metadata.service.location.zapopan.website.twitter.title,
+      description:
+        metadata.service.location.zapopan.website.twitter.description,
+    },
+    openGraph: {
+      title: metadata.service.location.zapopan.website.openGraph.title,
+      description:
+        metadata.service.location.zapopan.website.openGraph.description,
+    },
+  };
 };
 
 const iconMapping: { [key: string]: HeroIcon } = {

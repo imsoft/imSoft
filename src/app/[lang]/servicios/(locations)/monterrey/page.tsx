@@ -4,28 +4,27 @@ import { Locale } from "../../../../../../i18n.config";
 import { getDictionary } from "@/lib/dictionary";
 import { CustomLink } from "@/components/ui/shared";
 
-export const metadata: Metadata = {
-  title: "Servicios de Desarrollo Web en Monterrey | imSoft",
-  description: "En imSoft ofrecemos servicios de diseño y desarrollo web personalizados en Monterrey. Creamos sitios web responsivos, atractivos y optimizados para SEO, asegurando la mejor presencia online para tu negocio. Contáctanos para transformar tus ideas en una realidad digital exitosa.",
-  keywords: [
-    "Desarrollo Web Monterrey",
-    "Diseño Web en Monterrey",
-    "Servicios Web Monterrey",
-    "Creación de Sitios Web Monterrey",
-    "Ecommerce Monterrey",
-    "SEO Monterrey",
-    "Consultoría Web Monterrey",
-    "Agencia Web Monterrey",
-    "Desarrollo de Aplicaciones Monterrey",
-  ],
-  twitter: {
-    title: "Desarrollo y Diseño Web en Monterrey | imSoft",
-    description: "Transforma tu negocio con nuestros servicios de desarrollo y diseño web en Monterrey. Sitios web personalizados, optimizados para SEO y listos para competir en el mercado digital. ¡Contáctanos y empieza tu proyecto hoy!",
-  },
-  openGraph: {
-    title: "Servicios de Desarrollo Web en Monterrey | imSoft",
-    description: "Potencia tu negocio en línea con soluciones web a medida en Monterrey. En imSoft, ofrecemos diseño, desarrollo, SEO y más para asegurar el éxito de tu proyecto en internet. Contáctanos para saber más.",
-  },
+export const generateMetadata = async ({
+  params: { lang },
+}: {
+  params: { lang: Locale };
+}): Promise<Metadata> => {
+  const { metadata } = await getDictionary(lang);
+  return {
+    title: metadata.service.location.monterrey.main.title,
+    description: metadata.service.location.monterrey.main.description,
+    keywords: metadata.service.location.monterrey.main.keywords,
+    twitter: {
+      title: metadata.service.location.monterrey.main.twitter.title,
+      description:
+        metadata.service.location.monterrey.main.twitter.description,
+    },
+    openGraph: {
+      title: metadata.service.location.monterrey.main.openGraph.title,
+      description:
+        metadata.service.location.monterrey.main.openGraph.description,
+    },
+  };
 };
 
 const ServicesPage = async({

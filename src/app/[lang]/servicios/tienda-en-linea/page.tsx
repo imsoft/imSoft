@@ -17,21 +17,27 @@ import {
 import { Locale } from "../../../../../i18n.config";
 import { getDictionary } from "@/lib/dictionary";
 
-export const metadata: Metadata = {
-  title: "Tienda en línea",
-  description:
-    "Si estás buscando expandir tu negocio y llevar tus productos o servicios a una audiencia más amplia, una tienda en línea es una excelente opción. Si estás listo para llevar tu negocio al siguiente nivel, no dudes en contactarme y solicitar una cotización. Estoy seguro de que podemos ayudarte a alcanzar tus objetivos y a tener éxito en el mundo de las tiendas en línea",
-  keywords: ["imSoft", "Tienda en línea"],
-  twitter: {
-    title: "Tienda en línea",
-    description:
-      "Si estás buscando expandir tu negocio y llevar tus productos o servicios a una audiencia más amplia, una tienda en línea es una excelente opción. Si estás listo para llevar tu negocio al siguiente nivel, no dudes en contactarme y solicitar una cotización. Estoy seguro de que podemos ayudarte a alcanzar tus objetivos y a tener éxito en el mundo de las Tienda en línea",
-  },
-  openGraph: {
-    title: "Tienda en línea",
-    description:
-      "Si estás buscando expandir tu negocio y llevar tus productos o servicios a una audiencia más amplia, una tienda en línea es una excelente opción. Si estás listo para llevar tu negocio al siguiente nivel, no dudes en contactarme y solicitar una cotización. Estoy seguro de que podemos ayudarte a alcanzar tus objetivos y a tener éxito en el mundo de las Tienda en línea",
-  },
+export const generateMetadata = async ({
+  params: { lang },
+}: {
+  params: { lang: Locale };
+}): Promise<Metadata> => {
+  const { metadata } = await getDictionary(lang);
+  return {
+    title: metadata.service.main.ecommerce.title,
+    description: metadata.service.main.ecommerce.description,
+    keywords: metadata.service.main.ecommerce.keywords,
+    twitter: {
+      title: metadata.service.main.ecommerce.twitter.title,
+      description:
+        metadata.service.main.ecommerce.twitter.description,
+    },
+    openGraph: {
+      title: metadata.service.main.ecommerce.openGraph.title,
+      description:
+        metadata.service.main.ecommerce.openGraph.description,
+    },
+  };
 };
 
 const iconMapping: { [key: string]: HeroIcon } = {

@@ -4,31 +4,27 @@ import { Locale } from "../../../../../../i18n.config";
 import { getDictionary } from "@/lib/dictionary";
 import { CustomLink } from "@/components/ui/shared";
 
-export const metadata: Metadata = {
-  title: "Servicios de Desarrollo Web en Guadalajara | imSoft",
-  description:
-    "En imSoft ofrecemos servicios de diseño y desarrollo web personalizados en Guadalajara. Creamos sitios web responsivos, atractivos y optimizados para SEO, asegurando la mejor presencia online para tu negocio. Contáctanos para transformar tus ideas en una realidad digital exitosa.",
-  keywords: [
-    "Desarrollo Web Guadalajara",
-    "Diseño Web en Guadalajara",
-    "Servicios Web Guadalajara",
-    "Creación de Sitios Web Guadalajara",
-    "Ecommerce Guadalajara",
-    "SEO Guadalajara",
-    "Consultoría Web Guadalajara",
-    "Agencia Web Guadalajara",
-    "Desarrollo de Aplicaciones Guadalajara",
-  ],
-  twitter: {
-    title: "Desarrollo y Diseño Web en Guadalajara | imSoft",
-    description:
-      "Transforma tu negocio con nuestros servicios de desarrollo y diseño web en Guadalajara. Sitios web personalizados, optimizados para SEO y listos para competir en el mercado digital. ¡Contáctanos y empieza tu proyecto hoy!",
-  },
-  openGraph: {
-    title: "Servicios de Desarrollo Web en Guadalajara | imSoft",
-    description:
-      "Potencia tu negocio en línea con soluciones web a medida en Guadalajara. En imSoft, ofrecemos diseño, desarrollo, SEO y más para asegurar el éxito de tu proyecto en internet. Contáctanos para saber más.",
-  },
+export const generateMetadata = async ({
+  params: { lang },
+}: {
+  params: { lang: Locale };
+}): Promise<Metadata> => {
+  const { metadata } = await getDictionary(lang);
+  return {
+    title: metadata.service.location.guadalajara.main.title,
+    description: metadata.service.location.guadalajara.main.description,
+    keywords: metadata.service.location.guadalajara.main.keywords,
+    twitter: {
+      title: metadata.service.location.guadalajara.main.twitter.title,
+      description:
+        metadata.service.location.guadalajara.main.twitter.description,
+    },
+    openGraph: {
+      title: metadata.service.location.guadalajara.main.openGraph.title,
+      description:
+        metadata.service.location.guadalajara.main.openGraph.description,
+    },
+  };
 };
 
 const ServicesPage = async ({

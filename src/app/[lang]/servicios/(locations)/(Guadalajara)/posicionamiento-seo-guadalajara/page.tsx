@@ -19,27 +19,27 @@ import {
 import { Locale } from "../../../../../../../i18n.config";
 import { getDictionary } from "@/lib/dictionary";
 
-export const metadata: Metadata = {
-  title: "Servicios de SEO en Guadalajara | imSoft",
-  description:
-    "Optimiza tu presencia online en Guadalajara con nuestros servicios de SEO. Estrategias personalizadas para impulsar tu negocio en los resultados de búsqueda de Google.",
-  keywords: [
-    "imSoft",
-    "SEO Guadalajara",
-    "Posicionamiento SEO Guadalajara",
-    "Servicios SEO Guadalajara",
-    "Análisis de palabras clave",
-  ],
-  twitter: {
-    title: "SEO en Guadalajara | imSoft",
-    description:
-      "Aumenta la visibilidad de tu negocio en Guadalajara con nuestro SEO especializado. Estrategias y técnicas para dominar los resultados de Google.",
-  },
-  openGraph: {
-    title: "Optimización SEO en Guadalajara | imSoft",
-    description:
-      "Con nuestros servicios de SEO en Guadalajara, tu negocio alcanzará nuevas alturas en el mundo digital. Contáctanos para mejorar tu ranking en Google.",
-  },
+export const generateMetadata = async ({
+  params: { lang },
+}: {
+  params: { lang: Locale };
+}): Promise<Metadata> => {
+  const { metadata } = await getDictionary(lang);
+  return {
+    title: metadata.service.location.guadalajara.positioningSeo.title,
+    description: metadata.service.location.guadalajara.positioningSeo.description,
+    keywords: metadata.service.location.guadalajara.positioningSeo.keywords,
+    twitter: {
+      title: metadata.service.location.guadalajara.positioningSeo.twitter.title,
+      description:
+        metadata.service.location.guadalajara.positioningSeo.twitter.description,
+    },
+    openGraph: {
+      title: metadata.service.location.guadalajara.positioningSeo.openGraph.title,
+      description:
+        metadata.service.location.guadalajara.positioningSeo.openGraph.description,
+    },
+  };
 };
 
 const iconMapping: { [key: string]: HeroIcon } = {

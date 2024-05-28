@@ -19,27 +19,27 @@ import {
 import { Locale } from "../../../../../../../i18n.config";
 import { getDictionary } from "@/lib/dictionary";
 
-export const metadata: Metadata = {
-  title: "Gestión de Campañas en Google Ads en Tlaquepaque | imSoft",
-  description:
-    "Optimiza tu inversión publicitaria en Tlaquepaque con nuestras campañas personalizadas de Google Ads. Crea y gestiona campañas efectivas que mejoran la visibilidad local y atraen tráfico de calidad.",
-  keywords: [
-    "imSoft",
-    "Google Ads Tlaquepaque",
-    "Campañas PPC Tlaquepaque",
-    "Publicidad en línea Tlaquepaque",
-    "SEM Tlaquepaque",
-  ],
-  twitter: {
-    title: "Gestión de Campañas en Google Ads",
-    description:
-      "Maximiza el ROI de tu publicidad en línea con campañas de Google Ads diseñadas para el éxito. Atrae más clientes y aumenta tus conversiones con imSoft.",
-  },
-  openGraph: {
-    title: "Gestión de Campañas en Google Ads",
-    description:
-      "Alcanza tus objetivos de marketing con campañas de Google Ads optimizadas para rendimiento. Visibilidad mejorada, tráfico de calidad y más conversiones con imSoft.",
-  },
+export const generateMetadata = async ({
+  params: { lang },
+}: {
+  params: { lang: Locale };
+}): Promise<Metadata> => {
+  const { metadata } = await getDictionary(lang);
+  return {
+    title: metadata.service.location.tlaquepaque.campaignsInGoogleAds.title,
+    description: metadata.service.location.tlaquepaque.campaignsInGoogleAds.description,
+    keywords: metadata.service.location.tlaquepaque.campaignsInGoogleAds.keywords,
+    twitter: {
+      title: metadata.service.location.tlaquepaque.campaignsInGoogleAds.twitter.title,
+      description:
+        metadata.service.location.tlaquepaque.campaignsInGoogleAds.twitter.description,
+    },
+    openGraph: {
+      title: metadata.service.location.tlaquepaque.campaignsInGoogleAds.openGraph.title,
+      description:
+        metadata.service.location.tlaquepaque.campaignsInGoogleAds.openGraph.description,
+    },
+  };
 };
 
 const iconMapping: { [key: string]: HeroIcon } = {

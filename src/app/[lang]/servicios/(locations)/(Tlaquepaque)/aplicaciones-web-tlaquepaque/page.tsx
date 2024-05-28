@@ -19,26 +19,27 @@ import {
 import { Locale } from "../../../../../../../i18n.config";
 import { getDictionary } from "@/lib/dictionary";
 
-export const metadata: Metadata = {
-  title: "Desarrollo de Aplicaciones Web en Tlaquepaque | imSoft",
-  description:
-    "En imSoft, creamos aplicaciones web personalizadas en Tlaquepaque para potenciar tu negocio. Mejora tu presencia online, interactúa eficazmente con tus clientes y automatiza tus procesos de negocio con nuestras soluciones web. Diseñamos aplicaciones escalables y adaptables para el futuro de tu empresa en Tlaquepaque.",
-  keywords: [
-    "imSoft",
-    "Aplicaciones web Tlaquepaque",
-    "Desarrollo web Tlaquepaque",
-    "Soluciones web personalizadas",
-  ],
-  twitter: {
-    title: "Desarrollo de Aplicaciones Web en Tlaquepaque por imSoft",
-    description:
-      "Descubre cómo imSoft puede transformar tu negocio en Tlaquepaque con aplicaciones web personalizadas. Aumenta tu presencia en línea y mejora la interacción con tus clientes con nuestras soluciones innovadoras.",
-  },
-  openGraph: {
-    title: "Aplicaciones Web Personalizadas en Tlaquepaque | imSoft",
-    description:
-      "Con imSoft, lleva tu negocio en Tlaquepaque al siguiente nivel con aplicaciones web adaptadas a tus necesidades. Experiencia de usuario mejorada, escalabilidad y adaptabilidad para el futuro de tu empresa.",
-  },
+export const generateMetadata = async ({
+  params: { lang },
+}: {
+  params: { lang: Locale };
+}): Promise<Metadata> => {
+  const { metadata } = await getDictionary(lang);
+  return {
+    title: metadata.service.location.tlaquepaque.webApplications.title,
+    description: metadata.service.location.tlaquepaque.webApplications.description,
+    keywords: metadata.service.location.tlaquepaque.webApplications.keywords,
+    twitter: {
+      title: metadata.service.location.tlaquepaque.webApplications.twitter.title,
+      description:
+        metadata.service.location.tlaquepaque.webApplications.twitter.description,
+    },
+    openGraph: {
+      title: metadata.service.location.tlaquepaque.webApplications.openGraph.title,
+      description:
+        metadata.service.location.tlaquepaque.webApplications.openGraph.description,
+    },
+  };
 };
 
 const iconMapping: { [key: string]: HeroIcon } = {

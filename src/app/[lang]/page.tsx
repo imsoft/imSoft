@@ -10,31 +10,25 @@ import {
 import { Locale } from "../../../i18n.config";
 import { getDictionary } from "@/lib/dictionary";
 
-export const metadata: Metadata = {
-  title: "imSoft",
-  description:
-    "¿Necesitas contactarnos para resolver una duda, solicitar información o contratar nuestros servicios? ¡No dudes en hacerlo! En nuestro sitio web encontrarás un formulario de contacto diseñado específicamente para que puedas comunicarte con nosotros de manera sencilla y eficaz.",
-  keywords: [
-    "imSoft",
-    "Portafolio de trabajo",
-    "Clientes",
-    "Clientes satisfechos",
-    "Sitio web",
-    "Aplicación web",
-    "Ecommerce",
-    "SEO",
-    "Consultoria",
-  ],
-  twitter: {
-    title: "imSoft",
-    description:
-      "¿Necesitas contactarnos para resolver una duda, solicitar información o contratar nuestros servicios? ¡No dudes en hacerlo! En nuestro sitio web encontrarás un formulario de contacto diseñado específicamente para que puedas comunicarte con nosotros de manera sencilla y eficaz.",
-  },
-  openGraph: {
-    title: "imSoft",
-    description:
-      "¿Necesitas contactarnos para resolver una duda, solicitar información o contratar nuestros servicios? ¡No dudes en hacerlo! En nuestro sitio web encontrarás un formulario de contacto diseñado específicamente para que puedas comunicarte con nosotros de manera sencilla y eficaz.",
-  },
+export const generateMetadata = async ({
+  params: { lang },
+}: {
+  params: { lang: Locale };
+}): Promise<Metadata> => {
+  const { metadata } = await getDictionary(lang);
+  return {
+    title: metadata.home.title,
+    description: metadata.home.description,
+    keywords: metadata.home.keywords,
+    twitter: {
+      title: metadata.home.twitter.title,
+      description: metadata.home.twitter.description,
+    },
+    openGraph: {
+      title: metadata.home.openGraph.title,
+      description: metadata.home.openGraph.description,
+    },
+  };
 };
 
 const IndexPage = async ({

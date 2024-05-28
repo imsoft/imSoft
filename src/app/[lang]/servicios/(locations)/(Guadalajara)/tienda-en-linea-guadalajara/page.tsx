@@ -5,9 +5,7 @@ import {
   CallToActionSection,
   PriceSection,
 } from "@/components/ui/services";
-import type {
-  HeroIcon,
-} from "@/interfaces";
+import type { HeroIcon } from "@/interfaces";
 import {
   UserGroupIcon,
   ClockIcon,
@@ -19,26 +17,27 @@ import {
 import { Locale } from "../../../../../../../i18n.config";
 import { getDictionary } from "@/lib/dictionary";
 
-export const metadata: Metadata = {
-  title: "Tienda en Línea en Guadalajara | imSoft",
-  description:
-    "Crea y expande tu tienda en línea en Guadalajara con imSoft. Ofrecemos soluciones personalizadas para llevar tu negocio al éxito digital.",
-  keywords: [
-    "imSoft",
-    "Tienda en línea",
-    "Tienda en línea Guadalajara",
-    "Comercio Electrónico Guadalajara",
-  ],
-  twitter: {
-    title: "Tienda en Línea en Guadalajara - imSoft",
-    description:
-      "Descubre cómo imSoft puede transformar tu negocio en Guadalajara con una tienda en línea personalizada. Estamos listos para llevar tu negocio al siguiente nivel en el mundo del comercio electrónico.",
-  },
-  openGraph: {
-    title: "Tienda en Línea Personalizada en Guadalajara | imSoft",
-    description:
-      "En imSoft, somos expertos en crear tiendas en línea que se destacan en Guadalajara. Contacta para una solución a medida y lleva tu negocio a nuevos horizontes digitales.",
-  },
+export const generateMetadata = async ({
+  params: { lang },
+}: {
+  params: { lang: Locale };
+}): Promise<Metadata> => {
+  const { metadata } = await getDictionary(lang);
+  return {
+    title: metadata.service.location.guadalajara.ecommerce.title,
+    description: metadata.service.location.guadalajara.ecommerce.description,
+    keywords: metadata.service.location.guadalajara.ecommerce.keywords,
+    twitter: {
+      title: metadata.service.location.guadalajara.ecommerce.twitter.title,
+      description:
+        metadata.service.location.guadalajara.ecommerce.twitter.description,
+    },
+    openGraph: {
+      title: metadata.service.location.guadalajara.ecommerce.openGraph.title,
+      description:
+        metadata.service.location.guadalajara.ecommerce.openGraph.description,
+    },
+  };
 };
 
 const iconMapping: { [key: string]: HeroIcon } = {

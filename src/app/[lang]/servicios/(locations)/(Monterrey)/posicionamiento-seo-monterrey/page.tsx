@@ -19,27 +19,27 @@ import {
 import { Locale } from "../../../../../../../i18n.config";
 import { getDictionary } from "@/lib/dictionary";
 
-export const metadata: Metadata = {
-  title: "Servicios de SEO en Monterrey | imSoft",
-  description:
-    "Optimiza tu presencia online en Monterrey con nuestros servicios de SEO. Estrategias personalizadas para impulsar tu negocio en los resultados de búsqueda de Google.",
-  keywords: [
-    "imSoft",
-    "SEO Monterrey",
-    "Posicionamiento SEO Monterrey",
-    "Servicios SEO Monterrey",
-    "Análisis de palabras clave",
-  ],
-  twitter: {
-    title: "SEO en Monterrey | imSoft",
-    description:
-      "Aumenta la visibilidad de tu negocio en Monterrey con nuestro SEO especializado. Estrategias y técnicas para dominar los resultados de Google.",
-  },
-  openGraph: {
-    title: "Optimización SEO en Monterrey | imSoft",
-    description:
-      "Con nuestros servicios de SEO en Monterrey, tu negocio alcanzará nuevas alturas en el mundo digital. Contáctanos para mejorar tu ranking en Google.",
-  },
+export const generateMetadata = async ({
+  params: { lang },
+}: {
+  params: { lang: Locale };
+}): Promise<Metadata> => {
+  const { metadata } = await getDictionary(lang);
+  return {
+    title: metadata.service.location.monterrey.positioningSeo.title,
+    description: metadata.service.location.monterrey.positioningSeo.description,
+    keywords: metadata.service.location.monterrey.positioningSeo.keywords,
+    twitter: {
+      title: metadata.service.location.monterrey.positioningSeo.twitter.title,
+      description:
+        metadata.service.location.monterrey.positioningSeo.twitter.description,
+    },
+    openGraph: {
+      title: metadata.service.location.monterrey.positioningSeo.openGraph.title,
+      description:
+        metadata.service.location.monterrey.positioningSeo.openGraph.description,
+    },
+  };
 };
 
 const iconMapping: { [key: string]: HeroIcon } = {

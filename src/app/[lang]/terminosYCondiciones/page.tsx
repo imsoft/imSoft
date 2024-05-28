@@ -2,18 +2,25 @@ import { Metadata } from "next";
 import { Locale } from "../../../../i18n.config";
 import { getDictionary } from "@/lib/dictionary";
 
-export const metadata: Metadata = {
-  title: "Términos y Condiciones",
-  description: "Términos y Condiciones, imSoft",
-  keywords: ["imSoft", "Términos y Condiciones"],
-  twitter: {
-    title: "Términos y Condiciones",
-    description: "Términos y Condiciones, imSoft",
-  },
-  openGraph: {
-    title: "Términos y Condiciones",
-    description: "Términos y Condiciones, imSoft",
-  },
+export const generateMetadata = async ({
+  params: { lang },
+}: {
+  params: { lang: Locale };
+}): Promise<Metadata> => {
+  const { metadata } = await getDictionary(lang);
+  return {
+    title: metadata.termsAndConditions.title,
+    description: metadata.termsAndConditions.description,
+    keywords: metadata.termsAndConditions.keywords,
+    twitter: {
+      title: metadata.termsAndConditions.twitter.title,
+      description: metadata.termsAndConditions.twitter.description,
+    },
+    openGraph: {
+      title: metadata.termsAndConditions.openGraph.title,
+      description: metadata.termsAndConditions.openGraph.description,
+    },
+  };
 };
 
 const TermsAndConditionsPage = async ({

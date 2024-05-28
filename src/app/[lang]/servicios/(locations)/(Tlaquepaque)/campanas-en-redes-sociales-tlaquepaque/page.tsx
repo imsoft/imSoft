@@ -19,26 +19,27 @@ import {
 import { Locale } from "../../../../../../../i18n.config";
 import { getDictionary } from "@/lib/dictionary";
 
-export const metadata: Metadata = {
-  title: "Gestión de Campañas de Redes Sociales en Tlaquepaque | imSoft",
-  description:
-    "Maximiza tu impacto en redes sociales en Tlaquepaque con nuestras campañas personalizadas. Diseñamos estrategias para aumentar la visibilidad de tu marca y fomentar la interacción local.",
-  keywords: [
-    "imSoft",
-    "Campañas de Redes Sociales Tlaquepaque",
-    "Marketing Digital Tlaquepaque",
-    "Engagement Social Tlaquepaque",
-  ],
-  twitter: {
-    title: "Gestión de Campañas de Redes Sociales",
-    description:
-      "Impulsa tu presencia en línea con estrategias de redes sociales que capturan y retienen la atención de tu audiencia. Con imSoft, transforma tus redes en canales de crecimiento.",
-  },
-  openGraph: {
-    title: "Gestión de Campañas de Redes Sociales",
-    description:
-      "Eleva tu estrategia de marketing con campañas de redes sociales que conectan, convierten y retienen. Descubre el poder de una comunicación efectiva con imSoft.",
-  },
+export const generateMetadata = async ({
+  params: { lang },
+}: {
+  params: { lang: Locale };
+}): Promise<Metadata> => {
+  const { metadata } = await getDictionary(lang);
+  return {
+    title: metadata.service.location.tlaquepaque.campaignsOnSocialNetworks.title,
+    description: metadata.service.location.tlaquepaque.campaignsOnSocialNetworks.description,
+    keywords: metadata.service.location.tlaquepaque.campaignsOnSocialNetworks.keywords,
+    twitter: {
+      title: metadata.service.location.tlaquepaque.campaignsOnSocialNetworks.twitter.title,
+      description:
+        metadata.service.location.tlaquepaque.campaignsOnSocialNetworks.twitter.description,
+    },
+    openGraph: {
+      title: metadata.service.location.tlaquepaque.campaignsOnSocialNetworks.openGraph.title,
+      description:
+        metadata.service.location.tlaquepaque.campaignsOnSocialNetworks.openGraph.description,
+    },
+  };
 };
 
 const iconMapping: { [key: string]: HeroIcon } = {

@@ -19,21 +19,27 @@ import {
 import { Locale } from "../../../../../i18n.config";
 import { getDictionary } from "@/lib/dictionary";
 
-export const metadata: Metadata = {
-  title: "Desarrollo de Aplicaciones Móviles",
-  description:
-    "Especialistas en el desarrollo de aplicaciones móviles a medida, diseñadas para impulsar la engagement de los usuarios, optimizar la experiencia móvil y contribuir al crecimiento de tu negocio. Nuestras soluciones móviles son escalables, seguras y personalizadas para satisfacer tanto las demandas actuales como futuras de tu empresa.",
-  keywords: ["imSoft", "Aplicaciones móviles", "Desarrollo móvil", "Apps"],
-  twitter: {
-    title: "Desarrollo de Aplicaciones Móviles",
-    description:
-      "Impulsa tu negocio con aplicaciones móviles a medida. Mejora la experiencia de tus usuarios y abre nuevas vías de interacción y crecimiento con imSoft.",
-  },
-  openGraph: {
-    title: "Desarrollo de Aplicaciones Móviles",
-    description:
-      "Transforma tu estrategia digital con nuestras soluciones móviles personalizadas. Escalabilidad, seguridad y diseño centrado en el usuario con imSoft.",
-  },
+export const generateMetadata = async ({
+  params: { lang },
+}: {
+  params: { lang: Locale };
+}): Promise<Metadata> => {
+  const { metadata } = await getDictionary(lang);
+  return {
+    title: metadata.service.main.mobileApps.title,
+    description: metadata.service.main.mobileApps.description,
+    keywords: metadata.service.main.mobileApps.keywords,
+    twitter: {
+      title: metadata.service.main.mobileApps.twitter.title,
+      description:
+        metadata.service.main.mobileApps.twitter.description,
+    },
+    openGraph: {
+      title: metadata.service.main.mobileApps.openGraph.title,
+      description:
+        metadata.service.main.mobileApps.openGraph.description,
+    },
+  };
 };
 
 const iconMapping: { [key: string]: HeroIcon } = {

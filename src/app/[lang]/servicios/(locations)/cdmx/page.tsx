@@ -4,31 +4,27 @@ import { Locale } from "../../../../../../i18n.config";
 import { getDictionary } from "@/lib/dictionary";
 import { CustomLink } from "@/components/ui/shared";
 
-export const metadata: Metadata = {
-  title: "Servicios de Desarrollo Web en CDMX | imSoft",
-  description:
-    "En imSoft ofrecemos servicios de diseño y desarrollo web personalizados en CDMX. Creamos sitios web responsivos, atractivos y optimizados para SEO, asegurando la mejor presencia online para tu negocio. Contáctanos para transformar tus ideas en una realidad digital exitosa.",
-  keywords: [
-    "Desarrollo Web CDMX",
-    "Diseño Web en CDMX",
-    "Servicios Web CDMX",
-    "Creación de Sitios Web CDMX",
-    "Ecommerce CDMX",
-    "SEO CDMX",
-    "Consultoría Web CDMX",
-    "Agencia Web CDMX",
-    "Desarrollo de Aplicaciones CDMX",
-  ],
-  twitter: {
-    title: "Desarrollo y Diseño Web en CDMX | imSoft",
-    description:
-      "Transforma tu negocio con nuestros servicios de desarrollo y diseño web en CDMX. Sitios web personalizados, optimizados para SEO y listos para competir en el mercado digital. ¡Contáctanos y empieza tu proyecto hoy!",
-  },
-  openGraph: {
-    title: "Servicios de Desarrollo Web en CDMX | imSoft",
-    description:
-      "Potencia tu negocio en línea con soluciones web a medida en CDMX. En imSoft, ofrecemos diseño, desarrollo, SEO y más para asegurar el éxito de tu proyecto en internet. Contáctanos para saber más.",
-  },
+export const generateMetadata = async ({
+  params: { lang },
+}: {
+  params: { lang: Locale };
+}): Promise<Metadata> => {
+  const { metadata } = await getDictionary(lang);
+  return {
+    title: metadata.service.location.cdmx.main.title,
+    description: metadata.service.location.cdmx.main.description,
+    keywords: metadata.service.location.cdmx.main.keywords,
+    twitter: {
+      title: metadata.service.location.cdmx.main.twitter.title,
+      description:
+        metadata.service.location.cdmx.main.twitter.description,
+    },
+    openGraph: {
+      title: metadata.service.location.cdmx.main.openGraph.title,
+      description:
+        metadata.service.location.cdmx.main.openGraph.description,
+    },
+  };
 };
 
 const ServicesPage = async ({

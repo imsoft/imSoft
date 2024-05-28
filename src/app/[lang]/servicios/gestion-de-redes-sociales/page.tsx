@@ -17,26 +17,27 @@ import { Locale } from "../../../../../i18n.config";
 import type { HeroIcon } from "@/interfaces";
 import { getDictionary } from "@/lib/dictionary";
 
-export const metadata: Metadata = {
-  title: "Gestión Profesional de Redes Sociales",
-  description:
-    "Nuestro servicio integral de gestión de redes sociales está diseñado para elevar tu presencia en línea, fortalecer la conexión con tu audiencia y potenciar el alcance de tu marca. Administramos tus perfiles sociales con contenido dinámico, interacciones significativas y estrategias de crecimiento adaptadas a las tendencias digitales actuales, asegurando que tu marca destaque en el ruidoso mundo de las redes sociales.",
-  keywords: [
-    "imSoft",
-    "Gestión de Redes Sociales",
-    "Marketing Digital",
-    "Engagement Social",
-  ],
-  twitter: {
-    title: "Gestión Profesional de Redes Sociales",
-    description:
-      "Eleva tu marca en redes sociales con nuestra gestión experta. Contenido dinámico, interacción auténtica y estrategias de crecimiento para tu negocio.",
-  },
-  openGraph: {
-    title: "Gestión Profesional de Redes Sociales",
-    description:
-      "Transforma tu presencia en redes con gestión experta. Aprovecha al máximo cada plataforma para crecer y conectar con tu audiencia.",
-  },
+export const generateMetadata = async ({
+  params: { lang },
+}: {
+  params: { lang: Locale };
+}): Promise<Metadata> => {
+  const { metadata } = await getDictionary(lang);
+  return {
+    title: metadata.service.main.socialNetworkManagement.title,
+    description: metadata.service.main.socialNetworkManagement.description,
+    keywords: metadata.service.main.socialNetworkManagement.keywords,
+    twitter: {
+      title: metadata.service.main.socialNetworkManagement.twitter.title,
+      description:
+        metadata.service.main.socialNetworkManagement.twitter.description,
+    },
+    openGraph: {
+      title: metadata.service.main.socialNetworkManagement.openGraph.title,
+      description:
+        metadata.service.main.socialNetworkManagement.openGraph.description,
+    },
+  };
 };
 
 const iconMapping: { [key: string]: HeroIcon } = {

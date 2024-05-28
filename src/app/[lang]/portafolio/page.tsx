@@ -3,31 +3,25 @@ import { PortfolioCard } from "@/components/ui/portfolio";
 import { Locale } from "../../../../i18n.config";
 import { getDictionary } from "@/lib/dictionary";
 
-export const metadata: Metadata = {
-  title: "Portafolio de trabajo",
-  description:
-    "Si estás buscando un profesional con experiencia y habilidades comprobadas, te invito a que visites mi portafolio de trabajo y descubras por ti mismo/a todo lo que puedo ofrecerte. Estoy seguro de que encontrarás trabajos que te sorprenderán y te mostrarán el valor que puedo aportar a tu proyecto",
-  keywords: [
-    "imSoft",
-    "Portafolio de trabajo",
-    "Clientes",
-    "Clientes satisfechos",
-    "Sitio web",
-    "Aplicación web",
-    "Ecommerce",
-    "SEO",
-    "Consultoria",
-  ],
-  twitter: {
-    title: "Portafolio de trabajo",
-    description:
-      "Si estás buscando un profesional con experiencia y habilidades comprobadas, te invito a que visites mi portafolio de trabajo y descubras por ti mismo/a todo lo que puedo ofrecerte. Estoy seguro de que encontrarás trabajos que te sorprenderán y te mostrarán el valor que puedo aportar a tu proyecto",
-  },
-  openGraph: {
-    title: "Portafolio de trabajo",
-    description:
-      "Si estás buscando un profesional con experiencia y habilidades comprobadas, te invito a que visites mi portafolio de trabajo y descubras por ti mismo/a todo lo que puedo ofrecerte. Estoy seguro de que encontrarás trabajos que te sorprenderán y te mostrarán el valor que puedo aportar a tu proyecto",
-  },
+export const generateMetadata = async ({
+  params: { lang },
+}: {
+  params: { lang: Locale };
+}): Promise<Metadata> => {
+  const { metadata } = await getDictionary(lang);
+  return {
+    title: metadata.portfolio.title,
+    description: metadata.portfolio.description,
+    keywords: metadata.portfolio.keywords,
+    twitter: {
+      title: metadata.portfolio.twitter.title,
+      description: metadata.portfolio.twitter.description,
+    },
+    openGraph: {
+      title: metadata.portfolio.openGraph.title,
+      description: metadata.portfolio.openGraph.description,
+    },
+  };
 };
 
 const PortfolioPage = async ({

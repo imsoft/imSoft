@@ -19,21 +19,27 @@ import {
 import { Locale } from "../../../../../i18n.config";
 import { getDictionary } from "@/lib/dictionary";
 
-export const metadata: Metadata = {
-  title: "Consultoría web",
-  description:
-    "Somos una empresa altamente calificada y con experiencia en la creación de sitios web y aplicaciones web. Estamos seguro de poder brindarle a su empresa un servicio de alta calidad y entregar un producto final que cumpla con sus expectativas y necesidades",
-  keywords: ["imSoft", "Consultoría web"],
-  twitter: {
-    title: "Consultoría web",
-    description:
-      "Somos una empresa altamente calificada y con experiencia en la creación de sitios web y aplicaciones web. Estamos seguro de poder brindarle a su empresa un servicio de alta calidad y entregar un producto final que cumpla con sus expectativas y necesidades",
-  },
-  openGraph: {
-    title: "Consultoría web",
-    description:
-      "Somos una empresa altamente calificada y con experiencia en la creación de sitios web y aplicaciones web. Estamos seguro de poder brindarle a su empresa un servicio de alta calidad y entregar un producto final que cumpla con sus expectativas y necesidades",
-  },
+export const generateMetadata = async ({
+  params: { lang },
+}: {
+  params: { lang: Locale };
+}): Promise<Metadata> => {
+  const { metadata } = await getDictionary(lang);
+  return {
+    title: metadata.service.main.webConsulting.title,
+    description: metadata.service.main.webConsulting.description,
+    keywords: metadata.service.main.webConsulting.keywords,
+    twitter: {
+      title: metadata.service.main.webConsulting.twitter.title,
+      description:
+        metadata.service.main.webConsulting.twitter.description,
+    },
+    openGraph: {
+      title: metadata.service.main.webConsulting.openGraph.title,
+      description:
+        metadata.service.main.webConsulting.openGraph.description,
+    },
+  };
 };
 
 const iconMapping: { [key: string]: HeroIcon } = {

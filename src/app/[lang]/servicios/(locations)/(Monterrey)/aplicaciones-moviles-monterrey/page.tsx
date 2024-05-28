@@ -19,26 +19,27 @@ import {
 import { Locale } from "../../../../../../../i18n.config";
 import { getDictionary } from "@/lib/dictionary";
 
-export const metadata: Metadata = {
-  title: "Desarrollo de Aplicaciones Móviles en Monterrey | imSoft",
-  description:
-    "Especialistas en desarrollo de aplicaciones móviles a medida en Monterrey, diseñadas para impulsar el engagement de los usuarios y contribuir al crecimiento de tu negocio local.",
-  keywords: [
-    "imSoft",
-    "Aplicaciones móviles en Monterrey",
-    "Desarrollo móvil Monterrey",
-    "Apps Monterrey",
-  ],
-  twitter: {
-    title: "Desarrollo de Aplicaciones Móviles",
-    description:
-      "Impulsa tu negocio con aplicaciones móviles a medida. Mejora la experiencia de tus usuarios y abre nuevas vías de interacción y crecimiento con imSoft.",
-  },
-  openGraph: {
-    title: "Desarrollo de Aplicaciones Móviles",
-    description:
-      "Transforma tu estrategia digital con nuestras soluciones móviles personalizadas. Escalabilidad, seguridad y diseño centrado en el usuario con imSoft.",
-  },
+export const generateMetadata = async ({
+  params: { lang },
+}: {
+  params: { lang: Locale };
+}): Promise<Metadata> => {
+  const { metadata } = await getDictionary(lang);
+  return {
+    title: metadata.service.location.monterrey.mobileApps.title,
+    description: metadata.service.location.monterrey.mobileApps.description,
+    keywords: metadata.service.location.monterrey.mobileApps.keywords,
+    twitter: {
+      title: metadata.service.location.monterrey.mobileApps.twitter.title,
+      description:
+        metadata.service.location.monterrey.mobileApps.twitter.description,
+    },
+    openGraph: {
+      title: metadata.service.location.monterrey.mobileApps.openGraph.title,
+      description:
+        metadata.service.location.monterrey.mobileApps.openGraph.description,
+    },
+  };
 };
 
 const iconMapping: { [key: string]: HeroIcon } = {

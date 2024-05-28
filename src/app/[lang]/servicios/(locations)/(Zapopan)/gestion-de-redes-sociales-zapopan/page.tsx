@@ -19,26 +19,27 @@ import { Metadata } from "next";
 import { Locale } from "../../../../../../../i18n.config";
 import { getDictionary } from "@/lib/dictionary";
 
-export const metadata: Metadata = {
-  title: "Gestión Profesional de Redes Sociales en Zapopan | imSoft",
-  description:
-    "Eleva tu presencia en línea en Zapopan con nuestro servicio integral de gestión de redes sociales. Administramos tus perfiles con contenido dinámico y estrategias de crecimiento adaptadas.",
-  keywords: [
-    "imSoft",
-    "Gestión de Redes Sociales Zapopan",
-    "Marketing Digital Zapopan",
-    "Engagement Social Zapopan",
-  ],
-  twitter: {
-    title: "Gestión Profesional de Redes Sociales",
-    description:
-      "Eleva tu marca en redes sociales con nuestra gestión experta. Contenido dinámico, interacción auténtica y estrategias de crecimiento para tu negocio.",
-  },
-  openGraph: {
-    title: "Gestión Profesional de Redes Sociales",
-    description:
-      "Transforma tu presencia en redes con gestión experta. Aprovecha al máximo cada plataforma para crecer y conectar con tu audiencia.",
-  },
+export const generateMetadata = async ({
+  params: { lang },
+}: {
+  params: { lang: Locale };
+}): Promise<Metadata> => {
+  const { metadata } = await getDictionary(lang);
+  return {
+    title: metadata.service.location.zapopan.socialNetworkManagement.title,
+    description: metadata.service.location.zapopan.socialNetworkManagement.description,
+    keywords: metadata.service.location.zapopan.socialNetworkManagement.keywords,
+    twitter: {
+      title: metadata.service.location.zapopan.socialNetworkManagement.twitter.title,
+      description:
+        metadata.service.location.zapopan.socialNetworkManagement.twitter.description,
+    },
+    openGraph: {
+      title: metadata.service.location.zapopan.socialNetworkManagement.openGraph.title,
+      description:
+        metadata.service.location.zapopan.socialNetworkManagement.openGraph.description,
+    },
+  };
 };
 
 const iconMapping: { [key: string]: HeroIcon } = {

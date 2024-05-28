@@ -17,26 +17,27 @@ import { Locale } from "../../../../../i18n.config";
 import type { HeroIcon } from "@/interfaces";
 import { getDictionary } from "@/lib/dictionary";
 
-export const metadata: Metadata = {
-  title: "Análisis de Datos",
-  description:
-    "Nuestro servicio de análisis de datos te permite descubrir patrones y obtener insights valiosos para impulsar la toma de decisiones estratégicas. Transformamos grandes volúmenes de datos en información clara y accionable, ayudándote a entender mejor a tus clientes, optimizar operaciones y predecir tendencias futuras. Nuestros sistemas son escalables y se adaptan a las necesidades cambiantes de tu negocio.",
-  keywords: [
-    "imSoft",
-    "Análisis de datos",
-    "Big Data",
-    "Business Intelligence",
-  ],
-  twitter: {
-    title: "Análisis de Datos",
-    description:
-      "Descubre cómo nuestro análisis de datos puede impulsar tu estrategia empresarial, optimizar operaciones y predecir tendencias futuras. Convierte datos en decisiones con imSoft.",
-  },
-  openGraph: {
-    title: "Análisis de Datos",
-    description:
-      "Transforma datos en decisiones con nuestro análisis. Optimiza tu estrategia empresarial y anticipa tendencias con imSoft.",
-  },
+export const generateMetadata = async ({
+  params: { lang },
+}: {
+  params: { lang: Locale };
+}): Promise<Metadata> => {
+  const { metadata } = await getDictionary(lang);
+  return {
+    title: metadata.service.main.dataAnalytics.title,
+    description: metadata.service.main.dataAnalytics.description,
+    keywords: metadata.service.main.dataAnalytics.keywords,
+    twitter: {
+      title: metadata.service.main.dataAnalytics.twitter.title,
+      description:
+        metadata.service.main.dataAnalytics.twitter.description,
+    },
+    openGraph: {
+      title: metadata.service.main.dataAnalytics.openGraph.title,
+      description:
+        metadata.service.main.dataAnalytics.openGraph.description,
+    },
+  };
 };
 
 const iconMapping: { [key: string]: HeroIcon } = {

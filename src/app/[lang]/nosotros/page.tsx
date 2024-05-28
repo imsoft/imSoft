@@ -3,34 +3,25 @@ import { Metadata } from "next";
 import { Locale } from "../../../../i18n.config";
 import { getDictionary } from "@/lib/dictionary";
 
-export const metadata: Metadata = {
-  title: "Nosotros",
-  description:
-    "¿Buscas una empresa experta en software y tecnología para desarrollar tu próximo proyecto? ¡ImSoft es tu mejor opción! Somos una empresa líder en el mercado, especializada en soluciones de software y tecnología para satisfacer las necesidades de nuestros clientes",
-  keywords: [
-    "imSoft",
-    "Tecnología",
-    "Informática",
-    "Ingeniería informática",
-    "Empresa de desarrollo de software",
-    "Soluciones de software personalizadas",
-    "Desarrollo de software",
-    "Clientes",
-    "Satisfacción del cliente",
-    "Empresa de desarrollo de software de alta calidad",
-    "Servicio excepcional",
-    "Soluciones de software personalizadas y de alta calidad",
-  ],
-  twitter: {
-    title: "Nosotros",
-    description:
-      "¿Buscas una empresa experta en software y tecnología para desarrollar tu próximo proyecto? ¡ImSoft es tu mejor opción! Somos una empresa líder en el mercado, especializada en soluciones de software y tecnología para satisfacer las necesidades de nuestros clientes",
-  },
-  openGraph: {
-    title: "Nosotros",
-    description:
-      "¿Buscas una empresa experta en software y tecnología para desarrollar tu próximo proyecto? ¡ImSoft es tu mejor opción! Somos una empresa líder en el mercado, especializada en soluciones de software y tecnología para satisfacer las necesidades de nuestros clientes",
-  },
+export const generateMetadata = async ({
+  params: { lang },
+}: {
+  params: { lang: Locale };
+}): Promise<Metadata> => {
+  const { metadata } = await getDictionary(lang);
+  return {
+    title: metadata.history.title,
+    description: metadata.history.description,
+    keywords: metadata.history.keywords,
+    twitter: {
+      title: metadata.history.twitter.title,
+      description: metadata.history.twitter.description,
+    },
+    openGraph: {
+      title: metadata.history.openGraph.title,
+      description: metadata.history.openGraph.description,
+    },
+  };
 };
 
 const AboutUsPage = async ({

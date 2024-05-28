@@ -4,31 +4,27 @@ import { Locale } from "../../../../../../i18n.config";
 import { getDictionary } from "@/lib/dictionary";
 import { CustomLink } from "@/components/ui/shared";
 
-export const metadata: Metadata = {
-  title: "Servicios de Desarrollo Web en Zapopan | imSoft",
-  description:
-    "En imSoft ofrecemos servicios de diseño y desarrollo web personalizados en Zapopan. Creamos sitios web responsivos, atractivos y optimizados para SEO, asegurando la mejor presencia online para tu negocio. Contáctanos para transformar tus ideas en una realidad digital exitosa.",
-  keywords: [
-    "Desarrollo Web Zapopan",
-    "Diseño Web en Zapopan",
-    "Servicios Web Zapopan",
-    "Creación de Sitios Web Zapopan",
-    "Ecommerce Zapopan",
-    "SEO Zapopan",
-    "Consultoría Web Zapopan",
-    "Agencia Web Zapopan",
-    "Desarrollo de Aplicaciones Zapopan",
-  ],
-  twitter: {
-    title: "Desarrollo y Diseño Web en Zapopan | imSoft",
-    description:
-      "Transforma tu negocio con nuestros servicios de desarrollo y diseño web en Zapopan. Sitios web personalizados, optimizados para SEO y listos para competir en el mercado digital. ¡Contáctanos y empieza tu proyecto hoy!",
-  },
-  openGraph: {
-    title: "Servicios de Desarrollo Web en Zapopan | imSoft",
-    description:
-      "Potencia tu negocio en línea con soluciones web a medida en Zapopan. En imSoft, ofrecemos diseño, desarrollo, SEO y más para asegurar el éxito de tu proyecto en internet. Contáctanos para saber más.",
-  },
+export const generateMetadata = async ({
+  params: { lang },
+}: {
+  params: { lang: Locale };
+}): Promise<Metadata> => {
+  const { metadata } = await getDictionary(lang);
+  return {
+    title: metadata.service.location.zapopan.main.title,
+    description: metadata.service.location.zapopan.main.description,
+    keywords: metadata.service.location.zapopan.main.keywords,
+    twitter: {
+      title: metadata.service.location.zapopan.main.twitter.title,
+      description:
+        metadata.service.location.zapopan.main.twitter.description,
+    },
+    openGraph: {
+      title: metadata.service.location.zapopan.main.openGraph.title,
+      description:
+        metadata.service.location.zapopan.main.openGraph.description,
+    },
+  };
 };
 
 const ServicesPage = async ({

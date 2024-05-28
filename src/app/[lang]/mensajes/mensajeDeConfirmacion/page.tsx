@@ -4,18 +4,25 @@ import { Confetti } from "@/components/ui/shared";
 import { Locale } from "../../../../../i18n.config";
 import { getDictionary } from "@/lib/dictionary";
 
-export const metadata: Metadata = {
-  title: "Mensaje de confirmación",
-  description: "Mensaje de confirmación, imSoft",
-  keywords: ["imSoft", "Mensaje de confirmación"],
-  twitter: {
-    title: "Mensaje de confirmación",
-    description: "Mensaje de confirmación, imSoft",
-  },
-  openGraph: {
-    title: "Mensaje de confirmación",
-    description: "Mensaje de confirmación, imSoft",
-  },
+export const generateMetadata = async ({
+  params: { lang },
+}: {
+  params: { lang: Locale };
+}): Promise<Metadata> => {
+  const { metadata } = await getDictionary(lang);
+  return {
+    title: metadata.message.sent.title,
+    description: metadata.message.sent.description,
+    keywords: metadata.message.sent.keywords,
+    twitter: {
+      title: metadata.message.sent.twitter.title,
+      description: metadata.message.sent.twitter.description,
+    },
+    openGraph: {
+      title: metadata.message.sent.openGraph.title,
+      description: metadata.message.sent.openGraph.description,
+    },
+  };
 };
 
 const ConfirmationMessagePage = async ({

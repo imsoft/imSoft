@@ -17,27 +17,27 @@ import {
 import { Locale } from "../../../../../../../i18n.config";
 import { getDictionary } from "@/lib/dictionary";
 
-export const metadata: Metadata = {
-  title: "Análisis de Datos en CDMX | imSoft",
-  description:
-    "Descubre cómo nuestro servicio de análisis de datos en CDMX te permite obtener insights valiosos para tu negocio. Especializados en Big Data y Business Intelligence para empresas en CDMX.",
-  keywords: [
-    "imSoft",
-    "Análisis de datos en CDMX",
-    "Big Data CDMX",
-    "Business Intelligence CDMX",
-    "Servicios de datos CDMX",
-  ],
-  twitter: {
-    title: "Análisis de Datos",
-    description:
-      "Descubre cómo nuestro análisis de datos puede impulsar tu estrategia empresarial, optimizar operaciones y predecir tendencias futuras. Convierte datos en decisiones con imSoft.",
-  },
-  openGraph: {
-    title: "Análisis de Datos",
-    description:
-      "Transforma datos en decisiones con nuestro análisis. Optimiza tu estrategia empresarial y anticipa tendencias con imSoft.",
-  },
+export const generateMetadata = async ({
+  params: { lang },
+}: {
+  params: { lang: Locale };
+}): Promise<Metadata> => {
+  const { metadata } = await getDictionary(lang);
+  return {
+    title: metadata.service.location.cdmx.dataAnalytics.title,
+    description: metadata.service.location.cdmx.dataAnalytics.description,
+    keywords: metadata.service.location.cdmx.dataAnalytics.keywords,
+    twitter: {
+      title: metadata.service.location.cdmx.dataAnalytics.twitter.title,
+      description:
+        metadata.service.location.cdmx.dataAnalytics.twitter.description,
+    },
+    openGraph: {
+      title: metadata.service.location.cdmx.dataAnalytics.openGraph.title,
+      description:
+        metadata.service.location.cdmx.dataAnalytics.openGraph.description,
+    },
+  };
 };
 
 const iconMapping: { [key: string]: HeroIcon } = {
