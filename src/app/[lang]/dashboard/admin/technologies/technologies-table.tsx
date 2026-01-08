@@ -19,8 +19,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import Link from "next/link"
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
 import {
@@ -31,7 +38,7 @@ import {
   EmptyTitle,
   EmptyAction,
 } from "@/components/ui/empty"
-import { Code, Plus, ArrowUpDown, MoreHorizontal, Pencil, Trash2, Building2 } from "lucide-react"
+import { Code, Plus, ArrowUpDown, MoreHorizontal, Pencil, Trash2, Building2, Filter } from "lucide-react"
 import { DataTable } from "@/components/ui/data-table"
 import type { Dictionary, Locale } from '@/app/[lang]/dictionaries'
 import { Badge } from "@/components/ui/badge"
@@ -65,6 +72,8 @@ export function TechnologiesTable({ technologies, dict, lang }: TechnologiesTabl
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [categoryFilter, setCategoryFilter] = useState<string>('all')
+  const [hasCompaniesFilter, setHasCompaniesFilter] = useState<string>('all')
 
   const handleDelete = async (id: string) => {
     setIsDeleting(true)
@@ -255,6 +264,42 @@ export function TechnologiesTable({ technologies, dict, lang }: TechnologiesTabl
     },
   ]
 
+  // Filtrar datos según los filtros seleccionados
+  const filteredTechnologies = useMemo(() => {
+    let filtered = technologies
+
+    // Filtro por categoría
+    if (categoryFilter !== 'all') {
+      filtered = filtered.filter(tech => tech.category === categoryFilter)
+    }
+
+    // Filtro por empresas (con/sin empresas)
+    if (hasCompaniesFilter === 'with') {
+      filtered = filtered.filter(tech => 
+        tech.technology_companies && tech.technology_companies.length > 0
+      )
+    } else if (hasCompaniesFilter === 'without') {
+      filtered = filtered.filter(tech => 
+        !tech.technology_companies || tech.technology_companies.length === 0
+      )
+    }
+
+    return filtered
+  }, [technologies, categoryFilter, hasCompaniesFilter])
+
+  // Obtener categorías únicas para el filtro
+  const uniqueCategories = useMemo(() => {
+    const categories = new Set<string>()
+    technologies.forEach(tech => {
+      if (tech.category) {
+        categories.add(tech.category)
+      }
+    })
+    return Array.from(categories).sort()
+  }, [technologies])
+
+  const categories = (dict as any).technologies?.categories || {}
+
   if (technologies.length === 0) {
     return (
       <Empty>
@@ -283,5 +328,78 @@ export function TechnologiesTable({ technologies, dict, lang }: TechnologiesTabl
     )
   }
 
-  return <DataTable columns={columns} data={technologies} dict={dict} lang={lang} />
+  return (
+    <div className="space-y-4">
+      {/* Filtros adicionales */}
+      <div className="flex flex-wrap items-center gap-4 p-4 bg-muted/50 rounded-lg border">
+        <div className="flex items-center gap-2">
+          <Filter className="h-4 w-4 text-muted-foreground" />
+          <span className="text-sm font-medium">
+            {lang === 'en' ? 'Filters' : 'Filtros'}:
+          </span>
+        </div>
+
+        {/* Filtro por categoría */}
+        <div className="flex items-center gap-2">
+          <label className="text-sm text-muted-foreground">
+            {lang === 'en' ? 'Category' : 'Categoría'}:
+          </label>
+          <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">
+                {lang === 'en' ? 'All categories' : 'Todas las categorías'}
+              </SelectItem>
+              {uniqueCategories.map(category => (
+                <SelectItem key={category} value={category}>
+                  {categories[category as keyof typeof categories] || category}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Filtro por empresas */}
+        <div className="flex items-center gap-2">
+          <label className="text-sm text-muted-foreground">
+            {lang === 'en' ? 'Companies' : 'Empresas'}:
+          </label>
+          <Select value={hasCompaniesFilter} onValueChange={setHasCompaniesFilter}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">
+                {lang === 'en' ? 'All' : 'Todas'}
+              </SelectItem>
+              <SelectItem value="with">
+                {lang === 'en' ? 'With companies' : 'Con empresas'}
+              </SelectItem>
+              <SelectItem value="without">
+                {lang === 'en' ? 'Without companies' : 'Sin empresas'}
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Contador de resultados */}
+        <div className="ml-auto text-sm text-muted-foreground">
+          {filteredTechnologies.length} {filteredTechnologies.length === 1 
+            ? (lang === 'en' ? 'technology' : 'tecnología')
+            : (lang === 'en' ? 'technologies' : 'tecnologías')}
+        </div>
+      </div>
+
+      <DataTable 
+        columns={columns} 
+        data={filteredTechnologies} 
+        searchKey="name"
+        searchPlaceholder={lang === 'en' ? 'Filter technologies...' : 'Filtrar tecnologías...'}
+        dict={dict} 
+        lang={lang} 
+      />
+    </div>
+  )
 }
