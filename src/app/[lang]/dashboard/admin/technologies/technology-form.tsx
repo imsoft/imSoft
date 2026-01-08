@@ -542,7 +542,7 @@ export function TechnologyForm({ dict, lang, technology }: TechnologyFormProps) 
           )}
         />
 
-        <Card>
+        <Card className="bg-white dark:bg-card">
           <CardHeader>
             <CardTitle>{(dict as any).technologies?.companies || (lang === 'en' ? 'Companies' : 'Empresas')}</CardTitle>
             <CardDescription>
