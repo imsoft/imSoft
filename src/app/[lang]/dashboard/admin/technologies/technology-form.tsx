@@ -30,6 +30,7 @@ import { toast } from 'sonner'
 import type { Dictionary, Locale } from '@/app/[lang]/dictionaries'
 import { TranslateButton } from '@/components/ui/translate-button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Checkbox } from '@/components/ui/checkbox'
 import { X, Image as ImageIcon, Plus, Trash2 } from 'lucide-react'
 import Image from 'next/image'
 
@@ -43,7 +44,7 @@ const technologySchema = z.object({
   name_en: z.string().min(1, 'El nombre en inglés es requerido'),
   description_es: z.string().min(10, 'La descripción en español debe tener al menos 10 caracteres'),
   description_en: z.string().min(10, 'La descripción en inglés debe tener al menos 10 caracteres'),
-  category: z.string().optional(),
+  categories: z.array(z.string()),
   logo_url: z.string().optional(),
   website_url: z.string().url('Debe ser una URL válida').optional().or(z.literal('')),
   companies: z.array(companySchema),
@@ -58,7 +59,7 @@ interface Technology {
   name?: string
   description_es?: string
   description_en?: string
-  category?: string
+  category?: string | string[] // Puede ser string (legacy) o array (nuevo)
   logo_url?: string
   website_url?: string
   technology_companies?: Array<{
@@ -90,7 +91,9 @@ export function TechnologyForm({ dict, lang, technology }: TechnologyFormProps) 
       name_en: technology?.name_en || technology?.name || '',
       description_es: technology?.description_es || '',
       description_en: technology?.description_en || '',
-      category: technology?.category || '',
+      categories: Array.isArray(technology?.category) 
+        ? technology.category 
+        : (technology?.category ? [technology.category] : []),
       logo_url: technology?.logo_url || '',
       website_url: technology?.website_url || '',
       companies: technology?.technology_companies?.map(tc => ({
@@ -221,7 +224,7 @@ export function TechnologyForm({ dict, lang, technology }: TechnologyFormProps) 
         name: values.name_es, // Fallback
         description_es: values.description_es,
         description_en: values.description_en,
-        category: values.category || null,
+        category: values.categories.length > 0 ? values.categories : null,
         logo_url: values.logo_url || null,
         website_url: values.website_url || null,
       }
@@ -442,27 +445,52 @@ export function TechnologyForm({ dict, lang, technology }: TechnologyFormProps) 
           </TabsContent>
         </Tabs>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-4">
           <FormField
             control={form.control}
-            name="category"
-            render={({ field }) => (
+            name="categories"
+            render={() => (
               <FormItem>
-                <FormLabel>{(dict as any).technologies?.category || (lang === 'en' ? 'Category' : 'Categoría')}</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value || ''}>
-                  <FormControl>
-                    <SelectTrigger className="w-full !border-2 !border-border">
-                      <SelectValue />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {categories.map((cat) => (
-                      <SelectItem key={cat.value} value={cat.value}>
-                        {lang === 'es' ? cat.label_es : cat.label_en}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <div className="mb-4">
+                  <FormLabel className="text-base">
+                    {(dict as any).technologies?.category || (lang === 'en' ? 'Categories' : 'Categorías')}
+                  </FormLabel>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {categories.map((cat) => (
+                    <FormField
+                      key={cat.value}
+                      control={form.control}
+                      name="categories"
+                      render={({ field }) => {
+                        return (
+                          <FormItem
+                            key={cat.value}
+                            className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-3"
+                          >
+                            <FormControl>
+                              <Checkbox
+                                checked={field.value?.includes(cat.value)}
+                                onCheckedChange={(checked) => {
+                                  return checked
+                                    ? field.onChange([...field.value, cat.value])
+                                    : field.onChange(
+                                        field.value?.filter(
+                                          (value) => value !== cat.value
+                                        )
+                                      )
+                                }}
+                              />
+                            </FormControl>
+                            <FormLabel className="font-normal cursor-pointer">
+                              {lang === 'es' ? cat.label_es : cat.label_en}
+                            </FormLabel>
+                          </FormItem>
+                        )
+                      }}
+                    />
+                  ))}
+                </div>
                 <FormMessage />
               </FormItem>
             )}

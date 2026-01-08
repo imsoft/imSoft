@@ -52,7 +52,7 @@ interface Technology {
   description_es?: string
   description_en?: string
   icon?: string
-  category?: string
+  category?: string | string[] // Puede ser string (legacy) o array (nuevo)
   website_url?: string
   order_index?: number
   technology_companies?: Array<{
@@ -134,13 +134,31 @@ export function TechnologiesTable({ technologies, dict, lang }: TechnologiesTabl
     {
       id: "category",
       accessorKey: "category",
-      header: (dict as any).technologies?.category || (lang === 'en' ? 'Category' : 'Categoría'),
+      header: (dict as any).technologies?.category || (lang === 'en' ? 'Categories' : 'Categorías'),
       cell: ({ row }) => {
         const category = row.original.category
         if (!category) return <span className="text-muted-foreground">-</span>
+        
+        // Manejar tanto string (legacy) como array (nuevo)
+        const categoryArray = Array.isArray(category) ? category : [category]
         const categories = (dict as any).technologies?.categories || {}
-        const categoryLabel = categories[category as keyof typeof categories] || category
-        return <Badge variant="outline">{categoryLabel}</Badge>
+        
+        if (categoryArray.length === 0) {
+          return <span className="text-muted-foreground">-</span>
+        }
+        
+        return (
+          <div className="flex flex-wrap gap-1">
+            {categoryArray.map((cat, index) => {
+              const categoryLabel = categories[cat as keyof typeof categories] || cat
+              return (
+                <Badge key={index} variant="outline" className="text-xs">
+                  {categoryLabel}
+                </Badge>
+              )
+            })}
+          </div>
+        )
       },
     },
     {
@@ -268,9 +286,13 @@ export function TechnologiesTable({ technologies, dict, lang }: TechnologiesTabl
   const filteredTechnologies = useMemo(() => {
     let filtered = technologies
 
-    // Filtro por categoría
+    // Filtro por categoría (soporta tanto string como array)
     if (categoryFilter !== 'all') {
-      filtered = filtered.filter(tech => tech.category === categoryFilter)
+      filtered = filtered.filter(tech => {
+        if (!tech.category) return false
+        const categoryArray = Array.isArray(tech.category) ? tech.category : [tech.category]
+        return categoryArray.includes(categoryFilter)
+      })
     }
 
     // Filtro por empresas (con/sin empresas)
@@ -292,7 +314,11 @@ export function TechnologiesTable({ technologies, dict, lang }: TechnologiesTabl
     const categories = new Set<string>()
     technologies.forEach(tech => {
       if (tech.category) {
-        categories.add(tech.category)
+        // Manejar tanto string (legacy) como array (nuevo)
+        const categoryArray = Array.isArray(tech.category) ? tech.category : [tech.category]
+        categoryArray.forEach(cat => {
+          if (cat) categories.add(cat)
+        })
       }
     })
     return Array.from(categories).sort()
