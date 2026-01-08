@@ -361,7 +361,7 @@ export function TechnologyForm({ dict, lang, technology }: TechnologyFormProps) 
               render={({ field }) => (
                 <FormItem>
                   <div className="flex items-center justify-between">
-                    <FormLabel>{(dict as any).technologies?.nameEs || (lang === 'en' ? 'Name in Spanish' : 'Nombre en Español')}</FormLabel>
+                    <FormLabel>{(dict as any).technologies?.name || (lang === 'en' ? 'Name' : 'Nombre')}</FormLabel>
                     <TranslateButton
                       text={field.value}
                       targetValue={form.watch('name_en')}
@@ -382,7 +382,7 @@ export function TechnologyForm({ dict, lang, technology }: TechnologyFormProps) 
               render={({ field }) => (
                 <FormItem>
                   <div className="flex items-center justify-between">
-                    <FormLabel>{(dict as any).technologies?.descriptionEs || (lang === 'en' ? 'Description in Spanish' : 'Descripción en Español')}</FormLabel>
+                    <FormLabel>{(dict as any).technologies?.description || (lang === 'en' ? 'Description' : 'Descripción')}</FormLabel>
                     <TranslateButton
                       text={field.value}
                       targetValue={form.watch('description_en')}
@@ -392,11 +392,6 @@ export function TechnologyForm({ dict, lang, technology }: TechnologyFormProps) 
                   <FormControl>
                     <Textarea {...field} rows={4} className="!border-2 !border-border" />
                   </FormControl>
-                  <FormDescription>
-                    {lang === 'en' 
-                      ? 'Describe what this technology is used for at imSoft'
-                      : 'Describe para qué se utiliza esta tecnología en imSoft'}
-                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -409,7 +404,7 @@ export function TechnologyForm({ dict, lang, technology }: TechnologyFormProps) 
               name="name_en"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{(dict as any).technologies?.nameEn || (lang === 'en' ? 'Name in English' : 'Nombre en Inglés')}</FormLabel>
+                  <FormLabel>{(dict as any).technologies?.name || (lang === 'en' ? 'Name' : 'Nombre')}</FormLabel>
                   <FormControl>
                     <Input {...field} className="!border-2 !border-border" />
                   </FormControl>
@@ -423,13 +418,10 @@ export function TechnologyForm({ dict, lang, technology }: TechnologyFormProps) 
               name="description_en"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{(dict as any).technologies?.descriptionEn || (lang === 'en' ? 'Description in English' : 'Descripción en Inglés')}</FormLabel>
+                  <FormLabel>{(dict as any).technologies?.description || (lang === 'en' ? 'Description' : 'Descripción')}</FormLabel>
                   <FormControl>
                     <Textarea {...field} rows={4} className="!border-2 !border-border" />
                   </FormControl>
-                  <FormDescription>
-                    Describe what this technology is used for at imSoft
-                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -532,11 +524,6 @@ export function TechnologyForm({ dict, lang, technology }: TechnologyFormProps) 
                   )}
                 </div>
               </FormControl>
-              <FormDescription>
-                {lang === 'en'
-                  ? 'Upload the logo of the technology (max 5MB)'
-                  : 'Sube el logo de la tecnología (máx 5MB)'}
-              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
