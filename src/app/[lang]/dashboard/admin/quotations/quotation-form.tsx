@@ -40,6 +40,7 @@ const quotationSchema = z.object({
   description: z.string().optional(),
   client_name: z.string().min(1, 'El nombre del cliente es requerido'),
   client_email: z.string().email('Email inválido'),
+  client_phone: z.string().optional(),
   client_company: z.string().optional(),
   answers: z.record(z.any()),
   technology_ids: z.array(z.string()),
@@ -104,6 +105,7 @@ export function QuotationForm({ services, dict, lang, userId }: QuotationFormPro
       description: '',
       client_name: '',
       client_email: '',
+      client_phone: '',
       client_company: '',
       answers: {},
       technology_ids: [] as string[],
@@ -244,6 +246,7 @@ export function QuotationForm({ services, dict, lang, userId }: QuotationFormPro
         description: values.description,
         client_name: values.client_name,
         client_email: values.client_email,
+        client_phone: values.client_phone || null,
         client_company: values.client_company,
         answers: values.answers,
         subtotal,
@@ -327,6 +330,20 @@ export function QuotationForm({ services, dict, lang, userId }: QuotationFormPro
                 <FormLabel>Email</FormLabel>
                 <FormControl>
                   <Input {...field} type="email" className="w-full !border-2 !border-border" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="client_phone"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{lang === 'en' ? 'Phone Number (Optional)' : 'Número de Teléfono (Opcional)'}</FormLabel>
+                <FormControl>
+                  <Input {...field} type="tel" className="w-full !border-2 !border-border" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
