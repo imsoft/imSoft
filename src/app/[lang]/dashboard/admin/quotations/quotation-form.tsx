@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
@@ -62,6 +62,18 @@ export function QuotationForm({ services, dict, lang, userId }: QuotationFormPro
   const [subtotal, setSubtotal] = useState(0)
   const [iva, setIva] = useState(0)
   const [total, setTotal] = useState(0)
+
+  // Eliminar servicios duplicados por ID usando useMemo para mejor rendimiento
+  const uniqueServices = useMemo(() => {
+    const seen = new Set<string>()
+    return services.filter((service) => {
+      if (seen.has(service.id)) {
+        return false
+      }
+      seen.add(service.id)
+      return true
+    })
+  }, [services])
 
   const form = useForm<QuotationFormValues>({
     resolver: zodResolver(quotationSchema),
@@ -272,7 +284,7 @@ export function QuotationForm({ services, dict, lang, userId }: QuotationFormPro
                       <SelectValue placeholder={lang === 'en' ? 'Select a service...' : 'Selecciona un servicio...'} />
                     </SelectTrigger>
                     <SelectContent>
-                      {services.map(service => (
+                      {uniqueServices.map(service => (
                         <SelectItem key={service.id} value={service.id}>
                           {lang === 'es' ? service.title_es : service.title_en}
                         </SelectItem>
@@ -292,11 +304,8 @@ export function QuotationForm({ services, dict, lang, userId }: QuotationFormPro
               <FormItem>
                 <FormLabel>{lang === 'en' ? 'Quotation Title' : 'Título de la Cotización'}</FormLabel>
                 <FormControl>
-                  <Input {...field} className="w-full !border-2 !border-border" placeholder={lang === 'en' ? 'e.g., Website Development for Acme Corp' : 'ej., Desarrollo Web para Acme Corp'} />
+                  <Input {...field} className="w-full !border-2 !border-border" />
                 </FormControl>
-                <FormDescription>
-                  {lang === 'en' ? 'A descriptive title for this quotation' : 'Un título descriptivo para esta cotización'}
-                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -309,11 +318,8 @@ export function QuotationForm({ services, dict, lang, userId }: QuotationFormPro
               <FormItem>
                 <FormLabel>{lang === 'en' ? 'Additional Description (Optional)' : 'Descripción Adicional (Opcional)'}</FormLabel>
                 <FormControl>
-                  <Textarea {...field} className="w-full !border-2 !border-border min-h-[100px]" placeholder={lang === 'en' ? 'Add any additional information beyond the questionnaire...' : 'Agrega información adicional más allá del cuestionario...'} />
+                  <Textarea {...field} className="w-full !border-2 !border-border min-h-[100px]" />
                 </FormControl>
-                <FormDescription>
-                  {lang === 'en' ? 'Detailed description with any additional information beyond the questionnaire answers' : 'Descripción detallada con información adicional más allá de las respuestas del cuestionario'}
-                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -322,7 +328,7 @@ export function QuotationForm({ services, dict, lang, userId }: QuotationFormPro
 
         {/* Preguntas del Cuestionario */}
         {selectedServiceId && questions.length > 0 && (
-          <Card>
+          <Card className="bg-white dark:bg-card">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Calculator className="h-5 w-5" />

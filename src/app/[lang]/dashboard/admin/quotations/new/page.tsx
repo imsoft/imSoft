@@ -19,11 +19,16 @@ export default async function NewQuotationPage({ params }: {
     redirect(`/${lang}/login`)
   }
 
-  // Obtener servicios
+  // Obtener servicios (sin duplicados)
   const { data: services } = await supabase
     .from('services')
     .select('id, title_es, title_en, slug')
     .order('title_es')
+  
+  // Eliminar duplicados por ID en el servidor también
+  const uniqueServices = services?.filter((service, index, self) =>
+    index === self.findIndex((s) => s.id === service.id)
+  ) || []
 
   return (
     <div className="space-y-6">
@@ -37,7 +42,7 @@ export default async function NewQuotationPage({ params }: {
             : 'Crea una nueva cotización respondiendo las preguntas'}
         </p>
       </div>
-      <QuotationForm services={services || []} dict={dict} lang={lang} userId={user.id} />
+      <QuotationForm services={uniqueServices} dict={dict} lang={lang} userId={user.id} />
     </div>
   )
 }
