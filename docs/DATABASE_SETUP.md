@@ -42,7 +42,6 @@ Para evitar errores de dependencias, crea las tablas en el siguiente orden:
 - **Script**: `scripts/create-blog-table.sql`
 - **Documentación**: `docs/BLOG_SETUP.md`
 - **Dependencias**: `auth.users` (para `author_id`)
-- **Nota**: Si la tabla ya existe, ejecuta `scripts/add-author-id-to-blog.sql` para agregar el campo de autor
 
 ### 6. Tabla de Testimonios
 - **Script**: `scripts/create-testimonials-table.sql`
@@ -106,9 +105,9 @@ Además de las tablas, necesitas configurar buckets en Supabase Storage:
 
 ### Bucket para Logos de Empresas
 - **Nombre**: `company-logos`
-- **Script**: `scripts/create-company-logos-bucket-policies.sql` (solo políticas, el bucket se crea desde la interfaz web)
-- **Documentación**: `docs/STORAGE_POLICIES_SETUP.md`
-- **Nota**: Crea el bucket desde la interfaz web primero, luego ejecuta el script de políticas
+- **Script**: `scripts/create-all-storage-buckets.sql` (crea todos los buckets)
+- **Políticas**: `scripts/setup-all-storage-policies.sql` (configura políticas para todos los buckets)
+- **Documentación**: Ver `scripts/STORAGE_SETUP.md` para más detalles
 
 ### Bucket para Imágenes Generales
 - **Nombre**: `images`

@@ -193,11 +193,5 @@ Para más información detallada sobre:
 - `BUCKETS_OVERVIEW.md` - Resumen visual de todos los buckets
 
 **Scripts Alternativos**:
-- `setup-storage-policies-simple.sql` - Solo company-logos (legacy)
-- `setup-storage-policies.sql` - Company-logos + images (legacy)
-- `copy-sql-for-dashboard.sh` - Helper para copiar SQL al portapapeles
-
-**Deprecated** (no usar):
-- `create-company-logos-bucket.sql`
-- `create-company-logos-bucket-policies.sql`
+- `setup-storage-buckets.ts` - Script TypeScript para crear buckets (requiere variables de entorno)
 

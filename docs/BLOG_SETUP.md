@@ -66,14 +66,6 @@ La tabla `blog` tiene los siguientes campos:
 - `created_at` (TIMESTAMP): Fecha de creación de la publicación
 - `updated_at` (TIMESTAMP): Fecha de última actualización (se actualiza automáticamente)
 
-## Agregar author_id a una Tabla Existente
-
-Si la tabla `blog` ya existe y necesitas agregar el campo `author_id`, ejecuta:
-
-```sql
--- Ejecuta el script scripts/add-author-id-to-blog.sql
-```
-
 ## Políticas RLS
 
 Las políticas de seguridad configuradas son:
