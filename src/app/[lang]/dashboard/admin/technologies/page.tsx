@@ -33,14 +33,9 @@ export default async function AdminTechnologiesPage({ params }: {
     .select(`
       *,
       technology_companies (
-        company_id,
-        companies (
-          id,
-          name
-        )
+        company_name
       )
     `)
-    .order('order_index', { ascending: true })
     .order('name', { ascending: true })
 
   if (error) {

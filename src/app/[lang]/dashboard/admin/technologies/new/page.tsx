@@ -24,12 +24,6 @@ export default async function NewTechnologyPage({ params }: {
     redirect(`/${lang}/dashboard/client`)
   }
 
-  // Obtener empresas para el selector
-  const { data: companies } = await supabase
-    .from('companies')
-    .select('id, name')
-    .order('name', { ascending: true })
-
   return (
     <div className="space-y-6">
       <div>
@@ -43,7 +37,6 @@ export default async function NewTechnologyPage({ params }: {
       <TechnologyForm 
         dict={dict} 
         lang={lang} 
-        companies={companies || []} 
       />
     </div>
   )

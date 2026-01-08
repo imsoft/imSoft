@@ -30,7 +30,7 @@ export default async function EditTechnologyPage({ params }: {
     .select(`
       *,
       technology_companies (
-        company_id
+        company_name
       )
     `)
     .eq('id', id)
@@ -39,12 +39,6 @@ export default async function EditTechnologyPage({ params }: {
   if (error || !technology) {
     notFound()
   }
-
-  // Obtener empresas para el selector
-  const { data: companies } = await supabase
-    .from('companies')
-    .select('id, name')
-    .order('name', { ascending: true })
 
   return (
     <div className="space-y-6">
@@ -60,7 +54,6 @@ export default async function EditTechnologyPage({ params }: {
         dict={dict} 
         lang={lang} 
         technology={technology}
-        companies={companies || []} 
       />
     </div>
   )

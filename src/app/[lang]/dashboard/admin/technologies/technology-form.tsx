@@ -24,15 +24,14 @@ import {
 } from '@/components/ui/select'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useRouter } from 'next/navigation'
-import { useState, useEffect } from 'react'
+import { useState, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
 import type { Dictionary, Locale } from '@/app/[lang]/dictionaries'
 import { TranslateButton } from '@/components/ui/translate-button'
-import {
-  Checkbox,
-} from '@/components/ui/checkbox'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { X, Image as ImageIcon, Plus, Trash2 } from 'lucide-react'
+import Image from 'next/image'
 
 const technologySchema = z.object({
   name_es: z.string().min(1, 'El nombre en español es requerido'),
@@ -40,10 +39,9 @@ const technologySchema = z.object({
   description_es: z.string().min(10, 'La descripción en español debe tener al menos 10 caracteres'),
   description_en: z.string().min(10, 'La descripción en inglés debe tener al menos 10 caracteres'),
   category: z.string().optional(),
-  icon: z.string().optional(),
+  logo_url: z.string().optional(),
   website_url: z.string().url('Debe ser una URL válida').optional().or(z.literal('')),
-  order_index: z.number(),
-  company_ids: z.array(z.string()),
+  company_names: z.array(z.string()),
 })
 
 type TechnologyFormValues = z.infer<typeof technologySchema>
@@ -56,11 +54,10 @@ interface Technology {
   description_es?: string
   description_en?: string
   category?: string
-  icon?: string
+  logo_url?: string
   website_url?: string
-  order_index?: number
   technology_companies?: Array<{
-    company_id: string
+    company_name: string
   }>
 }
 
@@ -68,12 +65,14 @@ interface TechnologyFormProps {
   dict: Dictionary
   lang: Locale
   technology?: Technology
-  companies: Array<{ id: string; name: string }>
 }
 
-export function TechnologyForm({ dict, lang, technology, companies }: TechnologyFormProps) {
+export function TechnologyForm({ dict, lang, technology }: TechnologyFormProps) {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isUploading, setIsUploading] = useState(false)
+  const [previewLogo, setPreviewLogo] = useState<string | null>(technology?.logo_url || null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const isEditing = !!technology
 
   const form = useForm<TechnologyFormValues>({
@@ -84,12 +83,121 @@ export function TechnologyForm({ dict, lang, technology, companies }: Technology
       description_es: technology?.description_es || '',
       description_en: technology?.description_en || '',
       category: technology?.category || '',
-      icon: technology?.icon || '',
+      logo_url: technology?.logo_url || '',
       website_url: technology?.website_url || '',
-      order_index: technology?.order_index ?? 0,
-      company_ids: technology?.technology_companies?.map(tc => tc.company_id) ?? [],
+      company_names: technology?.technology_companies?.map(tc => tc.company_name) || [],
     },
   })
+
+  // Función helper para extraer el path del storage desde la URL pública
+  function getStoragePathFromUrl(url: string, bucketName: string): string | null {
+    try {
+      const urlParts = url.split(`/storage/v1/object/public/${bucketName}/`)
+      return urlParts[1] || null
+    } catch {
+      return null
+    }
+  }
+
+  // Función para eliminar logo del storage
+  async function deleteLogoFromStorage(logoUrl: string) {
+    try {
+      const supabase = createClient()
+      const filePath = getStoragePathFromUrl(logoUrl, 'technology-logos')
+
+      if (!filePath) {
+        console.warn('No se pudo extraer el path del logo:', logoUrl)
+        return
+      }
+
+      const { error } = await supabase.storage
+        .from('technology-logos')
+        .remove([filePath])
+
+      if (error) {
+        console.error('Error al eliminar logo del storage:', error)
+      }
+    } catch (error) {
+      console.error('Error al eliminar logo:', error)
+    }
+  }
+
+  async function handleFileUpload(file: File) {
+    setIsUploading(true)
+    try {
+      const supabase = createClient()
+
+      // Si estamos editando, usar el ID real
+      // Si estamos creando, usar un nombre temporal único
+      const technologyId = technology?.id || `temp-${Date.now()}-${Math.random().toString(36).substring(7)}`
+
+      // Eliminar logo anterior si existe
+      const currentLogoUrl = form.getValues('logo_url')
+      if (currentLogoUrl && !currentLogoUrl.includes('/temp-')) {
+        await deleteLogoFromStorage(currentLogoUrl)
+      }
+
+      // Estructura: /<technology_id>/logo.ext
+      const fileExtension = file.name.split('.').pop()
+      const fileName = `logo.${fileExtension}`
+      const filePath = `${technologyId}/${fileName}`
+
+      const { error: uploadError } = await supabase.storage
+        .from('technology-logos')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: true
+        })
+
+      if (uploadError) throw uploadError
+
+      const { data } = supabase.storage
+        .from('technology-logos')
+        .getPublicUrl(filePath)
+
+      form.setValue('logo_url', data.publicUrl)
+      setPreviewLogo(data.publicUrl)
+      toast.success(lang === 'en' ? 'Logo uploaded successfully' : 'Logo subido exitosamente')
+    } catch (error) {
+      console.error('Error uploading logo:', error)
+      toast.error(lang === 'en' ? 'Error uploading logo' : 'Error al subir el logo', {
+        description: error instanceof Error ? error.message : undefined,
+      })
+    } finally {
+      setIsUploading(false)
+    }
+  }
+
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error(lang === 'en' ? 'Image size must be less than 5MB' : 'El tamaño de la imagen debe ser menor a 5MB')
+        return
+      }
+      if (!file.type.startsWith('image/')) {
+        toast.error(lang === 'en' ? 'Please select an image file' : 'Por favor selecciona un archivo de imagen')
+        return
+      }
+      handleFileUpload(file)
+    }
+  }
+
+  async function handleRemoveLogo() {
+    const currentLogoUrl = form.getValues('logo_url')
+
+    // Eliminar del storage
+    if (currentLogoUrl) {
+      await deleteLogoFromStorage(currentLogoUrl)
+    }
+
+    // Limpiar el formulario
+    form.setValue('logo_url', '')
+    setPreviewLogo(null)
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
+  }
 
   async function onSubmit(values: TechnologyFormValues) {
     setIsSubmitting(true)
@@ -103,9 +211,8 @@ export function TechnologyForm({ dict, lang, technology, companies }: Technology
         description_es: values.description_es,
         description_en: values.description_en,
         category: values.category || null,
-        icon: values.icon || null,
+        logo_url: values.logo_url || null,
         website_url: values.website_url || null,
-        order_index: values.order_index || 0,
       }
 
       let technologyId: string
@@ -133,7 +240,61 @@ export function TechnologyForm({ dict, lang, technology, companies }: Technology
         toast.success((dict as any).technologies?.saveSuccess || (lang === 'en' ? 'Technology saved successfully' : 'Tecnología guardada exitosamente'))
       }
 
-      // Gestionar relaciones con empresas
+      // Si se subió un logo con ID temporal, moverlo al ID real
+      if (previewLogo && previewLogo.includes('/temp-')) {
+        const tempPath = getStoragePathFromUrl(previewLogo, 'technology-logos')
+        if (tempPath) {
+          const tempFolder = tempPath.split('/')[0]
+          const fileName = tempPath.split('/').pop()
+          const newPath = `${technologyId}/${fileName}`
+          
+          // Descargar el archivo temporal
+          const { data: downloadData, error: downloadError } = await supabase.storage
+            .from('technology-logos')
+            .download(tempPath)
+          
+          if (downloadError) {
+            console.error('Error downloading temp logo:', downloadError)
+          } else if (downloadData) {
+            // Subir al nuevo path
+            const { error: uploadError } = await supabase.storage
+              .from('technology-logos')
+              .upload(newPath, downloadData, { upsert: true })
+            
+            if (uploadError) {
+              console.error('Error uploading logo to new path:', uploadError)
+            } else {
+              // Obtener la nueva URL
+              const { data: newUrl } = supabase.storage
+                .from('technology-logos')
+                .getPublicUrl(newPath)
+              
+              // Actualizar en la base de datos
+              await supabase
+                .from('technologies')
+                .update({ logo_url: newUrl.publicUrl })
+                .eq('id', technologyId)
+              
+              // Eliminar archivo temporal
+              await supabase.storage
+                .from('technology-logos')
+                .remove([tempPath])
+              
+              // Intentar eliminar la carpeta temporal si está vacía
+              const { data: folderContents } = await supabase.storage
+                .from('technology-logos')
+                .list(tempFolder)
+              
+              if (folderContents && folderContents.length === 0) {
+                // La carpeta está vacía, pero no podemos eliminarla directamente
+                // Supabase no permite eliminar carpetas vacías, así que la dejamos
+              }
+            }
+          }
+        }
+      }
+
+      // Gestionar empresas (nombres de empresas famosas)
       // Primero eliminar todas las relaciones existentes
       const { error: deleteError } = await supabase
         .from('technology_companies')
@@ -142,18 +303,22 @@ export function TechnologyForm({ dict, lang, technology, companies }: Technology
 
       if (deleteError) throw deleteError
 
-      // Luego crear las nuevas relaciones
-      if (values.company_ids.length > 0) {
-        const relations = values.company_ids.map(companyId => ({
-          technology_id: technologyId,
-          company_id: companyId,
-        }))
+      // Luego crear las nuevas relaciones con nombres de empresas
+      if (values.company_names.length > 0) {
+        const relations = values.company_names
+          .filter(name => name.trim() !== '')
+          .map(companyName => ({
+            technology_id: technologyId,
+            company_name: companyName.trim(),
+          }))
 
-        const { error: insertError } = await supabase
-          .from('technology_companies')
-          .insert(relations)
+        if (relations.length > 0) {
+          const { error: insertError } = await supabase
+            .from('technology_companies')
+            .insert(relations)
 
-        if (insertError) throw insertError
+          if (insertError) throw insertError
+        }
       }
 
       router.push(`/${lang}/dashboard/admin/technologies`)
@@ -172,6 +337,8 @@ export function TechnologyForm({ dict, lang, technology, companies }: Technology
     { value: 'frontend', label_es: 'Frontend', label_en: 'Frontend' },
     { value: 'backend', label_es: 'Backend', label_en: 'Backend' },
     { value: 'database', label_es: 'Base de Datos', label_en: 'Database' },
+    { value: 'servidor', label_es: 'Servidor', label_en: 'Server' },
+    { value: 'storage', label_es: 'Storage', label_en: 'Storage' },
     { value: 'devops', label_es: 'DevOps', label_en: 'DevOps' },
     { value: 'mobile', label_es: 'Móvil', label_en: 'Mobile' },
     { value: 'cloud', label_es: 'Cloud', label_en: 'Cloud' },
@@ -279,8 +446,8 @@ export function TechnologyForm({ dict, lang, technology, companies }: Technology
                 <FormLabel>{(dict as any).technologies?.category || (lang === 'en' ? 'Category' : 'Categoría')}</FormLabel>
                 <Select onValueChange={field.onChange} value={field.value || ''}>
                   <FormControl>
-                    <SelectTrigger className="!border-2 !border-border">
-                      <SelectValue placeholder={lang === 'en' ? 'Select category' : 'Selecciona categoría'} />
+                    <SelectTrigger className="w-full !border-2 !border-border">
+                      <SelectValue />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
@@ -298,57 +465,12 @@ export function TechnologyForm({ dict, lang, technology, companies }: Technology
 
           <FormField
             control={form.control}
-            name="order_index"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{(dict as any).technologies?.orderIndex || (lang === 'en' ? 'Order' : 'Orden')}</FormLabel>
-                <FormControl>
-                  <Input 
-                    type="number" 
-                    {...field} 
-                    onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
-                    className="!border-2 !border-border" 
-                  />
-                </FormControl>
-                <FormDescription>
-                  {lang === 'en' 
-                    ? 'Order for display (lower numbers appear first)'
-                    : 'Orden para mostrar (números menores aparecen primero)'}
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <FormField
-            control={form.control}
-            name="icon"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{(dict as any).technologies?.icon || (lang === 'en' ? 'Icon' : 'Icono')}</FormLabel>
-                <FormControl>
-                  <Input {...field} className="!border-2 !border-border" placeholder="lucide-react icon name or URL" />
-                </FormControl>
-                <FormDescription>
-                  {lang === 'en' 
-                    ? 'Icon name from lucide-react or URL to an image'
-                    : 'Nombre del icono de lucide-react o URL de una imagen'}
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
             name="website_url"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>{(dict as any).technologies?.websiteUrl || (lang === 'en' ? 'Website URL' : 'URL del Sitio Web')}</FormLabel>
                 <FormControl>
-                  <Input {...field} type="url" className="!border-2 !border-border" placeholder="https://..." />
+                  <Input {...field} type="url" className="!border-2 !border-border" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -356,60 +478,122 @@ export function TechnologyForm({ dict, lang, technology, companies }: Technology
           />
         </div>
 
+        {/* Logo Upload */}
+        <FormField
+          control={form.control}
+          name="logo_url"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{(dict as any).technologies?.logo || (lang === 'en' ? 'Logo' : 'Logo')}</FormLabel>
+              <FormControl>
+                <div className="space-y-4">
+                  {previewLogo ? (
+                    <div className="relative inline-block">
+                      <div className="relative h-32 w-32 overflow-hidden rounded-lg border-2 border-border">
+                        <Image
+                          src={previewLogo}
+                          alt="Logo preview"
+                          fill
+                          className="object-contain"
+                        />
+                      </div>
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="icon"
+                        className="absolute -top-2 -right-2 h-6 w-6 rounded-full"
+                        onClick={handleRemoveLogo}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-4">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={isUploading}
+                        className="!border-2 !border-border"
+                      >
+                        <ImageIcon className="mr-2 h-4 w-4" />
+                        {isUploading
+                          ? (lang === 'en' ? 'Uploading...' : 'Subiendo...')
+                          : (lang === 'en' ? 'Upload Logo' : 'Subir Logo')}
+                      </Button>
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                        className="hidden"
+                      />
+                    </div>
+                  )}
+                </div>
+              </FormControl>
+              <FormDescription>
+                {lang === 'en'
+                  ? 'Upload the logo of the technology (max 5MB)'
+                  : 'Sube el logo de la tecnología (máx 5MB)'}
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
         <Card>
           <CardHeader>
             <CardTitle>{(dict as any).technologies?.companies || (lang === 'en' ? 'Companies' : 'Empresas')}</CardTitle>
             <CardDescription>
-              {(dict as any).technologies?.selectCompanies || (lang === 'en' ? 'Select companies that use this technology' : 'Selecciona empresas que utilizan esta tecnología')}
+              {lang === 'en'
+                ? 'Add famous companies that use this technology (e.g., Liverpool, Netflix)'
+                : 'Agrega empresas famosas que utilizan esta tecnología (ej: Liverpool, Netflix)'}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <FormField
               control={form.control}
-              name="company_ids"
-              render={() => (
+              name="company_names"
+              render={({ field }) => (
                 <FormItem>
-                  <div className="space-y-3 max-h-60 overflow-y-auto">
-                    {companies.map((company) => (
-                      <FormField
-                        key={company.id}
-                        control={form.control}
-                        name="company_ids"
-                        render={({ field }) => {
-                          return (
-                            <FormItem
-                              key={company.id}
-                              className="flex flex-row items-start space-x-3 space-y-0"
-                            >
-                              <FormControl>
-                                <Checkbox
-                                  checked={field.value?.includes(company.id)}
-                                  onCheckedChange={(checked) => {
-                                    return checked
-                                      ? field.onChange([...field.value, company.id])
-                                      : field.onChange(
-                                          field.value?.filter(
-                                            (value) => value !== company.id
-                                          )
-                                        )
-                                  }}
-                                />
-                              </FormControl>
-                              <FormLabel className="font-normal cursor-pointer">
-                                {company.name}
-                              </FormLabel>
-                            </FormItem>
-                          )
-                        }}
-                      />
+                  <div className="space-y-3">
+                    {field.value?.map((companyName, index) => (
+                      <div key={index} className="flex gap-2">
+                        <Input
+                          value={companyName}
+                          onChange={(e) => {
+                            const newCompanies = [...(field.value || [])]
+                            newCompanies[index] = e.target.value
+                            field.onChange(newCompanies)
+                          }}
+                          className="!border-2 !border-border"
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="icon"
+                          onClick={() => {
+                            const newCompanies = field.value?.filter((_, i) => i !== index)
+                            field.onChange(newCompanies)
+                          }}
+                          className="text-destructive hover:text-destructive"
+                        >
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </div>
                     ))}
-                    {companies.length === 0 && (
-                      <p className="text-sm text-muted-foreground">
-                        {lang === 'en' 
-                          ? 'No companies available'
-                          : 'No hay empresas disponibles'}
-                      </p>
-                    )}
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => {
+                        field.onChange([...(field.value || []), ''])
+                      }}
+                      className="w-full !border-2 !border-border"
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      {lang === 'en' ? 'Add Company' : 'Agregar Empresa'}
+                    </Button>
                   </div>
                   <FormMessage />
                 </FormItem>
@@ -426,7 +610,7 @@ export function TechnologyForm({ dict, lang, technology, companies }: Technology
           >
             {dict.dashboard.admin.crud.cancel}
           </Button>
-          <Button type="submit" disabled={isSubmitting}>
+          <Button type="submit" disabled={isSubmitting || isUploading}>
             {isSubmitting
               ? (lang === 'en' ? 'Saving...' : 'Guardando...')
               : dict.dashboard.admin.crud.save}

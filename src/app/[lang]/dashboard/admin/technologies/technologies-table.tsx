@@ -48,11 +48,7 @@ interface Technology {
   website_url?: string
   order_index?: number
   technology_companies?: Array<{
-    company_id: string
-    companies: {
-      id: string
-      name: string
-    } | null
+    company_name: string
   }>
 }
 
@@ -152,8 +148,7 @@ export function TechnologiesTable({ technologies, dict, lang }: TechnologiesTabl
       header: (dict as any).technologies?.companies || (lang === 'en' ? 'Companies' : 'Empresas'),
       cell: ({ row }) => {
         const companies = row.original.technology_companies
-          ?.filter(tc => tc.companies !== null)
-          .map(tc => tc.companies?.name)
+          ?.map(tc => tc.company_name)
           .filter(Boolean) || []
         
         if (companies.length === 0) {
