@@ -63,6 +63,37 @@
         "emailExists": "This email is already registered"
       },
       "success": "Account created successfully. Please check your email to verify your account."
+    },
+    "forgotPassword": {
+      "title": "Forgot your password?",
+      "description": "Enter your email address and we'll send you a link to reset your password.",
+      "email": "Email address",
+      "submit": "Send recovery link",
+      "submitting": "Sending...",
+      "backToLogin": "Back to sign in",
+      "success": "If an account exists with that email, we've sent you a link to reset your password.",
+      "errors": {
+        "emailRequired": "Email is required",
+        "invalidEmail": "Must be a valid email",
+        "generic": "Error sending recovery link. Please try again."
+      }
+    },
+    "resetPassword": {
+      "title": "Reset password",
+      "description": "Enter your new password",
+      "password": "New password",
+      "confirmPassword": "Confirm new password",
+      "submit": "Reset password",
+      "submitting": "Resetting...",
+      "backToLogin": "Back to sign in",
+      "success": "Password reset successfully. Redirecting...",
+      "errors": {
+        "passwordRequired": "Password is required",
+        "passwordMin": "Password must be at least 6 characters",
+        "passwordsMatch": "Passwords must match",
+        "invalidToken": "The recovery link is invalid or has expired",
+        "generic": "Error resetting password. Please try again."
+      }
     }
   },
   "dashboard": {

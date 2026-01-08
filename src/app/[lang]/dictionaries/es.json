@@ -63,6 +63,37 @@
         "emailExists": "Este correo electrónico ya está registrado"
       },
       "success": "Cuenta creada exitosamente. Por favor, verifica tu correo electrónico."
+    },
+    "forgotPassword": {
+      "title": "¿Olvidaste tu contraseña?",
+      "description": "Ingresa tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña.",
+      "email": "Correo electrónico",
+      "submit": "Enviar enlace de recuperación",
+      "submitting": "Enviando...",
+      "backToLogin": "Volver al inicio de sesión",
+      "success": "Si existe una cuenta con ese correo, te hemos enviado un enlace para restablecer tu contraseña.",
+      "errors": {
+        "emailRequired": "El correo electrónico es requerido",
+        "invalidEmail": "Debe ser un correo electrónico válido",
+        "generic": "Error al enviar el enlace. Por favor, intenta de nuevo."
+      }
+    },
+    "resetPassword": {
+      "title": "Restablecer contraseña",
+      "description": "Ingresa tu nueva contraseña",
+      "password": "Nueva contraseña",
+      "confirmPassword": "Confirmar nueva contraseña",
+      "submit": "Restablecer contraseña",
+      "submitting": "Restableciendo...",
+      "backToLogin": "Volver al inicio de sesión",
+      "success": "Contraseña restablecida exitosamente. Redirigiendo...",
+      "errors": {
+        "passwordRequired": "La contraseña es requerida",
+        "passwordMin": "La contraseña debe tener al menos 6 caracteres",
+        "passwordsMatch": "Las contraseñas deben coincidir",
+        "invalidToken": "El enlace de recuperación no es válido o ha expirado",
+        "generic": "Error al restablecer la contraseña. Por favor, intenta de nuevo."
+      }
     }
   },
   "dashboard": {
