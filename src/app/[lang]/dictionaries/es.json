@@ -197,6 +197,8 @@
         "email": "Correo Electrónico",
         "repository": "Repositorio",
         "payment_gateway": "Pasarela de Pagos",
+        "ai": "Inteligencia Artificial",
+        "data_analytics": "Análisis de Datos",
         "devops": "DevOps",
         "mobile": "Móvil",
         "cloud": "Cloud"

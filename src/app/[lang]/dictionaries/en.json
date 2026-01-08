@@ -197,6 +197,8 @@
         "email": "Email",
         "repository": "Repository",
         "payment_gateway": "Payment Gateway",
+        "ai": "Artificial Intelligence",
+        "data_analytics": "Data Analytics",
         "devops": "DevOps",
         "mobile": "Mobile",
         "cloud": "Cloud"
