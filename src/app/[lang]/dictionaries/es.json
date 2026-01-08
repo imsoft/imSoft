@@ -111,10 +111,11 @@
         "contact": "Contacto",
         "quotations": "Cotizaciones",
         "feedbacks": "Feedbacks",
-        "crm": "CRM",
-        "settings": "Configuración",
-        "analytics": "Analíticas",
-        "reports": "Reportes"
+      "crm": "CRM",
+      "technologies": "Tecnologías",
+      "settings": "Configuración",
+      "analytics": "Analíticas",
+      "reports": "Reportes"
       },
       "crud": {
         "create": "Crear",
@@ -150,6 +151,52 @@
       "logout": "Cerrar sesión",
       "profile": "Perfil",
       "settings": "Configuración"
+    },
+    "technologies": {
+      "title": "Tecnologías",
+      "subtitle": "Gestiona las tecnologías que utiliza imSoft",
+      "name": "Nombre",
+      "nameEs": "Nombre en Español",
+      "nameEn": "Nombre en Inglés",
+      "description": "Descripción",
+      "descriptionEs": "Descripción en Español",
+      "descriptionEn": "Descripción en Inglés",
+      "icon": "Icono",
+      "category": "Categoría",
+      "websiteUrl": "URL del Sitio Web",
+      "orderIndex": "Orden",
+      "companies": "Empresas",
+      "selectCompanies": "Seleccionar Empresas",
+      "noCompanies": "No hay empresas asociadas",
+      "create": "Crear Tecnología",
+      "edit": "Editar Tecnología",
+      "delete": "Eliminar Tecnología",
+      "deleteConfirm": {
+        "title": "¿Eliminar tecnología?",
+        "description": "Esta acción no se puede deshacer. Esto eliminará permanentemente la tecnología y todas sus relaciones con empresas."
+      },
+      "deleteSuccess": "Tecnología eliminada exitosamente",
+      "deleteError": "Error al eliminar la tecnología",
+      "saveSuccess": "Tecnología guardada exitosamente",
+      "saveError": "Error al guardar la tecnología",
+      "validation": {
+        "nameRequired": "El nombre es requerido",
+        "nameEsRequired": "El nombre en español es requerido",
+        "nameEnRequired": "El nombre en inglés es requerido",
+        "descriptionEsRequired": "La descripción en español es requerida",
+        "descriptionEnRequired": "La descripción en inglés es requerida",
+        "descriptionEsMin": "La descripción en español debe tener al menos 10 caracteres",
+        "descriptionEnMin": "La descripción en inglés debe tener al menos 10 caracteres"
+      },
+      "categories": {
+        "frontend": "Frontend",
+        "backend": "Backend",
+        "database": "Base de Datos",
+        "devops": "DevOps",
+        "mobile": "Móvil",
+        "cloud": "Cloud",
+        "other": "Otro"
+      }
     },
     "empty": {
       "users": {

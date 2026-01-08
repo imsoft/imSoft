@@ -111,10 +111,11 @@
         "contact": "Contact",
         "quotations": "Quotations",
         "feedbacks": "Feedbacks",
-        "crm": "CRM",
-        "settings": "Settings",
-        "analytics": "Analytics",
-        "reports": "Reports"
+      "crm": "CRM",
+      "technologies": "Technologies",
+      "settings": "Settings",
+      "analytics": "Analytics",
+      "reports": "Reports"
       },
       "crud": {
         "create": "Create",
@@ -150,6 +151,52 @@
       "logout": "Logout",
       "profile": "Profile",
       "settings": "Settings"
+    },
+    "technologies": {
+      "title": "Technologies",
+      "subtitle": "Manage the technologies that imSoft uses",
+      "name": "Name",
+      "nameEs": "Name in Spanish",
+      "nameEn": "Name in English",
+      "description": "Description",
+      "descriptionEs": "Description in Spanish",
+      "descriptionEn": "Description in English",
+      "icon": "Icon",
+      "category": "Category",
+      "websiteUrl": "Website URL",
+      "orderIndex": "Order",
+      "companies": "Companies",
+      "selectCompanies": "Select Companies",
+      "noCompanies": "No companies associated",
+      "create": "Create Technology",
+      "edit": "Edit Technology",
+      "delete": "Delete Technology",
+      "deleteConfirm": {
+        "title": "Delete technology?",
+        "description": "This action cannot be undone. This will permanently delete the technology and all its relationships with companies."
+      },
+      "deleteSuccess": "Technology deleted successfully",
+      "deleteError": "Error deleting technology",
+      "saveSuccess": "Technology saved successfully",
+      "saveError": "Error saving technology",
+      "validation": {
+        "nameRequired": "Name is required",
+        "nameEsRequired": "Name in Spanish is required",
+        "nameEnRequired": "Name in English is required",
+        "descriptionEsRequired": "Description in Spanish is required",
+        "descriptionEnRequired": "Description in English is required",
+        "descriptionEsMin": "Description in Spanish must be at least 10 characters",
+        "descriptionEnMin": "Description in English must be at least 10 characters"
+      },
+      "categories": {
+        "frontend": "Frontend",
+        "backend": "Backend",
+        "database": "Database",
+        "devops": "DevOps",
+        "mobile": "Mobile",
+        "cloud": "Cloud",
+        "other": "Other"
+      }
     },
     "empty": {
       "users": {

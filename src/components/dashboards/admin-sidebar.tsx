@@ -28,7 +28,8 @@ import {
   Contact,
   Building2,
   Receipt,
-  UserCog
+  UserCog,
+  Code
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -104,6 +105,11 @@ export function AdminSidebar({ dict, lang, user }: AdminSidebarProps) {
       title: dict.dashboard.admin.nav.crm,
       url: `/${lang}/dashboard/admin/crm`,
       icon: UserCog,
+    },
+    {
+      title: dict.dashboard.admin.nav.technologies,
+      url: `/${lang}/dashboard/admin/technologies`,
+      icon: Code,
     },
     {
       title: dict.dashboard.admin.nav.analytics,

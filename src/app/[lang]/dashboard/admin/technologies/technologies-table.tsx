@@ -1,0 +1,280 @@
+'use client'
+
+import { ColumnDef } from "@tanstack/react-table"
+import { Button } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import Link from "next/link"
+import { useState } from "react"
+import { createClient } from "@/lib/supabase/client"
+import { useRouter } from "next/navigation"
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+  EmptyAction,
+} from "@/components/ui/empty"
+import { Code, Plus, ArrowUpDown, MoreHorizontal, Pencil, Trash2, Building2 } from "lucide-react"
+import { DataTable } from "@/components/ui/data-table"
+import type { Dictionary, Locale } from '@/app/[lang]/dictionaries'
+import { Badge } from "@/components/ui/badge"
+
+interface Technology {
+  id: string
+  name?: string
+  name_es?: string
+  name_en?: string
+  description_es?: string
+  description_en?: string
+  icon?: string
+  category?: string
+  website_url?: string
+  order_index?: number
+  technology_companies?: Array<{
+    company_id: string
+    companies: {
+      id: string
+      name: string
+    } | null
+  }>
+}
+
+interface TechnologiesTableProps {
+  technologies: Technology[]
+  dict: Dictionary
+  lang: Locale
+}
+
+export function TechnologiesTable({ technologies, dict, lang }: TechnologiesTableProps) {
+  const router = useRouter()
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
+
+  const handleDelete = async (id: string) => {
+    setIsDeleting(true)
+    try {
+      const supabase = createClient()
+
+      // Eliminar relaciones con empresas primero
+      const { error: deleteRelationsError } = await supabase
+        .from('technology_companies')
+        .delete()
+        .eq('technology_id', id)
+
+      if (deleteRelationsError) throw deleteRelationsError
+
+      // Luego eliminar la tecnología
+      const { error: deleteError } = await supabase
+        .from('technologies')
+        .delete()
+        .eq('id', id)
+
+      if (deleteError) throw deleteError
+
+      router.refresh()
+      setDeleteDialogOpen(false)
+      setDeletingId(null)
+    } catch (error) {
+      console.error('Error deleting technology:', error)
+    } finally {
+      setIsDeleting(false)
+    }
+  }
+
+  const columns: ColumnDef<Technology>[] = [
+    {
+      id: "name",
+      accessorFn: (row) => lang === 'en' 
+        ? (row.name_en || row.name || '')
+        : (row.name_es || row.name || ''),
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            {(dict as any).technologies?.name || (lang === 'en' ? 'Name' : 'Nombre')}
+            <ArrowUpDown className="ml-2 size-4" />
+          </Button>
+        )
+      },
+      cell: ({ row }) => {
+        const technology = row.original
+        const name = lang === 'en' 
+          ? (technology.name_en || technology.name || '')
+          : (technology.name_es || technology.name || '')
+        return <div className="font-medium">{name}</div>
+      },
+    },
+    {
+      id: "category",
+      accessorKey: "category",
+      header: (dict as any).technologies?.category || (lang === 'en' ? 'Category' : 'Categoría'),
+      cell: ({ row }) => {
+        const category = row.original.category
+        if (!category) return <span className="text-muted-foreground">-</span>
+        const categories = (dict as any).technologies?.categories || {}
+        const categoryLabel = categories[category as keyof typeof categories] || category
+        return <Badge variant="outline">{categoryLabel}</Badge>
+      },
+    },
+    {
+      id: "description",
+      header: (dict as any).technologies?.description || (lang === 'en' ? 'Description' : 'Descripción'),
+      cell: ({ row }) => {
+        const technology = row.original
+        const description = lang === 'en'
+          ? (technology.description_en || '')
+          : (technology.description_es || '')
+        return <div className="max-w-md truncate">{description}</div>
+      },
+    },
+    {
+      id: "companies",
+      header: (dict as any).technologies?.companies || (lang === 'en' ? 'Companies' : 'Empresas'),
+      cell: ({ row }) => {
+        const companies = row.original.technology_companies
+          ?.filter(tc => tc.companies !== null)
+          .map(tc => tc.companies?.name)
+          .filter(Boolean) || []
+        
+        if (companies.length === 0) {
+          return <span className="text-muted-foreground text-sm">{(dict as any).technologies?.noCompanies || (lang === 'en' ? 'No companies associated' : 'No hay empresas asociadas')}</span>
+        }
+        
+        return (
+          <div className="flex flex-wrap gap-1">
+            {companies.slice(0, 3).map((company, index) => (
+              <Badge key={index} variant="secondary" className="text-xs">
+                {company}
+              </Badge>
+            ))}
+            {companies.length > 3 && (
+              <Badge variant="secondary" className="text-xs">
+                +{companies.length - 3}
+              </Badge>
+            )}
+          </div>
+        )
+      },
+    },
+    {
+      id: "actions",
+      enableHiding: false,
+      cell: ({ row }) => {
+        const technology = row.original
+
+        return (
+          <>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-8 w-8 p-0">
+                  <span className="sr-only">Open menu</span>
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>{dict.dashboard.admin.crud.actions}</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link href={`/${lang}/dashboard/admin/technologies/${technology.id}/edit`}>
+                    <Pencil className="mr-2 size-4" />
+                    {dict.dashboard.admin.crud.edit}
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => {
+                    setDeletingId(technology.id)
+                    setDeleteDialogOpen(true)
+                  }}
+                  className="text-destructive"
+                >
+                  <Trash2 className="mr-2 size-4 text-destructive" />
+                  {dict.dashboard.admin.crud.delete}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <Dialog open={deleteDialogOpen && deletingId === technology.id} onOpenChange={setDeleteDialogOpen}>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>{(dict as any).technologies?.deleteConfirm?.title || (lang === 'en' ? 'Delete technology?' : '¿Eliminar tecnología?')}</DialogTitle>
+                  <DialogDescription>
+                    {(dict as any).technologies?.deleteConfirm?.description || (lang === 'en' ? 'This action cannot be undone.' : 'Esta acción no se puede deshacer.')}
+                  </DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setDeleteDialogOpen(false)
+                      setDeletingId(null)
+                    }}
+                    disabled={isDeleting}
+                  >
+                    {dict.dashboard.admin.crud.cancel}
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    onClick={() => handleDelete(technology.id)}
+                    disabled={isDeleting}
+                  >
+                    {isDeleting ? dict.dashboard.admin.crud.deleting : dict.dashboard.admin.crud.delete}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          </>
+        )
+      },
+    },
+  ]
+
+  if (technologies.length === 0) {
+    return (
+      <Empty>
+        <EmptyMedia>
+          <Code className="size-12 text-muted-foreground" />
+        </EmptyMedia>
+        <EmptyHeader>
+          <EmptyTitle>
+            {lang === 'en' ? 'No technologies' : 'No hay tecnologías'}
+          </EmptyTitle>
+          <EmptyDescription>
+            {lang === 'en' 
+              ? 'Get started by creating your first technology.'
+              : 'Comienza creando tu primera tecnología.'}
+          </EmptyDescription>
+        </EmptyHeader>
+        <EmptyAction>
+          <Button asChild>
+            <Link href={`/${lang}/dashboard/admin/technologies/new`}>
+              <Plus className="mr-2 size-4" />
+              {(dict as any).technologies?.create || (lang === 'en' ? 'Create Technology' : 'Crear Tecnología')}
+            </Link>
+          </Button>
+        </EmptyAction>
+      </Empty>
+    )
+  }
+
+  return <DataTable columns={columns} data={technologies} dict={dict} lang={lang} />
+}
