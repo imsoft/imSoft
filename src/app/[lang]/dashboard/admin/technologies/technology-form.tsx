@@ -445,71 +445,67 @@ export function TechnologyForm({ dict, lang, technology }: TechnologyFormProps) 
           </TabsContent>
         </Tabs>
 
-        <div className="space-y-4">
-          <FormField
-            control={form.control}
-            name="categories"
-            render={() => (
-              <FormItem>
-                <div className="mb-4">
-                  <FormLabel className="text-base">
-                    {(dict as any).technologies?.category || (lang === 'en' ? 'Categories' : 'Categorías')}
-                  </FormLabel>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {categories.map((cat) => (
-                    <FormField
-                      key={cat.value}
-                      control={form.control}
-                      name="categories"
-                      render={({ field }) => {
-                        return (
-                          <FormItem
-                            key={cat.value}
-                            className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-3"
-                          >
-                            <FormControl>
-                              <Checkbox
-                                checked={field.value?.includes(cat.value)}
-                                onCheckedChange={(checked) => {
-                                  return checked
-                                    ? field.onChange([...field.value, cat.value])
-                                    : field.onChange(
-                                        field.value?.filter(
-                                          (value) => value !== cat.value
-                                        )
+        <FormField
+          control={form.control}
+          name="categories"
+          render={() => (
+            <FormItem>
+              <FormLabel className="text-base">
+                {(dict as any).technologies?.category || (lang === 'en' ? 'Categories' : 'Categorías')}
+              </FormLabel>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mt-2">
+                {categories.map((cat) => (
+                  <FormField
+                    key={cat.value}
+                    control={form.control}
+                    name="categories"
+                    render={({ field }) => {
+                      return (
+                        <FormItem
+                          key={cat.value}
+                          className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-3"
+                        >
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value?.includes(cat.value)}
+                              onCheckedChange={(checked) => {
+                                return checked
+                                  ? field.onChange([...field.value, cat.value])
+                                  : field.onChange(
+                                      field.value?.filter(
+                                        (value) => value !== cat.value
                                       )
-                                }}
-                              />
-                            </FormControl>
-                            <FormLabel className="font-normal cursor-pointer">
-                              {lang === 'es' ? cat.label_es : cat.label_en}
-                            </FormLabel>
-                          </FormItem>
-                        )
-                      }}
-                    />
-                  ))}
-                </div>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+                                    )
+                              }}
+                            />
+                          </FormControl>
+                          <FormLabel className="font-normal cursor-pointer">
+                            {lang === 'es' ? cat.label_es : cat.label_en}
+                          </FormLabel>
+                        </FormItem>
+                      )
+                    }}
+                  />
+                ))}
+              </div>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-          <FormField
-            control={form.control}
-            name="website_url"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{(dict as any).technologies?.websiteUrl || (lang === 'en' ? 'Website URL' : 'URL del Sitio Web')}</FormLabel>
-                <FormControl>
-                  <Input {...field} type="url" className="!border-2 !border-border" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
+        <FormField
+          control={form.control}
+          name="website_url"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{(dict as any).technologies?.websiteUrl || (lang === 'en' ? 'Website URL' : 'URL del Sitio Web')}</FormLabel>
+              <FormControl>
+                <Input {...field} type="url" className="!border-2 !border-border" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
         {/* Logo Upload */}
         <FormField
