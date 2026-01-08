@@ -35,6 +35,7 @@ import { Code, Plus, ArrowUpDown, MoreHorizontal, Pencil, Trash2, Building2 } fr
 import { DataTable } from "@/components/ui/data-table"
 import type { Dictionary, Locale } from '@/app/[lang]/dictionaries'
 import { Badge } from "@/components/ui/badge"
+import Image from "next/image"
 
 interface Technology {
   id: string
@@ -49,6 +50,7 @@ interface Technology {
   order_index?: number
   technology_companies?: Array<{
     company_name: string
+    logo_url?: string
   }>
 }
 
@@ -147,20 +149,30 @@ export function TechnologiesTable({ technologies, dict, lang }: TechnologiesTabl
       id: "companies",
       header: (dict as any).technologies?.companies || (lang === 'en' ? 'Companies' : 'Empresas'),
       cell: ({ row }) => {
-        const companies = row.original.technology_companies
-          ?.map(tc => tc.company_name)
-          .filter(Boolean) || []
+        const companies = row.original.technology_companies || []
         
         if (companies.length === 0) {
           return <span className="text-muted-foreground text-sm">{(dict as any).technologies?.noCompanies || (lang === 'en' ? 'No companies associated' : 'No hay empresas asociadas')}</span>
         }
         
         return (
-          <div className="flex flex-wrap gap-1">
+          <div className="flex flex-wrap gap-2 items-center">
             {companies.slice(0, 3).map((company, index) => (
-              <Badge key={index} variant="secondary" className="text-xs">
-                {company}
-              </Badge>
+              <div key={index} className="flex items-center gap-1.5">
+                {company.logo_url && (
+                  <div className="relative h-6 w-6 overflow-hidden rounded border">
+                    <Image
+                      src={company.logo_url}
+                      alt={company.company_name}
+                      fill
+                      className="object-contain"
+                    />
+                  </div>
+                )}
+                <Badge variant="secondary" className="text-xs">
+                  {company.company_name}
+                </Badge>
+              </div>
             ))}
             {companies.length > 3 && (
               <Badge variant="secondary" className="text-xs">

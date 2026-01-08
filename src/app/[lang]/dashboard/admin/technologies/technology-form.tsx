@@ -33,6 +33,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { X, Image as ImageIcon, Plus, Trash2 } from 'lucide-react'
 import Image from 'next/image'
 
+const companySchema = z.object({
+  name: z.string().min(1, 'El nombre de la empresa es requerido'),
+  logo_url: z.string().optional(),
+})
+
 const technologySchema = z.object({
   name_es: z.string().min(1, 'El nombre en español es requerido'),
   name_en: z.string().min(1, 'El nombre en inglés es requerido'),
@@ -41,7 +46,7 @@ const technologySchema = z.object({
   category: z.string().optional(),
   logo_url: z.string().optional(),
   website_url: z.string().url('Debe ser una URL válida').optional().or(z.literal('')),
-  company_names: z.array(z.string()),
+  companies: z.array(companySchema),
 })
 
 type TechnologyFormValues = z.infer<typeof technologySchema>
@@ -58,6 +63,7 @@ interface Technology {
   website_url?: string
   technology_companies?: Array<{
     company_name: string
+    logo_url?: string
   }>
 }
 
@@ -72,7 +78,9 @@ export function TechnologyForm({ dict, lang, technology }: TechnologyFormProps) 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
   const [previewLogo, setPreviewLogo] = useState<string | null>(technology?.logo_url || null)
+  const [uploadingCompanyIndex, setUploadingCompanyIndex] = useState<number | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const companyFileInputRefs = useRef<Record<number, HTMLInputElement | null>>({})
   const isEditing = !!technology
 
   const form = useForm<TechnologyFormValues>({
@@ -85,7 +93,10 @@ export function TechnologyForm({ dict, lang, technology }: TechnologyFormProps) 
       category: technology?.category || '',
       logo_url: technology?.logo_url || '',
       website_url: technology?.website_url || '',
-      company_names: technology?.technology_companies?.map(tc => tc.company_name) || [],
+      companies: technology?.technology_companies?.map(tc => ({
+        name: tc.company_name,
+        logo_url: tc.logo_url || '',
+      })) || [],
     },
   })
 
@@ -294,7 +305,7 @@ export function TechnologyForm({ dict, lang, technology }: TechnologyFormProps) 
         }
       }
 
-      // Gestionar empresas (nombres de empresas famosas)
+      // Gestionar empresas (nombres de empresas famosas con logos)
       // Primero eliminar todas las relaciones existentes
       const { error: deleteError } = await supabase
         .from('technology_companies')
@@ -303,13 +314,14 @@ export function TechnologyForm({ dict, lang, technology }: TechnologyFormProps) 
 
       if (deleteError) throw deleteError
 
-      // Luego crear las nuevas relaciones con nombres de empresas
-      if (values.company_names.length > 0) {
-        const relations = values.company_names
-          .filter(name => name.trim() !== '')
-          .map(companyName => ({
+      // Luego crear las nuevas relaciones con nombres de empresas y logos
+      if (values.companies.length > 0) {
+        const relations = values.companies
+          .filter(company => company.name.trim() !== '')
+          .map(company => ({
             technology_id: technologyId,
-            company_name: companyName.trim(),
+            company_name: company.name.trim(),
+            logo_url: company.logo_url || null,
           }))
 
         if (relations.length > 0) {
@@ -339,6 +351,7 @@ export function TechnologyForm({ dict, lang, technology }: TechnologyFormProps) 
     { value: 'database', label_es: 'Base de Datos', label_en: 'Database' },
     { value: 'servidor', label_es: 'Servidor', label_en: 'Server' },
     { value: 'storage', label_es: 'Storage', label_en: 'Storage' },
+    { value: 'authentication', label_es: 'Autenticación', label_en: 'Authentication' },
     { value: 'devops', label_es: 'DevOps', label_en: 'DevOps' },
     { value: 'mobile', label_es: 'Móvil', label_en: 'Mobile' },
     { value: 'cloud', label_es: 'Cloud', label_en: 'Cloud' },
@@ -541,40 +554,186 @@ export function TechnologyForm({ dict, lang, technology }: TechnologyFormProps) 
           <CardContent>
             <FormField
               control={form.control}
-              name="company_names"
+              name="companies"
               render={({ field }) => (
                 <FormItem>
-                  <div className="space-y-3">
-                    {field.value?.map((companyName, index) => (
-                      <div key={index} className="flex gap-2">
-                        <Input
-                          value={companyName}
-                          onChange={(e) => {
-                            const newCompanies = [...(field.value || [])]
-                            newCompanies[index] = e.target.value
-                            field.onChange(newCompanies)
-                          }}
-                          className="!border-2 !border-border"
-                        />
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="icon"
-                          onClick={() => {
-                            const newCompanies = field.value?.filter((_, i) => i !== index)
-                            field.onChange(newCompanies)
-                          }}
-                          className="text-destructive hover:text-destructive"
-                        >
-                          <Trash2 className="h-4 w-4 text-destructive" />
-                        </Button>
-                      </div>
-                    ))}
+                  <div className="space-y-4">
+                    {field.value?.map((company, index) => {
+                      async function handleCompanyLogoUpload(file: File, companyIndex: number) {
+                        setUploadingCompanyIndex(companyIndex)
+                        try {
+                          const supabase = createClient()
+                          const technologyId = technology?.id || `temp-${Date.now()}-${Math.random().toString(36).substring(7)}`
+                          const companyName = field.value[companyIndex].name || `company-${companyIndex}`
+                          const companySlug = companyName.toLowerCase().replace(/[^a-z0-9]+/g, '-')
+                          
+                          // Eliminar logo anterior si existe
+                          const currentLogoUrl = field.value[companyIndex].logo_url
+                          if (currentLogoUrl && !currentLogoUrl.includes('/temp-')) {
+                            const filePath = getStoragePathFromUrl(currentLogoUrl, 'technology-logos')
+                            if (filePath) {
+                              await supabase.storage.from('technology-logos').remove([filePath])
+                            }
+                          }
+                          
+                          // Subir nuevo logo
+                          const fileExtension = file.name.split('.').pop()
+                          const fileName = `company-${companyIndex}-${Date.now()}.${fileExtension}`
+                          const filePath = `${technologyId}/companies/${fileName}`
+                          
+                          const { error: uploadError } = await supabase.storage
+                            .from('technology-logos')
+                            .upload(filePath, file, {
+                              cacheControl: '3600',
+                              upsert: true
+                            })
+                          
+                          if (uploadError) throw uploadError
+                          
+                          const { data } = supabase.storage
+                            .from('technology-logos')
+                            .getPublicUrl(filePath)
+                          
+                          // Actualizar el logo en el formulario
+                          const newCompanies = [...(field.value || [])]
+                          newCompanies[companyIndex] = {
+                            ...newCompanies[companyIndex],
+                            logo_url: data.publicUrl,
+                          }
+                          field.onChange(newCompanies)
+                          
+                          toast.success(lang === 'en' ? 'Logo uploaded successfully' : 'Logo subido exitosamente')
+                        } catch (error) {
+                          console.error('Error uploading company logo:', error)
+                          toast.error(lang === 'en' ? 'Error uploading logo' : 'Error al subir el logo', {
+                            description: error instanceof Error ? error.message : undefined,
+                          })
+                        } finally {
+                          setUploadingCompanyIndex(null)
+                        }
+                      }
+                      
+                      async function handleRemoveCompanyLogo(companyIndex: number) {
+                        const currentLogoUrl = field.value[companyIndex].logo_url
+                        if (currentLogoUrl) {
+                          const filePath = getStoragePathFromUrl(currentLogoUrl, 'technology-logos')
+                          if (filePath) {
+                            const supabase = createClient()
+                            await supabase.storage.from('technology-logos').remove([filePath])
+                          }
+                        }
+                        
+                        const newCompanies = [...(field.value || [])]
+                        newCompanies[companyIndex] = {
+                          ...newCompanies[companyIndex],
+                          logo_url: '',
+                        }
+                        field.onChange(newCompanies)
+                      }
+                      
+                      return (
+                        <div key={index} className="space-y-2 p-4 border rounded-lg">
+                          <div className="flex gap-2 items-start">
+                            <div className="flex-1 space-y-2">
+                              <Input
+                                value={company.name}
+                                onChange={(e) => {
+                                  const newCompanies = [...(field.value || [])]
+                                  newCompanies[index] = {
+                                    ...newCompanies[index],
+                                    name: e.target.value,
+                                  }
+                                  field.onChange(newCompanies)
+                                }}
+                                className="!border-2 !border-border"
+                              />
+                              {company.logo_url ? (
+                                <div className="relative inline-block">
+                                  <div className="relative h-20 w-20 overflow-hidden rounded-lg border-2 border-border">
+                                    <Image
+                                      src={company.logo_url}
+                                      alt={company.name || 'Company logo'}
+                                      fill
+                                      className="object-contain"
+                                    />
+                                  </div>
+                                  <Button
+                                    type="button"
+                                    variant="destructive"
+                                    size="icon"
+                                    className="absolute -top-2 -right-2 h-5 w-5 rounded-full"
+                                    onClick={() => handleRemoveCompanyLogo(index)}
+                                  >
+                                    <X className="h-3 w-3" />
+                                  </Button>
+                                </div>
+                              ) : (
+                                <div className="flex items-center gap-2">
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => companyFileInputRefs.current[index]?.click()}
+                                    disabled={uploadingCompanyIndex === index}
+                                    className="!border-2 !border-border"
+                                  >
+                                    <ImageIcon className="mr-2 h-3 w-3" />
+                                    {uploadingCompanyIndex === index
+                                      ? (lang === 'en' ? 'Uploading...' : 'Subiendo...')
+                                      : (lang === 'en' ? 'Upload Logo' : 'Subir Logo')}
+                                  </Button>
+                                  <input
+                                    ref={(el) => {
+                                      companyFileInputRefs.current[index] = el
+                                    }}
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => {
+                                      const file = e.target.files?.[0]
+                                      if (file) {
+                                        if (file.size > 5 * 1024 * 1024) {
+                                          toast.error(lang === 'en' ? 'Image size must be less than 5MB' : 'El tamaño de la imagen debe ser menor a 5MB')
+                                          return
+                                        }
+                                        if (!file.type.startsWith('image/')) {
+                                          toast.error(lang === 'en' ? 'Please select an image file' : 'Por favor selecciona un archivo de imagen')
+                                          return
+                                        }
+                                        handleCompanyLogoUpload(file, index)
+                                      }
+                                    }}
+                                    className="hidden"
+                                  />
+                                </div>
+                              )}
+                            </div>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="icon"
+                              onClick={() => {
+                                // Eliminar logo del storage si existe
+                                const companyToRemove = field.value[index]
+                                if (companyToRemove.logo_url) {
+                                  handleRemoveCompanyLogo(index)
+                                }
+                                // Eliminar la empresa del array
+                                const newCompanies = field.value?.filter((_, i) => i !== index)
+                                field.onChange(newCompanies)
+                              }}
+                              className="text-destructive hover:text-destructive"
+                            >
+                              <Trash2 className="h-4 w-4 text-destructive" />
+                            </Button>
+                          </div>
+                        </div>
+                      )
+                    })}
                     <Button
                       type="button"
                       variant="outline"
                       onClick={() => {
-                        field.onChange([...(field.value || []), ''])
+                        field.onChange([...(field.value || []), { name: '', logo_url: '' }])
                       }}
                       className="w-full !border-2 !border-border"
                     >

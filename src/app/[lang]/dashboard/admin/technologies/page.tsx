@@ -33,7 +33,8 @@ export default async function AdminTechnologiesPage({ params }: {
     .select(`
       *,
       technology_companies (
-        company_name
+        company_name,
+        logo_url
       )
     `)
     .order('name', { ascending: true })

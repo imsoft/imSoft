@@ -193,6 +193,7 @@
         "database": "Database",
         "servidor": "Server",
         "storage": "Storage",
+        "authentication": "Authentication",
         "devops": "DevOps",
         "mobile": "Mobile",
         "cloud": "Cloud",
