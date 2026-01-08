@@ -163,7 +163,23 @@ export function TechnologiesTable({ technologies, dict, lang }: TechnologiesTabl
         
         // Manejar tanto string (legacy) como array (nuevo)
         const categoryArray = Array.isArray(category) ? category : [category]
-        const categories = (dict as any).technologies?.categories || {}
+        const categoriesDict = (dict as any).technologies?.categories || {}
+        
+        // Mapeo manual como fallback
+        const categoryMap: Record<string, string> = {
+          frontend: lang === 'es' ? 'Frontend' : 'Frontend',
+          backend: lang === 'es' ? 'Backend' : 'Backend',
+          database: lang === 'es' ? 'Base de Datos' : 'Database',
+          servidor: lang === 'es' ? 'Servidor' : 'Server',
+          storage: lang === 'es' ? 'Storage' : 'Storage',
+          authentication: lang === 'es' ? 'Autenticación' : 'Authentication',
+          email: lang === 'es' ? 'Correo Electrónico' : 'Email',
+          repository: lang === 'es' ? 'Repositorio' : 'Repository',
+          payment_gateway: lang === 'es' ? 'Pasarela de Pagos' : 'Payment Gateway',
+          devops: lang === 'es' ? 'DevOps' : 'DevOps',
+          mobile: lang === 'es' ? 'Móvil' : 'Mobile',
+          cloud: lang === 'es' ? 'Cloud' : 'Cloud',
+        }
         
         if (categoryArray.length === 0) {
           return <span className="text-muted-foreground">-</span>
@@ -172,7 +188,9 @@ export function TechnologiesTable({ technologies, dict, lang }: TechnologiesTabl
         return (
           <div className="flex flex-wrap gap-1">
             {categoryArray.map((cat, index) => {
-              const categoryLabel = categories[cat as keyof typeof categories] || cat
+              // Obtener la traducción del diccionario o del mapeo manual
+              const categoryKey = String(cat)
+              const categoryLabel = categoriesDict[categoryKey] || categoryMap[categoryKey] || cat
               return (
                 <Badge key={index} variant="outline" className="text-xs">
                   {categoryLabel}
@@ -393,11 +411,29 @@ export function TechnologiesTable({ technologies, dict, lang }: TechnologiesTabl
               <SelectItem value="all">
                 {lang === 'en' ? 'All categories' : 'Todas las categorías'}
               </SelectItem>
-              {uniqueCategories.map(category => (
-                <SelectItem key={category} value={category}>
-                  {categories[category as keyof typeof categories] || category}
-                </SelectItem>
-              ))}
+              {uniqueCategories.map(category => {
+                const categoryKey = String(category)
+                const categoryMap: Record<string, string> = {
+                  frontend: lang === 'es' ? 'Frontend' : 'Frontend',
+                  backend: lang === 'es' ? 'Backend' : 'Backend',
+                  database: lang === 'es' ? 'Base de Datos' : 'Database',
+                  servidor: lang === 'es' ? 'Servidor' : 'Server',
+                  storage: lang === 'es' ? 'Storage' : 'Storage',
+                  authentication: lang === 'es' ? 'Autenticación' : 'Authentication',
+                  email: lang === 'es' ? 'Correo Electrónico' : 'Email',
+                  repository: lang === 'es' ? 'Repositorio' : 'Repository',
+                  payment_gateway: lang === 'es' ? 'Pasarela de Pagos' : 'Payment Gateway',
+                  devops: lang === 'es' ? 'DevOps' : 'DevOps',
+                  mobile: lang === 'es' ? 'Móvil' : 'Mobile',
+                  cloud: lang === 'es' ? 'Cloud' : 'Cloud',
+                }
+                const categoryLabel = categories[categoryKey] || categoryMap[categoryKey] || category
+                return (
+                  <SelectItem key={category} value={category}>
+                    {categoryLabel}
+                  </SelectItem>
+                )
+              })}
             </SelectContent>
           </Select>
         </div>
