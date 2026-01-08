@@ -53,6 +53,7 @@ interface Technology {
   description_en?: string
   icon?: string
   category?: string | string[] // Puede ser string (legacy) o array (nuevo)
+  logo_url?: string
   website_url?: string
   order_index?: number
   technology_companies?: Array<{
@@ -128,7 +129,21 @@ export function TechnologiesTable({ technologies, dict, lang }: TechnologiesTabl
         const name = lang === 'en' 
           ? (technology.name_en || technology.name || '')
           : (technology.name_es || technology.name || '')
-        return <div className="font-medium">{name}</div>
+        return (
+          <div className="flex items-center gap-3">
+            {technology.logo_url && (
+              <div className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded border">
+                <Image
+                  src={technology.logo_url}
+                  alt={name}
+                  fill
+                  className="object-contain p-1"
+                />
+              </div>
+            )}
+            <div className="font-medium">{name}</div>
+          </div>
+        )
       },
     },
     {
