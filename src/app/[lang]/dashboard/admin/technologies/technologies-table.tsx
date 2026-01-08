@@ -38,7 +38,7 @@ import {
   EmptyTitle,
   EmptyAction,
 } from "@/components/ui/empty"
-import { Code, Plus, ArrowUpDown, MoreHorizontal, Pencil, Trash2, Building2, Filter } from "lucide-react"
+import { Code, Plus, ArrowUpDown, MoreHorizontal, Pencil, Trash2, Building2 } from "lucide-react"
 import { DataTable } from "@/components/ui/data-table"
 import type { Dictionary, Locale } from '@/app/[lang]/dictionaries'
 import { Badge } from "@/components/ui/badge"
@@ -358,20 +358,13 @@ export function TechnologiesTable({ technologies, dict, lang }: TechnologiesTabl
     <div className="space-y-4">
       {/* Filtros adicionales */}
       <div className="flex flex-wrap items-center gap-4 p-4 bg-white dark:bg-card rounded-lg border">
-        <div className="flex items-center gap-2">
-          <Filter className="h-4 w-4 text-muted-foreground" />
-          <span className="text-sm font-medium">
-            {lang === 'en' ? 'Filters' : 'Filtros'}:
-          </span>
-        </div>
-
         {/* Filtro por categoría */}
         <div className="flex items-center gap-2 flex-1 min-w-[200px]">
           <label className="text-sm text-muted-foreground whitespace-nowrap">
             {lang === 'en' ? 'Category' : 'Categoría'}:
           </label>
           <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-            <SelectTrigger className="w-full">
+            <SelectTrigger className="w-full !border-2 !border-border">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -393,7 +386,7 @@ export function TechnologiesTable({ technologies, dict, lang }: TechnologiesTabl
             {lang === 'en' ? 'Companies' : 'Empresas'}:
           </label>
           <Select value={hasCompaniesFilter} onValueChange={setHasCompaniesFilter}>
-            <SelectTrigger className="w-full">
+            <SelectTrigger className="w-full !border-2 !border-border">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
