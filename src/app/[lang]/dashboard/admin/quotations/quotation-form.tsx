@@ -32,6 +32,7 @@ import { toast } from 'sonner'
 import type { Dictionary, Locale } from '@/app/[lang]/dictionaries'
 import type { QuotationQuestion } from '@/types/database'
 import { Calculator, Save } from 'lucide-react'
+import { Checkbox } from '@/components/ui/checkbox'
 
 const quotationSchema = z.object({
   service_id: z.string().min(1, 'El servicio es requerido'),
@@ -41,6 +42,7 @@ const quotationSchema = z.object({
   client_email: z.string().email('Email inválido'),
   client_company: z.string().optional(),
   answers: z.record(z.any()),
+  technology_ids: z.array(z.string()),
 })
 
 type QuotationFormValues = z.infer<typeof quotationSchema>
@@ -58,6 +60,8 @@ export function QuotationForm({ services, dict, lang, userId }: QuotationFormPro
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [questions, setQuestions] = useState<QuotationQuestion[]>([])
+  const [technologies, setTechnologies] = useState<Array<{ id: string; name_es?: string; name_en?: string; name?: string }>>([])
+  const [isLoadingTechnologies, setIsLoadingTechnologies] = useState(true)
   const [isLoadingQuestions, setIsLoadingQuestions] = useState(false)
   const [subtotal, setSubtotal] = useState(0)
   const [iva, setIva] = useState(0)
@@ -102,6 +106,7 @@ export function QuotationForm({ services, dict, lang, userId }: QuotationFormPro
       client_email: '',
       client_company: '',
       answers: {},
+      technology_ids: [] as string[],
     },
   })
 
@@ -121,6 +126,35 @@ export function QuotationForm({ services, dict, lang, userId }: QuotationFormPro
   useEffect(() => {
     calculatePrice()
   }, [answers, questions])
+
+  // Cargar tecnologías
+  useEffect(() => {
+    async function fetchTechnologies() {
+      setIsLoadingTechnologies(true)
+      try {
+        const supabase = createClient()
+        const { data, error } = await supabase
+          .from('technologies')
+          .select('id, name_es, name_en, name')
+          .order('name_es', { ascending: true })
+
+        if (error) throw error
+
+        setTechnologies(data || [])
+      } catch (error) {
+        console.error('Error fetching technologies:', error)
+        toast.error(
+          lang === 'en' ? 'Error loading technologies' : 'Error al cargar tecnologías',
+          {
+            description: error instanceof Error ? error.message : (lang === 'en' ? 'Unknown error' : 'Error desconocido'),
+          }
+        )
+      } finally {
+        setIsLoadingTechnologies(false)
+      }
+    }
+    fetchTechnologies()
+  }, [])
 
   async function loadQuestions(serviceId: string) {
     setIsLoadingQuestions(true)
@@ -219,11 +253,35 @@ export function QuotationForm({ services, dict, lang, userId }: QuotationFormPro
         valid_until: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 días
       }
 
-      const { error } = await supabase
+      const { data: insertedData, error } = await supabase
         .from('quotations')
         .insert([quotationData])
+        .select('id')
+        .single()
 
       if (error) throw error
+
+      // Guardar relaciones de tecnologías
+      if (insertedData?.id && values.technology_ids.length > 0) {
+        const technologyRelations = values.technology_ids.map(techId => ({
+          quotation_id: insertedData.id,
+          technology_id: techId,
+        }))
+
+        const { error: relationError } = await supabase
+          .from('quotation_technologies')
+          .insert(technologyRelations)
+
+        if (relationError) {
+          console.error('Error saving quotation technologies:', relationError)
+          toast.error(
+            lang === 'en' ? 'Error saving technologies' : 'Error al guardar tecnologías',
+            {
+              description: relationError.message,
+            }
+          )
+        }
+      }
 
       toast.success(lang === 'en' ? 'Quotation created successfully' : 'Cotización creada exitosamente')
       router.push(`/${lang}/dashboard/admin/quotations`)
@@ -345,6 +403,81 @@ export function QuotationForm({ services, dict, lang, userId }: QuotationFormPro
               </FormItem>
             )}
           />
+
+          {/* Technologies Section */}
+          <div className="space-y-4 border-t pt-6">
+            <div className="space-y-2">
+              <h3 className="text-lg font-semibold">
+                {lang === 'en' ? 'Technologies' : 'Tecnologías'}
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                {lang === 'en'
+                  ? 'Select the technologies that will be used in this project'
+                  : 'Selecciona las tecnologías que se utilizarán en este proyecto'
+                }
+              </p>
+            </div>
+
+            <FormField
+              control={form.control}
+              name="technology_ids"
+              render={() => (
+                <FormItem>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {isLoadingTechnologies ? (
+                      <div className="col-span-full text-sm text-muted-foreground">
+                        {lang === 'en' ? 'Loading technologies...' : 'Cargando tecnologías...'}
+                      </div>
+                    ) : technologies.length === 0 ? (
+                      <div className="col-span-full text-sm text-muted-foreground">
+                        {lang === 'en' ? 'No technologies available' : 'No hay tecnologías disponibles'}
+                      </div>
+                    ) : (
+                      technologies.map((tech) => {
+                        const techName = lang === 'es' 
+                          ? (tech.name_es || tech.name || '')
+                          : (tech.name_en || tech.name || '')
+                        return (
+                          <FormField
+                            key={tech.id}
+                            control={form.control}
+                            name="technology_ids"
+                            render={({ field }) => {
+                              return (
+                                <FormItem
+                                  key={tech.id}
+                                  className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-3"
+                                >
+                                  <FormControl>
+                                    <Checkbox
+                                      checked={field.value?.includes(tech.id)}
+                                      onCheckedChange={(checked) => {
+                                        return checked
+                                          ? field.onChange([...field.value, tech.id])
+                                          : field.onChange(
+                                              field.value?.filter(
+                                                (value) => value !== tech.id
+                                              )
+                                            )
+                                      }}
+                                    />
+                                  </FormControl>
+                                  <FormLabel className="font-normal cursor-pointer">
+                                    {techName}
+                                  </FormLabel>
+                                </FormItem>
+                              )
+                            }}
+                          />
+                        )
+                      })
+                    )}
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
         </div>
 
         {/* Preguntas del Cuestionario */}

@@ -27,6 +27,7 @@ import { X, Image as ImageIcon, Check, ChevronsUpDown } from 'lucide-react'
 import Image from 'next/image'
 import { cn } from '@/lib/utils'
 import { TranslateButton } from '@/components/ui/translate-button'
+import { Checkbox } from '@/components/ui/checkbox'
 import {
   Command,
   CommandEmpty,
@@ -102,6 +103,7 @@ const projectSchema = z.object({
     }
   }, 'Must be a valid GitHub URL'),
   github_enabled: z.boolean(),
+  technology_ids: z.array(z.string()),
 })
 
 type ProjectFormValues = z.infer<typeof projectSchema>
@@ -123,6 +125,8 @@ export function ProjectForm({ dict, lang, project }: ProjectFormProps) {
   const [statusOpen, setStatusOpen] = useState(false)
   const [companies, setCompanies] = useState<Array<{ value: string; label: string }>>([])
   const [isLoadingCompanies, setIsLoadingCompanies] = useState(true)
+  const [technologies, setTechnologies] = useState<Array<{ id: string; name_es?: string; name_en?: string; name?: string }>>([])
+  const [isLoadingTechnologies, setIsLoadingTechnologies] = useState(true)
   const isEditing = !!project
 
   const form = useForm<ProjectFormValues>({
@@ -145,6 +149,7 @@ export function ProjectForm({ dict, lang, project }: ProjectFormProps) {
       currency: project?.currency || 'MXN',
       github_repo_url: project?.github_repo_url || '',
       github_enabled: project?.github_enabled || false,
+      technology_ids: [] as string[],
     },
   })
 
@@ -207,6 +212,58 @@ export function ProjectForm({ dict, lang, project }: ProjectFormProps) {
     }
     fetchCompanies()
   }, [lang])
+
+  // Cargar tecnologías
+  useEffect(() => {
+    async function fetchTechnologies() {
+      setIsLoadingTechnologies(true)
+      try {
+        const supabase = createClient()
+        const { data, error } = await supabase
+          .from('technologies')
+          .select('id, name_es, name_en, name')
+          .order('name_es', { ascending: true })
+
+        if (error) throw error
+
+        setTechnologies(data || [])
+      } catch (error) {
+        console.error('Error fetching technologies:', error)
+        toast.error(
+          lang === 'en' ? 'Error loading technologies' : 'Error al cargar tecnologías',
+          {
+            description: error instanceof Error ? error.message : (lang === 'en' ? 'Unknown error' : 'Error desconocido'),
+          }
+        )
+      } finally {
+        setIsLoadingTechnologies(false)
+      }
+    }
+    fetchTechnologies()
+  }, [])
+
+  // Cargar tecnologías existentes si estamos editando
+  useEffect(() => {
+    async function fetchProjectTechnologies() {
+      if (!project?.id) return
+
+      try {
+        const supabase = createClient()
+        const { data, error } = await supabase
+          .from('project_technologies')
+          .select('technology_id')
+          .eq('project_id', project.id)
+
+        if (error) throw error
+
+        const technologyIds = (data || []).map(pt => pt.technology_id)
+        form.setValue('technology_ids', technologyIds)
+      } catch (error) {
+        console.error('Error fetching project technologies:', error)
+      }
+    }
+    fetchProjectTechnologies()
+  }, [project?.id, form])
 
   const titleEn = form.watch('title_en')
   const currentSlug = form.watch('slug')
@@ -386,6 +443,8 @@ export function ProjectForm({ dict, lang, project }: ProjectFormProps) {
         github_enabled: values.github_enabled,
       }
 
+      let projectId: string
+
       if (project) {
         // Actualizar
         const { error } = await supabase
@@ -394,15 +453,54 @@ export function ProjectForm({ dict, lang, project }: ProjectFormProps) {
           .eq('id', project.id)
 
         if (error) throw error
+        projectId = project.id
         toast.success(lang === 'en' ? 'Project updated successfully' : 'Proyecto actualizado exitosamente')
       } else {
         // Crear
-        const { error } = await supabase
+        const { data: insertedData, error } = await supabase
           .from('projects')
           .insert([data])
+          .select('id')
+          .single()
 
         if (error) throw error
+        projectId = insertedData.id
         toast.success(lang === 'en' ? 'Project created successfully' : 'Proyecto creado exitosamente')
+      }
+
+      // Guardar relaciones de tecnologías
+      if (projectId && values.technology_ids.length > 0) {
+        // Eliminar relaciones existentes
+        await supabase
+          .from('project_technologies')
+          .delete()
+          .eq('project_id', projectId)
+
+        // Insertar nuevas relaciones
+        const technologyRelations = values.technology_ids.map(techId => ({
+          project_id: projectId,
+          technology_id: techId,
+        }))
+
+        const { error: relationError } = await supabase
+          .from('project_technologies')
+          .insert(technologyRelations)
+
+        if (relationError) {
+          console.error('Error saving project technologies:', relationError)
+          toast.error(
+            lang === 'en' ? 'Error saving technologies' : 'Error al guardar tecnologías',
+            {
+              description: relationError.message,
+            }
+          )
+        }
+      } else if (projectId && values.technology_ids.length === 0) {
+        // Si no hay tecnologías seleccionadas, eliminar todas las relaciones
+        await supabase
+          .from('project_technologies')
+          .delete()
+          .eq('project_id', projectId)
       }
 
       router.push(`/${lang}/dashboard/admin/projects`)
@@ -903,6 +1001,81 @@ export function ProjectForm({ dict, lang, project }: ProjectFormProps) {
               )}
             />
           </div>
+        </div>
+
+        {/* Technologies Section */}
+        <div className="space-y-4 border-t pt-6">
+          <div className="space-y-2">
+            <h3 className="text-lg font-semibold">
+              {lang === 'en' ? 'Technologies' : 'Tecnologías'}
+            </h3>
+            <p className="text-sm text-muted-foreground">
+              {lang === 'en'
+                ? 'Select the technologies used in this project'
+                : 'Selecciona las tecnologías utilizadas en este proyecto'
+              }
+            </p>
+          </div>
+
+          <FormField
+            control={form.control}
+            name="technology_ids"
+            render={() => (
+              <FormItem>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {isLoadingTechnologies ? (
+                    <div className="col-span-full text-sm text-muted-foreground">
+                      {lang === 'en' ? 'Loading technologies...' : 'Cargando tecnologías...'}
+                    </div>
+                  ) : technologies.length === 0 ? (
+                    <div className="col-span-full text-sm text-muted-foreground">
+                      {lang === 'en' ? 'No technologies available' : 'No hay tecnologías disponibles'}
+                    </div>
+                  ) : (
+                    technologies.map((tech) => {
+                      const techName = lang === 'es' 
+                        ? (tech.name_es || tech.name || '')
+                        : (tech.name_en || tech.name || '')
+                      return (
+                        <FormField
+                          key={tech.id}
+                          control={form.control}
+                          name="technology_ids"
+                          render={({ field }) => {
+                            return (
+                              <FormItem
+                                key={tech.id}
+                                className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-3"
+                              >
+                                <FormControl>
+                                  <Checkbox
+                                    checked={field.value?.includes(tech.id)}
+                                    onCheckedChange={(checked) => {
+                                      return checked
+                                        ? field.onChange([...field.value, tech.id])
+                                        : field.onChange(
+                                            field.value?.filter(
+                                              (value) => value !== tech.id
+                                            )
+                                          )
+                                    }}
+                                  />
+                                </FormControl>
+                                <FormLabel className="font-normal cursor-pointer">
+                                  {techName}
+                                </FormLabel>
+                              </FormItem>
+                            )
+                          }}
+                        />
+                      )
+                    })
+                  )}
+                </div>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </div>
 
         {/* GitHub Integration Section */}
