@@ -31,7 +31,15 @@ export default async function AdminTechnologiesPage({ params }: {
   const { data: technologies, error } = await supabase
     .from('technologies')
     .select(`
-      *,
+      id,
+      name,
+      name_es,
+      name_en,
+      description_es,
+      description_en,
+      category,
+      logo_url,
+      website_url,
       technology_companies (
         company_name,
         logo_url

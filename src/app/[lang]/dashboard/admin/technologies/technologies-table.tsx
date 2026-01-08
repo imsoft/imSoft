@@ -131,16 +131,23 @@ export function TechnologiesTable({ technologies, dict, lang }: TechnologiesTabl
           : (technology.name_es || technology.name || '')
         return (
           <div className="flex items-center gap-3">
-            {technology.logo_url && (
-              <div className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded border">
+            {technology.logo_url ? (
+              <div className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded border bg-muted/50">
                 <Image
                   src={technology.logo_url}
                   alt={name}
                   fill
                   className="object-contain p-1"
+                  onError={(e) => {
+                    // Si la imagen falla al cargar, ocultar el contenedor
+                    const target = e.target as HTMLImageElement
+                    if (target.parentElement) {
+                      target.parentElement.style.display = 'none'
+                    }
+                  }}
                 />
               </div>
-            )}
+            ) : null}
             <div className="font-medium">{name}</div>
           </div>
         )
