@@ -25,10 +25,32 @@ export default async function NewQuotationPage({ params }: {
     .select('id, title_es, title_en, slug')
     .order('title_es')
   
-  // Eliminar duplicados por ID en el servidor también
-  const uniqueServices = services?.filter((service, index, self) =>
-    index === self.findIndex((s) => s.id === service.id)
-  ) || []
+  // Eliminar duplicados por ID y nombre en el servidor usando Map para garantizar unicidad
+  const uniqueServicesMap = new Map<string, NonNullable<typeof services>[0]>()
+  const seenTitles = new Set<string>()
+  
+  if (services) {
+    services.forEach((service) => {
+      // Si ya existe un servicio con el mismo ID, saltarlo
+      if (uniqueServicesMap.has(service.id)) {
+        return
+      }
+      
+      // Si ya existe un servicio con el mismo nombre, saltarlo
+      const titleEs = service.title_es?.toLowerCase().trim() || ''
+      if (titleEs && seenTitles.has(titleEs)) {
+        return
+      }
+      
+      // Agregar el servicio
+      uniqueServicesMap.set(service.id, service)
+      if (titleEs) {
+        seenTitles.add(titleEs)
+      }
+    })
+  }
+  
+  const uniqueServices = Array.from(uniqueServicesMap.values())
 
   return (
     <div className="space-y-6">

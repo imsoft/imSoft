@@ -63,17 +63,34 @@ export function QuotationForm({ services, dict, lang, userId }: QuotationFormPro
   const [iva, setIva] = useState(0)
   const [total, setTotal] = useState(0)
 
-  // Eliminar servicios duplicados por ID usando useMemo para mejor rendimiento
+  // Eliminar servicios duplicados por ID y nombre usando useMemo para mejor rendimiento
   const uniqueServices = useMemo(() => {
-    const seen = new Set<string>()
-    return services.filter((service) => {
-      if (seen.has(service.id)) {
-        return false
+    if (!services || services.length === 0) return []
+    
+    // Primero eliminar duplicados por ID
+    const byId = new Map<string, typeof services[0]>()
+    services.forEach(service => {
+      if (!byId.has(service.id)) {
+        byId.set(service.id, service)
       }
-      seen.add(service.id)
-      return true
     })
-  }, [services])
+    
+    // Luego eliminar duplicados por nombre (título)
+    const seenTitles = new Set<string>()
+    const result: typeof services = []
+    
+    for (const service of Array.from(byId.values())) {
+      const title = (lang === 'es' ? service.title_es : service.title_en)?.toLowerCase().trim() || ''
+      const titleKey = title || `__no_title_${service.id}__`
+      
+      if (!seenTitles.has(titleKey)) {
+        seenTitles.add(titleKey)
+        result.push(service)
+      }
+    }
+    
+    return result
+  }, [services, lang])
 
   const form = useForm<QuotationFormValues>({
     resolver: zodResolver(quotationSchema),
@@ -284,11 +301,15 @@ export function QuotationForm({ services, dict, lang, userId }: QuotationFormPro
                       <SelectValue placeholder={lang === 'en' ? 'Select a service...' : 'Selecciona un servicio...'} />
                     </SelectTrigger>
                     <SelectContent>
-                      {uniqueServices.map(service => (
-                        <SelectItem key={service.id} value={service.id}>
-                          {lang === 'es' ? service.title_es : service.title_en}
-                        </SelectItem>
-                      ))}
+                      {uniqueServices.map((service) => {
+                        const title = lang === 'es' ? service.title_es : service.title_en
+                        // Usar el ID como key y value para garantizar unicidad
+                        return (
+                          <SelectItem key={service.id} value={service.id}>
+                            {title}
+                          </SelectItem>
+                        )
+                      })}
                     </SelectContent>
                   </Select>
                 </FormControl>
