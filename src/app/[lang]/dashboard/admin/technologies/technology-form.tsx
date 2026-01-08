@@ -357,10 +357,10 @@ export function TechnologyForm({ dict, lang, technology }: TechnologyFormProps) 
     { value: 'authentication', label_es: 'Autenticación', label_en: 'Authentication' },
     { value: 'email', label_es: 'Correo Electrónico', label_en: 'Email' },
     { value: 'repository', label_es: 'Repositorio', label_en: 'Repository' },
+    { value: 'payment_gateway', label_es: 'Pasarela de Pagos', label_en: 'Payment Gateway' },
     { value: 'devops', label_es: 'DevOps', label_en: 'DevOps' },
     { value: 'mobile', label_es: 'Móvil', label_en: 'Mobile' },
     { value: 'cloud', label_es: 'Cloud', label_en: 'Cloud' },
-    { value: 'other', label_es: 'Otro', label_en: 'Other' },
   ]
 
   return (

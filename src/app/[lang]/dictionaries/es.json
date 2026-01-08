@@ -196,10 +196,10 @@
         "authentication": "Autenticación",
         "email": "Correo Electrónico",
         "repository": "Repositorio",
+        "payment_gateway": "Pasarela de Pagos",
         "devops": "DevOps",
         "mobile": "Móvil",
-        "cloud": "Cloud",
-        "other": "Otro"
+        "cloud": "Cloud"
       }
     },
     "empty": {
