@@ -1,0 +1,25 @@
+User-agent: *
+Allow: /
+
+# Sitemaps
+Sitemap: https://imsoft.io/sitemap.xml
+
+# Crawl-delay
+Crawl-delay: 1
+
+# Disallow admin and dashboard routes
+User-agent: *
+Disallow: /dashboard/
+Disallow: /api/
+Disallow: /_next/
+Disallow: /auth/
+
+# Allow important paths
+Allow: /es/
+Allow: /en/
+Allow: /es/servicios/
+Allow: /en/services/
+Allow: /es/blog/
+Allow: /en/blog/
+Allow: /es/portfolio/
+Allow: /en/portfolio/

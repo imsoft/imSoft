@@ -1,0 +1,222 @@
+'use client'
+
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
+import { Button } from "@/components/ui/button"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { useState } from "react"
+import type { Dictionary } from '../dictionaries'
+import type { ContactFormProps } from '@/types/components'
+import Magnet from "@/components/ui/magnet"
+
+const createFormSchema = (dict: Dictionary) => z.object({
+  firstName: z.string().min(2, {
+    message: dict.contact.form.validation.firstNameMin,
+  }),
+  lastName: z.string().min(2, {
+    message: dict.contact.form.validation.lastNameMin,
+  }),
+  email: z.string().email({
+    message: dict.contact.form.validation.emailInvalid,
+  }),
+  phoneNumber: z.string().optional(),
+  message: z.string().min(10, {
+    message: dict.contact.form.validation.messageMin,
+  }),
+})
+
+export default function ContactForm({ dict }: ContactFormProps) {
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle')
+
+  const formSchema = createFormSchema(dict)
+  
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      phoneNumber: "",
+      message: "",
+    },
+  })
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsSubmitting(true)
+    setSubmitStatus('idle')
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(values),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Error al enviar el mensaje')
+      }
+
+      setSubmitStatus('success')
+      form.reset()
+
+      setTimeout(() => {
+        setSubmitStatus('idle')
+      }, 5000)
+    } catch (error) {
+      console.error('Error:', error)
+      setSubmitStatus('error')
+
+      setTimeout(() => {
+        setSubmitStatus('idle')
+      }, 5000)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <div className="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
+          <FormField
+            control={form.control}
+            name="firstName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-sm font-semibold">
+                  {dict.contact.form.firstName}
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    autoComplete="given-name"
+                    className="!border-border/90"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="lastName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-sm font-semibold">
+                  {dict.contact.form.lastName}
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    autoComplete="family-name"
+                    className="!border-border/90"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem className="sm:col-span-2">
+                <FormLabel className="text-sm font-semibold">
+                  {dict.contact.form.email}
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    type="email"
+                    autoComplete="email"
+                    className="!border-border/90"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="phoneNumber"
+            render={({ field }) => (
+              <FormItem className="sm:col-span-2">
+                <FormLabel className="text-sm font-semibold">
+                  {dict.contact.form.phoneNumber}
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    type="tel"
+                    autoComplete="tel"
+                    className="!border-border/90"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="message"
+            render={({ field }) => (
+              <FormItem className="sm:col-span-2">
+                <FormLabel className="text-sm font-semibold">
+                  {dict.contact.form.message}
+                </FormLabel>
+                <FormControl>
+                  <Textarea
+                    {...field}
+                    rows={4}
+                    className="!border-border/90"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        {submitStatus === 'success' && (
+          <div className="p-4 rounded-lg bg-green-500/10 border border-green-500/20 text-green-600 dark:text-green-400">
+            {dict.contact.form.success}
+          </div>
+        )}
+
+        {submitStatus === 'error' && (
+          <div className="p-4 rounded-lg bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400">
+            {dict.contact.form.error}
+          </div>
+        )}
+
+        <div className="mt-8 flex justify-end">
+          <Magnet padding={50} disabled={false} magnetStrength={10}>
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              size="lg"
+              className="rounded-md bg-primary px-3.5 py-2.5 text-center text-sm font-semibold text-primary-foreground shadow-xs hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+            >
+              {isSubmitting ? dict.contact.form.sending : dict.contact.form.send}
+            </Button>
+          </Magnet>
+        </div>
+      </form>
+    </Form>
+  );
+}

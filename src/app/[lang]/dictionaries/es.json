@@ -1,0 +1,406 @@
+{
+  "hero": {
+    "announcement": "Presentando Soporte para Modelos de IA",
+    "announcementLink": "Leer más",
+    "title": "Soluciones Modernas para el Compromiso del Cliente",
+    "description": "Componentes altamente personalizables para construir sitios web y aplicaciones modernas que se vean y sientan como lo imaginas.",
+    "startBuilding": "Solicitar Cotización",
+    "requestDemo": "Ver Portafolio",
+    "meetCustomers": "Conoce a Nuestros Clientes"
+  },
+  "nav": {
+    "features": "Características",
+    "solution": "Solución",
+    "pricing": "Precios",
+    "about": "Acerca de",
+    "services": "Servicios",
+    "portfolio": "Portafolio",
+    "blog": "Blog",
+    "contact": "Contacto",
+    "login": "Iniciar Sesión",
+    "signUp": "Registrarse",
+    "getStarted": "Comenzar"
+  },
+  "auth": {
+    "login": {
+      "title": "Iniciar sesión en tu cuenta",
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "forgotPassword": "¿Olvidaste tu contraseña?",
+      "submit": "Iniciar sesión",
+      "noAccount": "¿No tienes una cuenta?",
+      "signUpLink": "Regístrate aquí",
+      "errors": {
+        "invalidCredentials": "Credenciales inválidas",
+        "emailRequired": "El correo electrónico es requerido",
+        "passwordRequired": "La contraseña es requerida",
+        "invalidEmail": "Debe ser un correo electrónico válido"
+      }
+    },
+    "signup": {
+      "title": "Crear una cuenta",
+      "firstName": "Nombre",
+      "lastName": "Apellido",
+      "companyName": "Nombre de la empresa",
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "confirmPassword": "Confirmar contraseña",
+      "submit": "Registrarse",
+      "hasAccount": "¿Ya tienes una cuenta?",
+      "signInLink": "Inicia sesión aquí",
+      "errors": {
+        "firstNameRequired": "El nombre es requerido",
+        "firstNameMin": "El nombre debe tener al menos 2 caracteres",
+        "lastNameRequired": "El apellido es requerido",
+        "lastNameMin": "El apellido debe tener al menos 2 caracteres",
+        "companyNameRequired": "El nombre de la empresa es requerido",
+        "companyNameMin": "El nombre de la empresa debe tener al menos 2 caracteres",
+        "emailRequired": "El correo electrónico es requerido",
+        "passwordRequired": "La contraseña es requerida",
+        "passwordMin": "La contraseña debe tener al menos 6 caracteres",
+        "passwordsMatch": "Las contraseñas deben coincidir",
+        "invalidEmail": "Debe ser un correo electrónico válido",
+        "emailExists": "Este correo electrónico ya está registrado"
+      },
+      "success": "Cuenta creada exitosamente. Por favor, verifica tu correo electrónico."
+    }
+  },
+  "dashboard": {
+    "admin": {
+      "title": "Panel de Administración",
+      "nav": {
+        "overview": "Resumen",
+        "users": "Usuarios",
+        "companies": "Empresas",
+        "projects": "Proyectos",
+        "services": "Servicios",
+        "portfolio": "Portafolio",
+        "blog": "Blog",
+        "testimonials": "Testimonios",
+        "contact": "Contacto",
+        "quotations": "Cotizaciones",
+        "feedbacks": "Feedbacks",
+        "crm": "CRM",
+        "settings": "Configuración",
+        "analytics": "Analíticas",
+        "reports": "Reportes"
+      },
+      "crud": {
+        "create": "Crear",
+        "edit": "Editar",
+        "delete": "Eliminar",
+        "deleting": "Eliminando...",
+        "save": "Guardar",
+        "cancel": "Cancelar",
+        "actions": "Acciones",
+        "noData": "No hay datos disponibles",
+        "confirmDelete": "¿Estás seguro de que deseas eliminar este elemento?",
+        "deleteSuccess": "Elemento eliminado exitosamente",
+        "deleteError": "Error al eliminar el elemento",
+        "saveSuccess": "Guardado exitosamente",
+        "saveError": "Error al guardar"
+      }
+    },
+    "client": {
+      "title": "Mi Panel",
+      "nav": {
+        "overview": "Resumen",
+        "myProjects": "Mis Proyectos",
+        "companies": "Mis Empresas",
+        "quotations": "Cotizaciones",
+        "feedback": "Feedback",
+        "messages": "Mensajes",
+        "profile": "Perfil",
+        "billing": "Facturación"
+      }
+    },
+    "common": {
+      "welcome": "Bienvenido",
+      "logout": "Cerrar sesión",
+      "profile": "Perfil",
+      "settings": "Configuración"
+    },
+    "empty": {
+      "users": {
+        "title": "No hay usuarios",
+        "description": "Aún no hay usuarios registrados en el sistema."
+      },
+      "projects": {
+        "title": "No hay proyectos",
+        "description": "Aún no se han creado proyectos. Comienza creando tu primer proyecto."
+      },
+      "analytics": {
+        "title": "No hay datos de analíticas",
+        "description": "Los datos de analíticas aparecerán aquí una vez que haya actividad en el sistema."
+      },
+      "reports": {
+        "title": "No hay reportes",
+        "description": "Aún no se han generado reportes. Los reportes aparecerán aquí una vez que se generen."
+      },
+      "myProjects": {
+        "title": "No tienes proyectos",
+        "description": "Estamos preparados para trabajar contigo, platicanos tu proyecto"
+      },
+      "messages": {
+        "title": "No hay mensajes",
+        "description": "No tienes mensajes nuevos. Tus conversaciones aparecerán aquí."
+      },
+      "billing": {
+        "title": "No hay información de facturación",
+        "description": "La información de facturación aparecerá aquí una vez que tengas transacciones."
+      },
+      "services": {
+        "title": "No hay servicios",
+        "description": "Aún no has creado ningún servicio."
+      },
+      "portfolio": {
+        "title": "No hay proyectos en el portafolio",
+        "description": "Aún no has agregado ningún proyecto al portafolio."
+      },
+      "blog": {
+        "title": "No hay publicaciones",
+        "description": "Aún no has creado ninguna publicación en el blog."
+      },
+      "testimonials": {
+        "title": "No hay testimonios",
+        "description": "Aún no has agregado ningún testimonio."
+      },
+      "contact": {
+        "title": "No hay datos de contacto",
+        "description": "Aún no has configurado los datos de contacto."
+      },
+      "companies": {
+        "title": "No tienes empresas",
+        "description": "Aún no has creado ninguna empresa. Comienza creando tu primera empresa."
+      },
+      "feedbacks": {
+        "title": "No hay feedbacks",
+        "description": "Aún no hay feedbacks registrados."
+      }
+    },
+    "table": {
+      "columns": "Columnas",
+      "noResults": "No hay resultados.",
+      "row": "fila",
+      "rows": "filas",
+      "previous": "Anterior",
+      "next": "Siguiente",
+      "columnNames": {
+        "title": "Título",
+        "description": "Descripción",
+        "actions": "Acciones",
+        "name": "Nombre",
+        "email": "Correo Electrónico",
+        "role": "Rol",
+        "company": "Empresa",
+        "status": "Estado",
+        "project_url": "URL del Proyecto",
+        "published": "Publicado",
+        "category": "Categoría",
+        "author": "Autor",
+        "author_id": "Autor",
+        "excerpt": "Resumen",
+        "content": "Contenido",
+        "client": "Cliente",
+        "project_type": "Tipo de Proyecto",
+        "logo": "Logo",
+        "logo_url": "Logo",
+        "phone": "Teléfono",
+        "address": "Dirección",
+        "role_company": "Empresa",
+        "created_at": "Fecha de Creación",
+        "updated_at": "Fecha de Actualización"
+      }
+    }
+  },
+  "companies": {
+    "title": "Nombre de la empresa",
+    "name": "Nombre",
+    "logo": "Logo",
+    "create": "Crear Empresa",
+    "edit": "Editar Empresa",
+    "delete": "Eliminar Empresa",
+    "deleteConfirm": {
+      "title": "¿Eliminar empresa?",
+      "description": "Esta acción no se puede deshacer. Esto eliminará permanentemente la empresa y todos sus datos asociados."
+    },
+    "deleteSuccess": "Empresa eliminada exitosamente",
+    "deleteError": "Error al eliminar la empresa",
+    "nameRequired": "El nombre de la empresa es requerido",
+    "uploadLogo": "Subir logo",
+    "changeLogo": "Cambiar logo",
+    "removeLogo": "Eliminar logo",
+    "noLogo": "No hay logo",
+    "logoUploaded": "Logo subido correctamente",
+    "uploadError": "Error al subir el logo",
+    "uploadSuccess": "Logo subido exitosamente",
+    "sizeError": "El tamaño de la imagen debe ser menor a 5MB",
+    "typeError": "Por favor selecciona un archivo de imagen",
+    "removeLogoSuccess": "Logo eliminado exitosamente",
+    "saveSuccess": "Empresa guardada exitosamente",
+    "saveError": "Error al guardar la empresa",
+    "created": "Empresa creada correctamente",
+    "updated": "Empresa actualizada correctamente",
+    "deleted": "Empresa eliminada correctamente",
+    "error": "Error al procesar la empresa",
+    "selectCompany": "Seleccionar empresa",
+    "searchCompany": "Buscar empresa..."
+  },
+  "theme": {
+    "light": "Claro",
+    "dark": "Oscuro",
+    "system": "Sistema"
+  },
+  "services": {
+    "title": "Nuestros Servicios",
+    "subtitle": "Ofrecemos soluciones tecnológicas integrales para ayudar a tu negocio a crecer",
+    "webApps": {
+      "title": "Aplicaciones Web",
+      "description": "Desarrollamos aplicaciones web modernas y escalables utilizando las últimas tecnologías."
+    },
+    "mobileApps": {
+      "title": "Aplicaciones Móviles",
+      "description": "Creamos aplicaciones móviles nativas e híbridas para iOS y Android."
+    },
+    "consulting": {
+      "title": "Consultoría Tecnológica",
+      "description": "Asesoramiento estratégico para optimizar tus procesos tecnológicos."
+    }
+  },
+  "portfolio": {
+    "title": "Nuestro Portafolio",
+    "subtitle": "Proyectos completados con éxito que demuestran nuestra experiencia"
+  },
+  "blog": {
+    "title": "Blog",
+    "subtitle": "Últimas noticias, artículos y actualizaciones sobre tecnología y desarrollo",
+    "readMore": "Leer más",
+    "noPosts": "No hay publicaciones disponibles aún."
+  },
+  "contact": {
+    "title": "Contacto",
+    "subtitle": "Estamos aquí para ayudarte. Ponte en contacto con nosotros.",
+    "getInTouch": "Ponte en contacto",
+    "description": "Estamos aquí para ayudarte. Si tienes alguna pregunta, necesitas más información sobre nuestros servicios o quieres discutir un proyecto, no dudes en contactarnos. Nuestro equipo está listo para responder a todas tus consultas.",
+    "address": {
+      "label": "Dirección",
+      "value": "545 Mavis Island\nChicago, IL 99191"
+    },
+    "phone": {
+      "label": "Teléfono",
+      "value": "+1 (555) 234-5678"
+    },
+    "email": {
+      "label": "Email",
+      "value": "hello@example.com"
+    },
+    "form": {
+      "firstName": "Nombre",
+      "lastName": "Apellido",
+      "email": "Email",
+      "phoneNumber": "Teléfono",
+      "message": "Mensaje",
+      "send": "Enviar mensaje",
+      "sending": "Enviando...",
+      "success": "¡Mensaje enviado con éxito!",
+      "error": "Error al enviar el mensaje. Por favor, intenta de nuevo.",
+      "validation": {
+        "firstNameMin": "El nombre debe tener al menos 2 caracteres.",
+        "lastNameMin": "El apellido debe tener al menos 2 caracteres.",
+        "emailInvalid": "Debe ser un email válido.",
+        "messageMin": "El mensaje debe tener al menos 10 caracteres."
+      }
+    }
+  },
+  "testimonials": {
+    "title": "Lo Que Dicen Nuestros Clientes",
+    "subtitle": "Testimonios de clientes satisfechos"
+  },
+  "feedback": {
+    "title": "Feedback",
+    "subtitle": "Comparte tus ideas y sugerencias",
+    "create": "Crear Feedback",
+    "edit": "Editar Feedback",
+    "delete": "Eliminar Feedback",
+    "type": "Tipo de Feedback",
+    "typeDashboard": "Dashboard",
+    "typeServices": "Servicios de imSoft",
+    "titleLabel": "Título",
+    "descriptionLabel": "Descripción",
+    "status": "Estado",
+    "statusPending": "Pendiente",
+    "statusReviewed": "Revisado",
+    "statusInProgress": "En Progreso",
+    "statusCompleted": "Completado",
+    "statusRejected": "Rechazado",
+    "adminNotes": "Notas del Administrador",
+    "submit": "Enviar Feedback",
+    "submitting": "Enviando...",
+    "submitSuccess": "Feedback enviado exitosamente",
+    "submitError": "Error al enviar el feedback",
+    "updateSuccess": "Feedback actualizado exitosamente",
+    "updateError": "Error al actualizar el feedback",
+    "deleteSuccess": "Feedback eliminado exitosamente",
+    "deleteError": "Error al eliminar el feedback",
+    "deleteConfirm": {
+      "title": "¿Eliminar feedback?",
+      "description": "Esta acción no se puede deshacer. Esto eliminará permanentemente el feedback."
+    },
+    "validation": {
+      "titleRequired": "El título es requerido",
+      "titleMin": "El título debe tener al menos 3 caracteres",
+      "descriptionRequired": "La descripción es requerida",
+      "descriptionMin": "La descripción debe tener al menos 10 caracteres",
+      "typeRequired": "El tipo de feedback es requerido"
+    },
+    "myFeedbacks": "Mis Feedbacks",
+    "allFeedbacks": "Todos los Feedbacks",
+    "user": "Usuario",
+    "createdAt": "Fecha de Creación",
+    "updatedAt": "Fecha de Actualización"
+  },
+  "footer": {
+    "cta": {
+      "title": "Registrarse",
+      "heading": "Aumenta tu productividad. Comienza a usar nuestra aplicación hoy.",
+      "description": "Incididunt sint fugiat pariatur cupidatat consectetur sit cillum anim id veniam aliqua proident excepteur commodo do ea.",
+      "button": "Crear cuenta"
+    },
+    "solutions": {
+      "title": "Servicios",
+      "items": {
+        "marketing": "Aplicaciones Web",
+        "analytics": "Aplicaciones Móviles",
+        "automation": "Consultoría Tecnológica",
+        "commerce": "Ver Todos los Servicios",
+        "insights": "Portafolio"
+      }
+    },
+    "support": {
+      "title": "Soporte",
+      "items": {
+        "submitTicket": "Contacto",
+        "documentation": "Blog",
+        "guides": "Artículos y Guías"
+      }
+    },
+    "company": {
+      "title": "Empresa",
+      "items": {
+        "about": "Inicio",
+        "blog": "Blog",
+        "jobs": "Contacto",
+        "press": "Contacto"
+      }
+    },
+    "legal": {
+      "title": "Legal",
+      "items": {
+        "terms": "Términos y Condiciones",
+        "privacy": "Aviso de Privacidad"
+      }
+    },
+    "copyright": "© {year} imSoft, Inc. Todos los derechos reservados."
+  }
+}
+
