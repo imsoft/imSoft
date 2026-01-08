@@ -446,7 +446,7 @@ export function QuotationForm({ services, dict, lang, userId }: QuotationFormPro
                               return (
                                 <FormItem
                                   key={tech.id}
-                                  className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-3"
+                                  className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-3 bg-white dark:bg-card"
                                 >
                                   <FormControl>
                                     <Checkbox

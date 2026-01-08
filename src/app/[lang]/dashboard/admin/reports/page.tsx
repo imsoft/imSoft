@@ -24,9 +24,16 @@ export default async function AdminReportsPage({ params }: {
     redirect(`/${lang}/login`)
   }
 
-  // Obtener reportes guardados (si existe una tabla de reportes)
-  // Por ahora, simulamos que no hay reportes guardados
-  const savedReports: any[] = []
+  // Obtener reportes guardados
+  const { data: savedReports, error: reportsError } = await supabase
+    .from('reports')
+    .select('*')
+    .order('generated_at', { ascending: false })
+    .limit(10)
+
+  if (reportsError) {
+    console.error('Error fetching reports:', reportsError)
+  }
 
   return (
     <div className="space-y-6">
@@ -39,7 +46,7 @@ export default async function AdminReportsPage({ params }: {
 
       <div className="grid gap-6 md:grid-cols-2">
         {/* Generador de reportes */}
-        <Card>
+        <Card className="bg-white dark:bg-card">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <FileText className="h-5 w-5" />
@@ -52,7 +59,7 @@ export default async function AdminReportsPage({ params }: {
         </Card>
 
         {/* Lista de reportes generados */}
-        <Card>
+        <Card className="bg-white dark:bg-card">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Download className="h-5 w-5" />
@@ -60,7 +67,7 @@ export default async function AdminReportsPage({ params }: {
             </CardTitle>
           </CardHeader>
           <CardContent className="pb-6">
-            <ReportsList reports={savedReports} dict={dict} lang={lang} />
+            <ReportsList reports={savedReports || []} dict={dict} lang={lang} />
           </CardContent>
         </Card>
       </div>
