@@ -1,25 +1,26 @@
 -- Agregar soporte para múltiples categorías en technologies
 -- Cambiar category de VARCHAR a JSONB para almacenar array de categorías
 
--- Primero, migrar datos existentes: convertir categoría única a array
-UPDATE technologies 
-SET category = jsonb_build_array(category)
-WHERE category IS NOT NULL AND category != '' AND category IS NOT NULL::jsonb;
-
--- Cambiar el tipo de columna a JSONB
+-- Cambiar el tipo de columna a JSONB y migrar datos existentes
 -- Si la columna ya es JSONB, esto no hará nada
 DO $$
 BEGIN
+  -- Verificar si la columna es VARCHAR y necesita migración
   IF EXISTS (
     SELECT 1 FROM information_schema.columns 
-    WHERE table_name = 'technologies' 
+    WHERE table_schema = 'public'
+    AND table_name = 'technologies' 
     AND column_name = 'category' 
     AND data_type = 'character varying'
   ) THEN
+    -- Cambiar el tipo a JSONB y convertir valores existentes
     ALTER TABLE technologies 
       ALTER COLUMN category TYPE JSONB USING 
         CASE 
           WHEN category IS NULL OR category = '' THEN NULL::jsonb
+          -- Si ya es un array JSON válido, mantenerlo
+          WHEN category ~ '^\[.*\]$' THEN category::jsonb
+          -- Si es un string simple, convertirlo a array
           ELSE jsonb_build_array(category)
         END;
   END IF;
