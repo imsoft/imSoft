@@ -194,6 +194,8 @@
         "servidor": "Servidor",
         "storage": "Storage",
         "authentication": "Autenticación",
+        "email": "Correo Electrónico",
+        "repository": "Repositorio",
         "devops": "DevOps",
         "mobile": "Móvil",
         "cloud": "Cloud",
