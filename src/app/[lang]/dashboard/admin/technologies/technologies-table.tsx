@@ -331,7 +331,7 @@ export function TechnologiesTable({ technologies, dict, lang }: TechnologiesTabl
   return (
     <div className="space-y-4">
       {/* Filtros adicionales */}
-      <div className="flex flex-wrap items-center gap-4 p-4 bg-muted/50 rounded-lg border">
+      <div className="flex flex-wrap items-center gap-4 p-4 bg-white dark:bg-card rounded-lg border">
         <div className="flex items-center gap-2">
           <Filter className="h-4 w-4 text-muted-foreground" />
           <span className="text-sm font-medium">
@@ -340,12 +340,12 @@ export function TechnologiesTable({ technologies, dict, lang }: TechnologiesTabl
         </div>
 
         {/* Filtro por categoría */}
-        <div className="flex items-center gap-2">
-          <label className="text-sm text-muted-foreground">
+        <div className="flex items-center gap-2 flex-1 min-w-[200px]">
+          <label className="text-sm text-muted-foreground whitespace-nowrap">
             {lang === 'en' ? 'Category' : 'Categoría'}:
           </label>
           <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-full">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -362,12 +362,12 @@ export function TechnologiesTable({ technologies, dict, lang }: TechnologiesTabl
         </div>
 
         {/* Filtro por empresas */}
-        <div className="flex items-center gap-2">
-          <label className="text-sm text-muted-foreground">
+        <div className="flex items-center gap-2 flex-1 min-w-[200px]">
+          <label className="text-sm text-muted-foreground whitespace-nowrap">
             {lang === 'en' ? 'Companies' : 'Empresas'}:
           </label>
           <Select value={hasCompaniesFilter} onValueChange={setHasCompaniesFilter}>
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-full">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -385,7 +385,7 @@ export function TechnologiesTable({ technologies, dict, lang }: TechnologiesTabl
         </div>
 
         {/* Contador de resultados */}
-        <div className="ml-auto text-sm text-muted-foreground">
+        <div className="text-sm text-muted-foreground whitespace-nowrap">
           {filteredTechnologies.length} {filteredTechnologies.length === 1 
             ? (lang === 'en' ? 'technology' : 'tecnología')
             : (lang === 'en' ? 'technologies' : 'tecnologías')}
