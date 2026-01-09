@@ -52,6 +52,14 @@ export interface Quotation {
   status: 'pending' | 'approved' | 'rejected' | 'converted'
   notes?: string
   valid_until?: string
+  final_price?: number
+  estimated_development_time?: number
+  ai_recommendation?: {
+    recommended_price?: number
+    recommended_time_days?: number
+    reasoning?: string
+    analysis?: string
+  }
   created_at?: string
   updated_at?: string
 }
