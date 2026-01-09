@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { FileText, Mail, Loader2, Sparkles, Save } from 'lucide-react'
+import { FileText, Mail, Loader2, Sparkles, Save, MessageCircle } from 'lucide-react'
 import { toast } from 'sonner'
 import type { Dictionary, Locale } from '@/app/[lang]/dictionaries'
 import jsPDF from 'jspdf'
@@ -37,6 +37,7 @@ export function QuotationDetail({ quotation, questions, dict, lang }: QuotationD
   const router = useRouter()
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false)
   const [isSendingEmail, setIsSendingEmail] = useState(false)
+  const [isSendingWhatsApp, setIsSendingWhatsApp] = useState(false)
   const [isGettingAIRecommendation, setIsGettingAIRecommendation] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [finalPrice, setFinalPrice] = useState<string>(quotation.final_price?.toString() || '')
@@ -225,6 +226,29 @@ export function QuotationDetail({ quotation, questions, dict, lang }: QuotationD
     }
   }
 
+  const sendWhatsApp = async () => {
+    setIsSendingWhatsApp(true)
+    try {
+      const response = await fetch(`/api/quotations/${quotation.id}/send-whatsapp`, {
+        method: 'POST',
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Error al enviar WhatsApp')
+      }
+
+      toast.success(lang === 'en' ? 'WhatsApp message sent successfully' : 'Mensaje de WhatsApp enviado exitosamente')
+    } catch (error) {
+      console.error('Error sending WhatsApp:', error)
+      toast.error(lang === 'en' ? 'Error sending WhatsApp' : 'Error al enviar WhatsApp', {
+        description: error instanceof Error ? error.message : undefined,
+      })
+    } finally {
+      setIsSendingWhatsApp(false)
+    }
+  }
+
   const getAIRecommendation = async () => {
     setIsGettingAIRecommendation(true)
     try {
@@ -340,6 +364,23 @@ export function QuotationDetail({ quotation, questions, dict, lang }: QuotationD
             <>
               <Mail className="mr-2 h-4 w-4" />
               {lang === 'en' ? 'Send by Email' : 'Enviar por Correo'}
+            </>
+          )}
+        </Button>
+        <Button
+          onClick={sendWhatsApp}
+          disabled={isSendingWhatsApp || !quotation.client_phone}
+          variant="outline"
+        >
+          {isSendingWhatsApp ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              {lang === 'en' ? 'Sending...' : 'Enviando...'}
+            </>
+          ) : (
+            <>
+              <MessageCircle className="mr-2 h-4 w-4" />
+              {lang === 'en' ? 'Send by WhatsApp' : 'Enviar por WhatsApp'}
             </>
           )}
         </Button>
