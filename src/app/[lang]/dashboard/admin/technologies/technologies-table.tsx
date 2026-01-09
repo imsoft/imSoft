@@ -109,6 +109,38 @@ export function TechnologiesTable({ technologies, dict, lang }: TechnologiesTabl
 
   const columns: ColumnDef<Technology>[] = [
     {
+      id: "logo",
+      header: (dict as any).technologies?.logo || (lang === 'en' ? 'Logo' : 'Logo'),
+      cell: ({ row }) => {
+        const technology = row.original
+        const name = lang === 'en' 
+          ? (technology.name_en || technology.name || '')
+          : (technology.name_es || technology.name || '')
+        
+        if (!technology.logo_url) {
+          return <span className="text-muted-foreground">-</span>
+        }
+        
+        return (
+          <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded border bg-white">
+            <Image
+              src={technology.logo_url}
+              alt={name}
+              fill
+              className="object-contain p-1"
+              onError={(e) => {
+                // Si la imagen falla al cargar, ocultar el contenedor
+                const target = e.target as HTMLImageElement
+                if (target.parentElement) {
+                  target.parentElement.style.display = 'none'
+                }
+              }}
+            />
+          </div>
+        )
+      },
+    },
+    {
       id: "name",
       accessorFn: (row) => lang === 'en' 
         ? (row.name_en || row.name || '')
@@ -130,26 +162,7 @@ export function TechnologiesTable({ technologies, dict, lang }: TechnologiesTabl
           ? (technology.name_en || technology.name || '')
           : (technology.name_es || technology.name || '')
         return (
-          <div className="flex items-center gap-3">
-            {technology.logo_url ? (
-              <div className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded border bg-muted/50">
-                <Image
-                  src={technology.logo_url}
-                  alt={name}
-                  fill
-                  className="object-contain p-1"
-                  onError={(e) => {
-                    // Si la imagen falla al cargar, ocultar el contenedor
-                    const target = e.target as HTMLImageElement
-                    if (target.parentElement) {
-                      target.parentElement.style.display = 'none'
-                    }
-                  }}
-                />
-              </div>
-            ) : null}
-            <div className="font-medium">{name}</div>
-          </div>
+          <div className="font-medium">{name}</div>
         )
       },
     },
