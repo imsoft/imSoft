@@ -419,7 +419,7 @@ export function TechnologiesTable({ technologies, dict, lang }: TechnologiesTabl
             {lang === 'en' ? 'Category' : 'Categoría'}:
           </label>
           <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-            <SelectTrigger className="w-full !border-2 !border-border">
+            <SelectTrigger className="w-full border-2! border-border!">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -461,7 +461,7 @@ export function TechnologiesTable({ technologies, dict, lang }: TechnologiesTabl
             {lang === 'en' ? 'Companies' : 'Empresas'}:
           </label>
           <Select value={hasCompaniesFilter} onValueChange={setHasCompaniesFilter}>
-            <SelectTrigger className="w-full !border-2 !border-border">
+            <SelectTrigger className="w-full border-2! border-border!">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
