@@ -1,6 +1,7 @@
 import { MetadataRoute } from 'next';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
+import type { City, Industry } from '@/types/landing-pages';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io';
 
@@ -185,6 +186,27 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       },
     },
   ];
+
+  // Agregar landing pages de ciudad + servicio
+  const cities: City[] = ['guadalajara', 'cdmx', 'monterrey'];
+  const industries: Industry[] = [
+    'software-para-inmobiliarias',
+    'software-para-constructoras',
+    'software-para-restaurantes',
+    'software-para-clinicas',
+    'software-para-logistica',
+  ];
+
+  cities.forEach((city) => {
+    industries.forEach((industry) => {
+      routes.push({
+        url: `${SITE_URL}/${city}/${industry}`,
+        lastModified: new Date(),
+        changeFrequency: 'monthly',
+        priority: 0.8,
+      });
+    });
+  });
 
   try {
     // Obtener servicios publicados
