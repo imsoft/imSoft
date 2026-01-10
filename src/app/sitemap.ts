@@ -188,6 +188,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   // Agregar landing pages de ciudad + servicio
+  const langs = ['es', 'en'];
   const cities: City[] = ['guadalajara', 'cdmx', 'monterrey'];
   const industries: Industry[] = [
     'software-para-inmobiliarias',
@@ -197,13 +198,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     'software-para-logistica',
   ];
 
-  cities.forEach((city) => {
-    industries.forEach((industry) => {
-      routes.push({
-        url: `${SITE_URL}/${city}/${industry}`,
-        lastModified: new Date(),
-        changeFrequency: 'monthly',
-        priority: 0.8,
+  langs.forEach((lang) => {
+    cities.forEach((city) => {
+      industries.forEach((industry) => {
+        routes.push({
+          url: `${SITE_URL}/${lang}/${city}/${industry}`,
+          lastModified: new Date(),
+          changeFrequency: 'monthly',
+          priority: 0.8,
+          alternates: {
+            languages: {
+              es: `${SITE_URL}/es/${city}/${industry}`,
+              en: `${SITE_URL}/en/${city}/${industry}`,
+            },
+          },
+        });
       });
     });
   });

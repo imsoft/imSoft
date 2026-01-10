@@ -10,6 +10,7 @@ import type { City, Industry } from '@/types/landing-pages';
 
 interface PageProps {
   params: Promise<{
+    lang: string;
     city: string;
     service: string;
   }>;
@@ -17,9 +18,10 @@ interface PageProps {
 
 /**
  * Genera todas las rutas estáticas en build time
- * Esto crea las 15 combinaciones de ciudad + servicio
+ * Esto crea las 30 combinaciones de lang + ciudad + servicio (15 en español, 15 en inglés)
  */
 export async function generateStaticParams() {
+  const langs = ['es', 'en'];
   const cities: City[] = ['guadalajara', 'cdmx', 'monterrey'];
   const services: Industry[] = [
     'software-para-inmobiliarias',
@@ -29,11 +31,14 @@ export async function generateStaticParams() {
     'software-para-logistica',
   ];
 
-  const params = cities.flatMap((city) =>
-    services.map((service) => ({
-      city,
-      service,
-    }))
+  const params = langs.flatMap((lang) =>
+    cities.flatMap((city) =>
+      services.map((service) => ({
+        lang,
+        city,
+        service,
+      }))
+    )
   );
 
   return params;
@@ -43,7 +48,7 @@ export async function generateStaticParams() {
  * Genera metadata dinámica para SEO
  */
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { city, service } = await params;
+  const { lang, city, service } = await params;
 
   // Validar que la combinación exista
   if (
@@ -64,8 +69,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title: pageData.seoTitle,
       description: pageData.seoDescription,
       type: 'website',
-      locale: 'es_MX',
-      url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io'}/${city}/${service}`,
+      locale: lang === 'es' ? 'es_MX' : 'en_US',
+      url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io'}/${lang}/${city}/${service}`,
       siteName: 'imSoft',
       images: [
         {
@@ -83,7 +88,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       images: [`${process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io'}/og-image.jpg`],
     },
     alternates: {
-      canonical: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io'}/${city}/${service}`,
+      canonical: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io'}/${lang}/${city}/${service}`,
     },
     robots: {
       index: true,
@@ -103,7 +108,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
  * Página principal - Landing page dinámica
  */
 export default async function LandingPage({ params }: PageProps) {
-  const { city, service } = await params;
+  const { lang, city, service } = await params;
 
   // Validar que la combinación ciudad + servicio exista
   if (
@@ -121,7 +126,7 @@ export default async function LandingPage({ params }: PageProps) {
     '@type': 'WebPage',
     name: pageData.seoTitle,
     description: pageData.seoDescription,
-    url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io'}/${city}/${service}`,
+    url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io'}/${lang}/${city}/${service}`,
     provider: {
       '@type': 'Organization',
       name: 'imSoft',
@@ -154,7 +159,7 @@ export default async function LandingPage({ params }: PageProps) {
       />
 
       {/* Hero Section */}
-      <HeroSectionLanding h1={pageData.h1} subtitle={pageData.heroSubtitle} />
+      <HeroSectionLanding h1={pageData.h1} subtitle={pageData.heroSubtitle} lang={lang} />
 
       {/* Problems Section */}
       <ProblemsSection title={pageData.problems.title} problems={pageData.problems.items} />
@@ -174,6 +179,7 @@ export default async function LandingPage({ params }: PageProps) {
         title={pageData.cta.title}
         description={pageData.cta.description}
         buttonText={pageData.cta.buttonText}
+        lang={lang}
       />
     </>
   );
