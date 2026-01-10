@@ -2,7 +2,7 @@
 
 ## 📋 Resumen
 
-Sistema de 15 landing pages estáticas generadas automáticamente para SEO, combinando 3 ciudades con 5 industrias diferentes.
+Sistema de **30 landing pages estáticas bilingües** generadas automáticamente para SEO, combinando 2 idiomas (español/inglés) con 3 ciudades y 5 industrias diferentes.
 
 ## 🗂️ Estructura de Archivos Creados
 
@@ -11,42 +11,68 @@ src/
 ├── types/
 │   └── landing-pages.ts          # Tipos TypeScript para City e Industry
 ├── config/
-│   └── landing-pages-data.ts     # Configuración completa de las 15 páginas
+│   └── landing-pages-data.ts     # Configuración completa con contenido único
 ├── components/
 │   └── landing/
-│       ├── hero-section-landing.tsx
+│       ├── hero-section-landing.tsx      # Hero con soporte multiidioma
 │       ├── problems-section.tsx
 │       ├── solutions-section.tsx
 │       ├── services-section-landing.tsx
-│       └── cta-section.tsx
+│       └── cta-section.tsx              # CTA con soporte multiidioma
 └── app/
-    └── [city]/
-        └── [service]/
-            └── page.tsx          # Página dinámica con generateStaticParams
+    └── [lang]/
+        └── [city]/
+            └── [service]/
+                └── page.tsx          # Página dinámica con generateStaticParams
 ```
 
-## 🌐 Rutas Generadas (15 páginas estáticas)
+## 🌐 Rutas Generadas (30 páginas estáticas)
 
-### Guadalajara (5 páginas)
-- `/guadalajara/software-para-inmobiliarias`
-- `/guadalajara/software-para-constructoras`
-- `/guadalajara/software-para-restaurantes`
-- `/guadalajara/software-para-clinicas`
-- `/guadalajara/software-para-logistica`
+### Español (15 páginas)
 
-### CDMX (5 páginas)
-- `/cdmx/software-para-inmobiliarias`
-- `/cdmx/software-para-constructoras`
-- `/cdmx/software-para-restaurantes`
-- `/cdmx/software-para-clinicas`
-- `/cdmx/software-para-logistica`
+#### Guadalajara (5 páginas)
+- `/es/guadalajara/software-para-inmobiliarias`
+- `/es/guadalajara/software-para-constructoras`
+- `/es/guadalajara/software-para-restaurantes`
+- `/es/guadalajara/software-para-clinicas`
+- `/es/guadalajara/software-para-logistica`
 
-### Monterrey (5 páginas)
-- `/monterrey/software-para-inmobiliarias`
-- `/monterrey/software-para-constructoras`
-- `/monterrey/software-para-restaurantes`
-- `/monterrey/software-para-clinicas`
-- `/monterrey/software-para-logistica`
+#### CDMX (5 páginas)
+- `/es/cdmx/software-para-inmobiliarias`
+- `/es/cdmx/software-para-constructoras`
+- `/es/cdmx/software-para-restaurantes`
+- `/es/cdmx/software-para-clinicas`
+- `/es/cdmx/software-para-logistica`
+
+#### Monterrey (5 páginas)
+- `/es/monterrey/software-para-inmobiliarias`
+- `/es/monterrey/software-para-constructoras`
+- `/es/monterrey/software-para-restaurantes`
+- `/es/monterrey/software-para-clinicas`
+- `/es/monterrey/software-para-logistica`
+
+### Inglés (15 páginas)
+
+#### Guadalajara (5 páginas)
+- `/en/guadalajara/software-para-inmobiliarias`
+- `/en/guadalajara/software-para-constructoras`
+- `/en/guadalajara/software-para-restaurantes`
+- `/en/guadalajara/software-para-clinicas`
+- `/en/guadalajara/software-para-logistica`
+
+#### CDMX (5 páginas)
+- `/en/cdmx/software-para-inmobiliarias`
+- `/en/cdmx/software-para-constructoras`
+- `/en/cdmx/software-para-restaurantes`
+- `/en/cdmx/software-para-clinicas`
+- `/en/cdmx/software-para-logistica`
+
+#### Monterrey (5 páginas)
+- `/en/monterrey/software-para-inmobiliarias`
+- `/en/monterrey/software-para-constructoras`
+- `/en/monterrey/software-para-restaurantes`
+- `/en/monterrey/software-para-clinicas`
+- `/en/monterrey/software-para-logistica`
 
 ## 🎯 Características
 
@@ -68,10 +94,11 @@ Cada combinación ciudad + industria tiene:
 - **CTA personalizado** por industria
 
 ### 3. Generación Estática (SSG)
-- Usa `generateStaticParams()` para crear las 15 páginas en build time
+- Usa `generateStaticParams()` para crear las 30 páginas en build time
 - Renderizado en servidor (SSG) = velocidad máxima
 - SEO perfecto: páginas completamente renderizadas
 - Sin JavaScript necesario para el contenido principal
+- Alternates bilingües configurados en sitemap.xml
 
 ### 4. Tono Empresarial
 - Profesional y orientado a empresas medianas/grandes

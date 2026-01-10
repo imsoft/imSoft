@@ -2,7 +2,7 @@
 
 ## ✅ Completado Exitosamente
 
-Se han implementado **15 landing pages estáticas** con contenido único para SEO local.
+Se han implementado **30 landing pages estáticas bilingües** (15 en español + 15 en inglés) con contenido único para SEO local.
 
 ---
 
@@ -14,7 +14,7 @@ Se han implementado **15 landing pages estáticas** con contenido único para SE
 
 ### 2. **Configuración de Datos**
 - **Archivo**: [`src/config/landing-pages-data.ts`](src/config/landing-pages-data.ts)
-- **Contenido**: Objeto `landingPagesData` con las 15 combinaciones
+- **Contenido**: Objeto `landingPagesData` con las 15 combinaciones únicas (multiplicadas x2 por idioma)
 - **Tamaño**: ~650 líneas de contenido único
 - **Características**:
   - SEO title y description únicos por página
@@ -24,24 +24,25 @@ Se han implementado **15 landing pages estáticas** con contenido único para SE
   - 3 servicios de imSoft (apps web, móviles, consultoría)
   - CTA personalizado
 
-### 3. **Componentes de UI** (5 componentes)
-- [`src/components/landing/hero-section-landing.tsx`](src/components/landing/hero-section-landing.tsx)
+### 3. **Componentes de UI** (5 componentes con soporte multiidioma)
+- [`src/components/landing/hero-section-landing.tsx`](src/components/landing/hero-section-landing.tsx) - Con traducción de botones
 - [`src/components/landing/problems-section.tsx`](src/components/landing/problems-section.tsx)
 - [`src/components/landing/solutions-section.tsx`](src/components/landing/solutions-section.tsx)
 - [`src/components/landing/services-section-landing.tsx`](src/components/landing/services-section-landing.tsx)
-- [`src/components/landing/cta-section.tsx`](src/components/landing/cta-section.tsx)
+- [`src/components/landing/cta-section.tsx`](src/components/landing/cta-section.tsx) - Con traducción de textos
 
 ### 4. **Página Dinámica**
-- **Archivo**: [`src/app/[city]/[service]/page.tsx`](src/app/[city]/[service]/page.tsx)
+- **Archivo**: [`src/app/[lang]/[city]/[service]/page.tsx`](src/app/[lang]/[city]/[service]/page.tsx)
 - **Funcionalidades**:
-  - `generateStaticParams()` - Genera las 15 rutas en build time
-  - `generateMetadata()` - Metadata SEO dinámica
+  - `generateStaticParams()` - Genera las 30 rutas en build time (2 idiomas x 3 ciudades x 5 industrias)
+  - `generateMetadata()` - Metadata SEO dinámica con locale correcto (es_MX / en_US)
   - Structured Data JSON-LD para Schema.org
   - Renderizado estático (SSG) para máxima velocidad
+  - URLs con idioma incluido: `/[lang]/[city]/[service]`
 
 ### 5. **Sitemap Actualizado**
 - **Archivo**: [`src/app/sitemap.ts`](src/app/sitemap.ts)
-- **Actualización**: Se agregaron las 15 landing pages con priority 0.8
+- **Actualización**: Se agregaron las 30 landing pages con priority 0.8 y alternates bilingües
 
 ### 6. **Documentación y Scripts**
 - [`LANDING_PAGES_README.md`](LANDING_PAGES_README.md) - Documentación completa
