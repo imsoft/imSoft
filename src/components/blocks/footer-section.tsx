@@ -5,6 +5,7 @@ import type { Locale } from '@/app/[lang]/dictionaries'
 import Magnet from '@/components/ui/magnet'
 import { Logo } from '@/components/blocks/hero-section'
 import type { ContactData } from '@/types/database'
+import { useCookieConsent } from '@/contexts/cookie-context'
 
 import type { FooterSectionProps } from '@/types/components'
 
@@ -82,6 +83,8 @@ const ThreadsIcon = (props: React.SVGProps<SVGSVGElement>) => (
 )
 
 export function FooterSection({ dict, lang, contactData }: FooterSectionProps) {
+  const { openPreferences } = useCookieConsent();
+
   // Construir array de enlaces de redes sociales desde contactData
   // Solo incluir redes sociales que tienen URL y están marcadas como visibles
   const socialLinks = []
@@ -136,6 +139,7 @@ export function FooterSection({ dict, lang, contactData }: FooterSectionProps) {
     legal: [
       { id: 'terms', name: dict.footer.legal.items.terms, href: `/${lang}/${lang === 'es' ? 'terminos-y-condiciones' : 'terms-and-conditions'}` },
       { id: 'privacy', name: dict.footer.legal.items.privacy, href: `/${lang}/${lang === 'es' ? 'aviso-de-privacidad' : 'privacy-policy'}` },
+      { id: 'cookies', name: dict.footer.legal.items.cookies, href: `/${lang}/cookie-policy` },
     ],
   }
 
@@ -251,9 +255,17 @@ export function FooterSection({ dict, lang, contactData }: FooterSectionProps) {
               ))}
             </div>
           )}
-          <p className="mt-8 text-sm/6 text-muted-foreground md:order-1 md:mt-0">
-            {dict.footer.copyright.replace('{year}', new Date().getFullYear().toString())}
-          </p>
+          <div className="mt-8 text-sm/6 text-muted-foreground md:order-1 md:mt-0 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
+            <p>
+              {dict.footer.copyright.replace('{year}', new Date().getFullYear().toString())}
+            </p>
+            <button
+              onClick={openPreferences}
+              className="text-sm underline underline-offset-4 hover:text-foreground transition-colors text-left sm:text-center"
+            >
+              {dict.footer.cookieSettings}
+            </button>
+          </div>
         </div>
       </div>
     </footer>

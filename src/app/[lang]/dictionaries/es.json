@@ -481,10 +481,42 @@
       "title": "Legal",
       "items": {
         "terms": "Términos y Condiciones",
-        "privacy": "Aviso de Privacidad"
+        "privacy": "Aviso de Privacidad",
+        "cookies": "Política de Cookies"
       }
     },
-    "copyright": "© {year} imSoft, Inc. Todos los derechos reservados."
+    "copyright": "© {year} imSoft, Inc. Todos los derechos reservados.",
+    "cookieSettings": "Configuración de Cookies"
+  },
+  "cookies": {
+    "banner": {
+      "title": "Utilizamos cookies",
+      "description": "Utilizamos cookies esenciales para el funcionamiento del sitio y cookies opcionales para mejorar tu experiencia. Puedes personalizar tus preferencias en cualquier momento.",
+      "acceptAll": "Aceptar todo",
+      "rejectAll": "Rechazar todo",
+      "customize": "Personalizar",
+      "learnMore": "Más información",
+      "privacyPolicy": "Aviso de Privacidad"
+    },
+    "preferences": {
+      "title": "Preferencias de Cookies",
+      "subtitle": "Personaliza qué cookies quieres aceptar",
+      "acceptAll": "Aceptar todo",
+      "rejectAll": "Rechazar todo",
+      "save": "Guardar preferencias",
+      "alwaysActive": "Siempre activas",
+      "info": "Puedes cambiar tus preferencias en cualquier momento desde el pie de página de nuestro sitio web."
+    },
+    "categories": {
+      "essential": "Cookies Esenciales",
+      "essentialDesc": "Necesarias para el funcionamiento básico del sitio web. Incluyen cookies de autenticación, seguridad y preferencias básicas. No se pueden desactivar.",
+      "functional": "Cookies Funcionales",
+      "functionalDesc": "Permiten que el sitio recuerde tus preferencias como idioma, tema oscuro/claro y otras configuraciones personalizadas para mejorar tu experiencia.",
+      "analytics": "Cookies Analíticas",
+      "analyticsDesc": "Nos ayudan a entender cómo los visitantes interactúan con nuestro sitio recopilando información de forma anónima. Usamos estos datos para mejorar nuestros servicios.",
+      "marketing": "Cookies de Marketing",
+      "marketingDesc": "Se utilizan para rastrear visitantes y mostrar anuncios relevantes. Actualmente no utilizamos cookies de marketing, pero esta opción está disponible para futuras campañas."
+    }
   }
 }
 

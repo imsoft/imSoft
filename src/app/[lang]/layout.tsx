@@ -4,10 +4,13 @@ import "./globals.css";
 import { notFound } from 'next/navigation';
 import { getDictionary, hasLocale } from './dictionaries';
 import { ThemeProvider } from '@/components/theme-provider';
-import { Analytics } from '@vercel/analytics/next';
+import { ConditionalAnalytics } from '@/components/analytics/conditional-analytics';
 import { Toaster } from '@/components/ui/sonner';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
 import Script from 'next/script';
+import { CookieProvider } from '@/contexts/cookie-context';
+import { CookieBanner } from '@/components/cookies/cookie-banner';
+import { CookiePreferences } from '@/components/cookies/cookie-preferences';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -43,6 +46,7 @@ export default async function RootLayout({
 
   if (!hasLocale(lang)) notFound();
 
+  const dict = await getDictionary(lang);
   const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io';
 
   // Structured data para Organization
@@ -86,9 +90,13 @@ export default async function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
-          <Analytics />
-          <Toaster />
+          <CookieProvider>
+            {children}
+            <ConditionalAnalytics />
+            <CookieBanner lang={lang as 'es' | 'en'} dict={dict} />
+            <CookiePreferences lang={lang as 'es' | 'en'} dict={dict} />
+            <Toaster />
+          </CookieProvider>
         </ThemeProvider>
       </body>
     </html>

@@ -481,10 +481,42 @@
       "title": "Legal",
       "items": {
         "terms": "Terms and Conditions",
-        "privacy": "Privacy Policy"
+        "privacy": "Privacy Policy",
+        "cookies": "Cookie Policy"
       }
     },
-    "copyright": "© {year} imSoft, Inc. All rights reserved."
+    "copyright": "© {year} imSoft, Inc. All rights reserved.",
+    "cookieSettings": "Cookie Settings"
+  },
+  "cookies": {
+    "banner": {
+      "title": "We use cookies",
+      "description": "We use essential cookies for site functionality and optional cookies to enhance your experience. You can customize your preferences at any time.",
+      "acceptAll": "Accept all",
+      "rejectAll": "Reject all",
+      "customize": "Customize",
+      "learnMore": "Learn more",
+      "privacyPolicy": "Privacy Policy"
+    },
+    "preferences": {
+      "title": "Cookie Preferences",
+      "subtitle": "Customize which cookies you want to accept",
+      "acceptAll": "Accept all",
+      "rejectAll": "Reject all",
+      "save": "Save preferences",
+      "alwaysActive": "Always active",
+      "info": "You can change your preferences at any time from the footer of our website."
+    },
+    "categories": {
+      "essential": "Essential Cookies",
+      "essentialDesc": "Necessary for basic website functionality. Includes authentication, security, and basic preference cookies. Cannot be disabled.",
+      "functional": "Functional Cookies",
+      "functionalDesc": "Allow the site to remember your preferences such as language, dark/light theme, and other personalized settings to enhance your experience.",
+      "analytics": "Analytics Cookies",
+      "analyticsDesc": "Help us understand how visitors interact with our site by collecting information anonymously. We use this data to improve our services.",
+      "marketing": "Marketing Cookies",
+      "marketingDesc": "Used to track visitors and display relevant ads. We currently do not use marketing cookies, but this option is available for future campaigns."
+    }
   }
 }
 
