@@ -1,3 +1,9 @@
+'use client';
+
+import SpotlightCard from '@/components/ui/spotlight-card';
+import { AnimatedGroup } from '@/components/animations/animated-group';
+import { CheckCircle2 } from 'lucide-react';
+
 interface Solution {
   title: string;
   description: string;
@@ -10,31 +16,39 @@ interface SolutionsSectionProps {
 
 export function SolutionsSection({ title, solutions }: SolutionsSectionProps) {
   return (
-    <section className="py-20 px-4 bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-800 dark:via-gray-900 dark:to-gray-800">
+    <section className="py-20 px-4">
       <div className="container mx-auto max-w-6xl">
-        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white text-center mb-12">
-          {title}
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <AnimatedGroup preset="fade">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
+            {title}
+          </h2>
+        </AnimatedGroup>
+
+        <AnimatedGroup preset="blur-slide" className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {solutions.map((solution, index) => (
-            <div
+            <SpotlightCard
               key={index}
-              className="p-8 bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-2xl transition-shadow border-2 border-blue-100 dark:border-blue-900"
+              spotlightColor="rgba(59, 130, 246, 0.15)"
+              className="h-full"
             >
-              <div className="flex items-center gap-3 mb-4">
-                <div className="flex-shrink-0 w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
-                  ✓
+              <div className="p-8 h-full">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="shrink-0">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary">
+                      <CheckCircle2 className="h-6 w-6 text-primary-foreground" />
+                    </div>
+                  </div>
+                  <h3 className="text-xl md:text-2xl font-bold">
+                    {solution.title}
+                  </h3>
                 </div>
-                <h3 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
-                  {solution.title}
-                </h3>
+                <p className="leading-relaxed text-muted-foreground">
+                  {solution.description}
+                </p>
               </div>
-              <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                {solution.description}
-              </p>
-            </div>
+            </SpotlightCard>
           ))}
-        </div>
+        </AnimatedGroup>
       </div>
     </section>
   );

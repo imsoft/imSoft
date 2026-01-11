@@ -1,4 +1,9 @@
+'use client';
+
 import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import Magnet from '@/components/ui/magnet';
+import { AnimatedGroup } from '@/components/animations/animated-group';
 
 interface HeroSectionLandingProps {
   h1: string;
@@ -8,30 +13,47 @@ interface HeroSectionLandingProps {
 
 export function HeroSectionLanding({ h1, subtitle, lang }: HeroSectionLandingProps) {
   return (
-    <section className="relative min-h-[60vh] flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-20 px-4">
-      <div className="container mx-auto max-w-6xl">
-        <div className="text-center space-y-6">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white leading-tight">
+    <section className="relative flex min-h-[calc(100vh-4rem)] items-center justify-center overflow-hidden px-4 py-16 md:py-24">
+      {/* Background gradients - mismo estilo que el home */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute -left-1/4 -top-1/4 h-[800px] w-[800px] rounded-full bg-gradient-radial from-primary/20 via-primary/5 to-transparent blur-3xl" />
+        <div className="absolute -bottom-1/4 -right-1/4 h-[800px] w-[800px] rounded-full bg-gradient-radial from-purple-500/20 via-purple-500/5 to-transparent blur-3xl" />
+      </div>
+
+      <div className="container relative z-10 mx-auto max-w-6xl">
+        <AnimatedGroup preset="blur-slide" className="space-y-8 text-center">
+          {/* H1 Principal */}
+          <h1 className="text-4xl font-bold leading-tight tracking-tight md:text-5xl lg:text-6xl xl:text-7xl">
             {h1}
           </h1>
-          <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
+
+          {/* Subtitle */}
+          <p className="mx-auto max-w-3xl text-lg text-muted-foreground md:text-xl lg:text-2xl">
             {subtitle}
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-6">
-            <Link
-              href={`/${lang}/contact`}
-              className="inline-flex items-center justify-center px-8 py-4 text-base font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors shadow-lg hover:shadow-xl"
+
+          {/* CTAs */}
+          <div className="flex flex-col items-center justify-center gap-4 pt-4 sm:flex-row">
+            <Magnet>
+              <Button asChild size="lg" className="min-w-[200px] text-base">
+                <Link href={`/${lang}/contact`}>
+                  {lang === 'es' ? 'Solicitar Cotización' : 'Request Quote'}
+                </Link>
+              </Button>
+            </Magnet>
+
+            <Button
+              asChild
+              variant="outline"
+              size="lg"
+              className="min-w-[200px] text-base"
             >
-              {lang === 'es' ? 'Solicitar Cotización' : 'Request Quote'}
-            </Link>
-            <Link
-              href={`/${lang}/${lang === 'es' ? 'servicios' : 'services'}`}
-              className="inline-flex items-center justify-center px-8 py-4 text-base font-semibold text-gray-700 bg-white dark:bg-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors shadow-md hover:shadow-lg border-2 border-gray-200 dark:border-gray-700"
-            >
-              {lang === 'es' ? 'Conocer Servicios' : 'View Services'}
-            </Link>
+              <Link href={`/${lang}/${lang === 'es' ? 'servicios' : 'services'}`}>
+                {lang === 'es' ? 'Conocer Servicios' : 'View Services'}
+              </Link>
+            </Button>
           </div>
-        </div>
+        </AnimatedGroup>
       </div>
     </section>
   );
