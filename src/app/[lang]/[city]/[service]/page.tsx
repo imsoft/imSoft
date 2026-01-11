@@ -3,8 +3,7 @@ import { notFound } from 'next/navigation';
 import { HeroSectionLanding } from '@/components/landing/hero-section-landing';
 import { ProblemsSection } from '@/components/landing/problems-section';
 import { SolutionsSection } from '@/components/landing/solutions-section';
-import { ServicesSectionLanding } from '@/components/landing/services-section-landing';
-import { CTASection } from '@/components/landing/cta-section';
+import { ServicesSection } from '@/components/blocks/services-section';
 import { FooterSection } from '@/components/blocks/footer-section';
 import { landingPagesData } from '@/config/landing-pages-data';
 import type { City, Industry } from '@/types/landing-pages';
@@ -181,19 +180,7 @@ export default async function LandingPage({ params }: PageProps) {
         <SolutionsSection title={pageData.solutions.title} solutions={pageData.solutions.items} />
 
         {/* Services Section */}
-        <ServicesSectionLanding
-          title={pageData.imSoftServices.title}
-          description={pageData.imSoftServices.description}
-          services={pageData.imSoftServices.services}
-        />
-
-        {/* CTA Section */}
-        <CTASection
-          title={pageData.cta.title}
-          description={pageData.cta.description}
-          buttonText={pageData.cta.buttonText}
-          lang={lang}
-        />
+        <ServicesSection dict={dict} lang={lang as 'es' | 'en'} />
 
         {/* Footer Section */}
         <FooterSection dict={dict} lang={lang as 'es' | 'en'} contactData={contactData || undefined} />
