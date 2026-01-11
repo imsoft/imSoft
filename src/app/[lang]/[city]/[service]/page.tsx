@@ -91,6 +91,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     },
     alternates: {
       canonical: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io'}/${lang}/${city}/${service}`,
+      languages: {
+        'es': `${process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io'}/es/${city}/${service}`,
+        'en': `${process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io'}/en/${city}/${service}`,
+        'x-default': `${process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io'}/es/${city}/${service}`,
+      },
     },
     robots: {
       index: true,
