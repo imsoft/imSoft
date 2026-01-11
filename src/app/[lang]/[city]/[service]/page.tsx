@@ -5,8 +5,11 @@ import { ProblemsSection } from '@/components/landing/problems-section';
 import { SolutionsSection } from '@/components/landing/solutions-section';
 import { ServicesSectionLanding } from '@/components/landing/services-section-landing';
 import { CTASection } from '@/components/landing/cta-section';
+import { FooterSection } from '@/components/blocks/footer-section';
 import { landingPagesData } from '@/config/landing-pages-data';
 import type { City, Industry } from '@/types/landing-pages';
+import { getDictionary } from '@/app/[lang]/dictionaries';
+import { createClient } from '@/lib/supabase/server';
 
 interface PageProps {
   params: Promise<{
@@ -119,6 +122,15 @@ export default async function LandingPage({ params }: PageProps) {
   }
 
   const pageData = landingPagesData[city as City][service as Industry];
+  const dict = await getDictionary(lang as 'es' | 'en');
+  const supabase = await createClient();
+
+  // Obtener datos de contacto para el footer
+  const { data: contactData } = await supabase
+    .from('contact')
+    .select('*')
+    .limit(1)
+    .maybeSingle();
 
   // Structured Data para SEO
   const structuredData = {
@@ -158,29 +170,34 @@ export default async function LandingPage({ params }: PageProps) {
         }}
       />
 
-      {/* Hero Section */}
-      <HeroSectionLanding h1={pageData.h1} subtitle={pageData.heroSubtitle} lang={lang} />
+      <div className="overflow-x-hidden w-full">
+        {/* Hero Section */}
+        <HeroSectionLanding h1={pageData.h1} subtitle={pageData.heroSubtitle} lang={lang as 'es' | 'en'} dict={dict} />
 
-      {/* Problems Section */}
-      <ProblemsSection title={pageData.problems.title} problems={pageData.problems.items} />
+        {/* Problems Section */}
+        <ProblemsSection title={pageData.problems.title} problems={pageData.problems.items} />
 
-      {/* Solutions Section */}
-      <SolutionsSection title={pageData.solutions.title} solutions={pageData.solutions.items} />
+        {/* Solutions Section */}
+        <SolutionsSection title={pageData.solutions.title} solutions={pageData.solutions.items} />
 
-      {/* Services Section */}
-      <ServicesSectionLanding
-        title={pageData.imSoftServices.title}
-        description={pageData.imSoftServices.description}
-        services={pageData.imSoftServices.services}
-      />
+        {/* Services Section */}
+        <ServicesSectionLanding
+          title={pageData.imSoftServices.title}
+          description={pageData.imSoftServices.description}
+          services={pageData.imSoftServices.services}
+        />
 
-      {/* CTA Section */}
-      <CTASection
-        title={pageData.cta.title}
-        description={pageData.cta.description}
-        buttonText={pageData.cta.buttonText}
-        lang={lang}
-      />
+        {/* CTA Section */}
+        <CTASection
+          title={pageData.cta.title}
+          description={pageData.cta.description}
+          buttonText={pageData.cta.buttonText}
+          lang={lang}
+        />
+
+        {/* Footer Section */}
+        <FooterSection dict={dict} lang={lang as 'es' | 'en'} contactData={contactData || undefined} />
+      </div>
     </>
   );
 }
