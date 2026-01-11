@@ -54,7 +54,7 @@ export async function POST(request: Request) {
       .limit(1)
       .maybeSingle();
 
-    const adminEmail = contactData?.email || 'info@imsoft.io';
+    const adminEmail = contactData?.email || 'contacto@imsoft.io';
 
     // Enviar email de notificación al administrador
     try {
