@@ -278,12 +278,12 @@ export function ContactForm({ contact, lang, userId }: ContactFormProps) {
             <div className="grid gap-4 md:grid-cols-2">
               <FormField
                 control={form.control}
-                name="address_city"
+                name="address_state"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{lang === 'en' ? 'City' : 'Ciudad'}</FormLabel>
+                    <FormLabel>{lang === 'en' ? 'State' : 'Estado'}</FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <Input {...field} className="!border-2 !border-border" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -291,12 +291,12 @@ export function ContactForm({ contact, lang, userId }: ContactFormProps) {
               />
               <FormField
                 control={form.control}
-                name="address_state"
+                name="address_city"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{lang === 'en' ? 'State' : 'Estado'}</FormLabel>
+                    <FormLabel>{lang === 'en' ? 'City' : 'Ciudad'}</FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <Input {...field} className="!border-2 !border-border" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -309,7 +309,7 @@ export function ContactForm({ contact, lang, userId }: ContactFormProps) {
                   <FormItem>
                     <FormLabel>{lang === 'en' ? 'Country' : 'País'}</FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <Input {...field} className="!border-2 !border-border" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -322,7 +322,7 @@ export function ContactForm({ contact, lang, userId }: ContactFormProps) {
                   <FormItem>
                     <FormLabel>{lang === 'en' ? 'Postal Code' : 'Código Postal'}</FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <Input {...field} className="!border-2 !border-border" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
+import confetti from 'canvas-confetti'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -221,6 +222,14 @@ export function PublicQuotationForm({
       if (error) throw error
 
       setQuotationSaved(true)
+
+      // Lanzar confetti
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 }
+      })
+
       toast.success(
         lang === 'en' ? 'Quotation saved successfully!' : '¡Cotización guardada exitosamente!',
         {
