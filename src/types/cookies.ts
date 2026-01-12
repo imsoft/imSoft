@@ -21,4 +21,4 @@ export const defaultConsent: CookieConsent = {
 };
 
 export const COOKIE_CONSENT_KEY = 'imsoft_cookie_consent';
-export const COOKIE_VERSION = '1.0.0';
+export const COOKIE_VERSION = 1; // Version número para Zustand persist

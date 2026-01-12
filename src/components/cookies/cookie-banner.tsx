@@ -1,6 +1,6 @@
 'use client';
 
-import { useCookieConsent } from '@/contexts/cookie-context';
+import { useCookieStore } from '@/stores/cookie-store';
 import { Button } from '@/components/ui/button';
 import { Cookie, Settings, X } from 'lucide-react';
 import Link from 'next/link';
@@ -12,7 +12,7 @@ interface CookieBannerProps {
 }
 
 export function CookieBanner({ lang, dict }: CookieBannerProps) {
-  const { showBanner, acceptAll, rejectAll, openPreferences } = useCookieConsent();
+  const { showBanner, acceptAll, rejectAll, openPreferences } = useCookieStore();
 
   if (!showBanner) return null;
 

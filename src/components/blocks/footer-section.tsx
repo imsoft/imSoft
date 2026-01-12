@@ -5,7 +5,7 @@ import type { Locale } from '@/app/[lang]/dictionaries'
 import Magnet from '@/components/ui/magnet'
 import { Logo } from '@/components/blocks/hero-section'
 import type { ContactData } from '@/types/database'
-import { useCookieConsent } from '@/contexts/cookie-context'
+import { useCookieStore } from '@/stores/cookie-store'
 
 import type { FooterSectionProps } from '@/types/components'
 
@@ -83,7 +83,7 @@ const ThreadsIcon = (props: React.SVGProps<SVGSVGElement>) => (
 )
 
 export function FooterSection({ dict, lang, contactData }: FooterSectionProps) {
-  const { openPreferences } = useCookieConsent();
+  const { openPreferences } = useCookieStore();
 
   // Construir array de enlaces de redes sociales desde contactData
   // Solo incluir redes sociales que tienen URL y están marcadas como visibles

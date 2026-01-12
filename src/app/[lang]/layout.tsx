@@ -8,7 +8,6 @@ import { ConditionalAnalytics } from '@/components/analytics/conditional-analyti
 import { Toaster } from '@/components/ui/sonner';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
 import Script from 'next/script';
-import { CookieProvider } from '@/contexts/cookie-context';
 import { CookieBanner } from '@/components/cookies/cookie-banner';
 import { CookiePreferences } from '@/components/cookies/cookie-preferences';
 
@@ -90,13 +89,11 @@ export default async function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <CookieProvider>
-            {children}
-            <ConditionalAnalytics />
-            <CookieBanner lang={lang as 'es' | 'en'} dict={dict} />
-            <CookiePreferences lang={lang as 'es' | 'en'} dict={dict} />
-            <Toaster />
-          </CookieProvider>
+          {children}
+          <ConditionalAnalytics />
+          <CookieBanner lang={lang as 'es' | 'en'} dict={dict} />
+          <CookiePreferences lang={lang as 'es' | 'en'} dict={dict} />
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>

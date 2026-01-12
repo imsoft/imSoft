@@ -1,6 +1,6 @@
 'use client';
 
-import { useCookieConsent } from '@/contexts/cookie-context';
+import { useCookieStore } from '@/stores/cookie-store';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { X, Shield, Palette, BarChart3, Megaphone, Info } from 'lucide-react';
@@ -28,7 +28,7 @@ export function CookiePreferences({ lang, dict }: CookiePreferencesProps) {
     closePreferences,
     acceptAll,
     rejectAll,
-  } = useCookieConsent();
+  } = useCookieStore();
 
   if (!showPreferences) return null;
 
