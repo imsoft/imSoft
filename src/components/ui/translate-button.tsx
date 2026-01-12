@@ -45,6 +45,13 @@ export function TranslateButton({
     }
   }, [text, targetValue, lastTranslatedText])
 
+  // Decodificar entidades HTML
+  const decodeHtmlEntities = (html: string): string => {
+    const textarea = document.createElement('textarea')
+    textarea.innerHTML = html
+    return textarea.value
+  }
+
   const handleTranslate = async () => {
     if (!text || !text.trim()) {
       return
@@ -75,9 +82,10 @@ export function TranslateButton({
       }
 
       const data = await response.json()
-      // Guardar el HTML traducido completo, no solo el texto plano
-      setLastTranslatedText(data.translatedText)
-      onTranslate(data.translatedText)
+      // Decodificar entidades HTML (como &#39; a ')
+      const decodedText = decodeHtmlEntities(data.translatedText)
+      setLastTranslatedText(decodedText)
+      onTranslate(decodedText)
     } catch (error) {
       console.error('Translation error:', error)
       alert(error instanceof Error ? error.message : 'Error al traducir el texto')

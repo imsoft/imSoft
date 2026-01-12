@@ -298,7 +298,17 @@ export function ServiceForm({ dict, lang, service }: ServiceFormProps) {
               name="benefits_es"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Beneficios</FormLabel>
+                  <div className="flex items-center justify-between">
+                    <FormLabel>Beneficios</FormLabel>
+                    <TranslateButton
+                      text={field.value?.join('\n')}
+                      targetValue={form.watch('benefits_en')?.join('\n')}
+                      onTranslate={(translated) => {
+                        const translatedArray = translated.split('\n').filter(b => b.trim())
+                        form.setValue('benefits_en', translatedArray)
+                      }}
+                    />
+                  </div>
                   <div className="space-y-2">
                     {field.value?.map((benefit, index) => (
                       <div key={index} className="flex gap-2">
@@ -310,7 +320,6 @@ export function ServiceForm({ dict, lang, service }: ServiceFormProps) {
                             field.onChange(newBenefits)
                           }}
                           className="!border-2 !border-border"
-                          placeholder="Ej: Ahorro de tiempo"
                         />
                         <Button
                           type="button"
@@ -407,7 +416,6 @@ export function ServiceForm({ dict, lang, service }: ServiceFormProps) {
                             field.onChange(newBenefits)
                           }}
                           className="!border-2 !border-border"
-                          placeholder="E.g: Time saving"
                         />
                         <Button
                           type="button"
