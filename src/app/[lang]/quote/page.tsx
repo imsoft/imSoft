@@ -67,10 +67,10 @@ export default async function QuotePage({ params }: {
   return (
     <>
       <HeroHeader dict={dict} lang={lang} />
-      <main className="pt-20 min-h-screen bg-linear-to-b from-gray-50 to-white dark:from-gray-950 dark:to-gray-900">
+      <main className="pt-20 min-h-screen bg-background">
         <div className="container mx-auto px-4 py-12 max-w-4xl">
           <div className="text-center mb-10">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-clip-text text-transparent bg-linear-to-r from-primary to-primary/60">
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">
               {lang === 'en' ? 'Get Your Quote' : 'Obtén tu Cotización'}
             </h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
