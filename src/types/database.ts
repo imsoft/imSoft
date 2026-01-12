@@ -44,6 +44,7 @@ export interface Quotation {
   description?: string
   client_name?: string
   client_email?: string
+  client_phone?: string
   client_company?: string
   answers: Record<string, any>
   subtotal: number

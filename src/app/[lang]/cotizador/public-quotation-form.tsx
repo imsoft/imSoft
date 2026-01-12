@@ -28,12 +28,13 @@ import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
 import type { Dictionary, Locale } from '@/app/[lang]/dictionaries'
 import type { QuotationQuestion } from '@/types/database'
-import { Calculator, Mail, User, Building2 } from 'lucide-react'
+import { Calculator, Mail, User, Building2, Phone } from 'lucide-react'
 
 const quotationSchema = z.object({
   service_id: z.string().min(1, 'El servicio es requerido'),
   client_name: z.string().min(2, 'El nombre es requerido'),
   client_email: z.string().email('Email inválido'),
+  client_phone: z.string().min(10, 'El teléfono es requerido'),
   client_company: z.string().optional(),
   answers: z.record(z.any()),
 })
@@ -68,6 +69,7 @@ export function PublicQuotationForm({
       service_id: '',
       client_name: '',
       client_email: '',
+      client_phone: '',
       client_company: '',
       answers: {},
     },
@@ -95,6 +97,7 @@ export function PublicQuotationForm({
 
   async function loadQuestions(serviceId: string) {
     setIsLoadingQuestions(true)
+    console.log('Loading questions for service:', serviceId)
     try {
       const supabase = createClient()
       const { data, error } = await supabase
@@ -103,11 +106,23 @@ export function PublicQuotationForm({
         .eq('service_id', serviceId)
         .order('order_index')
 
-      if (error) throw error
+      if (error) {
+        console.error('Supabase error:', error)
+        throw error
+      }
 
+      console.log('Questions loaded:', data?.length || 0)
       setQuestions(data || [])
       form.setValue('answers', {})
       setShowQuotation(false)
+
+      if (!data || data.length === 0) {
+        toast.info(
+          lang === 'en'
+            ? 'This service has no questions configured yet'
+            : 'Este servicio aún no tiene preguntas configuradas'
+        )
+      }
     } catch (error) {
       console.error('Error loading questions:', error)
       toast.error(
@@ -191,6 +206,7 @@ export function PublicQuotationForm({
         service_id: values.service_id,
         client_name: values.client_name,
         client_email: values.client_email,
+        client_phone: values.client_phone,
         client_company: values.client_company || null,
         answers: values.answers,
         subtotal: subtotal,
@@ -286,7 +302,6 @@ export function PublicQuotationForm({
                   <FormControl>
                     <Input
                       {...field}
-                      placeholder={lang === 'en' ? 'John Doe' : 'Juan Pérez'}
                       className="!border-2 !border-border"
                     />
                   </FormControl>
@@ -304,7 +319,6 @@ export function PublicQuotationForm({
                     <Input
                       {...field}
                       type="email"
-                      placeholder={lang === 'en' ? 'john@example.com' : 'juan@ejemplo.com'}
                       className="!border-2 !border-border"
                     />
                   </FormControl>
@@ -313,25 +327,46 @@ export function PublicQuotationForm({
               )}
             />
           </div>
-          <FormField
-            control={form.control}
-            name="client_company"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  {lang === 'en' ? 'Company (Optional)' : 'Empresa (Opcional)'}
-                </FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    placeholder={lang === 'en' ? 'Acme Inc.' : 'Mi Empresa S.A.'}
-                    className="!border-2 !border-border"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="client_phone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    <Phone className="h-4 w-4 inline mr-1" />
+                    {lang === 'en' ? 'Phone Number' : 'Número de Teléfono'}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      type="tel"
+                      className="!border-2 !border-border"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="client_company"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    {lang === 'en' ? 'Company (Optional)' : 'Empresa (Opcional)'}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      className="!border-2 !border-border"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
         </div>
 
         {/* Selector de servicio */}
@@ -349,9 +384,7 @@ export function PublicQuotationForm({
                 <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
                     <SelectTrigger className="w-full !border-2 !border-border">
-                      <SelectValue
-                        placeholder={lang === 'en' ? 'Select a service' : 'Selecciona un servicio'}
-                      />
+                      <SelectValue />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent className="w-full max-w-full">
@@ -601,7 +634,8 @@ export function PublicQuotationForm({
               !selectedServiceId ||
               questions.length === 0 ||
               !form.watch('client_name') ||
-              !form.watch('client_email')
+              !form.watch('client_email') ||
+              !form.watch('client_phone')
             }
             className="w-full md:w-auto px-8"
           >
