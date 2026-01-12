@@ -244,7 +244,7 @@ export function QuestionsManager({ services, questions: initialQuestions, dict, 
   return (
     <div className="space-y-6">
       {/* Selector de Servicio */}
-      <Card>
+      <Card className="bg-white dark:bg-gray-900">
         <CardHeader>
           <CardTitle>{lang === 'en' ? 'Select Service' : 'Seleccionar Servicio'}</CardTitle>
           <CardDescription>
@@ -271,7 +271,7 @@ export function QuestionsManager({ services, questions: initialQuestions, dict, 
 
       {/* Lista de Preguntas */}
       {selectedServiceId && (
-        <Card>
+        <Card className="bg-white dark:bg-gray-900">
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
