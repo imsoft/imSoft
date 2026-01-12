@@ -26,12 +26,19 @@ export function TranslateButton({
 }: TranslateButtonProps) {
   const [isTranslating, setIsTranslating] = useState(false)
   const [lastTranslatedText, setLastTranslatedText] = useState<string>('')
+  const [lastSourceText, setLastSourceText] = useState<string>('')
   const [translationState, setTranslationState] = useState<'idle' | 'modified' | 'translated'>('idle')
 
   // Detectar cambios en el texto fuente y destino
   useEffect(() => {
     if (!text || !text.trim()) {
       setTranslationState('idle')
+      return
+    }
+
+    // Si el texto fuente cambió después de traducir
+    if (lastSourceText && text !== lastSourceText) {
+      setTranslationState('modified')
       return
     }
 
@@ -43,7 +50,7 @@ export function TranslateButton({
     } else {
       setTranslationState('idle')
     }
-  }, [text, targetValue, lastTranslatedText])
+  }, [text, targetValue, lastTranslatedText, lastSourceText])
 
   // Decodificar entidades HTML
   const decodeHtmlEntities = (html: string): string => {
@@ -85,6 +92,7 @@ export function TranslateButton({
       // Decodificar entidades HTML (como &#39; a ')
       const decodedText = decodeHtmlEntities(data.translatedText)
       setLastTranslatedText(decodedText)
+      setLastSourceText(textToTranslate)
       onTranslate(decodedText)
     } catch (error) {
       console.error('Translation error:', error)
