@@ -114,7 +114,7 @@ export function DealForm({ deal, contacts, services, lang, userId }: DealFormPro
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         {/* Basic Information */}
-        <Card className="p-6">
+        <Card className="p-6 bg-card">
           <h2 className="text-lg font-semibold mb-4">
             {lang === 'en' ? 'Deal Information' : 'Información del Negocio'}
           </h2>
@@ -126,7 +126,7 @@ export function DealForm({ deal, contacts, services, lang, userId }: DealFormPro
                 <FormItem>
                   <FormLabel>{lang === 'en' ? 'Deal Name' : 'Nombre del Negocio'} *</FormLabel>
                   <FormControl>
-                    <Input placeholder={lang === 'en' ? 'e.g., Website Development Project' : 'ej., Proyecto de Desarrollo Web'} {...field} />
+                    <Input placeholder={lang === 'en' ? 'e.g., Website Development Project' : 'ej., Proyecto de Desarrollo Web'} {...field} className="!border-2 !border-border" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -139,7 +139,7 @@ export function DealForm({ deal, contacts, services, lang, userId }: DealFormPro
                 <FormItem>
                   <FormLabel>{lang === 'en' ? 'Description' : 'Descripción'}</FormLabel>
                   <FormControl>
-                    <Textarea rows={3} {...field} />
+                    <Textarea rows={3} {...field} className="!border-2 !border-border" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -154,7 +154,7 @@ export function DealForm({ deal, contacts, services, lang, userId }: DealFormPro
                     <FormLabel>{lang === 'en' ? 'Contact' : 'Contacto'} *</FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
-                        <SelectTrigger>
+                        <SelectTrigger className="w-full !border-2 !border-border">
                           <SelectValue placeholder={lang === 'en' ? 'Select a contact' : 'Selecciona un contacto'} />
                         </SelectTrigger>
                       </FormControl>
@@ -179,7 +179,7 @@ export function DealForm({ deal, contacts, services, lang, userId }: DealFormPro
                     <FormLabel>{lang === 'en' ? 'Service' : 'Servicio'}</FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
-                        <SelectTrigger>
+                        <SelectTrigger className="w-full !border-2 !border-border">
                           <SelectValue placeholder={lang === 'en' ? 'Select a service' : 'Selecciona un servicio'} />
                         </SelectTrigger>
                       </FormControl>
@@ -200,7 +200,7 @@ export function DealForm({ deal, contacts, services, lang, userId }: DealFormPro
         </Card>
 
         {/* Deal Value & Stage */}
-        <Card className="p-6">
+        <Card className="p-6 bg-card">
           <h2 className="text-lg font-semibold mb-4">
             {lang === 'en' ? 'Sales Information' : 'Información de Venta'}
           </h2>
@@ -212,7 +212,7 @@ export function DealForm({ deal, contacts, services, lang, userId }: DealFormPro
                 <FormItem>
                   <FormLabel>{lang === 'en' ? 'Deal Value' : 'Valor del Negocio'} *</FormLabel>
                   <FormControl>
-                    <Input type="number" step="0.01" min="0" {...field} />
+                    <Input type="number" step="0.01" min="0" {...field} className="!border-2 !border-border" />
                   </FormControl>
                   <FormDescription>
                     {lang === 'en' ? 'Amount in MXN' : 'Monto en MXN'}
@@ -228,7 +228,7 @@ export function DealForm({ deal, contacts, services, lang, userId }: DealFormPro
                 <FormItem>
                   <FormLabel>{lang === 'en' ? 'Win Probability (%)' : 'Probabilidad de Ganar (%)'}</FormLabel>
                   <FormControl>
-                    <Input type="number" min="0" max="100" {...field} />
+                    <Input type="number" min="0" max="100" {...field} className="!border-2 !border-border" />
                   </FormControl>
                   <FormDescription>
                     {lang === 'en' ? '0-100%' : '0-100%'}
@@ -245,7 +245,7 @@ export function DealForm({ deal, contacts, services, lang, userId }: DealFormPro
                   <FormLabel>{lang === 'en' ? 'Stage' : 'Etapa'} *</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
-                      <SelectTrigger>
+                      <SelectTrigger className="w-full !border-2 !border-border">
                         <SelectValue />
                       </SelectTrigger>
                     </FormControl>
@@ -268,7 +268,7 @@ export function DealForm({ deal, contacts, services, lang, userId }: DealFormPro
                 <FormItem>
                   <FormLabel>{lang === 'en' ? 'Expected Close Date' : 'Fecha de Cierre Esperada'}</FormLabel>
                   <FormControl>
-                    <Input type="date" {...field} />
+                    <Input type="date" {...field} className="!border-2 !border-border" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

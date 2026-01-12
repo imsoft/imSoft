@@ -147,7 +147,7 @@ export default async function CRMPage({ params }: {
 
       {/* Stats Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="p-6">
+        <Card className="p-6 bg-card">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-muted-foreground">
@@ -162,7 +162,7 @@ export default async function CRMPage({ params }: {
           </p>
         </Card>
 
-        <Card className="p-6">
+        <Card className="p-6 bg-card">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-muted-foreground">
@@ -177,7 +177,7 @@ export default async function CRMPage({ params }: {
           </p>
         </Card>
 
-        <Card className="p-6">
+        <Card className="p-6 bg-card">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-muted-foreground">
@@ -192,7 +192,7 @@ export default async function CRMPage({ params }: {
           </p>
         </Card>
 
-        <Card className="p-6">
+        <Card className="p-6 bg-card">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-muted-foreground">
@@ -211,7 +211,7 @@ export default async function CRMPage({ params }: {
       {/* Two Column Layout */}
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Recent Deals */}
-        <Card className="p-6">
+        <Card className="p-6 bg-card">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-lg font-semibold">
               {lang === 'en' ? 'Recent Deals' : 'Negocios Recientes'}
@@ -251,7 +251,7 @@ export default async function CRMPage({ params }: {
         </Card>
 
         {/* Recent Activities */}
-        <Card className="p-6">
+        <Card className="p-6 bg-card">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-lg font-semibold">
               {lang === 'en' ? 'Recent Activities' : 'Actividades Recientes'}

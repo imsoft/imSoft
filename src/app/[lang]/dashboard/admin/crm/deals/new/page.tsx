@@ -38,7 +38,7 @@ export default async function NewDealPage({ params }: {
     .order('title_es')
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="space-y-6">
       <div className="flex items-center gap-2">
         <Button variant="ghost" size="icon" asChild>
           <Link href={`/${lang}/dashboard/admin/crm/deals`}>
