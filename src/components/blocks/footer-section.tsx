@@ -128,6 +128,7 @@ export function FooterSection({ dict, lang, contactData }: FooterSectionProps) {
       { id: 'insights', name: dict.footer.solutions.items.insights, href: `/${lang}/${lang === 'es' ? 'portafolio' : 'portfolio'}` },
     ],
     support: [
+      { id: 'quote', name: dict.nav.quote, href: lang === 'es' ? `/${lang}/cotizador` : `/${lang}/quote` },
       { id: 'submitTicket', name: dict.footer.support.items.submitTicket, href: `/${lang}/contact` },
       { id: 'documentation', name: dict.footer.support.items.documentation, href: `/${lang}/blog` },
     ],

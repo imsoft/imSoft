@@ -348,13 +348,13 @@ export function PublicQuotationForm({
                 <FormLabel>{lang === 'en' ? 'Service' : 'Servicio'}</FormLabel>
                 <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
-                    <SelectTrigger className="!border-2 !border-border">
+                    <SelectTrigger className="w-full !border-2 !border-border">
                       <SelectValue
                         placeholder={lang === 'en' ? 'Select a service' : 'Selecciona un servicio'}
                       />
                     </SelectTrigger>
                   </FormControl>
-                  <SelectContent>
+                  <SelectContent className="w-full max-w-full">
                     {services.map((service) => (
                       <SelectItem key={service.id} value={service.id}>
                         {lang === 'es' ? service.title_es : service.title_en}

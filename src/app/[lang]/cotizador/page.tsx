@@ -3,6 +3,8 @@ import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { PublicQuotationForm } from './public-quotation-form'
 import { Metadata } from 'next'
+import { HeroHeader } from '@/components/blocks/hero-section'
+import { FooterSection } from '@/components/blocks/footer-section'
 
 export async function generateMetadata({ params }: {
   params: Promise<{ lang: string }>
@@ -55,36 +57,47 @@ export default async function PublicQuotationPage({ params }: {
     .select('id, title_es, title_en, slug')
     .order('title_es')
 
+  // Obtener datos de contacto para el footer
+  const { data: contactData } = await supabase
+    .from('contact')
+    .select('*')
+    .limit(1)
+    .maybeSingle()
+
   return (
-    <div className="min-h-screen bg-linear-to-b from-gray-50 to-white dark:from-gray-950 dark:to-gray-900">
-      <div className="container mx-auto px-4 py-12 max-w-4xl">
-        <div className="text-center mb-10">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-clip-text text-transparent bg-linear-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">
-            {lang === 'en' ? 'Get Your Quote' : 'Obtén tu Cotización'}
-          </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            {lang === 'en'
-              ? 'Answer a few questions and get an instant quote for your project'
-              : 'Responde algunas preguntas y obtén una cotización instantánea para tu proyecto'}
-          </p>
-        </div>
+    <>
+      <HeroHeader dict={dict} lang={lang} />
+      <main className="pt-20 min-h-screen bg-linear-to-b from-gray-50 to-white dark:from-gray-950 dark:to-gray-900">
+        <div className="container mx-auto px-4 py-12 max-w-4xl">
+          <div className="text-center mb-10">
+            <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-clip-text text-transparent bg-linear-to-r from-primary to-primary/60">
+              {lang === 'en' ? 'Get Your Quote' : 'Obtén tu Cotización'}
+            </h1>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              {lang === 'en'
+                ? 'Answer a few questions and get an instant quote for your project'
+                : 'Responde algunas preguntas y obtén una cotización instantánea para tu proyecto'}
+            </p>
+          </div>
 
-        <div className="bg-white dark:bg-gray-900 rounded-lg shadow-xl p-6 md:p-8 border border-gray-200 dark:border-gray-800">
-          <PublicQuotationForm
-            services={services || []}
-            dict={dict}
-            lang={lang}
-          />
-        </div>
+          <div className="bg-white dark:bg-gray-900 rounded-lg shadow-xl p-6 md:p-8 border border-gray-200 dark:border-gray-800">
+            <PublicQuotationForm
+              services={services || []}
+              dict={dict}
+              lang={lang}
+            />
+          </div>
 
-        <div className="mt-8 text-center text-sm text-muted-foreground">
-          <p>
-            {lang === 'en'
-              ? 'This is an automated estimate. Final pricing may vary based on specific requirements.'
-              : 'Esta es una estimación automatizada. El precio final puede variar según los requisitos específicos.'}
-          </p>
+          <div className="mt-8 text-center text-sm text-muted-foreground">
+            <p>
+              {lang === 'en'
+                ? 'This is an automated estimate. Final pricing may vary based on specific requirements.'
+                : 'Esta es una estimación automatizada. El precio final puede variar según los requisitos específicos.'}
+            </p>
+          </div>
         </div>
-      </div>
-    </div>
+      </main>
+      <FooterSection dict={dict} lang={lang} contactData={contactData || undefined} />
+    </>
   )
 }
