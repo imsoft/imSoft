@@ -36,7 +36,7 @@ const questionSchema = z.object({
   service_id: z.string().min(1, 'El servicio es requerido'),
   question_es: z.string().min(1, 'La pregunta en español es requerida'),
   question_en: z.string().min(1, 'La pregunta en inglés es requerida'),
-  question_type: z.enum(['multiple_choice', 'yes_no', 'number', 'range']),
+  question_type: z.enum(['multiple_choice', 'multiple_selection', 'yes_no', 'number', 'range']),
   base_price: z.number().min(0, 'El precio base debe ser mayor o igual a 0'),
   price_multiplier: z.number().min(0, 'El multiplicador debe ser mayor o igual a 0'),
   is_required: z.boolean(),
@@ -85,7 +85,7 @@ export function QuestionForm({ services, dict, lang, question, defaultServiceId 
 
   // Resetear opciones cuando cambia el tipo de pregunta
   useEffect(() => {
-    if (questionType !== 'multiple_choice') {
+    if (questionType !== 'multiple_choice' && questionType !== 'multiple_selection') {
       setMultipleChoiceOptions([])
     }
   }, [questionType])
@@ -112,8 +112,8 @@ export function QuestionForm({ services, dict, lang, question, defaultServiceId 
     try {
       const supabase = createClient()
 
-      // Validar opciones de multiple choice
-      if (values.question_type === 'multiple_choice') {
+      // Validar opciones de multiple choice y multiple selection
+      if (values.question_type === 'multiple_choice' || values.question_type === 'multiple_selection') {
         if (multipleChoiceOptions.length === 0) {
           toast.error(lang === 'en' ? 'Add at least one option' : 'Agrega al menos una opción')
           setIsSaving(false)
@@ -139,7 +139,7 @@ export function QuestionForm({ services, dict, lang, question, defaultServiceId 
         order_index: values.order_index,
       }
 
-      if (values.question_type === 'multiple_choice') {
+      if (values.question_type === 'multiple_choice' || values.question_type === 'multiple_selection') {
         questionData.options = multipleChoiceOptions
       } else {
         questionData.options = null
@@ -251,7 +251,10 @@ export function QuestionForm({ services, dict, lang, question, defaultServiceId 
                       </FormControl>
                       <SelectContent>
                         <SelectItem value="multiple_choice">
-                          {lang === 'en' ? 'Multiple Choice' : 'Opción Múltiple'}
+                          {lang === 'en' ? 'Multiple Choice (Single Selection)' : 'Opción Múltiple (Selección Única)'}
+                        </SelectItem>
+                        <SelectItem value="multiple_selection">
+                          {lang === 'en' ? 'Multiple Selection (Checkboxes)' : 'Selección Múltiple (Checkboxes)'}
                         </SelectItem>
                         <SelectItem value="yes_no">
                           {lang === 'en' ? 'Yes/No' : 'Sí/No'}
@@ -269,8 +272,8 @@ export function QuestionForm({ services, dict, lang, question, defaultServiceId 
                 )}
               />
 
-              {/* Opciones para Multiple Choice */}
-              {questionType === 'multiple_choice' && (
+              {/* Opciones para Multiple Choice y Multiple Selection */}
+              {(questionType === 'multiple_choice' || questionType === 'multiple_selection') && (
                 <div className="space-y-4 p-4 border rounded-lg bg-white dark:bg-gray-900">
                   <div className="flex items-center justify-between">
                     <FormLabel>{lang === 'en' ? 'Options' : 'Opciones'}</FormLabel>

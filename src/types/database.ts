@@ -20,7 +20,7 @@ export interface QuotationQuestion {
   service_id: string
   question_es: string
   question_en: string
-  question_type: 'multiple_choice' | 'number' | 'yes_no' | 'range'
+  question_type: 'multiple_choice' | 'multiple_selection' | 'number' | 'yes_no' | 'range'
   options?: QuotationOption[]
   base_price: number
   price_multiplier: number

@@ -99,7 +99,7 @@ function SortableQuestion({ question, index, lang, onDelete, formatCurrency, get
               )}
             </div>
             <div className="text-sm text-muted-foreground space-y-1">
-              {question.question_type === 'multiple_choice' && question.options && (
+              {(question.question_type === 'multiple_choice' || question.question_type === 'multiple_selection') && question.options && (
                 <div>
                   <span className="font-medium">{lang === 'en' ? 'Options:' : 'Opciones:'}</span>
                   <ul className="list-disc list-inside ml-2">
@@ -234,6 +234,7 @@ export function QuestionsManager({ services, questions: initialQuestions, dict, 
   const getQuestionTypeLabel = (type: string) => {
     const labels: Record<string, { es: string; en: string }> = {
       multiple_choice: { es: 'Opción Múltiple', en: 'Multiple Choice' },
+      multiple_selection: { es: 'Selección Múltiple', en: 'Multiple Selection' },
       yes_no: { es: 'Sí/No', en: 'Yes/No' },
       number: { es: 'Número', en: 'Number' },
       range: { es: 'Rango', en: 'Range' },

@@ -22,6 +22,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Slider } from '@/components/ui/slider'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
@@ -156,6 +157,19 @@ export function ClientQuotationForm({
             if (selectedOption) {
               calculatedSubtotal += selectedOption.price || 0
             }
+          }
+          break
+
+        case 'multiple_selection':
+          if (answer && Array.isArray(answer) && question.options && Array.isArray(question.options)) {
+            answer.forEach((selectedLabel: string) => {
+              const selectedOption = question.options!.find(opt =>
+                opt.label_es === selectedLabel || opt.label_en === selectedLabel
+              )
+              if (selectedOption) {
+                calculatedSubtotal += selectedOption.price || 0
+              }
+            })
           }
           break
 
@@ -353,6 +367,52 @@ export function ClientQuotationForm({
                                 )
                               })}
                             </RadioGroup>
+                          )}
+
+                          {question.question_type === 'multiple_selection' && question.options && (
+                            <div className="space-y-2">
+                              {question.options.map((option, optIndex) => {
+                                const optionLabel = lang === 'es' ? option.label_es : option.label_en
+                                const currentAnswers = answers[question.id] || []
+                                const isChecked = Array.isArray(currentAnswers) && currentAnswers.includes(optionLabel)
+
+                                return (
+                                  <div key={optIndex} className="flex items-center space-x-2 py-2">
+                                    <Checkbox
+                                      id={`${question.id}-${optIndex}`}
+                                      checked={isChecked}
+                                      onCheckedChange={(checked) => {
+                                        const currentAnswers = answers[question.id] || []
+                                        let newAnswers: string[]
+
+                                        if (checked) {
+                                          // Agregar la opción
+                                          newAnswers = Array.isArray(currentAnswers)
+                                            ? [...currentAnswers, optionLabel]
+                                            : [optionLabel]
+                                        } else {
+                                          // Remover la opción
+                                          newAnswers = Array.isArray(currentAnswers)
+                                            ? currentAnswers.filter((a: string) => a !== optionLabel)
+                                            : []
+                                        }
+
+                                        form.setValue(`answers.${question.id}`, newAnswers)
+                                        // Forzar recálculo
+                                        setTimeout(() => calculatePrice(), 0)
+                                      }}
+                                      className="!border-2 !border-gray-400 dark:!border-gray-500"
+                                    />
+                                    <label
+                                      htmlFor={`${question.id}-${optIndex}`}
+                                      className="text-sm font-normal cursor-pointer flex-1"
+                                    >
+                                      {optionLabel}
+                                    </label>
+                                  </div>
+                                )
+                              })}
+                            </div>
                           )}
 
                           {question.question_type === 'yes_no' && (
