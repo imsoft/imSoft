@@ -18,6 +18,10 @@ export interface SEOConfig {
   tags?: string[];
   noindex?: boolean;
   nofollow?: boolean;
+  alternateUrls?: {
+    es?: string;
+    en?: string;
+  };
 }
 
 export function generateMetadata(config: SEOConfig, lang: string = 'es'): Metadata {
@@ -34,6 +38,7 @@ export function generateMetadata(config: SEOConfig, lang: string = 'es'): Metada
     tags,
     noindex = false,
     nofollow = false,
+    alternateUrls,
   } = config;
 
   const defaultTitle = lang === 'es' 
@@ -74,7 +79,11 @@ export function generateMetadata(config: SEOConfig, lang: string = 'es'): Metada
     },
     alternates: {
       canonical: canonicalUrl,
-      languages: {
+      languages: alternateUrls ? {
+        'es': alternateUrls.es || `${SITE_URL}/es`,
+        'en': alternateUrls.en || `${SITE_URL}/en`,
+        'x-default': alternateUrls.es || `${SITE_URL}/es`,
+      } : {
         'es': `${SITE_URL}/es`,
         'en': `${SITE_URL}/en`,
         'x-default': `${SITE_URL}/es`,
@@ -113,16 +122,17 @@ export function generateMetadata(config: SEOConfig, lang: string = 'es'): Metada
     },
     metadataBase: new URL(SITE_URL),
     verification: {
-      // Agregar aquí los códigos de verificación cuando los tengas
-      // google: 'your-google-verification-code',
-      // yandex: 'your-yandex-verification-code',
-      // bing: 'your-bing-verification-code',
+      google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+      yandex: process.env.NEXT_PUBLIC_YANDEX_VERIFICATION,
+      other: {
+        'msvalidate.01': process.env.NEXT_PUBLIC_BING_VERIFICATION || '',
+      },
     },
   };
 }
 
 export function generateStructuredData(config: {
-  type: 'Organization' | 'WebSite' | 'Service' | 'Article' | 'BreadcrumbList' | 'FAQPage';
+  type: 'Organization' | 'WebSite' | 'Service' | 'Article' | 'BreadcrumbList' | 'FAQPage' | 'LocalBusiness';
   data: any;
 }): object {
   const { type, data } = config;
@@ -245,13 +255,83 @@ export function generateStructuredData(config: {
         })),
       };
 
+    case 'LocalBusiness':
+      return {
+        '@context': 'https://schema.org',
+        '@type': 'LocalBusiness',
+        '@id': data.url || baseUrl,
+        name: data.name || SITE_NAME,
+        description: data.description || '',
+        url: data.url || baseUrl,
+        image: data.image || `${baseUrl}/logos/logo-imsoft-blue.png`,
+        telephone: data.phone || '',
+        email: data.email || '',
+        priceRange: data.priceRange || '$$',
+        address: {
+          '@type': 'PostalAddress',
+          addressLocality: data.city || '',
+          addressRegion: data.state || '',
+          addressCountry: 'MX',
+        },
+        geo: data.geo ? {
+          '@type': 'GeoCoordinates',
+          latitude: data.geo.latitude,
+          longitude: data.geo.longitude,
+        } : undefined,
+        areaServed: {
+          '@type': 'City',
+          name: data.city || '',
+        },
+        serviceArea: data.serviceArea ? {
+          '@type': 'GeoCircle',
+          geoMidpoint: {
+            '@type': 'GeoCoordinates',
+            latitude: data.geo?.latitude,
+            longitude: data.geo?.longitude,
+          },
+          geoRadius: '50000', // 50km radius
+        } : undefined,
+        openingHours: data.openingHours || 'Mo-Fr 09:00-18:00',
+        sameAs: data.socialLinks || [],
+      };
+
     default:
       return {};
   }
 }
 
-export function getCanonicalUrl(path: string, lang: string): string {
+export function getCanonicalUrl(path: string): string {
   const baseUrl = SITE_URL;
   const cleanPath = path.startsWith('/') ? path : `/${path}`;
   return `${baseUrl}${cleanPath}`;
+}
+
+// Helper para obtener información de ciudades para LocalBusiness schema
+export function getCityInfo(city: string): {
+  displayName: { es: string; en: string };
+  state: string;
+  geo?: { latitude: number; longitude: number };
+} {
+  const cities: Record<string, any> = {
+    guadalajara: {
+      displayName: { es: 'Guadalajara', en: 'Guadalajara' },
+      state: 'Jalisco',
+      geo: { latitude: 20.6597, longitude: -103.3496 },
+    },
+    cdmx: {
+      displayName: { es: 'Ciudad de México', en: 'Mexico City' },
+      state: 'CDMX',
+      geo: { latitude: 19.4326, longitude: -99.1332 },
+    },
+    monterrey: {
+      displayName: { es: 'Monterrey', en: 'Monterrey' },
+      state: 'Nuevo León',
+      geo: { latitude: 25.6866, longitude: -100.3161 },
+    },
+  };
+
+  return cities[city] || {
+    displayName: { es: city, en: city },
+    state: '',
+  };
 }

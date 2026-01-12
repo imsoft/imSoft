@@ -63,6 +63,10 @@ export async function generateMetadata({
     author: post.author_name || 'imSoft',
     section: post.category || 'Technology',
     tags: post.tags || [],
+    alternateUrls: {
+      es: `${SITE_URL}/es/blog/${slug}`,
+      en: `${SITE_URL}/en/blog/${slug}`,
+    },
   }, lang);
 }
 

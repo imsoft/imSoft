@@ -8,30 +8,32 @@ export async function generateMetadata({ params }: {
   params: Promise<{ lang: string }>
 }): Promise<Metadata> {
   const { lang } = await params
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io'
 
   const title = lang === 'es'
-    ? 'Cotizador en Línea - Obtén tu Presupuesto | imSoft'
-    : 'Online Quote - Get Your Estimate | imSoft'
+    ? 'Cotizador en Línea - Obtén tu Presupuesto'
+    : 'Online Quote - Get Your Estimate'
 
   const description = lang === 'es'
     ? 'Obtén una cotización instantánea para tu proyecto de software. Responde unas preguntas simples y recibe un presupuesto detallado al instante.'
     : 'Get an instant quote for your software project. Answer a few simple questions and receive a detailed estimate instantly.'
 
   return {
-    title,
+    title: `${title} | imSoft`,
     description,
     openGraph: {
-      title,
+      title: `${title} | imSoft`,
       description,
       type: 'website',
       locale: lang === 'es' ? 'es_MX' : 'en_US',
+      url: `${SITE_URL}/${lang}/quote`,
     },
     alternates: {
-      canonical: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io'}/${lang}/quote`,
+      canonical: `${SITE_URL}/${lang}/quote`,
       languages: {
-        'es': `${process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io'}/es/cotizador`,
-        'en': `${process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io'}/en/quote`,
-        'x-default': `${process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io'}/es/cotizador`,
+        'es': `${SITE_URL}/es/cotizador`,
+        'en': `${SITE_URL}/en/quote`,
+        'x-default': `${SITE_URL}/es/cotizador`,
       },
     },
   }

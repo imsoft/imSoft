@@ -17,12 +17,12 @@ export async function generateMetadata({
   params: Promise<{ lang: string }>;
 }): Promise<Metadata> {
   const { lang } = await params;
-  
+
   const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io';
   const url = `${SITE_URL}/${lang}/contact`;
 
   return generateSEOMetadata({
-    title: lang === 'es' 
+    title: lang === 'es'
       ? 'Contacto - Contáctanos para Soluciones Tecnológicas'
       : 'Contact - Contact Us for Technology Solutions',
     description: lang === 'es'
@@ -30,9 +30,13 @@ export async function generateMetadata({
       : 'Contact us to discuss your technology needs. We offer consulting, software development and custom solutions.',
     url,
     type: 'website',
-    tags: lang === 'es' 
+    tags: lang === 'es'
       ? ['contacto', 'solicitar cotización', 'consultoría']
       : ['contact', 'request quote', 'consulting'],
+    alternateUrls: {
+      es: `${SITE_URL}/es/contact`,
+      en: `${SITE_URL}/en/contact`,
+    },
   }, lang);
 }
 

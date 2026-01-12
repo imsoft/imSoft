@@ -50,7 +50,7 @@ export async function generateMetadata({
     : (service.description_es || service.description || '');
 
   const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io';
-  const url = `${SITE_URL}/${lang}/servicios/${slug}`;
+  const url = `${SITE_URL}/${lang}/${lang === 'es' ? 'servicios' : 'services'}/${slug}`;
   const image = service.image_url || `${SITE_URL}/logos/logo-imsoft-blue.png`;
 
   return generateSEOMetadata({
@@ -59,9 +59,13 @@ export async function generateMetadata({
     url,
     image,
     type: 'website',
-    tags: lang === 'es' 
+    tags: lang === 'es'
       ? ['servicio', 'tecnología', 'desarrollo de software', 'consultoría']
       : ['service', 'technology', 'software development', 'consulting'],
+    alternateUrls: {
+      es: `${SITE_URL}/es/servicios/${slug}`,
+      en: `${SITE_URL}/en/services/${slug}`,
+    },
   }, lang);
 }
 

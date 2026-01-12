@@ -17,16 +17,21 @@ export async function generateMetadata({
   params: Promise<{ lang: string }>;
 }): Promise<Metadata> {
   const { lang } = await params;
-  
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io';
+
   return generateSEOMetadata({
-    title: lang === 'es' 
+    title: lang === 'es'
       ? 'Soluciones Tecnológicas Modernas para Empresas'
       : 'Modern Technology Solutions for Businesses',
     description: lang === 'es'
       ? 'Desarrollo de software, consultoría tecnológica y servicios de transformación digital. Soluciones personalizadas para hacer crecer tu negocio.'
       : 'Software development, technology consulting and digital transformation services. Custom solutions to grow your business.',
-    url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io'}/${lang}`,
+    url: `${SITE_URL}/${lang}`,
     type: 'website',
+    alternateUrls: {
+      es: `${SITE_URL}/es`,
+      en: `${SITE_URL}/en`,
+    },
   }, lang);
 }
 
