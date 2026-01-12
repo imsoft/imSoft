@@ -28,7 +28,7 @@ import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import type { Dictionary, Locale } from '@/app/[lang]/dictionaries'
 import type { QuotationQuestion } from '@/types/database'
-import { Calculator, Save } from 'lucide-react'
+import { Calculator } from 'lucide-react'
 
 const quotationSchema = z.object({
   service_id: z.string().min(1, 'El servicio es requerido'),
@@ -66,6 +66,7 @@ export function ClientQuotationForm({
   const [subtotal, setSubtotal] = useState(0)
   const [iva, setIva] = useState(0)
   const [total, setTotal] = useState(0)
+  const [showQuotation, setShowQuotation] = useState(false)
 
   const form = useForm<QuotationFormValues>({
     resolver: zodResolver(quotationSchema),
@@ -183,6 +184,14 @@ export function ClientQuotationForm({
   }
 
   async function onSubmit(values: QuotationFormValues) {
+    // Si aún no se ha mostrado la cotización, solo calcular y mostrar
+    if (!showQuotation) {
+      calculatePrice()
+      setShowQuotation(true)
+      return
+    }
+
+    // Si ya se mostró la cotización, guardarla
     setIsSubmitting(true)
     try {
       const supabase = createClient()
@@ -227,7 +236,7 @@ export function ClientQuotationForm({
     }
   }
 
-  const formatCurrency = (amount: number) => {
+  function formatCurrency(amount: number) {
     return new Intl.NumberFormat('es-MX', {
       style: 'currency',
       currency: 'MXN',
@@ -339,9 +348,6 @@ export function ClientQuotationForm({
                                       className="text-sm font-normal cursor-pointer flex-1"
                                     >
                                       {optionLabel}
-                                      <span className="ml-2 text-muted-foreground">
-                                        (+{formatCurrency(option.price)})
-                                      </span>
                                     </label>
                                   </div>
                                 )
@@ -362,11 +368,6 @@ export function ClientQuotationForm({
                                 <RadioGroupItem value="yes" id={`${question.id}-yes`} className="!border-2 !border-gray-400 dark:!border-gray-500" />
                                 <label htmlFor={`${question.id}-yes`} className="text-sm font-normal cursor-pointer">
                                   {lang === 'es' ? 'Sí' : 'Yes'}
-                                  {question.base_price > 0 && (
-                                    <span className="ml-2 text-muted-foreground">
-                                      (+{formatCurrency(question.base_price)})
-                                    </span>
-                                  )}
                                 </label>
                               </div>
                               <div className="flex items-center space-x-2 py-2">
@@ -392,11 +393,6 @@ export function ClientQuotationForm({
                                 }}
                                 className="!border-2 !border-gray-400 dark:!border-gray-500 w-full"
                               />
-                              {question.price_multiplier > 0 && (
-                                <p className="text-xs text-muted-foreground">
-                                  {formatCurrency(question.base_price)} + ({formatCurrency(question.price_multiplier)} × cantidad)
-                                </p>
-                              )}
                             </div>
                           )}
 
@@ -416,11 +412,6 @@ export function ClientQuotationForm({
                               />
                               <div className="flex items-center justify-between text-sm">
                                 <span className="font-medium">{answers[question.id] || 1}</span>
-                                {question.price_multiplier > 0 && (
-                                  <span className="text-muted-foreground">
-                                    {formatCurrency(question.base_price + ((answers[question.id] || 1) * question.price_multiplier))}
-                                  </span>
-                                )}
                               </div>
                             </div>
                           )}
@@ -434,10 +425,13 @@ export function ClientQuotationForm({
           </div>
         )}
 
-        {/* Resumen de Precio */}
-        {selectedServiceId && questions.length > 0 && (
-          <div className="space-y-3 p-6 rounded-lg bg-blue-50 dark:bg-blue-950/20">
-            <h2 className="text-lg font-semibold">{lang === 'en' ? 'Price Summary' : 'Resumen del Precio'}</h2>
+
+        {/* Resumen de Precio - Solo se muestra después de cotizar */}
+        {showQuotation && selectedServiceId && questions.length > 0 && (
+          <div className="space-y-3 p-6 rounded-lg bg-green-50 dark:bg-green-950/20 border-2 border-green-500">
+            <h2 className="text-lg font-semibold text-green-700 dark:text-green-400">
+              {lang === 'en' ? 'Price Summary' : 'Resumen del Precio'}
+            </h2>
             <div className="space-y-3">
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">{lang === 'en' ? 'Subtotal' : 'Subtotal'}:</span>
@@ -448,9 +442,9 @@ export function ClientQuotationForm({
                 <span className="font-medium">{formatCurrency(iva)}</span>
               </div>
               <div className="h-px bg-border" />
-              <div className="flex justify-between text-lg font-bold">
+              <div className="flex justify-between text-xl font-bold">
                 <span>Total:</span>
-                <span className="text-primary">{formatCurrency(total)}</span>
+                <span className="text-green-600 dark:text-green-400">{formatCurrency(total)}</span>
               </div>
             </div>
           </div>
@@ -465,20 +459,22 @@ export function ClientQuotationForm({
           >
             {lang === 'en' ? 'Cancel' : 'Cancelar'}
           </Button>
-          <Button 
-            type="submit" 
+          <Button
+            type="submit"
             disabled={
-              isSubmitting || 
-              isLoadingQuestions || 
-              !selectedServiceId || 
-              !companyId || 
+              isSubmitting ||
+              isLoadingQuestions ||
+              !selectedServiceId ||
+              !companyId ||
               questions.length === 0
             }
           >
-            <Save className="mr-2 h-4 w-4" />
+            <Calculator className="mr-2 h-4 w-4" />
             {isSubmitting
               ? (lang === 'en' ? 'Saving...' : 'Guardando...')
-              : (lang === 'en' ? 'Save Quotation' : 'Guardar Cotización')}
+              : showQuotation
+              ? (lang === 'en' ? 'Save Quotation' : 'Guardar Cotización')
+              : (lang === 'en' ? 'Get Quote' : 'Cotizar')}
           </Button>
         </div>
       </form>
