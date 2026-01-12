@@ -319,7 +319,7 @@ export function QuestionForm({ services, dict, lang, question, defaultServiceId 
                           <Input
                             type="text"
                             inputMode="decimal"
-                            value={option.price === 0 ? '' : option.price.toString()}
+                            value={option.price.toString()}
                             onChange={(e) => {
                               const value = e.target.value.trim()
                               if (value === '') {
@@ -329,10 +329,10 @@ export function QuestionForm({ services, dict, lang, question, defaultServiceId 
                                 const cleanValue = value.replace(/[^\d.]/g, '')
                                 // Permitir solo un punto decimal
                                 const parts = cleanValue.split('.')
-                                const finalValue = parts.length > 2 
+                                const finalValue = parts.length > 2
                                   ? parts[0] + '.' + parts.slice(1).join('')
                                   : cleanValue
-                                
+
                                 if (finalValue === '' || finalValue === '.') {
                                   updateMultipleChoiceOption(index, 'price', 0)
                                 } else {
@@ -385,7 +385,7 @@ export function QuestionForm({ services, dict, lang, question, defaultServiceId 
                         <Input
                           type="text"
                           inputMode="decimal"
-                          value={field.value === 0 ? '' : field.value.toString()}
+                          value={field.value.toString()}
                           onChange={(e) => {
                             const value = e.target.value.trim()
                             if (value === '') {
@@ -395,10 +395,10 @@ export function QuestionForm({ services, dict, lang, question, defaultServiceId 
                               const cleanValue = value.replace(/[^\d.]/g, '')
                               // Permitir solo un punto decimal
                               const parts = cleanValue.split('.')
-                              const finalValue = parts.length > 2 
+                              const finalValue = parts.length > 2
                                 ? parts[0] + '.' + parts.slice(1).join('')
                                 : cleanValue
-                              
+
                               if (finalValue === '' || finalValue === '.') {
                                 field.onChange(0)
                               } else {
@@ -438,7 +438,7 @@ export function QuestionForm({ services, dict, lang, question, defaultServiceId 
                         <Input
                           type="text"
                           inputMode="decimal"
-                          value={field.value === 0 ? '' : field.value.toString()}
+                          value={field.value.toString()}
                           onChange={(e) => {
                             const value = e.target.value.trim()
                             if (value === '') {
@@ -448,10 +448,10 @@ export function QuestionForm({ services, dict, lang, question, defaultServiceId 
                               const cleanValue = value.replace(/[^\d.]/g, '')
                               // Permitir solo un punto decimal
                               const parts = cleanValue.split('.')
-                              const finalValue = parts.length > 2 
+                              const finalValue = parts.length > 2
                                 ? parts[0] + '.' + parts.slice(1).join('')
                                 : cleanValue
-                              
+
                               if (finalValue === '' || finalValue === '.') {
                                 field.onChange(0)
                               } else {
