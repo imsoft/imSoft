@@ -271,7 +271,7 @@ export function QuestionForm({ services, dict, lang, question, defaultServiceId 
 
               {/* Opciones para Multiple Choice */}
               {questionType === 'multiple_choice' && (
-                <div className="space-y-4 p-4 border rounded-lg bg-accent/50">
+                <div className="space-y-4 p-4 border rounded-lg bg-white dark:bg-gray-900">
                   <div className="flex items-center justify-between">
                     <FormLabel>{lang === 'en' ? 'Options' : 'Opciones'}</FormLabel>
                     <Button type="button" variant="outline" size="sm" onClick={addMultipleChoiceOption}>
