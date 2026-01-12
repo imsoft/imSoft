@@ -6,6 +6,7 @@ import { Logo } from "@/components/blocks/hero-section"
 import { getDictionary, hasLocale, type Locale, type Dictionary } from '../dictionaries'
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { Skeleton } from '@/components/ui/skeleton'
 
 function ResetPasswordContent({ dict, lang }: { dict: Dictionary, lang: Locale }) {
   return (
@@ -51,7 +52,19 @@ export default async function ResetPasswordPage({ params }: {
     .maybeSingle()
 
   return (
-    <Suspense fallback={<div>Cargando...</div>}>
+    <Suspense fallback={
+      <div className="flex min-h-screen flex-col justify-center px-6 py-12 lg:px-8">
+        <div className="sm:mx-auto sm:w-full sm:max-w-sm space-y-6">
+          <Skeleton className="h-12 w-12 rounded-full mx-auto" />
+          <Skeleton className="h-8 w-3/4 mx-auto" />
+          <div className="space-y-4 mt-10">
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+        </div>
+      </div>
+    }>
       <ResetPasswordContent dict={dict} lang={locale} />
     </Suspense>
   )

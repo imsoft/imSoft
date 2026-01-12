@@ -24,6 +24,7 @@ import {
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Slider } from '@/components/ui/slider'
+import { Skeleton } from '@/components/ui/skeleton'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
 import type { Dictionary, Locale } from '@/app/[lang]/dictionaries'
@@ -403,11 +404,34 @@ export function PublicQuotationForm({
 
         {/* Preguntas */}
         {isLoadingQuestions && (
-          <div className="text-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-            <p className="mt-4 text-muted-foreground">
-              {lang === 'en' ? 'Loading questions...' : 'Cargando preguntas...'}
-            </p>
+          <div className="space-y-6">
+            <h2 className="text-xl font-semibold flex items-center gap-2">
+              <Calculator className="h-5 w-5" />
+              {lang === 'en' ? 'Quotation Questions' : 'Preguntas de Cotización'}
+            </h2>
+            <div className="space-y-6">
+              {/* Skeleton para 3 preguntas */}
+              {[1, 2, 3].map((i) => (
+                <div
+                  key={i}
+                  className="p-6 border rounded-lg bg-gray-50 dark:bg-gray-800/50"
+                >
+                  <div className="space-y-4">
+                    <div className="flex items-start gap-3">
+                      <Skeleton className="shrink-0 w-8 h-8 rounded-full" />
+                      <div className="flex-1 space-y-4">
+                        <Skeleton className="h-6 w-3/4" />
+                        <div className="space-y-2">
+                          <Skeleton className="h-10 w-full" />
+                          <Skeleton className="h-10 w-full" />
+                          <Skeleton className="h-10 w-full" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 
