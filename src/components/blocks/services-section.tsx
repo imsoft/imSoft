@@ -1,34 +1,24 @@
-'use client'
-
 import TiltedCard from "@/components/ui/tilted-card"
-import type { Locale } from '@/app/[lang]/dictionaries'
 import type { ServicesSectionProps } from '@/types/components'
+import type { Service } from '@/types/database'
 import Link from 'next/link'
 
-export function ServicesSection({ dict, lang }: ServicesSectionProps) {
-  const services = [
-    {
-      id: 'web',
-      slug: 'aplicaciones-web',
-      title: dict.services.webApps.title,
-      imageSrc: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop',
-      altText: 'Web Applications'
-    },
-    {
-      id: 'mobile',
-      slug: 'aplicaciones-moviles',
-      title: dict.services.mobileApps.title,
-      imageSrc: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&h=600&fit=crop',
-      altText: 'Mobile Applications'
-    },
-    {
-      id: 'consulting',
-      slug: 'consultoria-tecnologica',
-      title: dict.services.consulting.title,
-      imageSrc: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&h=600&fit=crop',
-      altText: 'Technology Consulting'
-    }
-  ]
+interface ServicesSectionClientProps extends ServicesSectionProps {
+  services: Service[]
+}
+
+export function ServicesSection({ dict, lang, services }: ServicesSectionClientProps) {
+  const displayServices = services.map((service) => ({
+    id: service.id,
+    slug: service.slug || '',
+    title: lang === 'en'
+      ? (service.title_en || service.title || '')
+      : (service.title_es || service.title || ''),
+    imageSrc: service.image_url || 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop',
+    altText: lang === 'en'
+      ? (service.title_en || service.title || '')
+      : (service.title_es || service.title || '')
+  }))
 
   return (
     <section id="services" className="py-16 md:py-24 bg-background">
@@ -42,7 +32,7 @@ export function ServicesSection({ dict, lang }: ServicesSectionProps) {
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {services.map((service) => (
+          {displayServices.map((service) => (
             <Link
               key={service.id}
               href={`/${lang}/servicios/${service.slug}`}

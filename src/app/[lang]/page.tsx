@@ -101,6 +101,12 @@ export default async function Home({ params }: {
     .order('created_at', { ascending: false })
     .limit(8);
 
+  // Obtener servicios de la base de datos
+  const { data: services = [] } = await supabase
+    .from('services')
+    .select('*')
+    .order('created_at', { ascending: true });
+
   // Obtener posts del blog para mostrar títulos aleatorios
   // Usar cliente de administrador para evitar problemas de RLS
   let blogPosts = null;
@@ -179,7 +185,7 @@ export default async function Home({ params }: {
       <StructuredData data={organizationStructuredData} id="organization-structured-data" />
       <div className="overflow-x-hidden w-full">
         <HeroSection dict={dict} lang={lang} companies={companies || []} portfolioProjects={projects} blogTitles={blogTitles} />
-        <ServicesSection dict={dict} lang={lang} />
+        <ServicesSection dict={dict} lang={lang} services={services || []} />
         <PortfolioSection dict={dict} lang={lang} projects={projects} />
         <TestimonialsSection dict={dict} lang={lang} testimonials={formattedTestimonials} />
         <FooterSection dict={dict} lang={lang} contactData={contactData || undefined} />

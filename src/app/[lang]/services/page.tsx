@@ -14,7 +14,7 @@ export default async function ServicesPage({ params }: {
 
   const dict = await getDictionary(lang);
   const supabase = await createClient();
-  
+
   // Obtener datos de contacto
   const { data: contactData } = await supabase
     .from('contact')
@@ -22,11 +22,17 @@ export default async function ServicesPage({ params }: {
     .limit(1)
     .maybeSingle();
 
+  // Obtener servicios de la base de datos
+  const { data: services = [] } = await supabase
+    .from('services')
+    .select('*')
+    .order('created_at', { ascending: true });
+
   return (
     <div>
       <HeroHeader dict={dict} lang={lang} />
       <main className="pt-24">
-        <ServicesSection dict={dict} lang={lang} />
+        <ServicesSection dict={dict} lang={lang} services={services || []} />
       </main>
       <FooterSection dict={dict} lang={lang} contactData={contactData || undefined} />
     </div>

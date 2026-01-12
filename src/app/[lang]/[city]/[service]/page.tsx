@@ -136,6 +136,12 @@ export default async function LandingPage({ params }: PageProps) {
     .limit(1)
     .maybeSingle();
 
+  // Obtener servicios de la base de datos
+  const { data: services = [] } = await supabase
+    .from('services')
+    .select('*')
+    .order('created_at', { ascending: true });
+
   // Structured Data para SEO
   const structuredData = {
     '@context': 'https://schema.org',
@@ -185,7 +191,7 @@ export default async function LandingPage({ params }: PageProps) {
         <SolutionsSection title={pageData.solutions.title} solutions={pageData.solutions.items} />
 
         {/* Services Section */}
-        <ServicesSection dict={dict} lang={lang as 'es' | 'en'} />
+        <ServicesSection dict={dict} lang={lang as 'es' | 'en'} services={services || []} />
 
         {/* Footer Section */}
         <FooterSection dict={dict} lang={lang as 'es' | 'en'} contactData={contactData || undefined} />
