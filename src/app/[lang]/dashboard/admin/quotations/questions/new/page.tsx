@@ -3,10 +3,15 @@ import { notFound, redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { QuestionForm } from '../question-form'
 
-export default async function NewQuestionPage({ params }: {
+export default async function NewQuestionPage({
+  params,
+  searchParams
+}: {
   params: Promise<{ lang: string }>
+  searchParams: Promise<{ service_id?: string }>
 }) {
   const { lang } = await params
+  const { service_id } = await searchParams
 
   if (!hasLocale(lang)) notFound()
 
@@ -37,7 +42,7 @@ export default async function NewQuestionPage({ params }: {
             : 'Configura la pregunta y su precio'}
         </p>
       </div>
-      <QuestionForm services={services || []} dict={dict} lang={lang} />
+      <QuestionForm services={services || []} dict={dict} lang={lang} defaultServiceId={service_id} />
     </div>
   )
 }

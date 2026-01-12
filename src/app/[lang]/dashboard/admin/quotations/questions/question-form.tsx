@@ -50,9 +50,10 @@ interface QuestionFormProps {
   dict: Dictionary
   lang: Locale
   question?: any
+  defaultServiceId?: string
 }
 
-export function QuestionForm({ services, dict, lang, question }: QuestionFormProps) {
+export function QuestionForm({ services, dict, lang, question, defaultServiceId }: QuestionFormProps) {
   const router = useRouter()
   const [multipleChoiceOptions, setMultipleChoiceOptions] = useState<QuotationOption[]>([])
   const [isSaving, setIsSaving] = useState(false)
@@ -60,7 +61,7 @@ export function QuestionForm({ services, dict, lang, question }: QuestionFormPro
   const form = useForm<QuestionFormValues>({
     resolver: zodResolver(questionSchema),
     defaultValues: {
-      service_id: question?.service_id || '',
+      service_id: question?.service_id || defaultServiceId || '',
       question_es: question?.question_es || '',
       question_en: question?.question_en || '',
       question_type: question?.question_type || 'yes_no',

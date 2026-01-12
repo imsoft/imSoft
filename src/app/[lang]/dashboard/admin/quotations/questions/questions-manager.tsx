@@ -285,7 +285,7 @@ export function QuestionsManager({ services, questions: initialQuestions, dict, 
                 </CardDescription>
               </div>
               <Button asChild>
-                <Link href={`/${lang}/dashboard/admin/quotations/questions/new`}>
+                <Link href={`/${lang}/dashboard/admin/quotations/questions/new?service_id=${selectedServiceId}`}>
                   <Plus className="mr-2 h-4 w-4" />
                   {lang === 'en' ? 'Add Question' : 'Agregar Pregunta'}
                 </Link>
