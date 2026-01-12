@@ -12,9 +12,10 @@ interface CookieBannerProps {
 }
 
 export function CookieBanner({ lang, dict }: CookieBannerProps) {
-  const { showBanner, acceptAll, rejectAll, openPreferences } = useCookieStore();
+  const { hasConsent, acceptAll, rejectAll, openPreferences } = useCookieStore();
 
-  if (!showBanner) return null;
+  // Solo mostrar el banner si el usuario NO ha dado consentimiento
+  if (hasConsent) return null;
 
   return (
     <AnimatePresence>

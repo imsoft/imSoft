@@ -14,7 +14,6 @@ import {
 interface CookieStore {
   consent: CookieConsent
   hasConsent: boolean
-  showBanner: boolean
   showPreferences: boolean
   acceptAll: () => void
   rejectAll: () => void
@@ -30,7 +29,6 @@ export const useCookieStore = create<CookieStore>()(
     (set, get) => ({
       consent: defaultConsent,
       hasConsent: false,
-      showBanner: true,
       showPreferences: false,
 
       acceptAll: () => {
@@ -43,7 +41,6 @@ export const useCookieStore = create<CookieStore>()(
         set({
           consent: allAccepted,
           hasConsent: true,
-          showBanner: false,
           showPreferences: false,
         })
       },
@@ -58,7 +55,6 @@ export const useCookieStore = create<CookieStore>()(
         set({
           consent: allRejected,
           hasConsent: true,
-          showBanner: false,
           showPreferences: false,
         })
       },
@@ -78,7 +74,6 @@ export const useCookieStore = create<CookieStore>()(
       savePreferences: () => {
         set({
           hasConsent: true,
-          showBanner: false,
           showPreferences: false,
         })
       },
@@ -95,7 +90,6 @@ export const useCookieStore = create<CookieStore>()(
         set({
           consent: defaultConsent,
           hasConsent: false,
-          showBanner: true,
           showPreferences: false,
         })
       },
@@ -109,12 +103,11 @@ export const useCookieStore = create<CookieStore>()(
       }),
       version: COOKIE_VERSION,
       migrate: (persistedState: any, version: number) => {
-        // Si la versión es diferente, resetear y mostrar banner
+        // Si la versión es diferente, resetear el consentimiento
         if (version !== COOKIE_VERSION) {
           return {
             consent: defaultConsent,
             hasConsent: false,
-            showBanner: true,
             showPreferences: false,
           }
         }
