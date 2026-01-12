@@ -1,7 +1,7 @@
 import { getDictionary, hasLocale } from '../dictionaries'
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { PublicQuotationForm } from './public-quotation-form'
+import { PublicQuotationForm } from '../cotizador/public-quotation-form'
 import { Metadata } from 'next'
 
 export async function generateMetadata({ params }: {
@@ -27,17 +27,17 @@ export async function generateMetadata({ params }: {
       locale: lang === 'es' ? 'es_MX' : 'en_US',
     },
     alternates: {
-      canonical: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io'}/${lang}/cotizador`,
+      canonical: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io'}/${lang}/quote`,
       languages: {
         'es': `${process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io'}/es/cotizador`,
-        'en': `${process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io'}/en/cotizador`,
+        'en': `${process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io'}/en/quote`,
         'x-default': `${process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io'}/es/cotizador`,
       },
     },
   }
 }
 
-export default async function PublicQuotationPage({ params }: {
+export default async function QuotePage({ params }: {
   params: Promise<{ lang: string }>
 }) {
   const { lang } = await params
