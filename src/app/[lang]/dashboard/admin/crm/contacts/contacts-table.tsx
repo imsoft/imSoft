@@ -78,7 +78,7 @@ export function ContactsTable({ contacts, dict, lang }: ContactsTableProps) {
 
   if (contacts.length === 0) {
     return (
-      <Card className="p-12 bg-card">
+      <Card className="p-12 bg-white">
         <div className="text-center">
           <p className="text-muted-foreground">
             {lang === 'en' ? 'No contacts yet. Create your first contact!' : '¡No hay contactos todavía. Crea tu primer contacto!'}
@@ -89,7 +89,7 @@ export function ContactsTable({ contacts, dict, lang }: ContactsTableProps) {
   }
 
   return (
-    <Card className="overflow-hidden bg-card">
+    <Card className="overflow-hidden bg-white">
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead className="border-b bg-white">

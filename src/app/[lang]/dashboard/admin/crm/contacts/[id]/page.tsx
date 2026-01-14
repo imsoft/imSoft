@@ -99,7 +99,7 @@ export default async function ContactDetailPage({ params }: {
       </div>
 
       {/* Basic Information */}
-      <Card className="p-6 bg-card">
+      <Card className="p-6 bg-white">
         <h2 className="text-lg font-semibold mb-4">
           {lang === 'en' ? 'Basic Information' : 'Información Básica'}
         </h2>
@@ -191,7 +191,7 @@ export default async function ContactDetailPage({ params }: {
 
       {/* Address */}
       {(contact.address_street || contact.address_city || contact.address_state || contact.address_country || contact.address_postal_code) && (
-        <Card className="p-6 bg-card">
+        <Card className="p-6 bg-white">
           <h2 className="text-lg font-semibold mb-4">
             <MapPin className="inline-block mr-2 h-5 w-5" />
             {lang === 'en' ? 'Address' : 'Dirección'}
@@ -210,7 +210,7 @@ export default async function ContactDetailPage({ params }: {
 
       {/* Links */}
       {(contact.linkedin_url || contact.website_url) && (
-        <Card className="p-6 bg-card">
+        <Card className="p-6 bg-white">
           <h2 className="text-lg font-semibold mb-4">
             {lang === 'en' ? 'Links' : 'Enlaces'}
           </h2>
@@ -243,7 +243,7 @@ export default async function ContactDetailPage({ params }: {
 
       {/* Notes */}
       {contact.notes && (
-        <Card className="p-6 bg-card">
+        <Card className="p-6 bg-white">
           <h2 className="text-lg font-semibold mb-4">
             {lang === 'en' ? 'Notes' : 'Notas'}
           </h2>
@@ -252,7 +252,7 @@ export default async function ContactDetailPage({ params }: {
       )}
 
       {/* Metadata */}
-      <Card className="p-6 bg-card">
+      <Card className="p-6 bg-white">
         <h2 className="text-lg font-semibold mb-4">
           {lang === 'en' ? 'Metadata' : 'Metadatos'}
         </h2>
