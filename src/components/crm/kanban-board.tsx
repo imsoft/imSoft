@@ -222,7 +222,7 @@ export function KanbanBoard({ deals: initialDeals, lang }: KanbanBoardProps) {
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 overflow-x-auto">
         {STAGES.map((stage) => {
           const stageDeals = dealsByStage[stage.id]
           const stageValue = stageValues[stage.id]
