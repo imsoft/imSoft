@@ -32,6 +32,7 @@ interface KanbanBoardProps {
       phone?: string
       company?: string
     }
+    email_sent?: boolean
   })[]
   lang: string
 }
@@ -195,7 +196,26 @@ export function KanbanBoard({ deals: initialDeals, lang }: KanbanBoardProps) {
           throw new Error('Failed to update deal stage')
         }
 
-        // Refrescar la página para obtener datos actualizados
+        const { data: updatedDeal } = await response.json()
+
+        // Actualizar el estado local inmediatamente con el deal actualizado
+        // Esto incluye el email_sent que se resetea cuando cambia el stage
+        setDeals((prevDeals) =>
+          prevDeals.map((d) =>
+            d.id === activeDeal.id 
+              ? { 
+                  ...d, 
+                  ...updatedDeal,
+                  // Asegurar que email_sent se actualice correctamente
+                  email_sent: updatedDeal.email_sent !== undefined 
+                    ? updatedDeal.email_sent 
+                    : false // Si cambió el stage, email_sent debería ser false
+                } 
+              : d
+          )
+        )
+
+        // Refrescar la página para sincronizar con el servidor
         router.refresh()
       } catch (error) {
         console.error('Error updating deal stage:', error)

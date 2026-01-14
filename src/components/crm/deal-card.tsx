@@ -17,6 +17,7 @@ interface DealCardProps {
       phone?: string
       company?: string
     }
+    email_sent?: boolean
   }
   lang: string
 }
