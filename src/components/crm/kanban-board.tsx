@@ -282,7 +282,19 @@ export function KanbanBoard({ deals: initialDeals, lang }: KanbanBoardProps) {
               >
                 <DroppableColumn id={stage.id} hasDeals={stageDeals.length > 0}>
                   {stageDeals.map((deal) => (
-                    <DealCard key={deal.id} deal={deal} lang={lang} />
+                    <DealCard 
+                      key={deal.id} 
+                      deal={deal} 
+                      lang={lang}
+                      onEmailSent={(dealId) => {
+                        // Actualizar el estado local del deal para reflejar que se envió el correo
+                        setDeals((prevDeals) =>
+                          prevDeals.map((d) =>
+                            d.id === dealId ? { ...d, email_sent: true } : d
+                          )
+                        )
+                      }}
+                    />
                   ))}
                 </DroppableColumn>
               </SortableContext>
