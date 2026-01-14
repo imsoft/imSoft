@@ -174,19 +174,32 @@ INSTRUCCIONES:
    - Email: contacto@imsoft.io
    - Teléfono: 33 2536 5558
 
-REGLAS PARA EL ASUNTO:
-- El asunto DEBE reflejar directamente el contenido principal del email
-- Debe mencionar el título del negocio: "${deal.title}"
-- Debe ser específico y relacionado con lo que se dice en el cuerpo del email
-- Debe ser atractivo pero no genérico (máximo 60 caracteres)
-- NO uses frases genéricas como "Hola" o "Seguimiento"
-- Ejemplos BUENOS:
-  * "Propuesta personalizada para ${deal.title} - imSoft"
-  * "Siguiente paso para ${deal.title}: ${stageLabel}"
-  * "Actualización sobre ${deal.title} - ${formatCurrency(deal.value)}"
-- Ejemplos MALOS (NO usar):
+REGLAS PARA EL ASUNTO (CRÍTICO - DEBE SER MUY LLAMATIVO):
+- El asunto DEBE ser EXTREMADAMENTE ATRACTIVO y generar curiosidad para que quieran abrirlo
+- Debe mencionar el título del negocio: "${deal.title}" o hacer referencia clara a él
+- Debe ser específico, personalizado y relacionado con el contenido del email
+- MÁXIMO 60 caracteres (más corto = mejor)
+- Usa técnicas de copywriting para aumentar aperturas:
+  * Preguntas que generen curiosidad: "¿Listo para [beneficio]?"
+  * Números o datos específicos: "3 formas de [beneficio] para ${deal.title}"
+  * Urgencia o escasez: "Última oportunidad: [beneficio]"
+  * Beneficios claros: "Cómo [beneficio] puede transformar ${deal.title}"
+  * Personalización: "Solución personalizada para ${deal.contacts.company || contactName}"
+  * Emojis estratégicos (máximo 1-2): 🚀 💡 ⚡ 🎯
+- Ejemplos MUY BUENOS (llamativos y que generan apertura):
+  * "🚀 ${deal.title}: Tu solución está lista"
+  * "¿Listo para transformar ${deal.title}? Propuesta exclusiva"
+  * "3 razones por las que ${deal.contacts.company || contactName} necesita esto"
+  * "Solución personalizada: ${formatCurrency(deal.value)} de valor"
+  * "Último paso para cerrar ${deal.title} - ${stageLabel}"
+  * "💡 Idea exclusiva para ${deal.contacts.company || contactName}"
+  * "¿${deal.title}? Te muestro cómo lograrlo"
+- Ejemplos MALOS (NO usar - muy genéricos):
   * "Hola" o "Seguimiento" o "Email importante"
-  * Cualquier asunto que no mencione el negocio o su contenido
+  * "Propuesta" (sin contexto)
+  * "Actualización" (muy genérico)
+  * Cualquier asunto que no genere curiosidad o interés
+- IMPORTANTE: El asunto debe hacer que el destinatario piense "Necesito abrir esto AHORA"
 
 IMPORTANTE: 
 - El email debe estar en formato HTML válido
@@ -207,7 +220,7 @@ Responde SOLO con un JSON válido con esta estructura:
       messages: [
         {
           role: 'system',
-          content: 'Eres un experto en comunicación comercial B2B y generación de emails de ventas personalizados. CRÍTICO: El asunto del email DEBE reflejar directamente el contenido del cuerpo. Primero piensa en el contenido del email, luego crea un asunto que lo resuma perfectamente. Siempre respondes en formato JSON válido.'
+          content: 'Eres un experto en comunicación comercial B2B, copywriting y generación de emails de ventas personalizados con ALTA tasa de apertura. CRÍTICO: El asunto del email DEBE ser EXTREMADAMENTE LLAMATIVO y generar curiosidad. Usa técnicas de copywriting: preguntas, números, beneficios claros, urgencia, personalización. Primero piensa en el contenido del email, luego crea un asunto que sea irresistible y que haga que quieran abrirlo INMEDIATAMENTE. El asunto debe reflejar el contenido pero de forma MUY ATRACTIVA. Siempre respondes en formato JSON válido.'
         },
         {
           role: 'user',
