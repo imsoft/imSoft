@@ -114,7 +114,7 @@ export function DealForm({ deal, contacts, services, lang, userId }: DealFormPro
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         {/* Basic Information */}
-        <Card className="p-6 bg-card">
+        <Card className="p-6 bg-white">
           <h2 className="text-lg font-semibold mb-4">
             {lang === 'en' ? 'Deal Information' : 'Información del Negocio'}
           </h2>
@@ -200,7 +200,7 @@ export function DealForm({ deal, contacts, services, lang, userId }: DealFormPro
         </Card>
 
         {/* Deal Value & Stage */}
-        <Card className="p-6 bg-card">
+        <Card className="p-6 bg-white">
           <h2 className="text-lg font-semibold mb-4">
             {lang === 'en' ? 'Sales Information' : 'Información de Venta'}
           </h2>

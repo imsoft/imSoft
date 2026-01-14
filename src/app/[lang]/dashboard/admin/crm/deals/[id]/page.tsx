@@ -115,7 +115,7 @@ export default async function DealDetailPage({ params }: {
 
       {/* Overview */}
       <div className="grid gap-6 md:grid-cols-3">
-        <Card className="p-6 bg-card">
+        <Card className="p-6 bg-white">
           <div className="flex items-center gap-3">
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-500/10">
               <DollarSign className="h-6 w-6 text-green-600" />
@@ -129,7 +129,7 @@ export default async function DealDetailPage({ params }: {
           </div>
         </Card>
 
-        <Card className="p-6 bg-card">
+        <Card className="p-6 bg-white">
           <div className="flex items-center gap-3">
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-500/10">
               <TrendingUp className="h-6 w-6 text-blue-600" />
@@ -147,7 +147,7 @@ export default async function DealDetailPage({ params }: {
           </div>
         </Card>
 
-        <Card className="p-6 bg-card">
+        <Card className="p-6 bg-white">
           <div className="flex items-center gap-3">
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-purple-500/10">
               <Calendar className="h-6 w-6 text-purple-600" />
@@ -163,7 +163,7 @@ export default async function DealDetailPage({ params }: {
       </div>
 
       {/* Deal Information */}
-      <Card className="p-6 bg-card">
+      <Card className="p-6 bg-white">
         <h2 className="text-lg font-semibold mb-4">
           {lang === 'en' ? 'Deal Information' : 'Información del Negocio'}
         </h2>
@@ -197,7 +197,7 @@ export default async function DealDetailPage({ params }: {
 
       {/* Contact Information */}
       {deal.contacts && (
-        <Card className="p-6 bg-card">
+        <Card className="p-6 bg-white">
           <h2 className="text-lg font-semibold mb-4">
             <User className="inline-block mr-2 h-5 w-5" />
             {lang === 'en' ? 'Contact Information' : 'Información de Contacto'}
@@ -248,7 +248,7 @@ export default async function DealDetailPage({ params }: {
 
       {/* Service Information */}
       {deal.services && (
-        <Card className="p-6 bg-card">
+        <Card className="p-6 bg-white">
           <h2 className="text-lg font-semibold mb-4">
             <Briefcase className="inline-block mr-2 h-5 w-5" />
             {lang === 'en' ? 'Service' : 'Servicio'}
@@ -260,7 +260,7 @@ export default async function DealDetailPage({ params }: {
       )}
 
       {/* Metadata */}
-      <Card className="p-6 bg-card">
+      <Card className="p-6 bg-white">
         <h2 className="text-lg font-semibold mb-4">
           {lang === 'en' ? 'Metadata' : 'Metadatos'}
         </h2>

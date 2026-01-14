@@ -76,7 +76,7 @@ export function DealsTable({ deals, dict, lang }: DealsTableProps) {
 
   if (deals.length === 0) {
     return (
-      <Card className="p-12 bg-card">
+      <Card className="p-12 bg-white">
         <div className="text-center">
           <p className="text-muted-foreground">
             {lang === 'en' ? 'No deals yet. Create your first deal!' : '¡No hay negocios todavía. Crea tu primer negocio!'}
@@ -87,7 +87,7 @@ export function DealsTable({ deals, dict, lang }: DealsTableProps) {
   }
 
   return (
-    <Card className="overflow-hidden bg-card">
+    <Card className="overflow-hidden bg-white">
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead className="border-b bg-white">
