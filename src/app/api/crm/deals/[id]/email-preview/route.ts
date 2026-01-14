@@ -1,8 +1,5 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { Resend } from 'resend'
-
-const resend = new Resend(process.env.RESEND_API_KEY)
 
 // Templates de email basados en el estado del deal
 const getEmailTemplate = (stage: string, dealTitle: string, contactName: string, dealValue: number, lang: 'en' | 'es' = 'es') => {
@@ -211,7 +208,7 @@ const getEmailTemplate = (stage: string, dealTitle: string, contactName: string,
   return templates[templateKey] || templates.no_contact || templates.prospecting
 }
 
-export async function POST(
+export async function GET(
   request: Request,
   context: { params: Promise<{ id: string }> }
 ) {
@@ -266,37 +263,13 @@ export async function POST(
       )
     }
 
-    // Verificar que RESEND_API_KEY esté configurado
-    if (!process.env.RESEND_API_KEY) {
-      console.error('RESEND_API_KEY is not configured')
-      return NextResponse.json(
-        { error: 'Email service is not configured. Please contact the administrator.' },
-        { status: 500 }
-      )
-    }
-
-    // Obtener subject y body del request body si están presentes
-    let requestBody: { subject?: string; body?: string } = {}
-    try {
-      requestBody = await request.json()
-    } catch {
-      // Si no hay body, usar template por defecto
-    }
-
     const contactName = `${deal.contacts.first_name} ${deal.contacts.last_name}`
     const template = getEmailTemplate(deal.stage, deal.title, contactName, deal.value, 'es')
 
-    // Usar subject y body personalizados si están presentes, sino usar el template
-    const emailSubject = requestBody.subject && requestBody.subject.trim() !== '' 
-      ? requestBody.subject 
-      : template.subject.es
-
     const primaryColor = '#1e9df1'
 
-    // Si hay body personalizado, usarlo, sino generar el HTML del template
-    const html = requestBody.body && requestBody.body.trim() !== '' 
-      ? requestBody.body
-      : `
+    // Generar el HTML completo del email
+    const html = `
       <!DOCTYPE html>
       <html>
         <head>
@@ -333,16 +306,16 @@ export async function POST(
                         </td>
                         <!-- Botón Email -->
                         <td style="padding-right: 15px;">
-                          <a href="mailto:weareimsoft@gmail.com?subject=${encodeURIComponent(`Consulta sobre: ${deal.title}`)}&body=${encodeURIComponent(`Hola,\n\nSoy ${contactName}${deal.contacts.company ? ` de ${deal.contacts.company}` : ''} y tengo una pregunta sobre: ${deal.title}.\n\nSaludos,\n${contactName}`)}"
+                          <a href="mailto:contacto@imsoft.io?subject=${encodeURIComponent(`Consulta sobre: ${deal.title}`)}&body=${encodeURIComponent(`Hola, soy ${contactName}${deal.contacts.company ? ` de ${deal.contacts.company}` : ''} y tengo una pregunta sobre: ${deal.title}.`)}"
                              style="display: inline-block; background: ${primaryColor}; color: white; text-align: center; padding: 10px 18px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 13px; white-space: nowrap;">
                             ✉️ Email
                           </a>
                         </td>
-                        <!-- Botón Contacto -->
+                        <!-- Botón Formulario de Contacto -->
                         <td>
-                          <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io'}/es/contact"
-                             style="display: inline-block; background: #f8f9fa; color: ${primaryColor}; text-align: center; padding: 10px 18px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 13px; border: 2px solid ${primaryColor}; white-space: nowrap;">
-                            📋 Contacto
+                          <a href="https://imsoft.io/contact"
+                             style="display: inline-block; background: #6B7280; color: white; text-align: center; padding: 10px 18px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 13px; white-space: nowrap;">
+                            📝 Formulario
                           </a>
                         </td>
                       </tr>
@@ -352,15 +325,15 @@ export async function POST(
               </table>
             </div>
 
-            <div style="background: white; text-align: center; margin-top: 30px; padding: 30px 20px; border-top: 1px solid #e5e7eb; color: #6b7280; font-size: 12px;">
-              <p style="margin: 0 0 8px 0;">Este es un correo automático de imSoft. Por favor, no responda a este correo.</p>
-              <p style="margin: 0; font-size: 11px; color: #9ca3af;">Para cualquier consulta, utiliza los botones de contacto arriba.</p>
-            </div>
-
-            <!-- Firma Electrónica -->
-            <div style="background: white; margin-top: 40px; padding: 30px; border-top: 2px solid #e5e7eb;">
-              <table cellpadding="0" cellspacing="0" border="0" style="font-family: Geist, Geist_Mono, -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, Roboto, Arial, sans-serif; color:#0b0b0b; width: 100%;">
+            <!-- Disclaimer y Firma -->
+            <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center; vertical-align: middle;">
+              <p style="font-size: 12px; color: #666; margin: 0 0 15px 0; line-height: 1.5;">
+                Este es un correo automático de imSoft. Por favor, no responda a este correo.<br>
+                El precio mostrado es una estimación y puede variar según los detalles del proyecto y la negociación.
+              </p>
+              <table cellpadding="0" cellspacing="0" border="0" style="font-family: Geist, Geist_Mono, -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, Roboto, Arial, sans-serif; color:#0b0b0b; margin: 0 auto;">
                 <tr>
+                  <!-- LOGO -->
                   <td style="padding-right:16px; vertical-align:top;">
                     <img
                       src="https://res.cloudinary.com/https-imsoft-io/image/upload/v1740963749/imsoft-images/imsoft/logo-imsoft-blue.png"
@@ -370,6 +343,7 @@ export async function POST(
                     />
                   </td>
 
+                  <!-- TEXTO -->
                   <td style="vertical-align:top;">
                     <div style="font-size:16px; font-weight:700; line-height:1.15; margin:0;">
                       Brandon Uriel Garcia Ramos
@@ -399,27 +373,23 @@ export async function POST(
                       </div>
                     </div>
 
+                    <!-- SERVICIOS -->
                     <div style="margin-top:10px; font-size:12px; color:#475569; line-height:1.6;">
                       <span style="white-space:nowrap;">
                         <span style="font-weight:700; color:#2563eb; font-size:6px; vertical-align:middle;">●</span>&nbsp;Análisis de datos
                       </span>
-
                       <span style="white-space:nowrap;">
                         <span style="font-weight:700; color:#2563eb; font-size:6px; vertical-align:middle;">●</span>&nbsp;Aplicaciones Móviles
                       </span>
-
                       <span style="white-space:nowrap;">
                         <span style="font-weight:700; color:#2563eb; font-size:6px; vertical-align:middle;">●</span>&nbsp;Aplicaciones Web
                       </span>
-
                       <span style="white-space:nowrap;">
                         <span style="font-weight:700; color:#2563eb; font-size:6px; vertical-align:middle;">●</span>&nbsp;Consultoría Tecnológica
                       </span>
-
                       <span style="white-space:nowrap;">
                         <span style="font-weight:700; color:#2563eb; font-size:6px; vertical-align:middle;">●</span>&nbsp;Páginas Web
                       </span>
-
                       <span style="white-space:nowrap;">
                         <span style="font-weight:700; color:#2563eb; font-size:6px; vertical-align:middle;">●</span>&nbsp;Tienda en línea
                       </span>
@@ -433,49 +403,12 @@ export async function POST(
       </html>
     `
 
-    const fromEmail = process.env.RESEND_FROM_EMAIL || 'weareimsoft@gmail.com'
-    const fromName = 'imSoft'
-
-    // Enviar email
-    const { data, error } = await resend.emails.send({
-      from: `${fromName} <${fromEmail}>`,
-      to: deal.contacts.email,
-      subject: emailSubject,
-      html: html,
+    return NextResponse.json({
+      subject: template.subject.es,
+      body: html,
     })
-
-    if (error) {
-      console.error('Resend API error:', error)
-      const errorMessage = error instanceof Error
-        ? error.message
-        : typeof error === 'object' && error !== null && 'message' in error
-        ? String(error.message)
-        : 'Error sending email'
-
-      return NextResponse.json(
-        {
-          error: 'Error sending email',
-          details: errorMessage,
-          ...(process.env.NODE_ENV === 'development' && { fullError: error })
-        },
-        { status: 500 }
-      )
-    }
-
-    // Marcar email_sent como true después de enviar exitosamente
-    const { error: updateError } = await supabase
-      .from('deals')
-      .update({ email_sent: true })
-      .eq('id', id)
-
-    if (updateError) {
-      console.error('Error updating email_sent:', updateError)
-      // No fallar la respuesta si solo falla la actualización del flag
-    }
-
-    return NextResponse.json({ success: true, data })
   } catch (error) {
-    console.error('Error in send email route:', error)
+    console.error('Error in email preview route:', error)
     const errorMessage = error instanceof Error
       ? error.message
       : 'Unknown error occurred'
@@ -484,7 +417,6 @@ export async function POST(
       {
         error: 'Internal server error',
         details: errorMessage,
-        ...(process.env.NODE_ENV === 'development' && { fullError: error })
       },
       { status: 500 }
     )

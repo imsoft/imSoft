@@ -10,6 +10,18 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import type { Deal } from '@/types/database'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { Label } from '@/components/ui/label'
 
 interface DealCardProps {
   deal: Deal & {
@@ -29,6 +41,10 @@ interface DealCardProps {
 export function DealCard({ deal, lang, onEmailSent }: DealCardProps) {
   const router = useRouter()
   const [isSendingEmail, setIsSendingEmail] = useState(false)
+  const [showEmailDialog, setShowEmailDialog] = useState(false)
+  const [emailSubject, setEmailSubject] = useState('')
+  const [emailBody, setEmailBody] = useState('')
+  const [isLoadingEmailPreview, setIsLoadingEmailPreview] = useState(false)
   const {
     attributes,
     listeners,
@@ -73,6 +89,36 @@ export function DealCard({ deal, lang, onEmailSent }: DealCardProps) {
       return
     }
 
+    // Cargar preview del email
+    setIsLoadingEmailPreview(true)
+    try {
+      const previewResponse = await fetch(`/api/crm/deals/${deal.id}/email-preview`, {
+        method: 'GET',
+      })
+
+      if (previewResponse.ok) {
+        const previewData = await previewResponse.json()
+        setEmailSubject(previewData.subject || '')
+        setEmailBody(previewData.body || '')
+        setShowEmailDialog(true)
+      } else {
+        // Si no hay endpoint de preview, usar valores por defecto
+        setEmailSubject('')
+        setEmailBody('')
+        setShowEmailDialog(true)
+      }
+    } catch (error) {
+      console.error('Error loading email preview:', error)
+      // Continuar de todas formas con valores vacíos
+      setEmailSubject('')
+      setEmailBody('')
+      setShowEmailDialog(true)
+    } finally {
+      setIsLoadingEmailPreview(false)
+    }
+  }
+
+  const handleSendEmail = async () => {
     setIsSendingEmail(true)
 
     try {
@@ -81,6 +127,10 @@ export function DealCard({ deal, lang, onEmailSent }: DealCardProps) {
         headers: {
           'Content-Type': 'application/json',
         },
+        body: JSON.stringify({
+          subject: emailSubject,
+          body: emailBody,
+        }),
       })
 
       const data = await response.json()
@@ -88,6 +138,9 @@ export function DealCard({ deal, lang, onEmailSent }: DealCardProps) {
       if (!response.ok) {
         throw new Error(data.error || data.details || 'Error sending email')
       }
+
+      // Cerrar el diálogo
+      setShowEmailDialog(false)
 
       // Notificar al componente padre para actualizar el estado
       if (onEmailSent) {
@@ -222,6 +275,93 @@ export function DealCard({ deal, lang, onEmailSent }: DealCardProps) {
           </div>
         </div>
       </Card>
+
+      {/* Diálogo de revisión de email */}
+      <Dialog open={showEmailDialog} onOpenChange={setShowEmailDialog}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>
+              {lang === 'en' ? 'Review Email Before Sending' : 'Revisar Correo Antes de Enviar'}
+            </DialogTitle>
+            <DialogDescription>
+              {lang === 'en' 
+                ? 'Review and edit the email subject and body before sending to the contact.'
+                : 'Revisa y edita el asunto y cuerpo del correo antes de enviarlo al contacto.'}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="email-to">
+                {lang === 'en' ? 'To' : 'Para'}
+              </Label>
+              <Input
+                id="email-to"
+                value={deal.contacts?.email || ''}
+                disabled
+                className="bg-muted"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="email-subject">
+                {lang === 'en' ? 'Subject' : 'Asunto'} *
+              </Label>
+              <Input
+                id="email-subject"
+                value={emailSubject}
+                onChange={(e) => setEmailSubject(e.target.value)}
+                placeholder={lang === 'en' ? 'Email subject' : 'Asunto del correo'}
+                className="!border-2 !border-border"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="email-body">
+                {lang === 'en' ? 'Body' : 'Cuerpo'} *
+              </Label>
+              <Textarea
+                id="email-body"
+                value={emailBody}
+                onChange={(e) => setEmailBody(e.target.value)}
+                placeholder={lang === 'en' ? 'Email body (HTML supported)' : 'Cuerpo del correo (HTML soportado)'}
+                className="!border-2 !border-border min-h-[300px] font-mono text-sm"
+              />
+              <p className="text-xs text-muted-foreground">
+                {lang === 'en' 
+                  ? 'You can use HTML tags to format the email body.'
+                  : 'Puedes usar etiquetas HTML para formatear el cuerpo del correo.'}
+              </p>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowEmailDialog(false)}
+              disabled={isSendingEmail}
+            >
+              {lang === 'en' ? 'Cancel' : 'Cancelar'}
+            </Button>
+            <Button
+              onClick={handleSendEmail}
+              disabled={isSendingEmail || !emailSubject.trim() || !emailBody.trim()}
+            >
+              {isSendingEmail ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  {lang === 'en' ? 'Sending...' : 'Enviando...'}
+                </>
+              ) : (
+                <>
+                  <Mail className="mr-2 h-4 w-4" />
+                  {lang === 'en' ? 'Send Email' : 'Enviar Correo'}
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

@@ -16,6 +16,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 import {
   Select,
   SelectContent,
@@ -27,6 +28,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
 import { createClient } from '@/lib/supabase/client'
 import { Contact, Quotation, Deal } from '@/types/database'
+import { toast } from 'sonner'
 
 const combinedSchema = z.object({
   // Contact fields
@@ -37,6 +39,7 @@ const combinedSchema = z.object({
   email: z.string().email('Invalid email address').optional().or(z.literal('')),
   phone: z.string().optional(),
   company: z.string().optional(),
+  company_description: z.string().optional(),
   // Deal fields
   title: z.string().min(2, 'Title is required'),
   quotation_id: z.string().optional(),
@@ -91,6 +94,7 @@ export function DealContactForm({ deal, contacts, quotations, lang, userId }: De
       email: associatedContact?.email || '',
       phone: associatedContact?.phone || '',
       company: associatedContact?.company || '',
+      company_description: associatedContact?.notes || '',
       title: deal?.title || '',
       quotation_id: deal?.quotation_id || undefined,
       value: deal?.value || 0,
@@ -165,6 +169,7 @@ export function DealContactForm({ deal, contacts, quotations, lang, userId }: De
                 email: values.email,
                 phone: values.phone || null,
                 company: values.company || null,
+                notes: values.company_description || null,
                 updated_at: new Date().toISOString(),
               })
               .eq('id', deal.contact_id)
@@ -191,6 +196,7 @@ export function DealContactForm({ deal, contacts, quotations, lang, userId }: De
                   email: values.email,
                   phone: values.phone || null,
                   company: values.company || null,
+                  notes: values.company_description || null,
                   contact_type: 'lead',
                   status: 'active',
                   created_by: userId,
@@ -282,7 +288,7 @@ export function DealContactForm({ deal, contacts, quotations, lang, userId }: De
     } catch (error: any) {
       console.error('Error saving deal and contact:', error)
       const errorMessage = error?.message || (lang === 'en' ? 'Error saving deal' : 'Error al guardar negocio')
-      alert(errorMessage)
+      toast.error(errorMessage)
     } finally {
       setIsSubmitting(false)
     }
@@ -322,12 +328,15 @@ export function DealContactForm({ deal, contacts, quotations, lang, userId }: De
                       // Limpiar campos cuando se cambia el modo
                       if (value === 'new') {
                         form.setValue('contact_id', '')
+                        // Limpiar también company_description
+                        form.setValue('company_description', '')
                       } else {
                         form.setValue('first_name', '')
                         form.setValue('last_name', '')
                         form.setValue('email', '')
                         form.setValue('phone', '')
                         form.setValue('company', '')
+                        form.setValue('company_description', '')
                       }
                     }}
                     value={field.value}
@@ -423,6 +432,24 @@ export function DealContactForm({ deal, contacts, quotations, lang, userId }: De
                   </FormItem>
                 )}
               />
+
+              <FormField
+                control={form.control}
+                name="company_description"
+                render={({ field }) => (
+                  <FormItem className="md:col-span-2">
+                    <FormLabel>{lang === 'en' ? 'Company Description' : 'Descripción de la Empresa'}</FormLabel>
+                    <FormControl>
+                      <Textarea 
+                        {...field} 
+                        className="!border-2 !border-border min-h-[100px]" 
+                        placeholder={lang === 'en' ? 'Brief description of the company...' : 'Breve descripción de la empresa...'}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
           ) : (
             <FormField
@@ -446,9 +473,9 @@ export function DealContactForm({ deal, contacts, quotations, lang, userId }: De
                           </SelectItem>
                         ))
                       ) : (
-                        <SelectItem value="no-contacts" disabled>
+                        <div className="px-2 py-1.5 text-sm text-muted-foreground">
                           {lang === 'en' ? 'No contacts available' : 'No hay contactos disponibles'}
-                        </SelectItem>
+                        </div>
                       )}
                     </SelectContent>
                   </Select>
