@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
-import { DealFormSimple } from '../../deal-form-simple'
+import { DealContactForm } from '../../deal-contact-form'
 
 export default async function EditDealPage({ params }: {
   params: Promise<{ lang: string; id: string }>
@@ -26,10 +26,20 @@ export default async function EditDealPage({ params }: {
     redirect(`/${lang}/dashboard/client`)
   }
 
-  // Obtener el deal
+  // Obtener el deal con información del contacto
   const { data: deal, error } = await supabase
     .from('deals')
-    .select('*')
+    .select(`
+      *,
+      contacts (
+        id,
+        first_name,
+        last_name,
+        email,
+        phone,
+        company
+      )
+    `)
     .eq('id', id)
     .single()
 
@@ -74,7 +84,7 @@ export default async function EditDealPage({ params }: {
           </p>
         </div>
       </div>
-      <DealFormSimple
+      <DealContactForm
         deal={deal}
         contacts={contacts || []}
         quotations={quotations || []}

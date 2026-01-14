@@ -26,7 +26,7 @@ import {
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
 import { createClient } from '@/lib/supabase/client'
-import { Contact, Quotation } from '@/types/database'
+import { Contact, Quotation, Deal } from '@/types/database'
 
 const combinedSchema = z.object({
   // Contact fields
@@ -58,37 +58,47 @@ const combinedSchema = z.object({
 type CombinedFormValues = z.infer<typeof combinedSchema>
 
 interface DealContactFormProps {
+  deal?: Deal
   contacts: Contact[]
   quotations: Quotation[]
   lang: string
   userId: string
 }
 
-export function DealContactForm({ contacts, quotations, lang, userId }: DealContactFormProps) {
+export function DealContactForm({ deal, contacts, quotations, lang, userId }: DealContactFormProps) {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [selectedQuotation, setSelectedQuotation] = useState<string | undefined>(undefined)
-  const [contactMode, setContactMode] = useState<'existing' | 'new'>('new')
+  const [selectedQuotation, setSelectedQuotation] = useState<string | undefined>(deal?.quotation_id || undefined)
+  
+  // Si hay un deal, buscar el contacto asociado
+  // Primero intentar desde deal.contacts (si viene de la query), luego buscar en la lista
+  const associatedContact = deal?.contacts 
+    ? (typeof deal.contacts === 'object' && 'id' in deal.contacts ? deal.contacts : null)
+    : (deal?.contact_id ? contacts.find(c => c.id === deal.contact_id) : null)
+  
+  const [contactMode, setContactMode] = useState<'existing' | 'new'>(
+    deal && associatedContact ? 'existing' : 'new'
+  )
 
   const form = useForm<CombinedFormValues>({
     resolver: zodResolver(combinedSchema),
     mode: 'onChange',
     defaultValues: {
-      contact_mode: 'new',
-      contact_id: '',
-      first_name: '',
-      last_name: '',
-      email: '',
-      phone: '',
-      company: '',
-      title: '',
-      quotation_id: undefined,
-      value: 0,
-      stage: 'no_contact',
+      contact_mode: deal && associatedContact ? 'existing' : 'new',
+      contact_id: deal?.contact_id || '',
+      first_name: associatedContact?.first_name || '',
+      last_name: associatedContact?.last_name || '',
+      email: associatedContact?.email || '',
+      phone: associatedContact?.phone || '',
+      company: associatedContact?.company || '',
+      title: deal?.title || '',
+      quotation_id: deal?.quotation_id || undefined,
+      value: deal?.value || 0,
+      stage: deal?.stage || 'no_contact',
     },
   })
 
-  // Cuando se selecciona una cotización, actualizar el valor automáticamente
+  // Cuando se selecciona una cotizaciรณn, actualizar el valor automรกticamente
   const handleQuotationChange = (quotationId: string) => {
     if (quotationId === 'none') {
       setSelectedQuotation(undefined)
@@ -103,7 +113,7 @@ export function DealContactForm({ contacts, quotations, lang, userId }: DealCont
     if (quotation) {
       form.setValue('value', quotation.final_price || quotation.total)
       
-      // Si estamos en modo "nuevo contacto" y la cotización tiene datos del cliente, autocompletar
+      // Si estamos en modo "nuevo contacto" y la cotizaciรณn tiene datos del cliente, autocompletar
       if (contactMode === 'new' && quotation.client_email) {
         form.setValue('email', quotation.client_email)
         if (quotation.client_name) {
@@ -142,24 +152,27 @@ export function DealContactForm({ contacts, quotations, lang, userId }: DealCont
           throw new Error(lang === 'en' ? 'Please fill in all required contact fields' : 'Por favor completa todos los campos requeridos del contacto')
         }
 
-        const { data: newContact, error: contactError } = await supabase
-          .from('contacts')
-          .insert({
-            first_name: values.first_name,
-            last_name: values.last_name,
-            email: values.email,
-            phone: values.phone || null,
-            company: values.company || null,
-            contact_type: 'lead',
-            status: 'active',
-            created_by: userId,
-          })
-          .select()
-          .single()
+        // Si estamos editando y el contacto ya existe y estamos en modo "nuevo contacto",
+        // actualizar el contacto existente en lugar de crear uno nuevo
+        if (deal && deal.contact_id && associatedContact) {
+          // Verificar si el email cambió o si es el mismo contacto
+          if (values.email === associatedContact.email || deal.contact_id === associatedContact.id) {
+            const { error: updateError } = await supabase
+              .from('contacts')
+              .update({
+                first_name: values.first_name,
+                last_name: values.last_name,
+                email: values.email,
+                phone: values.phone || null,
+                company: values.company || null,
+                updated_at: new Date().toISOString(),
+              })
+              .eq('id', deal.contact_id)
 
-        if (contactError) {
-          // Si el error es por email duplicado, intentar buscar el contacto existente
-          if (contactError.code === '23505' && values.email) {
+            if (updateError) throw updateError
+            contactId = deal.contact_id
+          } else {
+            // Email cambió, crear nuevo contacto o buscar existente
             const { data: existingContact } = await supabase
               .from('contacts')
               .select('id')
@@ -169,13 +182,63 @@ export function DealContactForm({ contacts, quotations, lang, userId }: DealCont
             if (existingContact) {
               contactId = existingContact.id
             } else {
+              // Crear nuevo contacto con el nuevo email
+              const { data: newContact, error: contactError } = await supabase
+                .from('contacts')
+                .insert({
+                  first_name: values.first_name,
+                  last_name: values.last_name,
+                  email: values.email,
+                  phone: values.phone || null,
+                  company: values.company || null,
+                  contact_type: 'lead',
+                  status: 'active',
+                  created_by: userId,
+                })
+                .select()
+                .single()
+
+              if (contactError) throw contactError
+              contactId = newContact.id
+            }
+          }
+        } else {
+          // Crear nuevo contacto
+          const { data: newContact, error: contactError } = await supabase
+            .from('contacts')
+            .insert({
+              first_name: values.first_name,
+              last_name: values.last_name,
+              email: values.email,
+              phone: values.phone || null,
+              company: values.company || null,
+              contact_type: 'lead',
+              status: 'active',
+              created_by: userId,
+            })
+            .select()
+            .single()
+
+          if (contactError) {
+            // Si el error es por email duplicado, intentar buscar el contacto existente
+            if (contactError.code === '23505' && values.email) {
+              const { data: existingContact } = await supabase
+                .from('contacts')
+                .select('id')
+                .eq('email', values.email)
+                .single()
+              
+              if (existingContact) {
+                contactId = existingContact.id
+              } else {
+                throw contactError
+              }
+            } else {
               throw contactError
             }
           } else {
-            throw contactError
+            contactId = newContact.id
           }
-        } else {
-          contactId = newContact.id
         }
       }
 
@@ -183,7 +246,7 @@ export function DealContactForm({ contacts, quotations, lang, userId }: DealCont
         throw new Error(lang === 'en' ? 'Contact ID is required' : 'Se requiere un ID de contacto')
       }
 
-      // Crear el deal
+      // Preparar datos del deal
       const dealData = {
         title: values.title,
         contact_id: contactId,
@@ -191,14 +254,28 @@ export function DealContactForm({ contacts, quotations, lang, userId }: DealCont
         value: values.value,
         stage: values.stage,
         currency: 'MXN',
-        created_by: userId,
+        updated_at: new Date().toISOString(),
       }
 
-      const { error: dealError } = await supabase
-        .from('deals')
-        .insert(dealData)
+      if (deal) {
+        // Actualizar deal existente
+        const { error: dealError } = await supabase
+          .from('deals')
+          .update(dealData)
+          .eq('id', deal.id)
 
-      if (dealError) throw dealError
+        if (dealError) throw dealError
+      } else {
+        // Crear nuevo deal
+        const { error: dealError } = await supabase
+          .from('deals')
+          .insert({
+            ...dealData,
+            created_by: userId,
+          })
+
+        if (dealError) throw dealError
+      }
 
       router.push(`/${lang}/dashboard/admin/crm/deals`)
       router.refresh()
@@ -214,9 +291,9 @@ export function DealContactForm({ contacts, quotations, lang, userId }: DealCont
   const getStageLabel = (stage: string) => {
     const labels: Record<string, { en: string; es: string }> = {
       no_contact: { en: 'No Contact', es: 'Sin Contacto' },
-      qualification: { en: 'Prospecting', es: 'Prospección' },
+      qualification: { en: 'Prospecting', es: 'Prospecciรณn' },
       proposal: { en: 'Proposal', es: 'Propuesta' },
-      negotiation: { en: 'Negotiation', es: 'Negociación' },
+      negotiation: { en: 'Negotiation', es: 'Negociaciรณn' },
       closed_won: { en: 'Won', es: 'Ganado' },
       closed_lost: { en: 'Lost', es: 'Perdido' },
     }
@@ -229,7 +306,7 @@ export function DealContactForm({ contacts, quotations, lang, userId }: DealCont
         {/* Contact Section */}
         <Card className="p-6 bg-white">
           <h2 className="text-lg font-semibold mb-4">
-            {lang === 'en' ? 'Contact Information' : 'Información de Contacto'}
+            {lang === 'en' ? 'Contact Information' : 'Informaciรณn de Contacto'}
           </h2>
 
           <FormField
@@ -324,7 +401,7 @@ export function DealContactForm({ contacts, quotations, lang, userId }: DealCont
                 name="phone"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{lang === 'en' ? 'Phone' : 'Teléfono'}</FormLabel>
+                    <FormLabel>{lang === 'en' ? 'Phone' : 'Telรฉfono'}</FormLabel>
                     <FormControl>
                       <Input {...field} className="!border-2 !border-border" />
                     </FormControl>
@@ -385,17 +462,17 @@ export function DealContactForm({ contacts, quotations, lang, userId }: DealCont
         {/* Deal Section */}
         <Card className="p-6 bg-white">
           <h2 className="text-lg font-semibold mb-4">
-            {lang === 'en' ? 'Deal Information' : 'Información del Negocio'}
+            {lang === 'en' ? 'Deal Information' : 'Informaciรณn del Negocio'}
           </h2>
 
           <div className="grid gap-4">
-            {/* Selector de Cotización - Primero para facilitar autocompletado */}
+            {/* Selector de Cotizaciรณn - Primero para facilitar autocompletado */}
             <FormField
               control={form.control}
               name="quotation_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{lang === 'en' ? 'Link Quotation (Optional)' : 'Vincular Cotización (Opcional)'}</FormLabel>
+                  <FormLabel>{lang === 'en' ? 'Link Quotation (Optional)' : 'Vincular Cotizaciรณn (Opcional)'}</FormLabel>
                   <Select
                     onValueChange={handleQuotationChange}
                     defaultValue={field.value}
@@ -403,7 +480,7 @@ export function DealContactForm({ contacts, quotations, lang, userId }: DealCont
                   >
                     <FormControl>
                       <SelectTrigger className="w-full !border-2 !border-border">
-                        <SelectValue placeholder={lang === 'en' ? 'Select a quotation...' : 'Selecciona una cotización...'} />
+                        <SelectValue placeholder={lang === 'en' ? 'Select a quotation...' : 'Selecciona una cotizaciรณn...'} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -412,7 +489,7 @@ export function DealContactForm({ contacts, quotations, lang, userId }: DealCont
                       </SelectItem>
                       {quotations.length > 0 ? (
                         quotations.map((quotation: any) => {
-                          // Construir un label descriptivo para la cotización
+                          // Construir un label descriptivo para la cotizaciรณn
                           const serviceName = quotation.services
                             ? (lang === 'en' ? quotation.services.title_en : quotation.services.title_es) || quotation.services.title
                             : null
@@ -422,7 +499,7 @@ export function DealContactForm({ contacts, quotations, lang, userId }: DealCont
                               ? `${quotation.client_name} - ${quotation.client_company}`
                               : quotation.client_name)
                             || serviceName
-                            || (lang === 'en' ? 'Unnamed Quotation' : 'Cotización sin nombre')
+                            || (lang === 'en' ? 'Unnamed Quotation' : 'Cotizaciรณn sin nombre')
                           
                           const price = new Intl.NumberFormat('es-MX', {
                             style: 'currency',
