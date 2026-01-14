@@ -128,6 +128,12 @@ export async function POST(
 
     const prompt = `Eres un experto en comunicación comercial y ventas B2B. Genera un email personalizado y profesional en español para un cliente potencial.
 
+INFORMACIÓN DE CONTACTO DE IMSOFT:
+- Nombre: Brandon Uriel García Ramos
+- Empresa: imSoft
+- Email: contacto@imsoft.io
+- Teléfono: 33 2536 5558
+
 INFORMACIÓN DEL NEGOCIO:
 - Título del Negocio: ${deal.title}
 - Valor del Negocio: ${formatCurrency(deal.value)}
@@ -156,12 +162,18 @@ ${emailHistoryText}
 
 INSTRUCCIONES:
 1. Genera un email profesional, personalizado y persuasivo en español
-2. El tono debe ser apropiado para la etapa "${stageLabel}"
-3. Si hay historial de emails, el nuevo email debe mostrar progreso y no repetir información
-4. Incluye información específica del negocio y contacto para personalización
-5. El email debe ser conciso pero completo (máximo 300 palabras en el cuerpo)
-6. Incluye una llamada a la acción clara y relevante para la etapa
-7. El asunto debe ser atractivo, personalizado y no genérico (máximo 60 caracteres)
+2. El email debe estar firmado por Brandon Uriel García Ramos de imSoft
+3. El tono debe ser apropiado para la etapa "${stageLabel}"
+4. Si hay historial de emails, el nuevo email debe mostrar progreso y no repetir información
+5. Incluye información específica del negocio y contacto para personalización
+6. El email debe ser conciso pero completo (máximo 300 palabras en el cuerpo)
+7. Incluye una llamada a la acción clara y relevante para la etapa
+8. El asunto debe ser atractivo, personalizado y no genérico (máximo 60 caracteres)
+9. Al final del email, incluye una firma profesional con:
+   - Nombre: Brandon Uriel García Ramos
+   - Empresa: imSoft
+   - Email: contacto@imsoft.io
+   - Teléfono: 33 2536 5558
 
 IMPORTANTE: 
 - El email debe estar en formato HTML válido
