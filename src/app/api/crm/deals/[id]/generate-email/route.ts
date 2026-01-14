@@ -136,7 +136,6 @@ INFORMACIÓN DE CONTACTO DE IMSOFT:
 
 INFORMACIÓN DEL NEGOCIO:
 - Título del Negocio: ${deal.title}
-- Valor del Negocio: ${formatCurrency(deal.value)}
 - Etapa Actual: ${stageLabel}
 - Probabilidad: ${deal.probability || 0}%
 
@@ -155,7 +154,6 @@ ${(deal.services as any).description_es ? `- Descripción: ${(deal.services as a
 ${deal.quotations ? `COTIZACIÓN ASOCIADA:
 - Título: ${(deal.quotations as any).title || 'N/A'}
 ${(deal.quotations as any).description ? `- Descripción: ${(deal.quotations as any).description}` : ''}
-${(deal.quotations as any).final_price ? `- Precio Final: ${formatCurrency((deal.quotations as any).final_price)}` : (deal.quotations as any).total ? `- Total: ${formatCurrency((deal.quotations as any).total)}` : ''}
 ` : ''}
 
 ${emailHistoryText}
@@ -174,6 +172,12 @@ INSTRUCCIONES:
    - Email: contacto@imsoft.io
    - Teléfono: 33 2536 5558
 
+PROHIBICIONES ABSOLUTAS:
+- NUNCA menciones dinero, precios, costos, valores monetarios, presupuestos, inversión, pagos, facturación, o cualquier referencia económica
+- NO uses palabras como: precio, costo, valor, presupuesto, inversión, pago, factura, dinero, pesos, dólares, monto, tarifa, cuota, etc.
+- NO menciones cantidades monetarias en ningún formato (ni en números ni en texto)
+- El email debe enfocarse en beneficios, soluciones, valor agregado, resultados, pero SIN mencionar aspectos económicos
+
 REGLAS PARA EL ASUNTO (CRÍTICO - DEBE SER MUY LLAMATIVO):
 - El asunto DEBE ser EXTREMADAMENTE ATRACTIVO y generar curiosidad para que quieran abrirlo
 - Debe mencionar el título del negocio: "${deal.title}" o hacer referencia clara a él
@@ -190,7 +194,7 @@ REGLAS PARA EL ASUNTO (CRÍTICO - DEBE SER MUY LLAMATIVO):
   * "🚀 ${deal.title}: Tu solución está lista"
   * "¿Listo para transformar ${deal.title}? Propuesta exclusiva"
   * "3 razones por las que ${deal.contacts.company || contactName} necesita esto"
-  * "Solución personalizada: ${formatCurrency(deal.value)} de valor"
+  * "Solución personalizada para ${deal.contacts.company || contactName}"
   * "Último paso para cerrar ${deal.title} - ${stageLabel}"
   * "💡 Idea exclusiva para ${deal.contacts.company || contactName}"
   * "¿${deal.title}? Te muestro cómo lograrlo"
@@ -220,7 +224,7 @@ Responde SOLO con un JSON válido con esta estructura:
       messages: [
         {
           role: 'system',
-          content: 'Eres un experto en comunicación comercial B2B, copywriting y generación de emails de ventas personalizados con ALTA tasa de apertura. CRÍTICO: El asunto del email DEBE ser EXTREMADAMENTE LLAMATIVO y generar curiosidad. Usa técnicas de copywriting: preguntas, números, beneficios claros, urgencia, personalización. Primero piensa en el contenido del email, luego crea un asunto que sea irresistible y que haga que quieran abrirlo INMEDIATAMENTE. El asunto debe reflejar el contenido pero de forma MUY ATRACTIVA. Siempre respondes en formato JSON válido.'
+          content: 'Eres un experto en comunicación comercial B2B, copywriting y generación de emails de ventas personalizados con ALTA tasa de apertura. CRÍTICO: El asunto del email DEBE ser EXTREMADAMENTE LLAMATIVO y generar curiosidad. Usa técnicas de copywriting: preguntas, números, beneficios claros, urgencia, personalización. PROHIBIDO ABSOLUTAMENTE: NO menciones dinero, precios, costos, valores monetarios, presupuestos, inversión, pagos, facturación, o cualquier referencia económica en el asunto NI en el cuerpo del email. El email debe enfocarse en beneficios, soluciones y valor agregado sin mencionar aspectos económicos. Primero piensa en el contenido del email, luego crea un asunto que sea irresistible y que haga que quieran abrirlo INMEDIATAMENTE. El asunto debe reflejar el contenido pero de forma MUY ATRACTIVA. Siempre respondes en formato JSON válido.'
         },
         {
           role: 'user',
