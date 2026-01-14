@@ -161,29 +161,43 @@ ${(deal.quotations as any).final_price ? `- Precio Final: ${formatCurrency((deal
 ${emailHistoryText}
 
 INSTRUCCIONES:
-1. Genera un email profesional, personalizado y persuasivo en español
+1. PRIMERO genera el cuerpo del email completo, luego crea un asunto que resuma perfectamente el contenido
 2. El email debe estar firmado por Brandon Uriel García Ramos de imSoft
 3. El tono debe ser apropiado para la etapa "${stageLabel}"
 4. Si hay historial de emails, el nuevo email debe mostrar progreso y no repetir información
 5. Incluye información específica del negocio y contacto para personalización
 6. El email debe ser conciso pero completo (máximo 300 palabras en el cuerpo)
 7. Incluye una llamada a la acción clara y relevante para la etapa
-8. El asunto debe ser atractivo, personalizado y no genérico (máximo 60 caracteres)
-9. Al final del email, incluye una firma profesional con:
+8. Al final del email, incluye una firma profesional con:
    - Nombre: Brandon Uriel García Ramos
    - Empresa: imSoft
    - Email: contacto@imsoft.io
    - Teléfono: 33 2536 5558
+
+REGLAS PARA EL ASUNTO:
+- El asunto DEBE reflejar directamente el contenido principal del email
+- Debe mencionar el título del negocio: "${deal.title}"
+- Debe ser específico y relacionado con lo que se dice en el cuerpo del email
+- Debe ser atractivo pero no genérico (máximo 60 caracteres)
+- NO uses frases genéricas como "Hola" o "Seguimiento"
+- Ejemplos BUENOS:
+  * "Propuesta personalizada para ${deal.title} - imSoft"
+  * "Siguiente paso para ${deal.title}: ${stageLabel}"
+  * "Actualización sobre ${deal.title} - ${formatCurrency(deal.value)}"
+- Ejemplos MALOS (NO usar):
+  * "Hola" o "Seguimiento" o "Email importante"
+  * Cualquier asunto que no mencione el negocio o su contenido
 
 IMPORTANTE: 
 - El email debe estar en formato HTML válido
 - Usa etiquetas HTML apropiadas: <h2>, <p>, <strong>, <ul>, <li>, etc.
 - NO incluyas el header/footer de imSoft (solo el contenido del cuerpo)
 - El estilo debe ser inline cuando sea necesario
+- El asunto y el cuerpo deben estar perfectamente alineados en contenido y propósito
 
 Responde SOLO con un JSON válido con esta estructura:
 {
-  "subject": "Asunto del email",
+  "subject": "Asunto del email que refleje el contenido del cuerpo",
   "body": "Cuerpo del email en HTML (sin header/footer, solo el contenido principal)"
 }`
 
@@ -193,7 +207,7 @@ Responde SOLO con un JSON válido con esta estructura:
       messages: [
         {
           role: 'system',
-          content: 'Eres un experto en comunicación comercial B2B y generación de emails de ventas personalizados. Siempre respondes en formato JSON válido.'
+          content: 'Eres un experto en comunicación comercial B2B y generación de emails de ventas personalizados. CRÍTICO: El asunto del email DEBE reflejar directamente el contenido del cuerpo. Primero piensa en el contenido del email, luego crea un asunto que lo resuma perfectamente. Siempre respondes en formato JSON válido.'
         },
         {
           role: 'user',
