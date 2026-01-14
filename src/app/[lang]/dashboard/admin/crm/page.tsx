@@ -5,6 +5,7 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Users } from 'lucide-react'
 import Link from 'next/link'
+import { ContactsKanbanBoard } from '@/components/crm/contacts-kanban-board'
 
 export default async function CRMPage({ params }: {
   params: Promise<{ lang: string }>
@@ -37,6 +38,12 @@ export default async function CRMPage({ params }: {
     .select('*', { count: 'exact', head: true })
     .eq('contact_type', 'lead')
     .eq('status', 'active')
+
+  // Obtener todos los contactos para el Kanban board
+  const { data: contacts } = await supabase
+    .from('contacts')
+    .select('*')
+    .order('created_at', { ascending: false })
 
   return (
     <div className="space-y-6">
@@ -78,6 +85,9 @@ export default async function CRMPage({ params }: {
           </p>
         </Card>
       </div>
+
+      {/* Contacts Kanban Board */}
+      <ContactsKanbanBoard contacts={contacts || []} lang={lang} />
     </div>
   )
 }
