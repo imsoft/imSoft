@@ -76,10 +76,9 @@ export async function POST(
       }).format(amount)
     }
 
-    // Color primario de marca: oklch(0.6723 0.1606 244.9955) convertido a RGB
-    // Aproximación RGB: rgb(102, 106, 234) = #666aea
-    const primaryColor = '#666aea'
-    const primaryColorDark = '#5555d9' // Versión más oscura para gradientes
+    // Color primario de marca: #1e9df1
+    const primaryColor = '#1e9df1'
+    const primaryColorDark = '#1788d9' // Versión más oscura para gradientes
 
     // Generar HTML del email
     const answersHTML = quotation.answers && Object.keys(quotation.answers).length > 0

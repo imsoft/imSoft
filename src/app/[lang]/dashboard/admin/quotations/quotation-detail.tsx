@@ -102,9 +102,8 @@ export function QuotationDetail({ quotation, questions, dict, lang }: QuotationD
         })
       }
 
-      // Color primario de marca: oklch(0.6723 0.1606 244.9955)
-      // Convertido a RGB: aproximadamente rgb(102, 106, 234)
-      const brandColor = { r: 102, g: 106, b: 234 }
+      // Color primario de marca: #1e9df1
+      const brandColor = { r: 30, g: 157, b: 241 }
 
       // Header con color de marca
       doc.setFillColor(brandColor.r, brandColor.g, brandColor.b)
