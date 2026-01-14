@@ -170,7 +170,6 @@ INFORMACIÓN DE CONTACTO DE IMSOFT:
 INFORMACIÓN DEL NEGOCIO:
 - Título del Negocio: ${deal.title}
 - Etapa Actual: ${stageLabel}
-- Probabilidad: ${deal.probability || 0}%
 
 INFORMACIÓN DEL CONTACTO:
 - Nombre: ${contactName}

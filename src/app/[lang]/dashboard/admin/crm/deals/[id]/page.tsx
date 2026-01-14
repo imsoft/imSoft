@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { ArrowLeft, Edit, DollarSign, Calendar, TrendingUp, User, Briefcase } from 'lucide-react'
+import { ArrowLeft, Edit, DollarSign, Calendar, Mail, User, Briefcase } from 'lucide-react'
 import Link from 'next/link'
 import { SendEmailButton } from './send-email-button'
 
@@ -179,16 +179,17 @@ export default async function DealDetailPage({ params }: {
         <Card className="p-6 bg-white">
           <div className="flex items-center gap-3">
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-500/10">
-              <TrendingUp className="h-6 w-6 text-blue-600" />
+              <Mail className="h-6 w-6 text-blue-600" />
             </div>
             <div>
               <p className="text-sm text-muted-foreground">
-                {lang === 'en' ? 'Probability' : 'Probabilidad'}
+                {lang === 'en' ? 'Emails Sent' : 'Correos Enviados'}
               </p>
               <p className="text-2xl font-bold">
-                {deal.probability !== null && deal.probability !== undefined
-                  ? `${deal.probability}%`
-                  : '-'}
+                {emailsSentInStage || 0} {lang === 'en' ? 'email' : 'correo'}{(emailsSentInStage || 0) !== 1 ? (lang === 'en' ? 's' : 's') : ''}
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                {lang === 'en' ? `in ${getStageLabel(deal.stage)}` : `en ${getStageLabel(deal.stage)}`}
               </p>
             </div>
           </div>

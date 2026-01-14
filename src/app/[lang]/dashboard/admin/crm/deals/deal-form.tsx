@@ -35,7 +35,6 @@ const dealSchema = z.object({
   service_id: z.string().optional(),
   value: z.coerce.number().min(0, 'Value must be positive'),
   stage: z.enum(['no_contact', 'qualification', 'proposal', 'negotiation', 'closed_won', 'closed_lost']),
-  probability: z.coerce.number().min(0).max(100).optional(),
   expected_close_date: z.string().optional(),
 })
 
@@ -62,7 +61,6 @@ export function DealForm({ deal, contacts, services, lang, userId }: DealFormPro
       service_id: deal?.service_id || '',
       value: deal?.value || 0,
       stage: deal?.stage || 'no_contact',
-      probability: deal?.probability || 0,
       expected_close_date: deal?.expected_close_date || '',
     },
   })
@@ -76,7 +74,6 @@ export function DealForm({ deal, contacts, services, lang, userId }: DealFormPro
       const dealData = {
         ...values,
         service_id: values.service_id || null,
-        probability: values.probability || 0,
         expected_close_date: values.expected_close_date || null,
       }
 
@@ -216,22 +213,6 @@ export function DealForm({ deal, contacts, services, lang, userId }: DealFormPro
                   </FormControl>
                   <FormDescription>
                     {lang === 'en' ? 'Amount in MXN' : 'Monto en MXN'}
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="probability"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{lang === 'en' ? 'Win Probability (%)' : 'Probabilidad de Ganar (%)'}</FormLabel>
-                  <FormControl>
-                    <Input type="number" min="0" max="100" {...field} className="!border-2 !border-border" />
-                  </FormControl>
-                  <FormDescription>
-                    {lang === 'en' ? '0-100%' : '0-100%'}
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

@@ -156,9 +156,6 @@ export function DealsTable({ deals, dict, lang }: DealsTableProps) {
                 <td className="px-6 py-4">
                   <div>
                     <p className="font-medium">{formatCurrency(deal.value)}</p>
-                    {deal.probability !== null && deal.probability !== undefined && (
-                      <p className="text-xs text-muted-foreground">{deal.probability}% {lang === 'en' ? 'probability' : 'probabilidad'}</p>
-                    )}
                   </div>
                 </td>
                 <td className="px-6 py-4">

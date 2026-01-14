@@ -176,12 +176,6 @@ export function DealCard({ deal, lang, onEmailSent }: DealCardProps) {
                 )}
               </Badge>
             )}
-            {/* Probability badge si existe */}
-            {deal.probability !== null && deal.probability !== undefined && (
-              <Badge variant="outline" className="text-xs">
-                {deal.probability}%
-              </Badge>
-            )}
           </div>
         </div>
       </Card>
