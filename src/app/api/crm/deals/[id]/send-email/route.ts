@@ -15,27 +15,43 @@ const getEmailTemplate = (stage: string, dealTitle: string, contactName: string,
 
   const primaryColor = '#1e9df1'
 
-  const templates: Record<string, { subject: { en: string; es: string }, content: { en: string; es: string } }> = {
+  const templates: Record<string, { subject: { en: string; es: string }, content: { en: string; es: string }, cta: { en: string; es: string } }> = {
     qualification: {
       subject: {
-        en: `Thank you for your interest - ${dealTitle}`,
-        es: `Gracias por tu interés - ${dealTitle}`
+        en: `Discover how we can help you - ${dealTitle}`,
+        es: `Descubre cómo podemos ayudarte - ${dealTitle}`
       },
       content: {
         en: `
-          <h2 style="color: ${primaryColor}; margin-top: 0;">Thank you for your interest!</h2>
+          <h2 style="color: ${primaryColor}; margin-top: 0;">Hello! We'd love to help you grow</h2>
           <p>Dear ${contactName},</p>
-          <p>We have received your inquiry regarding <strong>${dealTitle}</strong> valued at <strong>${formatCurrency(dealValue)}</strong>.</p>
-          <p>Our team is currently reviewing your request and we will get back to you shortly with more information and next steps.</p>
-          <p>If you have any questions in the meantime, please don't hesitate to reach out.</p>
+          <p>I'm reaching out because I believe we can help you with <strong>${dealTitle}</strong>.</p>
+          <p>At imSoft, we specialize in creating custom digital solutions that transform businesses. With our expertise, we've helped companies like yours achieve their goals through innovative technology.</p>
+          <p><strong>What we can offer:</strong></p>
+          <ul>
+            <li>Custom solutions tailored to your specific needs</li>
+            <li>Proven track record of successful projects</li>
+            <li>Dedicated support throughout the entire process</li>
+          </ul>
+          <p>I'd love to schedule a quick call to learn more about your needs and discuss how we can help.</p>
         `,
         es: `
-          <h2 style="color: ${primaryColor}; margin-top: 0;">¡Gracias por tu interés!</h2>
+          <h2 style="color: ${primaryColor}; margin-top: 0;">¡Hola! Nos encantaría ayudarte a crecer</h2>
           <p>Estimado/a ${contactName},</p>
-          <p>Hemos recibido tu solicitud respecto a <strong>${dealTitle}</strong> con un valor de <strong>${formatCurrency(dealValue)}</strong>.</p>
-          <p>Nuestro equipo está revisando tu solicitud y te contactaremos en breve con más información y los siguientes pasos.</p>
-          <p>Si tienes alguna pregunta mientras tanto, no dudes en contactarnos.</p>
+          <p>Me comunico contigo porque creo que podemos ayudarte con <strong>${dealTitle}</strong>.</p>
+          <p>En imSoft nos especializamos en crear soluciones digitales a la medida que transforman negocios. Con nuestra experiencia, hemos ayudado a empresas como la tuya a alcanzar sus objetivos a través de tecnología innovadora.</p>
+          <p><strong>Lo que podemos ofrecerte:</strong></p>
+          <ul>
+            <li>Soluciones personalizadas adaptadas a tus necesidades específicas</li>
+            <li>Historial comprobado de proyectos exitosos</li>
+            <li>Soporte dedicado durante todo el proceso</li>
+          </ul>
+          <p>Me encantaría agendar una breve llamada para conocer más sobre tus necesidades y discutir cómo podemos ayudarte.</p>
         `
+      },
+      cta: {
+        en: 'Interested? Let\'s Talk',
+        es: '¿Te Interesa? Hablemos'
       }
     },
     proposal: {
@@ -60,6 +76,10 @@ const getEmailTemplate = (stage: string, dealTitle: string, contactName: string,
           <p>Nuestra propuesta incluye un desglose detallado de entregables, cronograma y términos. Creemos que esta solución se ajusta perfectamente a tus necesidades.</p>
           <p>Por favor revisa la información adjunta y déjanos saber si tienes alguna pregunta o si deseas agendar una llamada para discutir más detalles.</p>
         `
+      },
+      cta: {
+        en: 'Questions About the Proposal?',
+        es: '¿Preguntas Sobre la Propuesta?'
       }
     },
     negotiation: {
@@ -84,6 +104,10 @@ const getEmailTemplate = (stage: string, dealTitle: string, contactName: string,
           <p>Queremos asegurarnos de que todos tus requisitos estén cubiertos y que estemos alineados en el alcance, cronograma y términos.</p>
           <p>Agendemos una reunión para finalizar los detalles restantes y avanzar con el proyecto.</p>
         `
+      },
+      cta: {
+        en: 'Need to Discuss Details?',
+        es: '¿Necesitas Discutir Detalles?'
       }
     },
     closed_won: {
@@ -120,6 +144,10 @@ const getEmailTemplate = (stage: string, dealTitle: string, contactName: string,
           </ul>
           <p>Gracias por elegir imSoft. ¡Esperamos una colaboración exitosa!</p>
         `
+      },
+      cta: {
+        en: 'Questions About Your Project?',
+        es: '¿Preguntas Sobre tu Proyecto?'
       }
     },
     closed_lost: {
@@ -144,6 +172,10 @@ const getEmailTemplate = (stage: string, dealTitle: string, contactName: string,
           <p>Si las circunstancias cambian o si tienes proyectos futuros donde podamos ser una buena opción, no dudes en contactarnos. Nos encantaría tener la oportunidad de trabajar contigo en el futuro.</p>
           <p>¡Te deseamos lo mejor con tu proyecto!</p>
         `
+      },
+      cta: {
+        en: 'Stay in Touch',
+        es: 'Mantengamos el Contacto'
       }
     }
   }
@@ -240,7 +272,7 @@ export async function POST(
 
             <!-- Llamadas a la Acción -->
             <div style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px;">
-              <h2 style="color: ${primaryColor}; margin-top: 0; font-size: 20px; border-bottom: 2px solid ${primaryColor}; padding-bottom: 10px; text-align: center;">¿Tienes Preguntas?</h2>
+              <h2 style="color: ${primaryColor}; margin-top: 0; font-size: 20px; border-bottom: 2px solid ${primaryColor}; padding-bottom: 10px; text-align: center;">${template.cta.es}</h2>
               <p style="text-align: center; color: #555; margin-bottom: 20px;">Estamos aquí para ayudarte. Elige la forma que prefieras para contactarnos:</p>
 
               <table cellpadding="0" cellspacing="0" border="0" style="width: 100%; margin: 0 auto;">
