@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
-import { ContactForm } from '../../contact-form'
+import { ContactFormSimple } from '../../contact-form-simple'
 
 export default async function EditContactPage({ params }: {
   params: Promise<{ lang: string; id: string }>
@@ -56,7 +56,7 @@ export default async function EditContactPage({ params }: {
           </p>
         </div>
       </div>
-      <ContactForm contact={contact} lang={lang} userId={user.id} />
+      <ContactFormSimple contact={contact} lang={lang} userId={user.id} />
     </div>
   )
 }

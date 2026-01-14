@@ -1,10 +1,10 @@
-import { getDictionary, hasLocale } from '../../../../dictionaries'
+import { hasLocale } from '../../../../dictionaries'
 import { notFound, redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { Button } from '@/components/ui/button'
 import { Plus, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
-import { DealsTable } from './deals-table'
+import { KanbanBoard } from '@/components/crm/kanban-board'
 
 export default async function DealsPage({ params }: {
   params: Promise<{ lang: string }>
@@ -13,7 +13,6 @@ export default async function DealsPage({ params }: {
 
   if (!hasLocale(lang)) notFound()
 
-  const dict = await getDictionary(lang)
   const supabase = await createClient()
 
   const { data: { user } } = await supabase.auth.getUser()
@@ -36,13 +35,9 @@ export default async function DealsPage({ params }: {
         id,
         first_name,
         last_name,
-        company,
-        email
-      ),
-      services (
-        id,
-        title_es,
-        title_en
+        email,
+        phone,
+        company
       )
     `)
     .order('created_at', { ascending: false })
@@ -58,13 +53,13 @@ export default async function DealsPage({ params }: {
               </Link>
             </Button>
             <h1 className="text-3xl font-bold">
-              {lang === 'en' ? 'Deals' : 'Negocios'}
+              {lang === 'en' ? 'Sales Pipeline' : 'Pipeline de Ventas'}
             </h1>
           </div>
           <p className="text-muted-foreground ml-12">
             {lang === 'en'
-              ? 'Manage your sales opportunities and pipeline'
-              : 'Gestiona tus oportunidades de venta y pipeline'}
+              ? 'Drag and drop deals between stages'
+              : 'Arrastra y suelta negocios entre etapas'}
           </p>
         </div>
         <Button asChild>
@@ -74,7 +69,7 @@ export default async function DealsPage({ params }: {
           </Link>
         </Button>
       </div>
-      <DealsTable deals={deals || []} dict={dict} lang={lang} />
+      <KanbanBoard deals={deals || []} lang={lang} />
     </div>
   )
 }

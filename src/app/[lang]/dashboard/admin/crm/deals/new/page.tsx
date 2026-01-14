@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
-import { DealForm } from '../deal-form'
+import { DealFormSimple } from '../deal-form-simple'
 
 export default async function NewDealPage({ params }: {
   params: Promise<{ lang: string }>
@@ -26,16 +26,11 @@ export default async function NewDealPage({ params }: {
     redirect(`/${lang}/dashboard/client`)
   }
 
-  // Obtener contactos y servicios
+  // Obtener contactos
   const { data: contacts } = await supabase
     .from('contacts')
     .select('*')
     .order('first_name')
-
-  const { data: services } = await supabase
-    .from('services')
-    .select('*')
-    .order('title_es')
 
   return (
     <div className="space-y-6">
@@ -56,7 +51,7 @@ export default async function NewDealPage({ params }: {
           </p>
         </div>
       </div>
-      <DealForm contacts={contacts || []} services={services || []} lang={lang} userId={user.id} />
+      <DealFormSimple contacts={contacts || []} lang={lang} userId={user.id} />
     </div>
   )
 }

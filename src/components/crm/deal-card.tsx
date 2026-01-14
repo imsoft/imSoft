@@ -1,0 +1,119 @@
+'use client'
+
+import { useSortable } from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
+import { Card } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { DollarSign, User, GripVertical } from 'lucide-react'
+import Link from 'next/link'
+import type { Deal } from '@/types/database'
+
+interface DealCardProps {
+  deal: Deal & {
+    contacts?: {
+      first_name: string
+      last_name: string
+      email: string
+      phone?: string
+      company?: string
+    }
+  }
+  lang: string
+}
+
+export function DealCard({ deal, lang }: DealCardProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: deal.id })
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  }
+
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat(lang === 'en' ? 'en-US' : 'es-MX', {
+      style: 'currency',
+      currency: 'MXN',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(value)
+  }
+
+  return (
+    <div ref={setNodeRef} style={style}>
+      <Card className="p-4 bg-white hover:shadow-md transition-shadow cursor-pointer group">
+        <Link href={`/${lang}/dashboard/admin/crm/deals/${deal.id}`}>
+          <div className="space-y-3">
+            {/* Header con drag handle */}
+            <div className="flex items-start justify-between gap-2">
+              <div className="flex-1 min-w-0">
+                <h3 className="font-semibold text-sm truncate group-hover:text-primary transition-colors">
+                  {deal.title}
+                </h3>
+              </div>
+              <button
+                className="text-muted-foreground hover:text-foreground cursor-grab active:cursor-grabbing"
+                {...attributes}
+                {...listeners}
+                onClick={(e) => e.preventDefault()}
+              >
+                <GripVertical className="h-4 w-4" />
+              </button>
+            </div>
+
+            {/* Valor */}
+            <div className="flex items-center gap-2">
+              <DollarSign className="h-4 w-4 text-green-600" />
+              <span className="font-bold text-green-600">
+                {formatCurrency(deal.value)}
+              </span>
+            </div>
+
+            {/* Contacto */}
+            {deal.contacts && (
+              <div className="flex items-start gap-2">
+                <User className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm truncate">
+                    {deal.contacts.first_name} {deal.contacts.last_name}
+                  </p>
+                  {deal.contacts.company && (
+                    <p className="text-xs text-muted-foreground truncate">
+                      {deal.contacts.company}
+                    </p>
+                  )}
+                  {deal.contacts.email && (
+                    <p className="text-xs text-muted-foreground truncate">
+                      {deal.contacts.email}
+                    </p>
+                  )}
+                  {deal.contacts.phone && (
+                    <p className="text-xs text-muted-foreground truncate">
+                      {deal.contacts.phone}
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Probability badge si existe */}
+            {deal.probability !== null && deal.probability !== undefined && (
+              <div className="flex justify-end">
+                <Badge variant="outline" className="text-xs">
+                  {deal.probability}%
+                </Badge>
+              </div>
+            )}
+          </div>
+        </Link>
+      </Card>
+    </div>
+  )
+}
