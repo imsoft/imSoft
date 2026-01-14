@@ -21,6 +21,7 @@ interface DealCardProps {
       company?: string
     }
     email_sent?: boolean
+    emailsSentInStage?: number
   }
   lang: string
   onEmailSent?: (dealId: string) => void
@@ -142,9 +143,9 @@ export function DealCard({ deal, lang, onEmailSent }: DealCardProps) {
             {/* Badge de correo enviado */}
             {deal.stage !== 'no_contact' && (
               <Badge 
-                variant={deal.email_sent ? "default" : "outline"}
+                variant={deal.emailsSentInStage && deal.emailsSentInStage > 0 ? "default" : "outline"}
                 className={`text-xs flex items-center gap-1 cursor-pointer transition-opacity hover:opacity-80 ${
-                  deal.email_sent 
+                  deal.emailsSentInStage && deal.emailsSentInStage > 0
                     ? 'bg-green-500/10 text-green-700 dark:text-green-400 border-green-500/20' 
                     : 'bg-gray-500/10 text-gray-700 dark:text-gray-400 border-gray-500/20'
                 } ${isSendingEmail ? 'opacity-50 cursor-not-allowed' : ''}`}
@@ -162,10 +163,10 @@ export function DealCard({ deal, lang, onEmailSent }: DealCardProps) {
                     <Loader2 className="h-3 w-3 animate-spin" />
                     {lang === 'en' ? 'Sending...' : 'Enviando...'}
                   </>
-                ) : deal.email_sent ? (
+                ) : deal.emailsSentInStage && deal.emailsSentInStage > 0 ? (
                   <>
                     <MailCheck className="h-3 w-3" />
-                    {lang === 'en' ? 'Email Sent' : 'Correo Enviado'}
+                    {deal.emailsSentInStage} {lang === 'en' ? 'Email' : 'Correo'}{deal.emailsSentInStage > 1 ? (lang === 'en' ? 's' : 's') : ''}
                   </>
                 ) : (
                   <>

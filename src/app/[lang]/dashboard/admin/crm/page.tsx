@@ -85,6 +85,28 @@ export default async function CRMPage({ params }: {
     `)
     .order('created_at', { ascending: false })
 
+  // Obtener contadores de emails por deal y etapa
+  let emailCountsMap: Record<string, number> = {}
+  
+  if (deals && deals.length > 0) {
+    // Para cada deal, contar emails en su etapa actual
+    for (const deal of deals) {
+      const { count } = await supabase
+        .from('deal_emails')
+        .select('*', { count: 'exact', head: true })
+        .eq('deal_id', deal.id)
+        .eq('stage', deal.stage)
+      
+      emailCountsMap[deal.id] = count || 0
+    }
+  }
+
+  // Agregar contadores a los deals
+  const dealsWithEmailCounts = deals?.map(deal => ({
+    ...deal,
+    emailsSentInStage: emailCountsMap[deal.id] || 0,
+  })) || []
+
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat(lang === 'en' ? 'en-US' : 'es-MX', {
       style: 'currency',
@@ -185,7 +207,7 @@ export default async function CRMPage({ params }: {
       </div>
 
       {/* Kanban Board */}
-      <KanbanBoard deals={deals || []} lang={lang} />
+      <KanbanBoard deals={dealsWithEmailCounts} lang={lang} />
     </div>
   )
 }

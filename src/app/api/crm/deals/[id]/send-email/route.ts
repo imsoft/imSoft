@@ -462,6 +462,22 @@ export async function POST(
       )
     }
 
+    // Guardar el email en el historial
+    const { error: emailHistoryError } = await supabase
+      .from('deal_emails')
+      .insert({
+        deal_id: id,
+        stage: deal.stage,
+        subject: emailSubject,
+        body: html,
+        sent_by: user.id,
+      })
+
+    if (emailHistoryError) {
+      console.error('Error saving email history:', emailHistoryError)
+      // No fallar la respuesta si solo falla el guardado del historial
+    }
+
     // Marcar email_sent como true después de enviar exitosamente
     const { error: updateError } = await supabase
       .from('deals')

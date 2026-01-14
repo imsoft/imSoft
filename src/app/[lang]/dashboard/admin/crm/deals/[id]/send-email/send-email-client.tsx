@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, Mail, Loader2 } from 'lucide-react'
+import { ArrowLeft, Mail, Loader2, Sparkles } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -36,24 +36,53 @@ export function SendEmailPageClient({
   const [emailBody, setEmailBody] = useState(initialBody)
   const [isSending, setIsSending] = useState(false)
   const [isLoadingPreview, setIsLoadingPreview] = useState(!initialSubject && !initialBody)
+  const [isGeneratingAI, setIsGeneratingAI] = useState(false)
 
   // Cargar preview si no se proporcionó inicialmente
   useEffect(() => {
     if (!initialSubject && !initialBody) {
-      setIsLoadingPreview(true)
-      fetch(`/api/crm/deals/${dealId}/email-preview`)
-        .then(res => res.json())
-        .then(data => {
-          setEmailSubject(data.subject || '')
-          setEmailBody(data.body || '')
-          setIsLoadingPreview(false)
-        })
-        .catch(error => {
-          console.error('Error loading email preview:', error)
-          setIsLoadingPreview(false)
-        })
+      // Por defecto, generar con AI
+      generateAIEmail()
     }
   }, [dealId, initialSubject, initialBody])
+
+  const generateAIEmail = async () => {
+    setIsGeneratingAI(true)
+    setIsLoadingPreview(true)
+    try {
+      const response = await fetch(`/api/crm/deals/${dealId}/generate-email`, {
+        method: 'POST',
+      })
+
+      if (!response.ok) {
+        throw new Error('Error generating AI email')
+      }
+
+      const data = await response.json()
+      setEmailSubject(data.subject || '')
+      setEmailBody(data.body || '')
+    } catch (error) {
+      console.error('Error generating AI email:', error)
+      toast.error(lang === 'en' 
+        ? 'Error generating AI email. Loading default template...' 
+        : 'Error al generar email con IA. Cargando plantilla por defecto...')
+      
+      // Fallback a template por defecto
+      try {
+        const previewResponse = await fetch(`/api/crm/deals/${dealId}/email-preview`)
+        if (previewResponse.ok) {
+          const previewData = await previewResponse.json()
+          setEmailSubject(previewData.subject || '')
+          setEmailBody(previewData.body || '')
+        }
+      } catch (previewError) {
+        console.error('Error loading default preview:', previewError)
+      }
+    } finally {
+      setIsGeneratingAI(false)
+      setIsLoadingPreview(false)
+    }
+  }
 
   const handleSendEmail = async () => {
     if (!emailSubject.trim() || !emailBody.trim()) {
@@ -154,9 +183,31 @@ export function SendEmailPageClient({
 
           {/* Subject */}
           <div className="space-y-2">
-            <Label htmlFor="email-subject">
-              {lang === 'en' ? 'Subject' : 'Asunto'} *
-            </Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="email-subject">
+                {lang === 'en' ? 'Subject' : 'Asunto'} *
+              </Label>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={generateAIEmail}
+                disabled={isGeneratingAI}
+                className="h-8 text-xs"
+              >
+                {isGeneratingAI ? (
+                  <>
+                    <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                    {lang === 'en' ? 'Generating...' : 'Generando...'}
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="mr-1 h-3 w-3" />
+                    {lang === 'en' ? 'Generate with AI' : 'Generar con IA'}
+                  </>
+                )}
+              </Button>
+            </div>
             <Input
               id="email-subject"
               value={emailSubject}

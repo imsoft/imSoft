@@ -75,6 +75,13 @@ export default async function DealDetailPage({ params }: {
     .eq('deal_id', id)
     .order('created_at', { ascending: false })
 
+  // Obtener contador de emails enviados en la etapa actual
+  const { count: emailsSentInStage } = await supabase
+    .from('deal_emails')
+    .select('*', { count: 'exact', head: true })
+    .eq('deal_id', id)
+    .eq('stage', deal.stage)
+
   if (error || !deal) {
     console.error('Deal fetch error:', error)
     console.error('Deal ID:', id)
@@ -142,6 +149,7 @@ export default async function DealDetailPage({ params }: {
             dealStage={deal.stage} 
             lang={lang}
             contactEmail={deal.contacts?.email}
+            emailsSentCount={emailsSentInStage || 0}
           />
           <Button asChild>
             <Link href={`/${lang}/dashboard/admin/crm/deals/${id}/edit`}>

@@ -11,9 +11,10 @@ interface SendEmailButtonProps {
   dealStage: string
   lang: string
   contactEmail?: string
+  emailsSentCount?: number
 }
 
-export function SendEmailButton({ dealId, dealStage, lang, contactEmail }: SendEmailButtonProps) {
+export function SendEmailButton({ dealId, dealStage, lang, contactEmail, emailsSentCount = 0 }: SendEmailButtonProps) {
   const router = useRouter()
 
   const getStageLabel = (stage: string) => {
@@ -46,9 +47,15 @@ export function SendEmailButton({ dealId, dealStage, lang, contactEmail }: SendE
     <Button
       variant="outline"
       onClick={handleEmailClick}
+      className="relative"
     >
       <Mail className="mr-2 h-4 w-4" />
       {lang === 'en' ? 'Send Email' : 'Enviar Email'}
+      {emailsSentCount > 0 && (
+        <span className="ml-2 px-1.5 py-0.5 text-xs font-semibold bg-primary text-primary-foreground rounded-full">
+          {emailsSentCount}
+        </span>
+      )}
     </Button>
   )
 }
