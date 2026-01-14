@@ -193,36 +193,42 @@ export async function POST(
                   <td style="padding: 12px 0; text-align: right; font-size: 18px; font-weight: bold; color: ${primaryColor};">${formatCurrency(quotation.total)}</td>
                 </tr>
               </table>
+              <div style="margin-top: 15px; padding: 12px; background: #fef3c7; border-left: 4px solid #f59e0b; border-radius: 4px;">
+                <p style="margin: 0; font-size: 13px; color: #92400e; line-height: 1.5;">
+                  <strong>⚠️ Importante:</strong> Este precio es una estimación inicial basada en las respuestas del cuestionario. El precio final puede verse afectado por los detalles específicos mencionados en la descripción del proyecto, así como por futuras adecuaciones durante la negociación. Te contactaremos para discutir los detalles y confirmar el precio final.
+                </p>
+              </div>
             </div>
 
             <!-- Llamadas a la Acción -->
             <div style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px;">
               <h2 style="color: ${primaryColor}; margin-top: 0; font-size: 20px; border-bottom: 2px solid ${primaryColor}; padding-bottom: 10px; text-align: center;">¿Tienes Preguntas o Quieres Continuar?</h2>
-              <p style="text-align: center; color: #555; margin-bottom: 25px;">Estamos aquí para ayudarte. Elige la forma que prefieras para contactarnos:</p>
+              <p style="text-align: center; color: #555; margin-bottom: 20px;">Estamos aquí para ayudarte. Elige la forma que prefieras para contactarnos:</p>
               
-              <div style="display: flex; flex-direction: column; gap: 15px; max-width: 500px; margin: 0 auto;">
+              <div style="display: flex; flex-direction: row; gap: 12px; justify-content: center; flex-wrap: wrap; max-width: 600px; margin: 0 auto;">
                 <!-- Botón WhatsApp -->
                 <a href="https://wa.me/523325365558?text=${encodeURIComponent(`Hola, soy ${quotation.client_name} y me interesa el proyecto: ${quotation.title || serviceName}. Me gustaría obtener más información.`)}" 
-                   style="display: block; background: #25D366; color: white; text-align: center; padding: 15px 25px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 16px; transition: background 0.3s;">
-                  💬 Contactar por WhatsApp
+                   style="display: inline-block; background: #25D366; color: white; text-align: center; padding: 10px 18px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 13px; transition: background 0.3s; white-space: nowrap;">
+                  💬 WhatsApp
                 </a>
                 
                 <!-- Botón Email -->
                 <a href="mailto:weareimsoft@gmail.com?subject=${encodeURIComponent(`Consulta sobre: ${quotation.title || serviceName}`)}&body=${encodeURIComponent(`Hola,\n\nSoy ${quotation.client_name}${quotation.client_company ? ` de ${quotation.client_company}` : ''} y me interesa el proyecto: ${quotation.title || serviceName}.\n\nMe gustaría obtener más información.\n\nSaludos,\n${quotation.client_name}`)}" 
-                   style="display: block; background: ${primaryColor}; color: white; text-align: center; padding: 15px 25px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 16px; transition: background 0.3s;">
-                  ✉️ Enviar Correo Electrónico
+                   style="display: inline-block; background: ${primaryColor}; color: white; text-align: center; padding: 10px 18px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 13px; transition: background 0.3s; white-space: nowrap;">
+                  ✉️ Email
                 </a>
                 
                 <!-- Botón Contacto -->
                 <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io'}/es/contact" 
-                   style="display: block; background: #f8f9fa; color: ${primaryColor}; text-align: center; padding: 15px 25px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 16px; border: 2px solid ${primaryColor}; transition: background 0.3s;">
-                  📋 Formulario de Contacto
+                   style="display: inline-block; background: #f8f9fa; color: ${primaryColor}; text-align: center; padding: 10px 18px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 13px; border: 2px solid ${primaryColor}; transition: background 0.3s; white-space: nowrap;">
+                  📋 Contacto
                 </a>
               </div>
             </div>
 
             <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb; color: #6b7280; font-size: 12px;">
-              <p>Este es un correo automático de imSoft. Por favor, no responda a este correo.</p>
+              <p style="margin: 0 0 8px 0;">Este es un correo automático de imSoft. Por favor, no responda a este correo.</p>
+              <p style="margin: 0; font-size: 11px; color: #9ca3af;">El precio mostrado es una estimación y puede variar según los detalles del proyecto y la negociación.</p>
             </div>
 
             <!-- Firma Electrónica -->
