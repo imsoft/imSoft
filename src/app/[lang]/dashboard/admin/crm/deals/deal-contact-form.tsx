@@ -98,7 +98,7 @@ export function DealContactForm({ deal, contacts, quotations, lang, userId }: De
     },
   })
 
-  // Cuando se selecciona una cotizaciรณn, actualizar el valor automรกticamente
+  // Cuando se selecciona una cotización, actualizar el valor automáticamente
   const handleQuotationChange = (quotationId: string) => {
     if (quotationId === 'none') {
       setSelectedQuotation(undefined)
@@ -113,7 +113,7 @@ export function DealContactForm({ deal, contacts, quotations, lang, userId }: De
     if (quotation) {
       form.setValue('value', quotation.final_price || quotation.total)
       
-      // Si estamos en modo "nuevo contacto" y la cotizaciรณn tiene datos del cliente, autocompletar
+      // Si estamos en modo "nuevo contacto" y la cotización tiene datos del cliente, autocompletar
       if (contactMode === 'new' && quotation.client_email) {
         form.setValue('email', quotation.client_email)
         if (quotation.client_name) {
@@ -291,9 +291,9 @@ export function DealContactForm({ deal, contacts, quotations, lang, userId }: De
   const getStageLabel = (stage: string) => {
     const labels: Record<string, { en: string; es: string }> = {
       no_contact: { en: 'No Contact', es: 'Sin Contacto' },
-      qualification: { en: 'Prospecting', es: 'Prospecciรณn' },
+      qualification: { en: 'Prospecting', es: 'Prospección' },
       proposal: { en: 'Proposal', es: 'Propuesta' },
-      negotiation: { en: 'Negotiation', es: 'Negociaciรณn' },
+      negotiation: { en: 'Negotiation', es: 'Negociación' },
       closed_won: { en: 'Won', es: 'Ganado' },
       closed_lost: { en: 'Lost', es: 'Perdido' },
     }
@@ -306,7 +306,7 @@ export function DealContactForm({ deal, contacts, quotations, lang, userId }: De
         {/* Contact Section */}
         <Card className="p-6 bg-white">
           <h2 className="text-lg font-semibold mb-4">
-            {lang === 'en' ? 'Contact Information' : 'Informaciรณn de Contacto'}
+            {lang === 'en' ? 'Contact Information' : 'Información de Contacto'}
           </h2>
 
           <FormField
@@ -401,7 +401,7 @@ export function DealContactForm({ deal, contacts, quotations, lang, userId }: De
                 name="phone"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{lang === 'en' ? 'Phone' : 'Telรฉfono'}</FormLabel>
+                    <FormLabel>{lang === 'en' ? 'Phone' : 'Teléfono'}</FormLabel>
                     <FormControl>
                       <Input {...field} className="!border-2 !border-border" />
                     </FormControl>
@@ -462,17 +462,17 @@ export function DealContactForm({ deal, contacts, quotations, lang, userId }: De
         {/* Deal Section */}
         <Card className="p-6 bg-white">
           <h2 className="text-lg font-semibold mb-4">
-            {lang === 'en' ? 'Deal Information' : 'Informaciรณn del Negocio'}
+            {lang === 'en' ? 'Deal Information' : 'Información del Negocio'}
           </h2>
 
           <div className="grid gap-4">
-            {/* Selector de Cotizaciรณn - Primero para facilitar autocompletado */}
+            {/* Selector de Cotización - Primero para facilitar autocompletado */}
             <FormField
               control={form.control}
               name="quotation_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{lang === 'en' ? 'Link Quotation (Optional)' : 'Vincular Cotizaciรณn (Opcional)'}</FormLabel>
+                  <FormLabel>{lang === 'en' ? 'Link Quotation (Optional)' : 'Vincular Cotización (Opcional)'}</FormLabel>
                   <Select
                     onValueChange={handleQuotationChange}
                     defaultValue={field.value}
@@ -480,7 +480,7 @@ export function DealContactForm({ deal, contacts, quotations, lang, userId }: De
                   >
                     <FormControl>
                       <SelectTrigger className="w-full !border-2 !border-border">
-                        <SelectValue placeholder={lang === 'en' ? 'Select a quotation...' : 'Selecciona una cotizaciรณn...'} />
+                        <SelectValue placeholder={lang === 'en' ? 'Select a quotation...' : 'Selecciona una cotización...'} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -489,7 +489,7 @@ export function DealContactForm({ deal, contacts, quotations, lang, userId }: De
                       </SelectItem>
                       {quotations.length > 0 ? (
                         quotations.map((quotation: any) => {
-                          // Construir un label descriptivo para la cotizaciรณn
+                          // Construir un label descriptivo para la cotización
                           const serviceName = quotation.services
                             ? (lang === 'en' ? quotation.services.title_en : quotation.services.title_es) || quotation.services.title
                             : null
@@ -499,7 +499,7 @@ export function DealContactForm({ deal, contacts, quotations, lang, userId }: De
                               ? `${quotation.client_name} - ${quotation.client_company}`
                               : quotation.client_name)
                             || serviceName
-                            || (lang === 'en' ? 'Unnamed Quotation' : 'Cotizaciรณn sin nombre')
+                            || (lang === 'en' ? 'Unnamed Quotation' : 'Cotización sin nombre')
                           
                           const price = new Intl.NumberFormat('es-MX', {
                             style: 'currency',
