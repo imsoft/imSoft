@@ -46,7 +46,7 @@ export default async function DealDetailPage({ params }: {
         title_en,
         title_es
       ),
-      quotations (
+      quotations:quotation_id (
         id,
         title,
         client_name,
