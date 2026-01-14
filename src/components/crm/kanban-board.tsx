@@ -47,10 +47,12 @@ const STAGES: { id: DealStage; label_en: string; label_es: string; color: string
 // Componente para la columna droppable
 function DroppableColumn({
   id,
-  children
+  children,
+  hasDeals
 }: {
   id: string
   children: React.ReactNode
+  hasDeals: boolean
 }) {
   const { setNodeRef, isOver } = useDroppable({
     id,
@@ -62,7 +64,9 @@ function DroppableColumn({
       className={`flex flex-col gap-3 min-h-[200px] p-2 rounded-lg border-2 border-dashed transition-colors ${
         isOver
           ? 'border-primary bg-primary/5'
-          : 'border-muted-foreground/20'
+          : hasDeals
+          ? 'border-muted-foreground/20'
+          : 'border-transparent'
       }`}
     >
       {children}
@@ -253,7 +257,7 @@ export function KanbanBoard({ deals: initialDeals, lang }: KanbanBoardProps) {
                 items={stageDeals.map((d) => d.id)}
                 strategy={verticalListSortingStrategy}
               >
-                <DroppableColumn id={stage.id}>
+                <DroppableColumn id={stage.id} hasDeals={stageDeals.length > 0}>
                   {stageDeals.map((deal) => (
                     <DealCard key={deal.id} deal={deal} lang={lang} />
                   ))}
