@@ -443,7 +443,6 @@ export function DealContactForm({ deal, contacts, quotations, lang, userId }: De
                       <Textarea 
                         {...field} 
                         className="!border-2 !border-border min-h-[100px]" 
-                        placeholder={lang === 'en' ? 'Brief description of the company...' : 'Breve descripción de la empresa...'}
                       />
                     </FormControl>
                     <FormMessage />
@@ -461,7 +460,7 @@ export function DealContactForm({ deal, contacts, quotations, lang, userId }: De
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger className="w-full !border-2 !border-border">
-                        <SelectValue placeholder={lang === 'en' ? 'Select a contact...' : 'Selecciona un contacto...'} />
+                        <SelectValue />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -507,7 +506,7 @@ export function DealContactForm({ deal, contacts, quotations, lang, userId }: De
                   >
                     <FormControl>
                       <SelectTrigger className="w-full !border-2 !border-border">
-                        <SelectValue placeholder={lang === 'en' ? 'Select a quotation...' : 'Selecciona una cotización...'} />
+                        <SelectValue />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
