@@ -47,16 +47,26 @@ export default async function QuotationDetailPage({ params }: {
     .eq('id', id)
     .single()
 
-  if (error || !quotation) {
+  if (error) {
+    console.error('Error fetching quotation:', error)
+    notFound()
+  }
+
+  if (!quotation) {
     notFound()
   }
 
   // Obtener las preguntas del cuestionario para mostrar los textos
-  const { data: questions } = await supabase
-    .from('quotation_questions')
-    .select('*')
-    .eq('service_id', quotation.service_id)
-    .order('order_index')
+  // Solo si hay service_id
+  let questions = null
+  if (quotation.service_id) {
+    const { data: questionsData } = await supabase
+      .from('quotation_questions')
+      .select('*')
+      .eq('service_id', quotation.service_id)
+      .order('order_index')
+    questions = questionsData
+  }
 
   return (
     <div className="space-y-6 bg-white min-h-screen p-6">
