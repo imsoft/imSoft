@@ -163,6 +163,13 @@ export async function POST(
               </table>
             </div>
 
+            ${quotation.description ? `
+            <div style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px;">
+              <h2 style="color: ${primaryColor}; margin-top: 0; font-size: 20px; border-bottom: 2px solid ${primaryColor}; padding-bottom: 10px;">Descripción del Proyecto</h2>
+              <p style="color: #555; line-height: 1.6; white-space: pre-wrap;">${quotation.description}</p>
+            </div>
+            ` : ''}
+
             <div style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px;">
               <h2 style="color: ${primaryColor}; margin-top: 0; font-size: 20px; border-bottom: 2px solid ${primaryColor}; padding-bottom: 10px;">Respuestas del Cuestionario</h2>
               <table style="width: 100%;">
@@ -170,7 +177,7 @@ export async function POST(
               </table>
             </div>
 
-            <div style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <div style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px;">
               <h2 style="color: ${primaryColor}; margin-top: 0; font-size: 20px; border-bottom: 2px solid ${primaryColor}; padding-bottom: 10px;">Resumen del Precio</h2>
               <table style="width: 100%;">
                 <tr>
@@ -188,8 +195,113 @@ export async function POST(
               </table>
             </div>
 
+            <!-- Llamadas a la Acción -->
+            <div style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px;">
+              <h2 style="color: ${primaryColor}; margin-top: 0; font-size: 20px; border-bottom: 2px solid ${primaryColor}; padding-bottom: 10px; text-align: center;">¿Tienes Preguntas o Quieres Continuar?</h2>
+              <p style="text-align: center; color: #555; margin-bottom: 25px;">Estamos aquí para ayudarte. Elige la forma que prefieras para contactarnos:</p>
+              
+              <div style="display: flex; flex-direction: column; gap: 15px; max-width: 500px; margin: 0 auto;">
+                <!-- Botón WhatsApp -->
+                <a href="https://wa.me/523325365558?text=${encodeURIComponent(`Hola, soy ${quotation.client_name} y me interesa el proyecto: ${quotation.title || serviceName}. Me gustaría obtener más información.`)}" 
+                   style="display: block; background: #25D366; color: white; text-align: center; padding: 15px 25px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 16px; transition: background 0.3s;">
+                  💬 Contactar por WhatsApp
+                </a>
+                
+                <!-- Botón Email -->
+                <a href="mailto:weareimsoft@gmail.com?subject=${encodeURIComponent(`Consulta sobre: ${quotation.title || serviceName}`)}&body=${encodeURIComponent(`Hola,\n\nSoy ${quotation.client_name}${quotation.client_company ? ` de ${quotation.client_company}` : ''} y me interesa el proyecto: ${quotation.title || serviceName}.\n\nMe gustaría obtener más información.\n\nSaludos,\n${quotation.client_name}`)}" 
+                   style="display: block; background: ${primaryColor}; color: white; text-align: center; padding: 15px 25px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 16px; transition: background 0.3s;">
+                  ✉️ Enviar Correo Electrónico
+                </a>
+                
+                <!-- Botón Contacto -->
+                <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io'}/es/contact" 
+                   style="display: block; background: #f8f9fa; color: ${primaryColor}; text-align: center; padding: 15px 25px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 16px; border: 2px solid ${primaryColor}; transition: background 0.3s;">
+                  📋 Formulario de Contacto
+                </a>
+              </div>
+            </div>
+
             <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb; color: #6b7280; font-size: 12px;">
               <p>Este es un correo automático de imSoft. Por favor, no responda a este correo.</p>
+            </div>
+
+            <!-- Firma Electrónica -->
+            <div style="margin-top: 40px; padding-top: 30px; border-top: 2px solid #e5e7eb;">
+              <table cellpadding="0" cellspacing="0" border="0" style="font-family: Geist, Geist_Mono, -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, Roboto, Arial, sans-serif; color:#0b0b0b; width: 100%;">
+                <tr>
+                  <!-- LOGO -->
+                  <td style="padding-right:16px; vertical-align:top;">
+                    <img
+                      src="https://res.cloudinary.com/https-imsoft-io/image/upload/v1740963749/imsoft-images/imsoft/logo-imsoft-blue.png"
+                      alt="imSoft"
+                      height="145"
+                      style="display:block; border:0; outline:none; height:145px; width:auto;"
+                    />
+                  </td>
+
+                  <!-- TEXTO -->
+                  <td style="vertical-align:top;">
+                    <div style="font-size:16px; font-weight:700; line-height:1.15; margin:0;">
+                      Brandon Uriel Garcia Ramos
+                    </div>
+
+                    <div style="margin-top:4px; font-size:13px; color:#334155; line-height:1.35;">
+                      imSoft
+                      <span style="font-weight:700; color:#2563eb; font-size:6px; vertical-align:middle;">●</span>
+                      Soluciones digitales a la medida
+                    </div>
+
+                    <div style="margin-top:10px; font-size:13px; line-height:1.6;">
+                      <div>
+                        <a href="mailto:contacto@imsoft.io" style="color:#2563eb; text-decoration:none;">
+                          contacto@imsoft.io
+                        </a>
+                      </div>
+                      <div>
+                        <a href="tel:+523325365558" style="color:#2563eb; text-decoration:none;">
+                          33 2536 5558
+                        </a>
+                      </div>
+                      <div>
+                        <a href="https://imsoft.io" style="color:#2563eb; text-decoration:none;">
+                          imsoft.io
+                        </a>
+                      </div>
+                    </div>
+
+                    <!-- SERVICIOS (alfabético + icono) -->
+                    <div style="margin-top:10px; font-size:12px; color:#475569; line-height:1.6;">
+                      <span style="white-space:nowrap;">
+                        <span style="font-weight:700; color:#2563eb; font-size:6px; vertical-align:middle;">●</span>&nbsp;Análisis de datos
+                      </span>
+                      
+                      <span style="white-space:nowrap;">
+                        <span style="font-weight:700; color:#2563eb; font-size:6px; vertical-align:middle;">●</span>&nbsp;Aplicaciones Móviles
+                      </span>
+                      
+                      <span style="white-space:nowrap;">
+                        <span style="font-weight:700; color:#2563eb; font-size:6px; vertical-align:middle;">●</span>&nbsp;Aplicaciones Web
+                      </span>
+                      
+                      <span style="white-space:nowrap;">
+                        <span style="font-weight:700; color:#2563eb; font-size:6px; vertical-align:middle;">●</span>&nbsp;Consultoría Tecnológica
+                      </span>
+                      
+                      <span style="white-space:nowrap;">
+                        <span style="font-weight:700; color:#2563eb; font-size:6px; vertical-align:middle;">●</span>&nbsp;Páginas Web
+                      </span>
+                      
+                      <span style="white-space:nowrap;">
+                        <span style="font-weight:700; color:#2563eb; font-size:6px; vertical-align:middle;">●</span>&nbsp;Tienda en línea
+                      </span>
+
+                      <span style="white-space:nowrap;">
+                        <span style="font-weight:700; color:#2563eb; font-size:6px; vertical-align:middle;">●</span>
+                      </span>
+                    </div>
+                  </td>
+                </tr>
+              </table>
             </div>
           </div>
         </body>

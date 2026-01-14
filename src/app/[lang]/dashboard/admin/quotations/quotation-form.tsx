@@ -37,6 +37,7 @@ import Image from 'next/image'
 
 const quotationSchema = z.object({
   service_id: z.string().min(1, 'El servicio es requerido'),
+  deal_id: z.string().optional(),
   title: z.string().min(1, 'El título es requerido'),
   description: z.string().optional(),
   client_name: z.string().min(1, 'El nombre del cliente es requerido'),
@@ -63,7 +64,9 @@ export function QuotationForm({ services, dict, lang, userId }: QuotationFormPro
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [questions, setQuestions] = useState<QuotationQuestion[]>([])
   const [technologies, setTechnologies] = useState<Array<{ id: string; name_es?: string; name_en?: string; name?: string; logo_url?: string }>>([])
+  const [deals, setDeals] = useState<Array<{ id: string; title: string; contacts?: { first_name?: string; last_name?: string; company?: string } | null }>>([])
   const [isLoadingTechnologies, setIsLoadingTechnologies] = useState(true)
+  const [isLoadingDeals, setIsLoadingDeals] = useState(true)
   const [isLoadingQuestions, setIsLoadingQuestions] = useState(false)
   const [subtotal, setSubtotal] = useState(0)
   const [iva, setIva] = useState(0)
@@ -110,6 +113,7 @@ export function QuotationForm({ services, dict, lang, userId }: QuotationFormPro
       client_company: '',
       answers: {},
       technology_ids: [] as string[],
+      deal_id: '',
     },
   })
 
@@ -159,6 +163,50 @@ export function QuotationForm({ services, dict, lang, userId }: QuotationFormPro
       }
     }
     fetchTechnologies()
+  }, [])
+
+  // Cargar deals
+  useEffect(() => {
+    async function fetchDeals() {
+      setIsLoadingDeals(true)
+      try {
+        const supabase = createClient()
+        const { data, error } = await supabase
+          .from('deals')
+          .select(`
+            id,
+            title,
+            contacts (
+              first_name,
+              last_name,
+              company
+            )
+          `)
+          .order('created_at', { ascending: false })
+          .limit(100)
+
+        if (error) throw error
+
+        // Transformar los datos para asegurar el tipo correcto
+        const dealsData = (data || []).map((deal: any) => ({
+          id: deal.id,
+          title: deal.title,
+          contacts: deal.contacts && !Array.isArray(deal.contacts) ? deal.contacts : null,
+        }))
+        setDeals(dealsData)
+      } catch (error) {
+        console.error('Error fetching deals:', error)
+        toast.error(
+          lang === 'en' ? 'Error loading deals' : 'Error al cargar negocios',
+          {
+            description: error instanceof Error ? error.message : (lang === 'en' ? 'Unknown error' : 'Error desconocido'),
+          }
+        )
+      } finally {
+        setIsLoadingDeals(false)
+      }
+    }
+    fetchDeals()
   }, [])
 
   async function loadQuestions(serviceId: string) {
@@ -248,6 +296,7 @@ export function QuotationForm({ services, dict, lang, userId }: QuotationFormPro
       const quotationData = {
         user_id: userId,
         service_id: values.service_id,
+        deal_id: values.deal_id || null,
         title: values.title,
         description: values.description,
         client_name: values.client_name,
@@ -422,6 +471,54 @@ export function QuotationForm({ services, dict, lang, userId }: QuotationFormPro
                 <FormControl>
                   <Textarea {...field} className="w-full !border-2 !border-border min-h-[100px]" />
                 </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="deal_id"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{lang === 'en' ? 'Associated Deal (Optional)' : 'Negocio Asociado (Opcional)'}</FormLabel>
+                <FormControl>
+                  <Select onValueChange={field.onChange} value={field.value || ''}>
+                    <SelectTrigger className="w-full !border-2 !border-border">
+                      <SelectValue placeholder={lang === 'en' ? 'Select a deal...' : 'Selecciona un negocio...'} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">{lang === 'en' ? 'None' : 'Ninguno'}</SelectItem>
+                      {isLoadingDeals ? (
+                        <SelectItem value="" disabled>
+                          {lang === 'en' ? 'Loading deals...' : 'Cargando negocios...'}
+                        </SelectItem>
+                      ) : (
+                        deals.map((deal) => {
+                          const contacts = deal.contacts && typeof deal.contacts === 'object' && !Array.isArray(deal.contacts)
+                            ? deal.contacts
+                            : null
+                          const contactName = contacts
+                            ? `${contacts.first_name || ''} ${contacts.last_name || ''}`.trim() || contacts.company || ''
+                            : ''
+                          const displayText = contactName
+                            ? `${deal.title} - ${contactName}`
+                            : deal.title
+                          return (
+                            <SelectItem key={deal.id} value={deal.id}>
+                              {displayText}
+                            </SelectItem>
+                          )
+                        })
+                      )}
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+                <FormDescription>
+                  {lang === 'en'
+                    ? 'Link this quotation to an existing deal in the CRM'
+                    : 'Vincula esta cotización a un negocio existente en el CRM'}
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}

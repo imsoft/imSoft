@@ -40,6 +40,7 @@ export interface Quotation {
   id: string
   user_id: string
   service_id?: string
+  deal_id?: string
   title?: string
   description?: string
   client_name?: string

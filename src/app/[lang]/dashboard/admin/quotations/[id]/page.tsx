@@ -22,7 +22,7 @@ export default async function QuotationDetailPage({ params }: {
     redirect(`/${lang}/login`)
   }
 
-  // Obtener la cotización con información del servicio
+  // Obtener la cotización con información del servicio y deal
   const { data: quotation, error } = await supabase
     .from('quotations')
     .select(`
@@ -31,6 +31,17 @@ export default async function QuotationDetailPage({ params }: {
         id,
         title_es,
         title_en
+      ),
+      deals (
+        id,
+        title,
+        stage,
+        value,
+        contacts (
+          first_name,
+          last_name,
+          company
+        )
       )
     `)
     .eq('id', id)

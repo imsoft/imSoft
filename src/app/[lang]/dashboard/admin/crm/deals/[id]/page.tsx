@@ -49,6 +49,21 @@ export default async function DealDetailPage({ params }: {
     .eq('id', id)
     .single()
 
+  // Obtener cotizaciones asociadas a este deal
+  const { data: associatedQuotations } = await supabase
+    .from('quotations')
+    .select(`
+      id,
+      title,
+      client_name,
+      client_company,
+      total,
+      status,
+      created_at
+    `)
+    .eq('deal_id', id)
+    .order('created_at', { ascending: false })
+
   if (error || !deal) {
     notFound()
   }
@@ -256,6 +271,72 @@ export default async function DealDetailPage({ params }: {
           <p className="font-medium">
             {lang === 'en' ? deal.services.title_en : deal.services.title_es}
           </p>
+        </Card>
+      )}
+
+      {/* Associated Quotations */}
+      {associatedQuotations && associatedQuotations.length > 0 && (
+        <Card className="p-6 bg-white">
+          <h2 className="text-lg font-semibold mb-4">
+            {lang === 'en' ? 'Associated Quotations' : 'Cotizaciones Asociadas'}
+          </h2>
+          <div className="space-y-3">
+            {associatedQuotations.map((quotation: any) => (
+              <Link
+                key={quotation.id}
+                href={`/${lang}/dashboard/admin/quotations/${quotation.id}`}
+                className="block p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold truncate">{quotation.title || quotation.client_name}</h3>
+                    <p className="text-sm text-muted-foreground truncate">
+                      {quotation.client_company || quotation.client_name}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {new Date(quotation.created_at).toLocaleDateString(lang === 'en' ? 'en-US' : 'es-MX')}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-semibold text-primary">
+                      {new Intl.NumberFormat('es-MX', {
+                        style: 'currency',
+                        currency: 'MXN',
+                      }).format(quotation.total)}
+                    </p>
+                    <Badge
+                      variant="outline"
+                      className={
+                        quotation.status === 'approved'
+                          ? 'bg-green-500/10 text-green-700 dark:text-green-400'
+                          : quotation.status === 'rejected'
+                          ? 'bg-red-500/10 text-red-700 dark:text-red-400'
+                          : quotation.status === 'converted'
+                          ? 'bg-blue-500/10 text-blue-700 dark:text-blue-400'
+                          : 'bg-yellow-500/10 text-yellow-700 dark:text-yellow-400'
+                      }
+                    >
+                      {quotation.status === 'pending'
+                        ? lang === 'en'
+                          ? 'Pending'
+                          : 'Pendiente'
+                        : quotation.status === 'approved'
+                        ? lang === 'en'
+                          ? 'Approved'
+                          : 'Aprobada'
+                        : quotation.status === 'rejected'
+                        ? lang === 'en'
+                          ? 'Rejected'
+                          : 'Rechazada'
+                        : lang === 'en'
+                        ? 'Converted'
+                        : 'Convertida'}
+                    </Badge>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
         </Card>
       )}
 

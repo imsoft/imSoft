@@ -6,11 +6,13 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { FileText, Mail, Loader2, Sparkles, Save, MessageCircle } from 'lucide-react'
+import { FileText, Mail, Loader2, Sparkles, Save, MessageCircle, Briefcase } from 'lucide-react'
+import Link from 'next/link'
 import { toast } from 'sonner'
 import type { Dictionary, Locale } from '@/app/[lang]/dictionaries'
 import jsPDF from 'jspdf'
 import { useRouter } from 'next/navigation'
+import { createClient } from '@/lib/supabase/client'
 
 interface QuotationDetailProps {
   quotation: any
@@ -40,6 +42,7 @@ export function QuotationDetail({ quotation, questions, dict, lang }: QuotationD
   const [isSendingWhatsApp, setIsSendingWhatsApp] = useState(false)
   const [isGettingAIRecommendation, setIsGettingAIRecommendation] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
+  const [isConvertingToDeal, setIsConvertingToDeal] = useState(false)
   const [finalPrice, setFinalPrice] = useState<string>(quotation.final_price?.toString() || '')
   const [estimatedTime, setEstimatedTime] = useState<string>(quotation.estimated_development_time?.toString() || '')
   const [aiRecommendation, setAiRecommendation] = useState<any>(quotation.ai_recommendation || null)
@@ -398,6 +401,94 @@ export function QuotationDetail({ quotation, questions, dict, lang }: QuotationD
     }
   }
 
+  const convertToDeal = async () => {
+    setIsConvertingToDeal(true)
+    try {
+      const supabase = createClient()
+
+      // Obtener el usuario actual
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        throw new Error(lang === 'en' ? 'User not authenticated' : 'Usuario no autenticado')
+      }
+
+      // Buscar o crear contacto basado en la información de la cotización
+      let contactId: string | null = null
+      
+      if (quotation.client_email) {
+        // Buscar contacto existente por email
+        const { data: existingContact } = await supabase
+          .from('contacts')
+          .select('id')
+          .eq('email', quotation.client_email)
+          .single()
+
+        if (existingContact) {
+          contactId = existingContact.id
+        } else {
+          // Crear nuevo contacto
+          const { data: newContact, error: contactError } = await supabase
+            .from('contacts')
+            .insert({
+              first_name: quotation.client_name?.split(' ')[0] || '',
+              last_name: quotation.client_name?.split(' ').slice(1).join(' ') || '',
+              email: quotation.client_email,
+              phone: quotation.client_phone || null,
+              company: quotation.client_company || null,
+              contact_type: 'prospect',
+              status: 'active',
+              created_by: user.id,
+            })
+            .select('id')
+            .single()
+
+          if (contactError) throw contactError
+          contactId = newContact.id
+        }
+      }
+
+      // Crear el deal
+      const dealData = {
+        contact_id: contactId,
+        service_id: quotation.service_id || null,
+        title: quotation.title || `${lang === 'en' ? 'Deal from Quotation' : 'Negocio de Cotización'}: ${quotation.client_name}`,
+        description: quotation.description || null,
+        value: quotation.final_price || quotation.total,
+        currency: 'MXN',
+        stage: 'qualification',
+        probability: 50,
+        created_by: user.id,
+      }
+
+      const { data: newDeal, error: dealError } = await supabase
+        .from('deals')
+        .insert(dealData)
+        .select('id')
+        .single()
+
+      if (dealError) throw dealError
+
+      // Asociar la cotización al deal
+      const { error: updateError } = await supabase
+        .from('quotations')
+        .update({ deal_id: newDeal.id, status: 'converted' })
+        .eq('id', quotation.id)
+
+      if (updateError) throw updateError
+
+      toast.success(lang === 'en' ? 'Quotation converted to deal successfully' : 'Cotización convertida a negocio exitosamente')
+      router.push(`/${lang}/dashboard/admin/crm/deals/${newDeal.id}`)
+      router.refresh()
+    } catch (error) {
+      console.error('Error converting quotation to deal:', error)
+      toast.error(lang === 'en' ? 'Error converting to deal' : 'Error al convertir a negocio', {
+        description: error instanceof Error ? error.message : undefined,
+      })
+    } finally {
+      setIsConvertingToDeal(false)
+    }
+  }
+
   return (
     <div className="space-y-6">
       {/* Título y Descripción */}
@@ -467,6 +558,33 @@ export function QuotationDetail({ quotation, questions, dict, lang }: QuotationD
             </>
           )}
         </Button>
+        {!quotation.deal_id && (
+          <Button
+            onClick={convertToDeal}
+            disabled={isConvertingToDeal}
+            variant="outline"
+          >
+            {isConvertingToDeal ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                {lang === 'en' ? 'Converting...' : 'Convirtiendo...'}
+              </>
+            ) : (
+              <>
+                <Briefcase className="mr-2 h-4 w-4" />
+                {lang === 'en' ? 'Convert to Deal' : 'Convertir a Negocio'}
+              </>
+            )}
+          </Button>
+        )}
+        {quotation.deal_id && (
+          <Button asChild variant="outline">
+            <Link href={`/${lang}/dashboard/admin/crm/deals/${quotation.deal_id}`}>
+              <Briefcase className="mr-2 h-4 w-4" />
+              {lang === 'en' ? 'View Deal' : 'Ver Negocio'}
+            </Link>
+          </Button>
+        )}
       </div>
 
       {/* Información General */}
@@ -533,6 +651,27 @@ export function QuotationDetail({ quotation, questions, dict, lang }: QuotationD
                   {lang === 'en' ? 'Valid Until' : 'Válida Hasta'}
                 </label>
                 <p className="text-base font-medium">{formatDate(quotation.valid_until)}</p>
+              </div>
+            )}
+            {quotation.deal_id && quotation.deals && (
+              <div>
+                <label className="text-sm font-medium text-muted-foreground">
+                  {lang === 'en' ? 'Associated Deal' : 'Negocio Asociado'}
+                </label>
+                <div className="mt-1">
+                  <Link
+                    href={`/${lang}/dashboard/admin/crm/deals/${quotation.deal_id}`}
+                    className="text-base font-medium text-primary hover:underline"
+                  >
+                    {quotation.deals.title}
+                    {quotation.deals.contacts && (
+                      <span className="text-muted-foreground ml-2">
+                        - {quotation.deals.contacts.first_name} {quotation.deals.contacts.last_name}
+                        {quotation.deals.contacts.company && ` (${quotation.deals.contacts.company})`}
+                      </span>
+                    )}
+                  </Link>
+                </div>
               </div>
             )}
           </div>
