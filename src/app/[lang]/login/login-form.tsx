@@ -65,6 +65,9 @@ export default function LoginForm({ dict, lang }: LoginFormProps) {
         return
       }
 
+      // Esperar un momento para que las cookies se establezcan
+      await new Promise(resolve => setTimeout(resolve, 100))
+      
       // Obtener el usuario para verificar su rol
       const { data: { user } } = await supabase.auth.getUser()
       
@@ -74,15 +77,14 @@ export default function LoginForm({ dict, lang }: LoginFormProps) {
         // En producción, deberías verificar el rol desde user_metadata o una tabla de usuarios
         const userRole = user.user_metadata?.role || 'client'
         
+        // Usar window.location para forzar una recarga completa y asegurar que las cookies se lean
         if (userRole === 'admin') {
-          router.push(`/${lang}/dashboard/admin`)
+          window.location.href = `/${lang}/dashboard/admin`
         } else {
-          router.push(`/${lang}/dashboard/client`)
+          window.location.href = `/${lang}/dashboard/client`
         }
-        router.refresh()
       } else {
-        router.push(`/${lang}`)
-        router.refresh()
+        window.location.href = `/${lang}`
       }
     } catch (err) {
       setError(dict.auth.login.errors.invalidCredentials)
