@@ -32,6 +32,13 @@ export default async function NewDealPage({ params }: {
     .select('*')
     .order('first_name')
 
+  // Obtener cotizaciones pendientes o aprobadas
+  const { data: quotations } = await supabase
+    .from('quotations')
+    .select('*')
+    .in('status', ['pending', 'approved'])
+    .order('created_at', { ascending: false })
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2">
@@ -51,7 +58,12 @@ export default async function NewDealPage({ params }: {
           </p>
         </div>
       </div>
-      <DealFormSimple contacts={contacts || []} lang={lang} userId={user.id} />
+      <DealFormSimple
+        contacts={contacts || []}
+        quotations={quotations || []}
+        lang={lang}
+        userId={user.id}
+      />
     </div>
   )
 }

@@ -263,6 +263,7 @@ export interface Deal {
   id: string
   contact_id?: string
   service_id?: string
+  quotation_id?: string
   title: string
   description?: string
   value: number
@@ -279,6 +280,7 @@ export interface Deal {
   updated_at?: string
   contacts?: Contact
   services?: Service
+  quotations?: Quotation
 }
 
 export interface Activity {

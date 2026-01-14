@@ -44,6 +44,16 @@ export default async function DealDetailPage({ params }: {
         id,
         title_en,
         title_es
+      ),
+      quotations (
+        id,
+        title,
+        client_name,
+        client_company,
+        total,
+        final_price,
+        status,
+        created_at
       )
     `)
     .eq('id', id)
@@ -271,6 +281,67 @@ export default async function DealDetailPage({ params }: {
           <p className="font-medium">
             {lang === 'en' ? deal.services.title_en : deal.services.title_es}
           </p>
+        </Card>
+      )}
+
+      {/* Linked Quotation */}
+      {deal.quotations && (
+        <Card className="p-6 bg-white">
+          <h2 className="text-lg font-semibold mb-4">
+            {lang === 'en' ? 'Linked Quotation' : 'Cotización Vinculada'}
+          </h2>
+          <Link
+            href={`/${lang}/dashboard/admin/quotations/${deal.quotations.id}`}
+            className="block p-4 border-2 border-primary/20 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex-1 min-w-0">
+                <h3 className="font-semibold truncate">{deal.quotations.title || deal.quotations.client_name}</h3>
+                <p className="text-sm text-muted-foreground truncate">
+                  {deal.quotations.client_company || deal.quotations.client_name}
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {new Date(deal.quotations.created_at).toLocaleDateString(lang === 'en' ? 'en-US' : 'es-MX')}
+                </p>
+              </div>
+              <div className="text-right">
+                <p className="font-semibold text-primary">
+                  {new Intl.NumberFormat('es-MX', {
+                    style: 'currency',
+                    currency: 'MXN',
+                  }).format(deal.quotations.final_price || deal.quotations.total)}
+                </p>
+                <Badge
+                  variant="outline"
+                  className={
+                    deal.quotations.status === 'approved'
+                      ? 'bg-green-500/10 text-green-700 dark:text-green-400'
+                      : deal.quotations.status === 'rejected'
+                      ? 'bg-red-500/10 text-red-700 dark:text-red-400'
+                      : deal.quotations.status === 'converted'
+                      ? 'bg-blue-500/10 text-blue-700 dark:text-blue-400'
+                      : 'bg-yellow-500/10 text-yellow-700 dark:text-yellow-400'
+                  }
+                >
+                  {deal.quotations.status === 'pending'
+                    ? lang === 'en'
+                      ? 'Pending'
+                      : 'Pendiente'
+                    : deal.quotations.status === 'approved'
+                    ? lang === 'en'
+                      ? 'Approved'
+                      : 'Aprobada'
+                    : deal.quotations.status === 'rejected'
+                    ? lang === 'en'
+                      ? 'Rejected'
+                      : 'Rechazada'
+                    : lang === 'en'
+                    ? 'Converted'
+                    : 'Convertida'}
+                </Badge>
+              </div>
+            </div>
+          </Link>
         </Card>
       )}
 

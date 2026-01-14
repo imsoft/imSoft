@@ -24,11 +24,12 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { createClient } from '@/lib/supabase/client'
-import { Deal, Contact } from '@/types/database'
+import { Deal, Contact, Quotation } from '@/types/database'
 
 const dealSchema = z.object({
   title: z.string().min(2, 'Title is required'),
   contact_id: z.string().min(1, 'Contact is required'),
+  quotation_id: z.string().optional(),
   value: z.coerce.number().min(0, 'Value must be positive'),
   stage: z.enum(['qualification', 'proposal', 'negotiation', 'closed_won', 'closed_lost']),
 })
@@ -38,23 +39,50 @@ type DealFormValues = z.infer<typeof dealSchema>
 interface DealFormProps {
   deal?: Deal
   contacts: Contact[]
+  quotations: Quotation[]
   lang: string
   userId: string
 }
 
-export function DealFormSimple({ deal, contacts, lang, userId }: DealFormProps) {
+export function DealFormSimple({ deal, contacts, quotations, lang, userId }: DealFormProps) {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [selectedQuotation, setSelectedQuotation] = useState<string | undefined>(undefined)
 
   const form = useForm<DealFormValues>({
     resolver: zodResolver(dealSchema),
     defaultValues: {
       title: deal?.title || '',
       contact_id: deal?.contact_id || '',
+      quotation_id: undefined,
       value: deal?.value || 0,
       stage: deal?.stage || 'qualification',
     },
   })
+
+  // Cuando se selecciona una cotización, actualizar el valor automáticamente
+  const handleQuotationChange = (quotationId: string) => {
+    if (quotationId === 'none') {
+      setSelectedQuotation(undefined)
+      form.setValue('quotation_id', undefined)
+      return
+    }
+
+    setSelectedQuotation(quotationId)
+    form.setValue('quotation_id', quotationId)
+
+    const quotation = quotations.find(q => q.id === quotationId)
+    if (quotation) {
+      form.setValue('value', quotation.final_price || quotation.total)
+      // Si la cotización tiene cliente, intentar seleccionar el contacto correspondiente
+      if (quotation.client_email) {
+        const contact = contacts.find(c => c.email === quotation.client_email)
+        if (contact) {
+          form.setValue('contact_id', contact.id)
+        }
+      }
+    }
+  }
 
   const onSubmit = async (values: DealFormValues) => {
     setIsSubmitting(true)
@@ -119,6 +147,50 @@ export function DealFormSimple({ deal, contacts, lang, userId }: DealFormProps) 
           </h2>
 
           <div className="grid gap-4">
+            {/* Selector de Cotización - Primero para facilitar autocompletado */}
+            <FormField
+              control={form.control}
+              name="quotation_id"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{lang === 'en' ? 'Link Quotation (Optional)' : 'Vincular Cotización (Opcional)'}</FormLabel>
+                  <Select
+                    onValueChange={handleQuotationChange}
+                    defaultValue={field.value}
+                    value={selectedQuotation}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="w-full !border-2 !border-border">
+                        <SelectValue placeholder={lang === 'en' ? 'Select a quotation...' : 'Selecciona una cotización...'} />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="none">
+                        {lang === 'en' ? 'None' : 'Ninguna'}
+                      </SelectItem>
+                      {quotations.length > 0 ? (
+                        quotations.map((quotation) => (
+                          <SelectItem key={quotation.id} value={quotation.id}>
+                            {quotation.title || quotation.client_name || lang === 'en' ? 'Unnamed Quotation' : 'Cotización sin nombre'}
+                            {' - '}
+                            {new Intl.NumberFormat(lang === 'en' ? 'en-US' : 'es-MX', {
+                              style: 'currency',
+                              currency: 'MXN',
+                            }).format(quotation.final_price || quotation.total)}
+                          </SelectItem>
+                        ))
+                      ) : (
+                        <SelectItem value="no-quotations" disabled>
+                          {lang === 'en' ? 'No quotations available' : 'No hay cotizaciones disponibles'}
+                        </SelectItem>
+                      )}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <FormField
               control={form.control}
               name="title"
