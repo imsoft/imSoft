@@ -112,16 +112,10 @@ export default async function CRMPage({ params }: {
               {lang === 'en' ? 'Contacts' : 'Contactos'}
             </Link>
           </Button>
-          <Button asChild variant="outline">
-            <Link href={`/${lang}/dashboard/admin/crm/deals`}>
-              <DollarSign className="mr-1.5 size-4" />
-              {lang === 'en' ? 'Deals' : 'Negocios'}
-            </Link>
-          </Button>
           <Button asChild>
-            <Link href={`/${lang}/dashboard/admin/crm/contacts/new`}>
+            <Link href={`/${lang}/dashboard/admin/crm/deals/new`}>
               <Plus className="mr-1.5 size-4" />
-              {lang === 'en' ? 'New Contact' : 'Nuevo Contacto'}
+              {lang === 'en' ? 'New Deal' : 'Nuevo Negocio'}
             </Link>
           </Button>
         </div>
