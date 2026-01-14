@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
-import { DealFormSimple } from '../deal-form-simple'
+import { DealContactForm } from '../deal-contact-form'
 
 export default async function NewDealPage({ params }: {
   params: Promise<{ lang: string }>
@@ -65,7 +65,7 @@ export default async function NewDealPage({ params }: {
           </p>
         </div>
       </div>
-      <DealFormSimple
+      <DealContactForm
         contacts={contacts || []}
         quotations={quotations || []}
         lang={lang}
