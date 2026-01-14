@@ -144,7 +144,7 @@ export default async function AdminDashboardPage({ params }: {
       {/* Proyectos y Cotizaciones Recientes */}
       <div className="grid gap-6 md:grid-cols-2">
         {/* Proyectos Recientes */}
-        <Card>
+        <Card className="bg-white">
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
@@ -176,7 +176,7 @@ export default async function AdminDashboardPage({ params }: {
                     <Link
                       key={project.id}
                       href={`/${lang}/dashboard/admin/projects/${project.id}/edit`}
-                      className="block rounded-lg border p-4 hover:bg-accent transition-colors"
+                      className="block rounded-lg border bg-white p-4 hover:bg-gray-50 transition-colors"
                     >
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1 min-w-0">
@@ -199,7 +199,7 @@ export default async function AdminDashboardPage({ params }: {
         </Card>
 
         {/* Cotizaciones Recientes */}
-        <Card>
+        <Card className="bg-white">
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
@@ -230,7 +230,7 @@ export default async function AdminDashboardPage({ params }: {
                     <Link
                       key={quotation.id}
                       href={`/${lang}/dashboard/admin/quotations/${quotation.id}`}
-                      className="block rounded-lg border p-4 hover:bg-accent transition-colors"
+                      className="block rounded-lg border bg-white p-4 hover:bg-gray-50 transition-colors"
                     >
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1 min-w-0">
