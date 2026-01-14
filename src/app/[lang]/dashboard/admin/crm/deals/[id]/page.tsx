@@ -137,7 +137,12 @@ export default async function DealDetailPage({ params }: {
           </div>
         </div>
         <div className="flex gap-2">
-          <SendEmailButton dealId={id} dealStage={deal.stage} lang={lang} />
+          <SendEmailButton 
+            dealId={id} 
+            dealStage={deal.stage} 
+            lang={lang}
+            contactEmail={deal.contacts?.email}
+          />
           <Button asChild>
             <Link href={`/${lang}/dashboard/admin/crm/deals/${id}/edit`}>
               <Edit className="mr-2 h-4 w-4" />

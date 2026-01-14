@@ -1,19 +1,36 @@
 'use client'
 
 import { useState } from 'react'
-import { Mail } from 'lucide-react'
+import { Mail, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { Label } from '@/components/ui/label'
 
 interface SendEmailButtonProps {
   dealId: string
   dealStage: string
   lang: string
+  contactEmail?: string
 }
 
-export function SendEmailButton({ dealId, dealStage, lang }: SendEmailButtonProps) {
+export function SendEmailButton({ dealId, dealStage, lang, contactEmail }: SendEmailButtonProps) {
   const router = useRouter()
   const [isSending, setIsSending] = useState(false)
+  const [showEmailDialog, setShowEmailDialog] = useState(false)
+  const [emailSubject, setEmailSubject] = useState('')
+  const [emailBody, setEmailBody] = useState('')
+  const [isLoadingEmailPreview, setIsLoadingEmailPreview] = useState(false)
 
   const getStageLabel = (stage: string) => {
     const labels: Record<string, { en: string; es: string }> = {
@@ -27,15 +44,45 @@ export function SendEmailButton({ dealId, dealStage, lang }: SendEmailButtonProp
     return lang === 'en' ? labels[stage]?.en || stage : labels[stage]?.es || stage
   }
 
-  const handleSendEmail = async () => {
-    if (!confirm(
-      lang === 'en'
-        ? `Are you sure you want to send an email based on the "${getStageLabel(dealStage)}" stage?`
-        : `¿Estás seguro de que quieres enviar un email basado en la etapa "${getStageLabel(dealStage)}"?`
-    )) {
+  const handleEmailClick = async () => {
+    // Si no hay email del contacto, mostrar error
+    if (!contactEmail) {
+      toast.error(lang === 'en'
+        ? 'Contact email is required to send email.'
+        : 'Se requiere el correo del contacto para enviar el email.')
       return
     }
 
+    // Cargar preview del email
+    setIsLoadingEmailPreview(true)
+    try {
+      const previewResponse = await fetch(`/api/crm/deals/${dealId}/email-preview`, {
+        method: 'GET',
+      })
+
+      if (previewResponse.ok) {
+        const previewData = await previewResponse.json()
+        setEmailSubject(previewData.subject || '')
+        setEmailBody(previewData.body || '')
+        setShowEmailDialog(true)
+      } else {
+        // Si no hay endpoint de preview, usar valores por defecto
+        setEmailSubject('')
+        setEmailBody('')
+        setShowEmailDialog(true)
+      }
+    } catch (error) {
+      console.error('Error loading email preview:', error)
+      // Continuar de todas formas con valores vacíos
+      setEmailSubject('')
+      setEmailBody('')
+      setShowEmailDialog(true)
+    } finally {
+      setIsLoadingEmailPreview(false)
+    }
+  }
+
+  const handleSendEmail = async () => {
     setIsSending(true)
 
     try {
@@ -44,43 +91,148 @@ export function SendEmailButton({ dealId, dealStage, lang }: SendEmailButtonProp
         headers: {
           'Content-Type': 'application/json',
         },
+        body: JSON.stringify({
+          subject: emailSubject,
+          body: emailBody,
+        }),
       })
 
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to send email')
+        throw new Error(data.error || data.details || 'Failed to send email')
       }
 
-      alert(
-        lang === 'en'
-          ? 'Email sent successfully!'
-          : '¡Email enviado exitosamente!'
-      )
+      // Cerrar el diálogo
+      setShowEmailDialog(false)
+
+      toast.success(lang === 'en'
+        ? 'Email sent successfully!'
+        : '¡Correo enviado exitosamente!')
 
       router.refresh()
     } catch (error) {
       console.error('Error sending email:', error)
-      alert(
-        lang === 'en'
-          ? `Error sending email: ${error instanceof Error ? error.message : 'Unknown error'}`
-          : `Error al enviar email: ${error instanceof Error ? error.message : 'Error desconocido'}`
-      )
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : (lang === 'en' ? 'Error sending email' : 'Error al enviar correo')
+      
+      toast.error(lang === 'en'
+        ? 'Error sending email'
+        : 'Error al enviar correo', {
+        description: errorMessage,
+      })
     } finally {
       setIsSending(false)
     }
   }
 
   return (
-    <Button
-      variant="outline"
-      onClick={handleSendEmail}
-      disabled={isSending}
-    >
-      <Mail className="mr-2 h-4 w-4" />
-      {isSending
-        ? (lang === 'en' ? 'Sending...' : 'Enviando...')
-        : (lang === 'en' ? 'Send Email' : 'Enviar Email')}
-    </Button>
+    <>
+      <Button
+        variant="outline"
+        onClick={handleEmailClick}
+        disabled={isSending || isLoadingEmailPreview}
+      >
+        {isLoadingEmailPreview ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            {lang === 'en' ? 'Loading...' : 'Cargando...'}
+          </>
+        ) : (
+          <>
+            <Mail className="mr-2 h-4 w-4" />
+            {lang === 'en' ? 'Send Email' : 'Enviar Email'}
+          </>
+        )}
+      </Button>
+
+      {/* Diálogo de revisión de email */}
+      <Dialog open={showEmailDialog} onOpenChange={setShowEmailDialog}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>
+              {lang === 'en' ? 'Review Email Before Sending' : 'Revisar Correo Antes de Enviar'}
+            </DialogTitle>
+            <DialogDescription>
+              {lang === 'en' 
+                ? 'Review and edit the email subject and body before sending to the contact.'
+                : 'Revisa y edita el asunto y cuerpo del correo antes de enviarlo al contacto.'}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="email-to">
+                {lang === 'en' ? 'To' : 'Para'}
+              </Label>
+              <Input
+                id="email-to"
+                value={contactEmail || ''}
+                disabled
+                className="bg-muted"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="email-subject">
+                {lang === 'en' ? 'Subject' : 'Asunto'} *
+              </Label>
+              <Input
+                id="email-subject"
+                value={emailSubject}
+                onChange={(e) => setEmailSubject(e.target.value)}
+                placeholder={lang === 'en' ? 'Email subject' : 'Asunto del correo'}
+                className="!border-2 !border-border"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="email-body">
+                {lang === 'en' ? 'Body' : 'Cuerpo'} *
+              </Label>
+              <Textarea
+                id="email-body"
+                value={emailBody}
+                onChange={(e) => setEmailBody(e.target.value)}
+                placeholder={lang === 'en' ? 'Email body (HTML supported)' : 'Cuerpo del correo (HTML soportado)'}
+                className="!border-2 !border-border min-h-[300px] font-mono text-sm"
+              />
+              <p className="text-xs text-muted-foreground">
+                {lang === 'en' 
+                  ? 'You can use HTML tags to format the email body.'
+                  : 'Puedes usar etiquetas HTML para formatear el cuerpo del correo.'}
+              </p>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowEmailDialog(false)}
+              disabled={isSending}
+            >
+              {lang === 'en' ? 'Cancel' : 'Cancelar'}
+            </Button>
+            <Button
+              onClick={handleSendEmail}
+              disabled={isSending || !emailSubject.trim() || !emailBody.trim()}
+            >
+              {isSending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  {lang === 'en' ? 'Sending...' : 'Enviando...'}
+                </>
+              ) : (
+                <>
+                  <Mail className="mr-2 h-4 w-4" />
+                  {lang === 'en' ? 'Send Email' : 'Enviar Correo'}
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   )
 }
