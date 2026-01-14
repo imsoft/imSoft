@@ -43,10 +43,17 @@ export default async function EditDealPage({ params }: {
     .select('*')
     .order('first_name')
 
-  // Obtener cotizaciones pendientes o aprobadas
+  // Obtener cotizaciones pendientes o aprobadas con información del servicio
   const { data: quotations } = await supabase
     .from('quotations')
-    .select('*')
+    .select(`
+      *,
+      services (
+        id,
+        title_es,
+        title_en
+      )
+    `)
     .in('status', ['pending', 'approved'])
     .order('created_at', { ascending: false })
 

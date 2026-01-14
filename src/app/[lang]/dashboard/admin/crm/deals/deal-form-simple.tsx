@@ -170,16 +170,30 @@ export function DealFormSimple({ deal, contacts, quotations, lang, userId }: Dea
                         {lang === 'en' ? 'None' : 'Ninguna'}
                       </SelectItem>
                       {quotations.length > 0 ? (
-                        quotations.map((quotation) => (
-                          <SelectItem key={quotation.id} value={quotation.id}>
-                            {quotation.title || quotation.client_name || lang === 'en' ? 'Unnamed Quotation' : 'Cotización sin nombre'}
-                            {' - '}
-                            {new Intl.NumberFormat(lang === 'en' ? 'en-US' : 'es-MX', {
-                              style: 'currency',
-                              currency: 'MXN',
-                            }).format(quotation.final_price || quotation.total)}
-                          </SelectItem>
-                        ))
+                        quotations.map((quotation: any) => {
+                          // Construir un label descriptivo para la cotización
+                          const serviceName = quotation.services
+                            ? (lang === 'en' ? quotation.services.title_en : quotation.services.title_es) || quotation.services.title
+                            : null
+                          
+                          const quotationLabel = quotation.title 
+                            || (quotation.client_name && quotation.client_company 
+                              ? `${quotation.client_name} - ${quotation.client_company}`
+                              : quotation.client_name)
+                            || serviceName
+                            || (lang === 'en' ? 'Unnamed Quotation' : 'Cotización sin nombre')
+                          
+                          const price = new Intl.NumberFormat('es-MX', {
+                            style: 'currency',
+                            currency: 'MXN',
+                          }).format(quotation.final_price || quotation.total)
+                          
+                          return (
+                            <SelectItem key={quotation.id} value={quotation.id}>
+                              {quotationLabel} - {price}
+                            </SelectItem>
+                          )
+                        })
                       ) : (
                         <SelectItem value="no-quotations" disabled>
                           {lang === 'en' ? 'No quotations available' : 'No hay cotizaciones disponibles'}
