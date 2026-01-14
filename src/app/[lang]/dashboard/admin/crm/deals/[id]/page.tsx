@@ -76,6 +76,9 @@ export default async function DealDetailPage({ params }: {
     .order('created_at', { ascending: false })
 
   if (error || !deal) {
+    console.error('Deal fetch error:', error)
+    console.error('Deal ID:', id)
+    console.error('Deal data:', deal)
     notFound()
   }
 
