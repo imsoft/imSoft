@@ -74,19 +74,69 @@ export function QuotationDetail({ quotation, questions, dict, lang }: QuotationD
       const pageHeight = doc.internal.pageSize.getHeight()
       let yPosition = 20
 
-      // Header
-      doc.setFillColor(102, 126, 234)
-      doc.rect(0, 0, pageWidth, 40, 'F')
-      doc.setTextColor(255, 255, 255)
-      doc.setFontSize(24)
-      doc.setFont('helvetica', 'bold')
-      doc.text('imSoft', pageWidth / 2, 25, { align: 'center' })
-      doc.setFontSize(16)
-      doc.text(lang === 'es' ? 'Cotización' : 'Quotation', pageWidth / 2, 35, { align: 'center' })
+      // Cargar logo
+      const loadImage = (src: string): Promise<string> => {
+        return new Promise((resolve, reject) => {
+          const img = new Image()
+          img.onload = () => {
+            try {
+              const canvas = document.createElement('canvas')
+              canvas.width = img.width
+              canvas.height = img.height
+              const ctx = canvas.getContext('2d')
+              if (ctx) {
+                ctx.drawImage(img, 0, 0)
+                resolve(canvas.toDataURL('image/png'))
+              } else {
+                reject(new Error('Could not get canvas context'))
+              }
+            } catch (error) {
+              reject(error)
+            }
+          }
+          img.onerror = (error) => {
+            reject(new Error(`Failed to load image: ${src}`))
+          }
+          // Usar ruta absoluta desde la raíz del sitio
+          img.src = window.location.origin + src
+        })
+      }
+
+      // Color de marca: #6366f1 (indigo)
+      const brandColor = { r: 99, g: 102, b: 241 }
+
+      // Header con color de marca
+      doc.setFillColor(brandColor.r, brandColor.g, brandColor.b)
+      doc.rect(0, 0, pageWidth, 50, 'F')
+      
+      // Intentar cargar y agregar logo
+      try {
+        const logoPath = '/logos/logo-imsoft-white.png'
+        const logoDataUrl = await loadImage(logoPath)
+        // Agregar logo a la izquierda del header (ajustar tamaño según necesidad)
+        const logoWidth = 40
+        const logoHeight = 12
+        doc.addImage(logoDataUrl, 'PNG', 20, 15, logoWidth, logoHeight)
+        
+        // Título a la derecha del logo
+        doc.setTextColor(255, 255, 255)
+        doc.setFontSize(18)
+        doc.setFont('helvetica', 'bold')
+        doc.text(lang === 'es' ? 'Cotización' : 'Quotation', pageWidth - 20, 25, { align: 'right' })
+      } catch (logoError) {
+        // Si falla cargar el logo, usar solo texto
+        console.warn('Could not load logo, using text only:', logoError)
+        doc.setTextColor(255, 255, 255)
+        doc.setFontSize(24)
+        doc.setFont('helvetica', 'bold')
+        doc.text('imSoft', pageWidth / 2, 25, { align: 'center' })
+        doc.setFontSize(16)
+        doc.text(lang === 'es' ? 'Cotización' : 'Quotation', pageWidth / 2, 35, { align: 'center' })
+      }
 
       // Reset text color
       doc.setTextColor(0, 0, 0)
-      yPosition = 50
+      yPosition = 60
 
       // General Information
       doc.setFontSize(14)
@@ -186,8 +236,17 @@ export function QuotationDetail({ quotation, questions, dict, lang }: QuotationD
       yPosition += 7
       doc.text(`IVA (16%): ${formatCurrency(quotation.iva)}`, 20, yPosition)
       yPosition += 7
+      
+      // Línea divisoria con color de marca
+      doc.setDrawColor(brandColor.r, brandColor.g, brandColor.b)
+      doc.setLineWidth(0.5)
+      doc.line(20, yPosition, pageWidth - 20, yPosition)
+      yPosition += 7
+      
       doc.setFont('helvetica', 'bold')
       doc.setFontSize(12)
+      // Total con color de marca
+      doc.setTextColor(brandColor.r, brandColor.g, brandColor.b)
       doc.text(`${lang === 'en' ? 'Total' : 'Total'}: ${formatCurrency(quotation.total)}`, 20, yPosition)
 
       // Save PDF
@@ -212,7 +271,11 @@ export function QuotationDetail({ quotation, questions, dict, lang }: QuotationD
 
       if (!response.ok) {
         const errorData = await response.json()
-        throw new Error(errorData.error || 'Error al enviar el correo')
+        // Mostrar detalles del error si están disponibles
+        const errorMessage = errorData.details 
+          ? `${errorData.error}: ${errorData.details}`
+          : errorData.error || 'Error al enviar el correo'
+        throw new Error(errorMessage)
       }
 
       toast.success(lang === 'en' ? 'Email sent successfully' : 'Correo enviado exitosamente')
@@ -220,6 +283,7 @@ export function QuotationDetail({ quotation, questions, dict, lang }: QuotationD
       console.error('Error sending email:', error)
       toast.error(lang === 'en' ? 'Error sending email' : 'Error al enviar correo', {
         description: error instanceof Error ? error.message : undefined,
+        duration: 5000, // Mostrar por más tiempo para que se pueda leer
       })
     } finally {
       setIsSendingEmail(false)
@@ -235,7 +299,11 @@ export function QuotationDetail({ quotation, questions, dict, lang }: QuotationD
 
       if (!response.ok) {
         const errorData = await response.json()
-        throw new Error(errorData.error || 'Error al enviar WhatsApp')
+        // Mostrar detalles del error si están disponibles
+        const errorMessage = errorData.details 
+          ? `${errorData.error}: ${errorData.details}`
+          : errorData.error || 'Error al enviar WhatsApp'
+        throw new Error(errorMessage)
       }
 
       toast.success(lang === 'en' ? 'WhatsApp message sent successfully' : 'Mensaje de WhatsApp enviado exitosamente')
@@ -243,6 +311,7 @@ export function QuotationDetail({ quotation, questions, dict, lang }: QuotationD
       console.error('Error sending WhatsApp:', error)
       toast.error(lang === 'en' ? 'Error sending WhatsApp' : 'Error al enviar WhatsApp', {
         description: error instanceof Error ? error.message : undefined,
+        duration: 6000, // Mostrar por más tiempo para que se pueda leer
       })
     } finally {
       setIsSendingWhatsApp(false)
@@ -387,7 +456,7 @@ export function QuotationDetail({ quotation, questions, dict, lang }: QuotationD
       </div>
 
       {/* Información General */}
-      <Card>
+      <Card className="bg-white">
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle>{lang === 'en' ? 'General Information' : 'Información General'}</CardTitle>
@@ -449,7 +518,7 @@ export function QuotationDetail({ quotation, questions, dict, lang }: QuotationD
       </Card>
 
       {/* Respuestas del Cuestionario */}
-      <Card>
+      <Card className="bg-white">
         <CardHeader>
           <CardTitle>{lang === 'en' ? 'Questionnaire Answers' : 'Respuestas del Cuestionario'}</CardTitle>
           <CardDescription>
@@ -504,7 +573,7 @@ export function QuotationDetail({ quotation, questions, dict, lang }: QuotationD
       </Card>
 
       {/* Resumen de Precio */}
-      <Card>
+      <Card className="bg-white">
         <CardHeader>
           <CardTitle>{lang === 'en' ? 'Price Summary' : 'Resumen del Precio'}</CardTitle>
         </CardHeader>
@@ -526,7 +595,7 @@ export function QuotationDetail({ quotation, questions, dict, lang }: QuotationD
       </Card>
 
       {/* Administración: Precio Final y Tiempo Estimado */}
-      <Card>
+      <Card className="bg-white">
         <CardHeader>
           <CardTitle>{lang === 'en' ? 'Admin Settings' : 'Configuración de Administrador'}</CardTitle>
           <CardDescription>
@@ -629,6 +698,7 @@ export function QuotationDetail({ quotation, questions, dict, lang }: QuotationD
                 value={finalPrice}
                 onChange={(e) => setFinalPrice(e.target.value)}
                 placeholder={formatCurrency(quotation.total)}
+                className="!border-2 !border-border bg-white"
               />
               <p className="text-xs text-muted-foreground">
                 {lang === 'en'
@@ -647,6 +717,7 @@ export function QuotationDetail({ quotation, questions, dict, lang }: QuotationD
                 value={estimatedTime}
                 onChange={(e) => setEstimatedTime(e.target.value)}
                 placeholder="0"
+                className="!border-2 !border-border bg-white"
               />
               <p className="text-xs text-muted-foreground">
                 {lang === 'en'
@@ -680,7 +751,7 @@ export function QuotationDetail({ quotation, questions, dict, lang }: QuotationD
 
       {/* Notas */}
       {quotation.notes && (
-        <Card>
+        <Card className="bg-white">
           <CardHeader>
             <CardTitle>{lang === 'en' ? 'Notes' : 'Notas'}</CardTitle>
           </CardHeader>

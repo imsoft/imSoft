@@ -163,9 +163,24 @@ export async function POST(
     // Validar configuración de Twilio
     if (!process.env.TWILIO_ACCOUNT_SID || !process.env.TWILIO_AUTH_TOKEN || !process.env.TWILIO_WHATSAPP_NUMBER) {
       return NextResponse.json(
-        { error: 'WhatsApp service is not configured' },
+        { 
+          error: 'WhatsApp service is not configured',
+          details: 'Please configure TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, and TWILIO_WHATSAPP_NUMBER in your environment variables'
+        },
         { status: 500 }
       )
+    }
+
+    // Validar y formatear el número de WhatsApp de Twilio
+    let twilioWhatsAppNumber = process.env.TWILIO_WHATSAPP_NUMBER.trim()
+    
+    // Si el número no tiene el prefijo 'whatsapp:', agregarlo
+    if (!twilioWhatsAppNumber.startsWith('whatsapp:')) {
+      // Si tiene el prefijo +, mantenerlo, sino agregarlo
+      if (!twilioWhatsAppNumber.startsWith('+')) {
+        twilioWhatsAppNumber = '+' + twilioWhatsAppNumber
+      }
+      twilioWhatsAppNumber = `whatsapp:${twilioWhatsAppNumber}`
     }
 
     // Obtener las preguntas del cuestionario
@@ -200,7 +215,7 @@ export async function POST(
     // Enviar mensaje por WhatsApp usando Twilio
     const client = getTwilioClient()
     const message = await client.messages.create({
-      from: `whatsapp:${process.env.TWILIO_WHATSAPP_NUMBER}`,
+      from: twilioWhatsAppNumber,
       to: formattedPhone,
       body: messageBody,
     })
@@ -218,15 +233,49 @@ export async function POST(
     
     // Manejar errores específicos de Twilio
     if (error instanceof Error) {
-      if (error.message.includes('not a valid WhatsApp number')) {
+      const errorMessage = error.message.toLowerCase()
+      
+      // Error de canal no encontrado (número de WhatsApp no configurado)
+      if (errorMessage.includes('could not find a channel') || 
+          errorMessage.includes('channel with the specified from address')) {
         return NextResponse.json(
-          { error: 'The phone number is not registered on WhatsApp' },
+          { 
+            error: 'WhatsApp number not configured in Twilio',
+            details: 'The WhatsApp number specified in TWILIO_WHATSAPP_NUMBER is not active or verified in your Twilio account. Please verify the number in Twilio Console → Messaging → Try it out → Send a WhatsApp message, or use the sandbox number: whatsapp:+14155238886'
+          },
+          { status: 500 }
+        )
+      }
+      
+      // Error de número no válido
+      if (errorMessage.includes('not a valid whatsapp number')) {
+        return NextResponse.json(
+          { 
+            error: 'The phone number is not registered on WhatsApp',
+            details: 'The recipient phone number must be registered on WhatsApp'
+          },
           { status: 400 }
         )
       }
-      if (error.message.includes('credentials')) {
+      
+      // Error de credenciales
+      if (errorMessage.includes('credentials') || errorMessage.includes('authentication')) {
         return NextResponse.json(
-          { error: 'WhatsApp service configuration error' },
+          { 
+            error: 'Twilio authentication error',
+            details: 'Please verify your TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN are correct'
+          },
+          { status: 500 }
+        )
+      }
+      
+      // Error de cuenta sin créditos
+      if (errorMessage.includes('insufficient') || errorMessage.includes('balance')) {
+        return NextResponse.json(
+          { 
+            error: 'Insufficient Twilio account balance',
+            details: 'Your Twilio account does not have sufficient credits to send WhatsApp messages'
+          },
           { status: 500 }
         )
       }
@@ -235,7 +284,9 @@ export async function POST(
     return NextResponse.json(
       { 
         error: 'Error sending WhatsApp message',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        details: error instanceof Error ? error.message : 'Unknown error',
+        // Solo incluir detalles completos en desarrollo
+        ...(process.env.NODE_ENV === 'development' && { fullError: error })
       },
       { status: 500 }
     )

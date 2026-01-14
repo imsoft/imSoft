@@ -192,18 +192,44 @@ export async function POST(
       </html>
     `
 
+    // Verificar que RESEND_API_KEY esté configurado
+    if (!process.env.RESEND_API_KEY) {
+      console.error('RESEND_API_KEY is not configured')
+      return NextResponse.json(
+        { error: 'Email service is not configured. Please contact the administrator.' },
+        { status: 500 }
+      )
+    }
+
+    // Determinar el remitente según si el dominio está verificado
+    // Si no tienes dominio verificado en Resend, usa el dominio de prueba
+    const fromEmail = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev'
+    const fromName = 'imSoft'
+    
     // Enviar email
     const { data, error } = await resend.emails.send({
-      from: 'imSoft <noreply@imsoft.io>',
+      from: `${fromName} <${fromEmail}>`,
       to: quotation.client_email,
       subject: `Cotización: ${quotation.title || serviceName}`,
       html: html,
     })
 
     if (error) {
-      console.error('Error sending email:', error)
+      console.error('Resend API error:', error)
+      // Proporcionar más detalles del error
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : typeof error === 'object' && error !== null && 'message' in error
+        ? String(error.message)
+        : 'Error sending email'
+      
       return NextResponse.json(
-        { error: 'Error sending email' },
+        { 
+          error: 'Error sending email',
+          details: errorMessage,
+          // Solo incluir detalles en desarrollo
+          ...(process.env.NODE_ENV === 'development' && { fullError: error })
+        },
         { status: 500 }
       )
     }
@@ -211,8 +237,17 @@ export async function POST(
     return NextResponse.json({ success: true, data })
   } catch (error) {
     console.error('Error in send email route:', error)
+    const errorMessage = error instanceof Error 
+      ? error.message 
+      : 'Unknown error occurred'
+    
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { 
+        error: 'Internal server error',
+        details: errorMessage,
+        // Solo incluir detalles en desarrollo
+        ...(process.env.NODE_ENV === 'development' && { fullError: error })
+      },
       { status: 500 }
     )
   }
