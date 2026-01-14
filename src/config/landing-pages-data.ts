@@ -12,15 +12,15 @@ export const landingPagesData: LandingPageConfig = {
         'Desarrollamos plataformas digitales para inmobiliarias en Guadalajara. Sistemas de gestión de propiedades, portales web y apps móviles que impulsan tus ventas.',
       h1: 'Software Especializado para Inmobiliarias en Guadalajara',
       heroSubtitle:
-        'Transformamos la gestión inmobiliaria con plataformas web y aplicaciones móviles diseñadas para aumentar tus ventas y optimizar la operación de tu empresa en la Zona Metropolitana de Guadalajara.',
+        'Transformamos la gestión inmobiliaria con páginas web modernas, aplicaciones móviles nativas, análisis de datos en tiempo real y consultoría tecnológica especializada diseñadas para aumentar tus ventas y optimizar la operación de tu empresa en la Zona Metropolitana de Guadalajara.',
       problems: {
         title: '¿Tu inmobiliaria enfrenta estos desafíos?',
         items: [
           'Gestión manual de propiedades dispersa entre Excel, emails y WhatsApp',
           'Falta de visibilidad en tiempo real del inventario disponible',
           'Dificultad para que clientes agenden visitas o soliciten información',
-          'Portal web desactualizado que no refleja tu oferta actual',
-          'Procesos lentos de seguimiento a prospectos y clientes',
+          'Páginas web desactualizadas que no reflejan tu oferta actual ni generan leads de calidad',
+          'Procesos lentos de seguimiento a prospectos y clientes sin análisis de datos que permitan optimizar la conversión',
           'Incapacidad de integrar con portales inmobiliarios externos',
         ],
       },
@@ -52,24 +52,36 @@ export const landingPagesData: LandingPageConfig = {
       imSoftServices: {
         title: 'Tecnología empresarial para inmobiliarias',
         description:
-          'En imSoft desarrollamos soluciones digitales robustas y escalables que impulsan el crecimiento de empresas inmobiliarias en Guadalajara.',
+          'En imSoft desarrollamos soluciones digitales robustas y escalables que impulsan el crecimiento de empresas inmobiliarias en Guadalajara. Ofrecemos páginas web modernas, aplicaciones móviles, análisis de datos, tiendas en línea y consultoría tecnológica especializada.',
         services: [
           {
-            title: 'Plataformas Web Personalizadas',
+            title: 'Páginas Web y Plataformas Personalizadas',
             description:
-              'Portales inmobiliarios con arquitectura moderna, optimización SEO, integración con APIs externas y panel de administración completo.',
+              'Páginas web modernas y portales inmobiliarios con arquitectura escalable, optimización SEO, integración con APIs externas y panel de administración completo.',
             icon: '🌐',
           },
           {
             title: 'Aplicaciones Móviles Nativas',
             description:
-              'Apps iOS y Android con experiencia fluida, notificaciones push, geolocalización y sincronización en tiempo real.',
+              'Aplicaciones móviles iOS y Android con experiencia fluida, notificaciones push, geolocalización y sincronización en tiempo real para agentes y clientes.',
             icon: '📱',
+          },
+          {
+            title: 'Análisis de Datos y Business Intelligence',
+            description:
+              'Dashboards ejecutivos con análisis de datos en tiempo real, reportes de rendimiento, métricas de conversión y business intelligence para tomar decisiones informadas.',
+            icon: '📊',
+          },
+          {
+            title: 'Tiendas en Línea y E-commerce',
+            description:
+              'Plataformas de e-commerce para venta de servicios inmobiliarios, membresías premium, paquetes de asesoría y productos relacionados con tu inmobiliaria.',
+            icon: '🛒',
           },
           {
             title: 'Consultoría Tecnológica',
             description:
-              'Auditoría de sistemas actuales, arquitectura de soluciones, migración de datos y estrategia de transformación digital.',
+              'Consultoría tecnológica especializada: auditoría de sistemas actuales, arquitectura de soluciones, migración de datos y estrategia de transformación digital.',
             icon: '💡',
           },
         ],
@@ -77,7 +89,7 @@ export const landingPagesData: LandingPageConfig = {
       cta: {
         title: '¿Listo para modernizar tu inmobiliaria?',
         description:
-          'Agenda una consultoría sin costo. Analizamos tu operación actual y diseñamos una solución tecnológica que impulse tus ventas.',
+          'Agenda una consultoría tecnológica sin costo. Analizamos tu operación actual con análisis de datos y diseñamos una solución integral que puede incluir páginas web, aplicaciones móviles, tiendas en línea y sistemas personalizados que impulsen tus ventas.',
         buttonText: 'Agendar Consultoría Gratuita',
       },
     },
@@ -88,14 +100,14 @@ export const landingPagesData: LandingPageConfig = {
         'Plataformas digitales para constructoras en Guadalajara. Gestión de proyectos, control de obra, ERP especializado y apps móviles para construcción.',
       h1: 'Sistemas de Gestión para Constructoras en Guadalajara',
       heroSubtitle:
-        'Digitalizamos la operación de constructoras con sistemas ERP especializados, control de obra en tiempo real y plataformas de seguimiento que reducen costos y aumentan la productividad.',
+        'Digitalizamos la operación de constructoras con páginas web corporativas, aplicaciones móviles para campo, análisis de datos en tiempo real, sistemas ERP especializados y consultoría tecnológica que reducen costos y aumentan la productividad.',
       problems: {
         title: 'Desafíos comunes en la industria de la construcción',
         items: [
           'Control manual de múltiples obras simultáneas con información fragmentada',
           'Dificultad para rastrear materiales, presupuestos y avances en tiempo real',
           'Comunicación deficiente entre oficina, supervisores y personal en campo',
-          'Reportes de avance tardíos o incompletos para clientes e inversionistas',
+          'Reportes de avance tardíos o incompletos para clientes e inversionistas sin análisis de datos que permitan tomar decisiones estratégicas',
           'Falta de trazabilidad en compras, inventarios y logística de materiales',
           'Procesos manuales que generan errores y retrasos costosos',
         ],
@@ -128,32 +140,44 @@ export const landingPagesData: LandingPageConfig = {
       imSoftServices: {
         title: 'Desarrollo de software para constructoras',
         description:
-          'Creamos soluciones empresariales que integran toda la cadena de valor de la construcción, desde la planeación hasta la entrega final.',
+          'Creamos soluciones empresariales que integran toda la cadena de valor de la construcción, desde la planeación hasta la entrega final. Ofrecemos páginas web corporativas, aplicaciones móviles, análisis de datos, tiendas en línea para materiales y consultoría tecnológica especializada.',
         services: [
           {
-            title: 'Sistemas ERP Especializados',
+            title: 'Páginas Web y Portales Corporativos',
             description:
-              'Arquitectura modular adaptada a tu flujo de trabajo, integración con contabilidad, reportes ejecutivos y business intelligence.',
-            icon: '🏗️',
+              'Páginas web modernas y portales para clientes con arquitectura escalable, optimización SEO, integración con sistemas ERP y dashboards en tiempo real.',
+            icon: '🌐',
           },
           {
-            title: 'Aplicaciones de Campo',
+            title: 'Aplicaciones Móviles para Campo',
             description:
-              'Apps nativas para iOS y Android que funcionan offline, sincronización automática, captura de fotos y firma digital.',
-            icon: '📲',
+              'Aplicaciones móviles nativas iOS y Android que funcionan offline, sincronización automática, captura de fotos, geolocalización y firma digital.',
+            icon: '📱',
           },
           {
-            title: 'Integración de Sistemas',
+            title: 'Análisis de Datos y Business Intelligence',
             description:
-              'Conectamos tus herramientas actuales (AutoCAD, ERP contable, CRM) en un ecosistema digital unificado.',
-            icon: '🔗',
+              'Análisis de datos en tiempo real, dashboards ejecutivos, reportes de avance, métricas de productividad y business intelligence para optimizar proyectos.',
+            icon: '📊',
+          },
+          {
+            title: 'Tiendas en Línea para Materiales',
+            description:
+              'Plataformas de e-commerce para venta de materiales de construcción, gestión de inventarios, pedidos en línea y facturación electrónica integrada.',
+            icon: '🛒',
+          },
+          {
+            title: 'Consultoría Tecnológica',
+            description:
+              'Consultoría tecnológica especializada: auditoría de sistemas, arquitectura de soluciones, migración de datos y estrategia de transformación digital.',
+            icon: '💡',
           },
         ],
       },
       cta: {
         title: 'Moderniza la gestión de tu constructora',
         description:
-          'Conversemos sobre cómo la tecnología puede reducir costos operativos y mejorar el control de tus proyectos de construcción.',
+          'Conversemos sobre cómo nuestras soluciones tecnológicas - páginas web, aplicaciones móviles, análisis de datos y consultoría - pueden reducir costos operativos y mejorar el control de tus proyectos de construcción.',
         buttonText: 'Solicitar Demo Personalizada',
       },
     },
@@ -164,14 +188,14 @@ export const landingPagesData: LandingPageConfig = {
         'Soluciones digitales para restaurantes en Guadalajara. Sistemas POS, apps de pedidos, gestión de cocina e integraciones con delivery.',
       h1: 'Plataformas Digitales para Restaurantes en Guadalajara',
       heroSubtitle:
-        'Impulsamos restaurantes y cadenas gastronómicas con sistemas de punto de venta, apps de pedidos en línea y plataformas de gestión que aumentan ventas y eficiencia operativa.',
+        'Impulsamos restaurantes y cadenas gastronómicas con páginas web modernas, aplicaciones móviles para pedidos, tiendas en línea, análisis de datos de ventas y consultoría tecnológica que aumentan ventas y eficiencia operativa.',
       problems: {
         title: 'Retos de la industria restaurantera',
         items: [
           'Sistemas POS obsoletos o de terceros con altas comisiones',
           'Falta de integración entre punto de venta, cocina y delivery',
           'Dificultad para gestionar múltiples sucursales desde un solo lugar',
-          'Pedidos en línea dispersos entre varias plataformas externas',
+          'Pedidos en línea dispersos entre varias plataformas externas sin una tienda en línea propia ni análisis de datos de comportamiento del cliente',
           'Control manual de inventarios y mermas que genera pérdidas',
           'Ausencia de programas de lealtad o promociones automatizadas',
         ],
@@ -204,32 +228,44 @@ export const landingPagesData: LandingPageConfig = {
       imSoftServices: {
         title: 'Desarrollo de software para restaurantes',
         description:
-          'Construimos ecosistemas digitales completos que conectan todos los puntos de contacto con tus clientes y optimizan tu operación.',
+          'Construimos ecosistemas digitales completos que conectan todos los puntos de contacto con tus clientes y optimizan tu operación. Ofrecemos páginas web modernas, aplicaciones móviles, tiendas en línea, análisis de datos y consultoría tecnológica especializada.',
         services: [
           {
-            title: 'Sistemas POS a la Medida',
+            title: 'Páginas Web y Tiendas en Línea',
             description:
-              'Plataformas web responsivas para tablets y terminales, integración con impresoras térmicas, lectores de tarjetas y periféricos.',
-            icon: '🍽️',
+              'Páginas web modernas y tiendas en línea para pedidos a domicilio con diseño responsive, optimización SEO, integración con sistemas POS y pasarelas de pago.',
+            icon: '🌐',
           },
           {
-            title: 'Apps Móviles de Pedidos',
+            title: 'Aplicaciones Móviles de Pedidos',
             description:
-              'Aplicaciones nativas iOS/Android con tu identidad de marca, notificaciones push, programa de puntos y pasarelas de pago.',
+              'Aplicaciones móviles nativas iOS y Android con tu identidad de marca, notificaciones push, programa de puntos, geolocalización y pasarelas de pago integradas.',
             icon: '📱',
           },
           {
-            title: 'Integraciones Empresariales',
+            title: 'Análisis de Datos y Business Intelligence',
             description:
-              'Conectamos con sistemas contables, plataformas de delivery externos (Uber Eats, Rappi) y herramientas de marketing.',
-            icon: '🔄',
+              'Análisis de datos en tiempo real, dashboards con métricas de ventas, análisis de platillos más vendidos, comportamiento de clientes y reportes ejecutivos.',
+            icon: '📊',
+          },
+          {
+            title: 'Sistemas POS y Gestión',
+            description:
+              'Plataformas web responsivas para tablets y terminales, integración con impresoras térmicas, lectores de tarjetas, control de inventarios y gestión multilocación.',
+            icon: '🍽️',
+          },
+          {
+            title: 'Consultoría Tecnológica',
+            description:
+              'Consultoría tecnológica especializada: auditoría de sistemas actuales, estrategia de transformación digital, integraciones empresariales y optimización de procesos.',
+            icon: '💡',
           },
         ],
       },
       cta: {
         title: 'Lleva tu restaurante al siguiente nivel',
         description:
-          'Platiquemos sobre cómo reducir dependencia de plataformas externas y aumentar tus ventas directas con tecnología propia.',
+          'Platiquemos sobre cómo nuestras soluciones - páginas web, aplicaciones móviles, tiendas en línea, análisis de datos y consultoría tecnológica - pueden reducir dependencia de plataformas externas y aumentar tus ventas directas con tecnología propia.',
         buttonText: 'Agendar Consultoría',
       },
     },
@@ -240,13 +276,13 @@ export const landingPagesData: LandingPageConfig = {
         'Sistemas de gestión para clínicas y consultorios en Guadalajara. Expediente electrónico, agendamiento, facturación y telemedicina.',
       h1: 'Software Médico para Clínicas en Guadalajara',
       heroSubtitle:
-        'Digitalizamos clínicas y consultorios médicos con expediente electrónico, sistema de citas, facturación automatizada y plataformas de telemedicina que mejoran la atención al paciente.',
+        'Digitalizamos clínicas y consultorios médicos con páginas web corporativas, aplicaciones móviles para pacientes, análisis de datos médicos, expediente electrónico y consultoría tecnológica que mejoran la atención al paciente.',
       problems: {
         title: 'Desafíos de clínicas y consultorios médicos',
         items: [
           'Expedientes en papel difíciles de consultar y susceptibles a pérdida',
           'Agendamiento de citas manual con conflictos y confirmaciones tardías',
-          'Falta de trazabilidad en tratamientos, estudios y seguimiento de pacientes',
+          'Falta de trazabilidad en tratamientos, estudios y seguimiento de pacientes sin análisis de datos que permitan optimizar la atención',
           'Facturación lenta que retrasa el ciclo de cobro con aseguradoras',
           'Imposibilidad de ofrecer consultas a distancia o telemedicina',
           'Comunicación deficiente con pacientes sobre resultados y recordatorios',
@@ -280,19 +316,37 @@ export const landingPagesData: LandingPageConfig = {
       imSoftServices: {
         title: 'Tecnología especializada para salud',
         description:
-          'Desarrollamos soluciones médicas que cumplen con estándares de seguridad, privacidad y normativas del sector salud.',
+          'Desarrollamos soluciones médicas que cumplen con estándares de seguridad, privacidad y normativas del sector salud. Ofrecemos páginas web corporativas, aplicaciones móviles, análisis de datos médicos y consultoría tecnológica especializada.',
         services: [
+          {
+            title: 'Páginas Web Corporativas',
+            description:
+              'Páginas web modernas para clínicas con arquitectura segura, optimización SEO, información de servicios, agendamiento en línea y cumplimiento de normativas.',
+            icon: '🌐',
+          },
+          {
+            title: 'Aplicaciones Móviles para Pacientes',
+            description:
+              'Aplicaciones móviles nativas iOS y Android para agendar citas, consultar resultados, videoconsultas, recordatorios y comunicación directa con médicos.',
+            icon: '📱',
+          },
+          {
+            title: 'Análisis de Datos Médicos',
+            description:
+              'Análisis de datos en tiempo real, dashboards con métricas de atención, reportes de eficiencia, análisis de tratamientos y business intelligence para clínicas.',
+            icon: '📊',
+          },
           {
             title: 'Sistemas Médicos a la Medida',
             description:
-              'Plataformas web con arquitectura segura, encriptación de datos, respaldo automático y cumplimiento HIPAA.',
+              'Plataformas web con arquitectura segura, encriptación de datos, respaldo automático, expediente electrónico y cumplimiento HIPAA.',
             icon: '⚕️',
           },
           {
-            title: 'Apps para Pacientes',
+            title: 'Consultoría Tecnológica',
             description:
-              'Aplicaciones móviles para agendar citas, consultar resultados, videoconsultas y comunicación directa con médicos.',
-            icon: '📱',
+              'Consultoría tecnológica especializada en salud: auditoría de sistemas, cumplimiento normativo, migración de datos y estrategia de transformación digital.',
+            icon: '💡',
           },
           {
             title: 'Migración y Capacitación',
@@ -305,7 +359,7 @@ export const landingPagesData: LandingPageConfig = {
       cta: {
         title: 'Digitaliza tu clínica o consultorio',
         description:
-          'Agenda una reunión para conocer cómo la tecnología puede mejorar la atención al paciente y la eficiencia de tu clínica.',
+          'Agenda una reunión para conocer cómo nuestras soluciones tecnológicas - páginas web corporativas, aplicaciones móviles, análisis de datos médicos y consultoría tecnológica - pueden mejorar la atención al paciente y la eficiencia de tu clínica.',
         buttonText: 'Contactar a un Especialista',
       },
     },
@@ -316,7 +370,7 @@ export const landingPagesData: LandingPageConfig = {
         'Plataformas de gestión logística en Guadalajara. TMS, rastreo GPS, gestión de flotas, almacenes y distribución para empresas.',
       h1: 'Sistemas de Gestión Logística en Guadalajara',
       heroSubtitle:
-        'Optimizamos operaciones logísticas con plataformas TMS, rastreo en tiempo real, gestión de almacenes y sistemas de distribución que reducen costos y mejoran tiempos de entrega.',
+        'Optimizamos operaciones logísticas con páginas web corporativas, aplicaciones móviles para operadores, análisis de datos en tiempo real, plataformas TMS y consultoría tecnológica que reducen costos y mejoran tiempos de entrega.',
       problems: {
         title: 'Retos en la industria logística',
         items: [
@@ -325,7 +379,7 @@ export const landingPagesData: LandingPageConfig = {
           'Gestión manual de almacenes con errores en inventarios y picking',
           'Comunicación deficiente entre almacén, distribución y clientes finales',
           'Dificultad para escalar operaciones o agregar nuevas rutas',
-          'Reportes tardíos que impiden toma de decisiones ágil',
+          'Reportes tardíos que impiden toma de decisiones ágil sin análisis de datos que permitan optimizar rutas y operaciones',
         ],
       },
       solutions: {
@@ -356,8 +410,26 @@ export const landingPagesData: LandingPageConfig = {
       imSoftServices: {
         title: 'Soluciones tecnológicas para logística',
         description:
-          'Creamos ecosistemas digitales que conectan almacenes, transporte, operadores y clientes en una sola plataforma centralizada.',
+          'Creamos ecosistemas digitales que conectan almacenes, transporte, operadores y clientes en una sola plataforma centralizada. Ofrecemos páginas web corporativas, aplicaciones móviles, análisis de datos, tiendas en línea para servicios y consultoría tecnológica especializada.',
         services: [
+          {
+            title: 'Páginas Web y Portales Corporativos',
+            description:
+              'Páginas web modernas y portales para clientes con arquitectura escalable, optimización SEO, rastreo en tiempo real, dashboards y gestión de documentación.',
+            icon: '🌐',
+          },
+          {
+            title: 'Aplicaciones Móviles para Operadores',
+            description:
+              'Aplicaciones móviles nativas iOS y Android para operadores de campo, rastreo GPS, captura de firmas, fotos de entrega y sincronización en tiempo real.',
+            icon: '📱',
+          },
+          {
+            title: 'Análisis de Datos y Business Intelligence',
+            description:
+              'Análisis de datos en tiempo real, dashboards ejecutivos, métricas de eficiencia, optimización de rutas, análisis de costos y business intelligence.',
+            icon: '📊',
+          },
           {
             title: 'Plataformas TMS/WMS',
             description:
@@ -365,23 +437,35 @@ export const landingPagesData: LandingPageConfig = {
             icon: '🚚',
           },
           {
-            title: 'Apps Móviles para Operadores',
+            title: 'Aplicaciones Móviles para Operadores',
             description:
-              'Aplicaciones nativas para choferes y personal de almacén con modo offline, captura de evidencias y firma digital.',
+              'Aplicaciones móviles nativas iOS y Android para choferes y personal de almacén con modo offline, captura de evidencias, geolocalización y firma digital.',
             icon: '📱',
           },
           {
-            title: 'Business Intelligence',
+            title: 'Análisis de Datos y Business Intelligence',
             description:
-              'Reportes avanzados, análisis predictivo de rutas, optimización de costos y visualización de datos logísticos.',
+              'Análisis de datos en tiempo real, reportes avanzados, análisis predictivo de rutas, optimización de costos, visualización de datos logísticos y business intelligence.',
             icon: '📊',
+          },
+          {
+            title: 'Tiendas en Línea para Servicios',
+            description:
+              'Plataformas de e-commerce para venta de servicios logísticos, cotización en línea, seguimiento de envíos y facturación electrónica integrada.',
+            icon: '🛒',
+          },
+          {
+            title: 'Consultoría Tecnológica',
+            description:
+              'Consultoría tecnológica especializada: auditoría de sistemas logísticos, arquitectura de soluciones, integraciones empresariales y estrategia de transformación digital.',
+            icon: '💡',
           },
         ],
       },
       cta: {
         title: 'Optimiza tu operación logística',
         description:
-          'Conversemos sobre cómo reducir costos operativos y mejorar tiempos de entrega con tecnología especializada en logística.',
+          'Conversemos sobre cómo nuestras soluciones tecnológicas - páginas web corporativas, aplicaciones móviles, análisis de datos, tiendas en línea y consultoría - pueden reducir costos operativos y mejorar tiempos de entrega con tecnología especializada en logística.',
         buttonText: 'Solicitar Análisis de Operación',
       },
     },
@@ -394,13 +478,13 @@ export const landingPagesData: LandingPageConfig = {
         'Desarrollamos plataformas digitales para inmobiliarias en Ciudad de México. Sistemas de gestión de propiedades, portales web y apps móviles.',
       h1: 'Software Especializado para Inmobiliarias en CDMX',
       heroSubtitle:
-        'Transformamos la gestión inmobiliaria en la Ciudad de México con plataformas web y aplicaciones móviles que impulsan ventas y optimizan la operación de tu empresa.',
+        'Transformamos la gestión inmobiliaria en la Ciudad de México con páginas web modernas, aplicaciones móviles nativas, análisis de datos en tiempo real y consultoría tecnológica especializada que impulsan ventas y optimizan la operación de tu empresa.',
       problems: {
         title: '¿Tu inmobiliaria enfrenta estos desafíos?',
         items: [
           'Gestión manual de propiedades en colonias y alcaldías dispersas de CDMX',
           'Falta de visibilidad en tiempo real del inventario disponible',
-          'Portal web que no destaca en el competitivo mercado inmobiliario de la capital',
+          'Páginas web que no destacan en el competitivo mercado inmobiliario de la capital ni generan leads de calidad',
           'Dificultad para gestionar propiedades en renta y venta simultáneamente',
           'Seguimiento deficiente a prospectos en zonas premium como Polanco, Santa Fe, Roma',
           'Incapacidad de integrar con portales externos y sistemas de valuación',
@@ -434,24 +518,36 @@ export const landingPagesData: LandingPageConfig = {
       imSoftServices: {
         title: 'Tecnología empresarial para inmobiliarias en CDMX',
         description:
-          'Desarrollamos soluciones digitales robustas para empresas inmobiliarias que operan en el competitivo mercado de la Ciudad de México.',
+          'Desarrollamos soluciones digitales robustas para empresas inmobiliarias que operan en el competitivo mercado de la Ciudad de México. Ofrecemos páginas web modernas, aplicaciones móviles, análisis de datos, tiendas en línea y consultoría tecnológica especializada.',
         services: [
           {
-            title: 'Plataformas Web Personalizadas',
+            title: 'Páginas Web y Plataformas Personalizadas',
             description:
-              'Portales inmobiliarios con arquitectura escalable, optimización SEO local, integración con APIs de geolocalización y panel administrativo.',
+              'Páginas web modernas y portales inmobiliarios con arquitectura escalable, optimización SEO local, integración con APIs de geolocalización y panel administrativo completo.',
             icon: '🌐',
           },
           {
             title: 'Aplicaciones Móviles Nativas',
             description:
-              'Apps iOS y Android con experiencia premium, notificaciones push inteligentes, realidad aumentada y sincronización en tiempo real.',
+              'Aplicaciones móviles iOS y Android con experiencia premium, notificaciones push inteligentes, realidad aumentada, geolocalización y sincronización en tiempo real.',
             icon: '📱',
+          },
+          {
+            title: 'Análisis de Datos y Business Intelligence',
+            description:
+              'Análisis de datos en tiempo real, dashboards ejecutivos con métricas de conversión, análisis de mercado inmobiliario y business intelligence para toma de decisiones.',
+            icon: '📊',
+          },
+          {
+            title: 'Tiendas en Línea y E-commerce',
+            description:
+              'Plataformas de e-commerce para venta de servicios inmobiliarios, membresías premium, paquetes de asesoría y productos relacionados con tu inmobiliaria.',
+            icon: '🛒',
           },
           {
             title: 'Consultoría Tecnológica',
             description:
-              'Auditoría de sistemas, arquitectura de soluciones, migración de datos históricos y estrategia de transformación digital.',
+              'Consultoría tecnológica especializada: auditoría de sistemas, arquitectura de soluciones, migración de datos históricos y estrategia de transformación digital.',
             icon: '💡',
           },
         ],
@@ -459,7 +555,7 @@ export const landingPagesData: LandingPageConfig = {
       cta: {
         title: '¿Listo para modernizar tu inmobiliaria en CDMX?',
         description:
-          'Agenda una consultoría sin costo. Analizamos tu operación actual y diseñamos una solución tecnológica que impulse tus ventas en la capital.',
+          'Agenda una consultoría tecnológica sin costo. Analizamos tu operación actual con análisis de datos y diseñamos una solución integral que puede incluir páginas web, aplicaciones móviles, tiendas en línea y sistemas personalizados que impulsen tus ventas en la capital.',
         buttonText: 'Agendar Consultoría Gratuita',
       },
     },
@@ -470,7 +566,7 @@ export const landingPagesData: LandingPageConfig = {
         'Plataformas digitales para constructoras en Ciudad de México. Gestión de proyectos, control de obra, ERP especializado y apps móviles.',
       h1: 'Sistemas de Gestión para Constructoras en CDMX',
       heroSubtitle:
-        'Digitalizamos la operación de constructoras en la Ciudad de México con sistemas ERP especializados, control de obra en tiempo real y plataformas que reducen costos.',
+        'Digitalizamos la operación de constructoras en la Ciudad de México con páginas web corporativas, aplicaciones móviles para campo, análisis de datos en tiempo real, sistemas ERP especializados y consultoría tecnológica que reducen costos.',
       problems: {
         title: 'Desafíos de constructoras en la capital',
         items: [
@@ -510,8 +606,26 @@ export const landingPagesData: LandingPageConfig = {
       imSoftServices: {
         title: 'Desarrollo de software para constructoras en CDMX',
         description:
-          'Creamos soluciones empresariales que integran toda la cadena de valor de la construcción, desde la planeación hasta la entrega de proyectos complejos.',
+          'Creamos soluciones empresariales que integran toda la cadena de valor de la construcción, desde la planeación hasta la entrega de proyectos complejos. Ofrecemos páginas web corporativas, aplicaciones móviles, análisis de datos, tiendas en línea para materiales y consultoría tecnológica especializada.',
         services: [
+          {
+            title: 'Páginas Web y Portales Corporativos',
+            description:
+              'Páginas web modernas y portales para clientes con arquitectura escalable, optimización SEO, integración con sistemas ERP y dashboards en tiempo real.',
+            icon: '🌐',
+          },
+          {
+            title: 'Aplicaciones Móviles para Campo',
+            description:
+              'Aplicaciones móviles nativas iOS y Android que funcionan offline, sincronización automática, captura de fotos, geolocalización y firma digital certificada.',
+            icon: '📱',
+          },
+          {
+            title: 'Análisis de Datos y Business Intelligence',
+            description:
+              'Análisis de datos en tiempo real, dashboards ejecutivos, reportes de avance, métricas de productividad, business intelligence y optimización de proyectos.',
+            icon: '📊',
+          },
           {
             title: 'Sistemas ERP Especializados',
             description:
@@ -519,23 +633,17 @@ export const landingPagesData: LandingPageConfig = {
             icon: '🏗️',
           },
           {
-            title: 'Aplicaciones de Campo',
+            title: 'Consultoría Tecnológica',
             description:
-              'Apps nativas para iOS y Android con modo offline, sincronización automática, captura multimedia y firma digital certificada.',
-            icon: '📲',
-          },
-          {
-            title: 'Integración Empresarial',
-            description:
-              'Conectamos tus sistemas actuales (ERP contable, CRM, Project Management) en un ecosistema digital unificado y escalable.',
-            icon: '🔗',
+              'Consultoría tecnológica especializada: auditoría de sistemas, arquitectura de soluciones, migración de datos y estrategia de transformación digital.',
+            icon: '💡',
           },
         ],
       },
       cta: {
         title: 'Moderniza la gestión de tu constructora en CDMX',
         description:
-          'Conversemos sobre cómo la tecnología puede reducir costos operativos y mejorar el control de tus proyectos de construcción en la capital.',
+          'Conversemos sobre cómo nuestras soluciones tecnológicas - páginas web, aplicaciones móviles, análisis de datos y consultoría - pueden reducir costos operativos y mejorar el control de tus proyectos de construcción en la capital.',
         buttonText: 'Solicitar Demo Personalizada',
       },
     },
@@ -546,7 +654,7 @@ export const landingPagesData: LandingPageConfig = {
         'Soluciones digitales para restaurantes en Ciudad de México. Sistemas POS, apps de pedidos, gestión de cocina y múltiples sucursales.',
       h1: 'Plataformas Digitales para Restaurantes en CDMX',
       heroSubtitle:
-        'Impulsamos restaurantes y cadenas gastronómicas en la Ciudad de México con sistemas POS, apps de pedidos propias y plataformas que aumentan ventas y eficiencia.',
+        'Impulsamos restaurantes y cadenas gastronómicas en la Ciudad de México con páginas web modernas, aplicaciones móviles para pedidos, tiendas en línea, análisis de datos de ventas y consultoría tecnológica que aumentan ventas y eficiencia.',
       problems: {
         title: 'Retos de restaurantes en la capital',
         items: [
@@ -586,32 +694,44 @@ export const landingPagesData: LandingPageConfig = {
       imSoftServices: {
         title: 'Desarrollo de software para restaurantes en CDMX',
         description:
-          'Construimos ecosistemas digitales completos para cadenas restauranteras que buscan independencia tecnológica y crecimiento escalable.',
+          'Construimos ecosistemas digitales completos para cadenas restauranteras que buscan independencia tecnológica y crecimiento escalable. Ofrecemos páginas web modernas, aplicaciones móviles, tiendas en línea, análisis de datos y consultoría tecnológica especializada.',
         services: [
           {
-            title: 'Sistemas POS Empresariales',
+            title: 'Páginas Web y Tiendas en Línea',
             description:
-              'Plataformas web responsivas para tablets y terminales, integración con hardware especializado, facturación electrónica CFDI 4.0.',
-            icon: '🍽️',
+              'Páginas web modernas y tiendas en línea para pedidos a domicilio con diseño responsive, optimización SEO, integración con sistemas POS y pasarelas de pago.',
+            icon: '🌐',
           },
           {
-            title: 'Apps Móviles de Pedidos',
+            title: 'Aplicaciones Móviles de Pedidos',
             description:
-              'Aplicaciones nativas iOS/Android con tu marca, notificaciones push, programa de puntos, cupones y pasarelas de pago mexicanas.',
+              'Aplicaciones móviles nativas iOS y Android con tu marca, notificaciones push, programa de puntos, geolocalización, cupones y pasarelas de pago mexicanas.',
             icon: '📱',
           },
           {
-            title: 'Integraciones Empresariales',
+            title: 'Análisis de Datos y Business Intelligence',
             description:
-              'Conectamos con sistemas contables (SAP, Oracle), plataformas de delivery (Uber Eats, Rappi) y herramientas de marketing.',
-            icon: '🔄',
+              'Análisis de datos en tiempo real, dashboards con métricas de ventas, análisis de platillos más vendidos, comportamiento de clientes y reportes ejecutivos.',
+            icon: '📊',
+          },
+          {
+            title: 'Sistemas POS y Gestión',
+            description:
+              'Plataformas web responsivas para tablets y terminales, integración con hardware especializado, facturación electrónica CFDI 4.0 y gestión multilocación.',
+            icon: '🍽️',
+          },
+          {
+            title: 'Consultoría Tecnológica',
+            description:
+              'Consultoría tecnológica especializada: auditoría de sistemas actuales, estrategia de transformación digital, integraciones empresariales y optimización de procesos.',
+            icon: '💡',
           },
         ],
       },
       cta: {
         title: 'Lleva tu restaurante al siguiente nivel en CDMX',
         description:
-          'Platiquemos sobre cómo reducir dependencia de plataformas externas y aumentar tus ventas directas con tecnología propia.',
+          'Platiquemos sobre cómo nuestras soluciones - páginas web, aplicaciones móviles, tiendas en línea, análisis de datos y consultoría tecnológica - pueden reducir dependencia de plataformas externas y aumentar tus ventas directas con tecnología propia.',
         buttonText: 'Agendar Consultoría',
       },
     },
@@ -622,7 +742,7 @@ export const landingPagesData: LandingPageConfig = {
         'Sistemas de gestión para clínicas en Ciudad de México. Expediente electrónico, agendamiento, facturación, telemedicina y NOM-024.',
       h1: 'Software Médico para Clínicas en CDMX',
       heroSubtitle:
-        'Digitalizamos clínicas y consultorios médicos en la Ciudad de México con expediente electrónico NOM-024, sistema de citas, facturación y telemedicina.',
+        'Digitalizamos clínicas y consultorios médicos en la Ciudad de México con páginas web corporativas, aplicaciones móviles para pacientes, análisis de datos médicos, expediente electrónico NOM-024 y consultoría tecnológica que mejoran la atención al paciente.',
       problems: {
         title: 'Desafíos de clínicas en la capital',
         items: [
@@ -662,8 +782,26 @@ export const landingPagesData: LandingPageConfig = {
       imSoftServices: {
         title: 'Tecnología especializada para salud en CDMX',
         description:
-          'Desarrollamos soluciones médicas que cumplen con normativas mexicanas, estándares de seguridad y privacidad del sector salud.',
+          'Desarrollamos soluciones médicas que cumplen con normativas mexicanas, estándares de seguridad y privacidad del sector salud. Ofrecemos páginas web corporativas, aplicaciones móviles, análisis de datos médicos y consultoría tecnológica especializada.',
         services: [
+          {
+            title: 'Páginas Web Corporativas',
+            description:
+              'Páginas web modernas para clínicas con arquitectura segura, optimización SEO, información de servicios, agendamiento en línea y cumplimiento de normativas.',
+            icon: '🌐',
+          },
+          {
+            title: 'Aplicaciones Móviles para Pacientes',
+            description:
+              'Aplicaciones móviles nativas iOS y Android para agendar citas, consultar resultados, videoconsultas, recordatorios y comunicación directa con médicos.',
+            icon: '📱',
+          },
+          {
+            title: 'Análisis de Datos Médicos',
+            description:
+              'Análisis de datos en tiempo real, dashboards con métricas de atención, reportes de eficiencia, análisis de tratamientos y business intelligence para clínicas.',
+            icon: '📊',
+          },
           {
             title: 'Sistemas Médicos Certificados',
             description:
@@ -677,17 +815,23 @@ export const landingPagesData: LandingPageConfig = {
             icon: '📱',
           },
           {
-            title: 'Migración y Capacitación',
+            title: 'Sistemas Médicos a la Medida',
             description:
-              'Transferencia de expedientes físicos a digital, capacitación al personal médico, certificación NOM-024 y soporte técnico.',
-            icon: '🎓',
+              'Plataformas web con arquitectura segura, encriptación de datos médicos, respaldo automático, expediente electrónico y cumplimiento NOM-024/HIPAA.',
+            icon: '⚕️',
+          },
+          {
+            title: 'Consultoría Tecnológica',
+            description:
+              'Consultoría tecnológica especializada en salud: auditoría de sistemas, cumplimiento normativo, migración de datos y estrategia de transformación digital.',
+            icon: '💡',
           },
         ],
       },
       cta: {
         title: 'Digitaliza tu clínica en CDMX',
         description:
-          'Agenda una reunión para conocer cómo la tecnología puede mejorar la atención al paciente y cumplir con normativas de salud.',
+          'Agenda una reunión para conocer cómo nuestras soluciones tecnológicas - páginas web corporativas, aplicaciones móviles, análisis de datos médicos y consultoría tecnológica - pueden mejorar la atención al paciente y cumplir con normativas de salud.',
         buttonText: 'Contactar a un Especialista',
       },
     },
@@ -698,7 +842,7 @@ export const landingPagesData: LandingPageConfig = {
         'Plataformas de gestión logística en Ciudad de México. TMS, rastreo GPS, gestión de flotas, almacenes y distribución urbana.',
       h1: 'Sistemas de Gestión Logística en CDMX',
       heroSubtitle:
-        'Optimizamos operaciones logísticas en la Ciudad de México con plataformas TMS, rastreo GPS en tiempo real, gestión de almacenes y sistemas de distribución urbana.',
+        'Optimizamos operaciones logísticas en la Ciudad de México con páginas web corporativas, aplicaciones móviles para operadores, análisis de datos en tiempo real, plataformas TMS y consultoría tecnológica que reducen costos y mejoran tiempos de entrega.',
       problems: {
         title: 'Retos logísticos en la capital',
         items: [
@@ -738,8 +882,26 @@ export const landingPagesData: LandingPageConfig = {
       imSoftServices: {
         title: 'Soluciones tecnológicas para logística en CDMX',
         description:
-          'Creamos ecosistemas digitales que conectan almacenes, transporte, operadores y clientes para operaciones logísticas eficientes en la capital.',
+          'Creamos ecosistemas digitales que conectan almacenes, transporte, operadores y clientes para operaciones logísticas eficientes en la capital. Ofrecemos páginas web corporativas, aplicaciones móviles, análisis de datos, tiendas en línea para servicios y consultoría tecnológica especializada.',
         services: [
+          {
+            title: 'Páginas Web y Portales Corporativos',
+            description:
+              'Páginas web modernas y portales para clientes con arquitectura escalable, optimización SEO, rastreo en tiempo real, dashboards y gestión de documentación.',
+            icon: '🌐',
+          },
+          {
+            title: 'Aplicaciones Móviles para Operadores',
+            description:
+              'Aplicaciones móviles nativas iOS y Android para choferes con navegación GPS, modo offline, captura de evidencias fotográficas, geolocalización y firma digital de entregas.',
+            icon: '📱',
+          },
+          {
+            title: 'Análisis de Datos y Business Intelligence',
+            description:
+              'Análisis de datos en tiempo real, reportes avanzados, análisis predictivo de demanda, optimización de costos, visualización de datos logísticos y business intelligence.',
+            icon: '📊',
+          },
           {
             title: 'Plataformas TMS/WMS Empresariales',
             description:
@@ -747,23 +909,17 @@ export const landingPagesData: LandingPageConfig = {
             icon: '🚚',
           },
           {
-            title: 'Apps Móviles para Operadores',
+            title: 'Consultoría Tecnológica',
             description:
-              'Aplicaciones nativas para choferes con navegación GPS, modo offline, captura de evidencias fotográficas y firma digital de entregas.',
-            icon: '📱',
-          },
-          {
-            title: 'Business Intelligence Logístico',
-            description:
-              'Reportes avanzados, análisis predictivo de demanda, optimización de costos, visualización de datos y alertas inteligentes.',
-            icon: '📊',
+              'Consultoría tecnológica especializada: auditoría de sistemas logísticos, arquitectura de soluciones, integraciones empresariales y estrategia de transformación digital.',
+            icon: '💡',
           },
         ],
       },
       cta: {
         title: 'Optimiza tu operación logística en CDMX',
         description:
-          'Conversemos sobre cómo reducir costos operativos y mejorar tiempos de entrega en la Ciudad de México con tecnología especializada.',
+          'Conversemos sobre cómo nuestras soluciones tecnológicas - páginas web corporativas, aplicaciones móviles, análisis de datos, tiendas en línea y consultoría - pueden reducir costos operativos y mejorar tiempos de entrega en la Ciudad de México con tecnología especializada.',
         buttonText: 'Solicitar Análisis de Operación',
       },
     },
@@ -776,12 +932,12 @@ export const landingPagesData: LandingPageConfig = {
         'Desarrollamos plataformas digitales para inmobiliarias en Monterrey. Sistemas de gestión de propiedades, portales web y apps móviles para empresas.',
       h1: 'Software Especializado para Inmobiliarias en Monterrey',
       heroSubtitle:
-        'Transformamos la gestión inmobiliaria en Monterrey y el área metropolitana con plataformas web y aplicaciones móviles que impulsan ventas y optimizan la operación empresarial.',
+        'Transformamos la gestión inmobiliaria en Monterrey y el área metropolitana con páginas web modernas, aplicaciones móviles nativas, análisis de datos en tiempo real y consultoría tecnológica especializada que impulsan ventas y optimizan la operación empresarial.',
       problems: {
         title: '¿Tu inmobiliaria enfrenta estos desafíos?',
         items: [
           'Gestión de propiedades en San Pedro, Santa Catarina, Escobedo y otros municipios',
-          'Portal web que no compite en el mercado inmobiliario industrial y corporativo',
+          'Páginas web que no compiten en el mercado inmobiliario industrial y corporativo ni generan leads de calidad',
           'Falta de integración con desarrolladoras y constructoras de la región',
           'Dificultad para gestionar propiedades industriales, corporativas y residenciales',
           'Seguimiento deficiente a clientes empresariales e inversionistas',
@@ -816,24 +972,36 @@ export const landingPagesData: LandingPageConfig = {
       imSoftServices: {
         title: 'Tecnología empresarial para inmobiliarias en Monterrey',
         description:
-          'Desarrollamos soluciones digitales robustas para empresas inmobiliarias que operan en el dinámico mercado de Monterrey y el área metropolitana.',
+          'Desarrollamos soluciones digitales robustas para empresas inmobiliarias que operan en el dinámico mercado de Monterrey y el área metropolitana. Ofrecemos páginas web modernas, aplicaciones móviles, análisis de datos, tiendas en línea y consultoría tecnológica especializada.',
         services: [
           {
-            title: 'Plataformas Web Corporativas',
+            title: 'Páginas Web y Plataformas Corporativas',
             description:
-              'Portales inmobiliarios con arquitectura empresarial, optimización SEO, integración con sistemas de terceros y panel de administración avanzado.',
+              'Páginas web modernas y portales inmobiliarios con arquitectura empresarial, optimización SEO, integración con sistemas de terceros y panel de administración avanzado.',
             icon: '🌐',
           },
           {
             title: 'Aplicaciones Móviles Empresariales',
             description:
-              'Apps iOS y Android con experiencia de usuario premium, notificaciones inteligentes, realidad aumentada y sincronización en tiempo real.',
+              'Aplicaciones móviles iOS y Android con experiencia de usuario premium, notificaciones inteligentes, realidad aumentada, geolocalización y sincronización en tiempo real.',
             icon: '📱',
+          },
+          {
+            title: 'Análisis de Datos y Business Intelligence',
+            description:
+              'Análisis de datos en tiempo real, dashboards ejecutivos con métricas de conversión, análisis de mercado inmobiliario y business intelligence para toma de decisiones.',
+            icon: '📊',
+          },
+          {
+            title: 'Tiendas en Línea y E-commerce',
+            description:
+              'Plataformas de e-commerce para venta de servicios inmobiliarios, membresías premium, paquetes de asesoría y productos relacionados con tu inmobiliaria.',
+            icon: '🛒',
           },
           {
             title: 'Consultoría Tecnológica',
             description:
-              'Auditoría de sistemas, diseño de arquitectura de soluciones, migración de datos y estrategia de transformación digital empresarial.',
+              'Consultoría tecnológica especializada: auditoría de sistemas, diseño de arquitectura de soluciones, migración de datos y estrategia de transformación digital empresarial.',
             icon: '💡',
           },
         ],
@@ -841,7 +1009,7 @@ export const landingPagesData: LandingPageConfig = {
       cta: {
         title: '¿Listo para modernizar tu inmobiliaria en Monterrey?',
         description:
-          'Agenda una consultoría sin costo. Analizamos tu operación actual y diseñamos una solución tecnológica que impulse tus ventas en el mercado regiomontano.',
+          'Agenda una consultoría tecnológica sin costo. Analizamos tu operación actual con análisis de datos y diseñamos una solución integral que puede incluir páginas web, aplicaciones móviles, tiendas en línea y sistemas personalizados que impulsen tus ventas en el mercado regiomontano.',
         buttonText: 'Agendar Consultoría Gratuita',
       },
     },
@@ -852,7 +1020,7 @@ export const landingPagesData: LandingPageConfig = {
         'Plataformas digitales para constructoras en Monterrey. Gestión de proyectos industriales, control de obra, ERP especializado y apps móviles.',
       h1: 'Sistemas de Gestión para Constructoras en Monterrey',
       heroSubtitle:
-        'Digitalizamos la operación de constructoras en Monterrey con sistemas ERP especializados, control de obra en tiempo real y plataformas para proyectos industriales y corporativos.',
+        'Digitalizamos la operación de constructoras en Monterrey con páginas web corporativas, aplicaciones móviles para campo, análisis de datos en tiempo real, sistemas ERP especializados y consultoría tecnológica para proyectos industriales y corporativos.',
       problems: {
         title: 'Desafíos de constructoras en el sector industrial',
         items: [
@@ -892,8 +1060,26 @@ export const landingPagesData: LandingPageConfig = {
       imSoftServices: {
         title: 'Desarrollo de software para constructoras en Monterrey',
         description:
-          'Creamos soluciones empresariales que integran toda la cadena de valor de la construcción industrial y corporativa.',
+          'Creamos soluciones empresariales que integran toda la cadena de valor de la construcción industrial y corporativa. Ofrecemos páginas web corporativas, aplicaciones móviles, análisis de datos, tiendas en línea para materiales y consultoría tecnológica especializada.',
         services: [
+          {
+            title: 'Páginas Web y Portales Corporativos',
+            description:
+              'Páginas web modernas y portales para clientes con arquitectura escalable, optimización SEO, integración con sistemas ERP y dashboards en tiempo real.',
+            icon: '🌐',
+          },
+          {
+            title: 'Aplicaciones Móviles para Campo',
+            description:
+              'Aplicaciones móviles nativas iOS y Android con modo offline, sincronización automática, captura multimedia profesional, geolocalización y firma digital certificada.',
+            icon: '📱',
+          },
+          {
+            title: 'Análisis de Datos y Business Intelligence',
+            description:
+              'Análisis de datos en tiempo real, dashboards ejecutivos, reportes de avance, métricas de productividad, business intelligence y optimización de proyectos.',
+            icon: '📊',
+          },
           {
             title: 'Sistemas ERP Especializados',
             description:
@@ -901,23 +1087,17 @@ export const landingPagesData: LandingPageConfig = {
             icon: '🏗️',
           },
           {
-            title: 'Aplicaciones de Campo',
+            title: 'Consultoría Tecnológica',
             description:
-              'Apps nativas para iOS y Android con modo offline, sincronización automática, captura multimedia profesional y firma digital certificada.',
-            icon: '📲',
-          },
-          {
-            title: 'Integración Empresarial',
-            description:
-              'Conectamos tus sistemas actuales (ERP, CRM, Project Management, BIM) en un ecosistema digital unificado y escalable.',
-            icon: '🔗',
+              'Consultoría tecnológica especializada: auditoría de sistemas, arquitectura de soluciones, migración de datos y estrategia de transformación digital.',
+            icon: '💡',
           },
         ],
       },
       cta: {
         title: 'Moderniza la gestión de tu constructora en Monterrey',
         description:
-          'Conversemos sobre cómo la tecnología puede reducir costos operativos y mejorar el control de tus proyectos de construcción industrial.',
+          'Conversemos sobre cómo nuestras soluciones tecnológicas - páginas web, aplicaciones móviles, análisis de datos y consultoría - pueden reducir costos operativos y mejorar el control de tus proyectos de construcción industrial.',
         buttonText: 'Solicitar Demo Personalizada',
       },
     },
@@ -928,7 +1108,7 @@ export const landingPagesData: LandingPageConfig = {
         'Soluciones digitales para restaurantes en Monterrey. Sistemas POS, apps de pedidos, gestión de cocina y múltiples sucursales para cadenas.',
       h1: 'Plataformas Digitales para Restaurantes en Monterrey',
       heroSubtitle:
-        'Impulsamos restaurantes y cadenas gastronómicas en Monterrey con sistemas POS, apps de pedidos propias y plataformas que aumentan ventas y eficiencia operativa.',
+        'Impulsamos restaurantes y cadenas gastronómicas en Monterrey con páginas web modernas, aplicaciones móviles para pedidos, tiendas en línea, análisis de datos de ventas y consultoría tecnológica que aumentan ventas y eficiencia operativa.',
       problems: {
         title: 'Retos de restaurantes en Monterrey',
         items: [
@@ -968,32 +1148,44 @@ export const landingPagesData: LandingPageConfig = {
       imSoftServices: {
         title: 'Desarrollo de software para restaurantes en Monterrey',
         description:
-          'Construimos ecosistemas digitales completos para cadenas restauranteras que buscan independencia tecnológica y crecimiento escalable.',
+          'Construimos ecosistemas digitales completos para cadenas restauranteras que buscan independencia tecnológica y crecimiento escalable. Ofrecemos páginas web modernas, aplicaciones móviles, tiendas en línea, análisis de datos y consultoría tecnológica especializada.',
         services: [
           {
-            title: 'Sistemas POS Empresariales',
+            title: 'Páginas Web y Tiendas en Línea',
+            description:
+              'Páginas web modernas y tiendas en línea para pedidos a domicilio con diseño responsive, optimización SEO, integración con sistemas POS y pasarelas de pago.',
+            icon: '🌐',
+          },
+          {
+            title: 'Aplicaciones Móviles de Pedidos',
+            description:
+              'Aplicaciones móviles nativas iOS y Android con tu marca, notificaciones push, programa de puntos premium, geolocalización, cupones y pasarelas de pago mexicanas.',
+            icon: '📱',
+          },
+          {
+            title: 'Análisis de Datos y Business Intelligence',
+            description:
+              'Análisis de datos en tiempo real, dashboards con métricas de ventas, análisis de platillos más vendidos, comportamiento de clientes y reportes ejecutivos.',
+            icon: '📊',
+          },
+          {
+            title: 'Sistemas POS y Gestión',
             description:
               'Plataformas web responsivas para tablets y terminales, integración con hardware especializado, facturación electrónica y control de franquicias.',
             icon: '🍽️',
           },
           {
-            title: 'Apps Móviles de Pedidos',
+            title: 'Consultoría Tecnológica',
             description:
-              'Aplicaciones nativas iOS/Android con tu marca, notificaciones push, programa de puntos premium, cupones y pasarelas de pago mexicanas.',
-            icon: '📱',
-          },
-          {
-            title: 'Integraciones Empresariales',
-            description:
-              'Conectamos con sistemas contables (SAP, Oracle), plataformas de delivery (Uber Eats, Rappi, DiDi Food) y herramientas de marketing.',
-            icon: '🔄',
+              'Consultoría tecnológica especializada: auditoría de sistemas actuales, estrategia de transformación digital, integraciones empresariales y optimización de procesos.',
+            icon: '💡',
           },
         ],
       },
       cta: {
         title: 'Lleva tu restaurante al siguiente nivel en Monterrey',
         description:
-          'Platiquemos sobre cómo reducir dependencia de plataformas externas y aumentar tus ventas directas con tecnología propia.',
+          'Platiquemos sobre cómo nuestras soluciones - páginas web, aplicaciones móviles, tiendas en línea, análisis de datos y consultoría tecnológica - pueden reducir dependencia de plataformas externas y aumentar tus ventas directas con tecnología propia.',
         buttonText: 'Agendar Consultoría',
       },
     },
@@ -1004,7 +1196,7 @@ export const landingPagesData: LandingPageConfig = {
         'Sistemas de gestión para clínicas en Monterrey. Expediente electrónico NOM-024, agendamiento, facturación, telemedicina y estándares internacionales.',
       h1: 'Software Médico para Clínicas en Monterrey',
       heroSubtitle:
-        'Digitalizamos clínicas y hospitales en Monterrey con expediente electrónico NOM-024, sistema de citas, facturación, telemedicina y cumplimiento de estándares internacionales.',
+        'Digitalizamos clínicas y hospitales en Monterrey con páginas web corporativas, aplicaciones móviles para pacientes, análisis de datos médicos, expediente electrónico NOM-024 y consultoría tecnológica que mejoran la atención al paciente.',
       problems: {
         title: 'Desafíos de clínicas en Monterrey',
         items: [
@@ -1044,32 +1236,44 @@ export const landingPagesData: LandingPageConfig = {
       imSoftServices: {
         title: 'Tecnología especializada para salud en Monterrey',
         description:
-          'Desarrollamos soluciones médicas que cumplen con normativas mexicanas e internacionales, estándares de seguridad y privacidad del sector salud.',
+          'Desarrollamos soluciones médicas que cumplen con normativas mexicanas e internacionales, estándares de seguridad y privacidad del sector salud. Ofrecemos páginas web corporativas, aplicaciones móviles, análisis de datos médicos y consultoría tecnológica especializada.',
         services: [
           {
-            title: 'Sistemas Médicos Certificados',
+            title: 'Páginas Web Corporativas',
             description:
-              'Plataformas web con arquitectura segura de nivel empresarial, encriptación de datos médicos, respaldo automático y cumplimiento NOM-024/HIPAA.',
-            icon: '⚕️',
+              'Páginas web modernas para clínicas con arquitectura segura, optimización SEO, información de servicios, agendamiento en línea y cumplimiento de normativas.',
+            icon: '🌐',
           },
           {
-            title: 'Apps para Pacientes',
+            title: 'Aplicaciones Móviles para Pacientes',
             description:
-              'Aplicaciones móviles premium para agendar citas, consultar resultados de estudios, videoconsultas de alta calidad y comunicación segura.',
+              'Aplicaciones móviles premium nativas iOS y Android para agendar citas, consultar resultados de estudios, videoconsultas de alta calidad y comunicación segura.',
             icon: '📱',
           },
           {
-            title: 'Migración y Capacitación',
+            title: 'Análisis de Datos Médicos',
             description:
-              'Transferencia de expedientes físicos a digital, capacitación al personal médico, certificación NOM-024 y soporte técnico especializado.',
-            icon: '🎓',
+              'Análisis de datos en tiempo real, dashboards con métricas de atención, reportes de eficiencia, análisis de tratamientos y business intelligence para clínicas.',
+            icon: '📊',
+          },
+          {
+            title: 'Sistemas Médicos Certificados',
+            description:
+              'Plataformas web con arquitectura segura de nivel empresarial, encriptación de datos médicos, respaldo automático, expediente electrónico y cumplimiento NOM-024/HIPAA.',
+            icon: '⚕️',
+          },
+          {
+            title: 'Consultoría Tecnológica',
+            description:
+              'Consultoría tecnológica especializada en salud: auditoría de sistemas, cumplimiento normativo, migración de datos y estrategia de transformación digital.',
+            icon: '💡',
           },
         ],
       },
       cta: {
         title: 'Digitaliza tu clínica en Monterrey',
         description:
-          'Agenda una reunión para conocer cómo la tecnología puede mejorar la atención al paciente y cumplir con normativas de salud nacionales e internacionales.',
+          'Agenda una reunión para conocer cómo nuestras soluciones tecnológicas - páginas web corporativas, aplicaciones móviles, análisis de datos médicos y consultoría tecnológica - pueden mejorar la atención al paciente y cumplir con normativas de salud nacionales e internacionales.',
         buttonText: 'Contactar a un Especialista',
       },
     },
@@ -1080,7 +1284,7 @@ export const landingPagesData: LandingPageConfig = {
         'Plataformas de gestión logística en Monterrey. TMS, rastreo GPS, gestión de flotas, almacenes y distribución para empresas industriales.',
       h1: 'Sistemas de Gestión Logística en Monterrey',
       heroSubtitle:
-        'Optimizamos operaciones logísticas en Monterrey con plataformas TMS, rastreo GPS en tiempo real, gestión de almacenes y sistemas de distribución para empresas industriales.',
+        'Optimizamos operaciones logísticas en Monterrey con páginas web corporativas, aplicaciones móviles para operadores, análisis de datos en tiempo real, plataformas TMS y consultoría tecnológica para empresas industriales.',
       problems: {
         title: 'Retos logísticos en el sector industrial',
         items: [
@@ -1120,8 +1324,26 @@ export const landingPagesData: LandingPageConfig = {
       imSoftServices: {
         title: 'Soluciones tecnológicas para logística en Monterrey',
         description:
-          'Creamos ecosistemas digitales que conectan almacenes, transporte, operadores y clientes para operaciones logísticas eficientes de nivel industrial.',
+          'Creamos ecosistemas digitales que conectan almacenes, transporte, operadores y clientes para operaciones logísticas eficientes de nivel industrial. Ofrecemos páginas web corporativas, aplicaciones móviles, análisis de datos, tiendas en línea para servicios y consultoría tecnológica especializada.',
         services: [
+          {
+            title: 'Páginas Web y Portales Corporativos',
+            description:
+              'Páginas web modernas y portales para clientes con arquitectura escalable, optimización SEO, rastreo en tiempo real, dashboards y gestión de documentación.',
+            icon: '🌐',
+          },
+          {
+            title: 'Aplicaciones Móviles para Operadores',
+            description:
+              'Aplicaciones móviles nativas iOS y Android para choferes con navegación GPS, modo offline, captura de evidencias multimedia, geolocalización y firma digital certificada.',
+            icon: '📱',
+          },
+          {
+            title: 'Análisis de Datos y Business Intelligence',
+            description:
+              'Análisis de datos en tiempo real, reportes avanzados, análisis predictivo de demanda, optimización de costos, visualización de datos logísticos y business intelligence.',
+            icon: '📊',
+          },
           {
             title: 'Plataformas TMS/WMS Empresariales',
             description:
@@ -1129,23 +1351,17 @@ export const landingPagesData: LandingPageConfig = {
             icon: '🚚',
           },
           {
-            title: 'Apps Móviles para Operadores',
+            title: 'Consultoría Tecnológica',
             description:
-              'Aplicaciones nativas para choferes con navegación GPS, modo offline, captura de evidencias multimedia y firma digital certificada.',
-            icon: '📱',
-          },
-          {
-            title: 'Business Intelligence Logístico',
-            description:
-              'Reportes avanzados, análisis predictivo de demanda, optimización de costos, visualización de datos y alertas inteligentes para directivos.',
-            icon: '📊',
+              'Consultoría tecnológica especializada: auditoría de sistemas logísticos, arquitectura de soluciones, integraciones empresariales y estrategia de transformación digital.',
+            icon: '💡',
           },
         ],
       },
       cta: {
         title: 'Optimiza tu operación logística en Monterrey',
         description:
-          'Conversemos sobre cómo reducir costos operativos y mejorar tiempos de entrega en Monterrey con tecnología especializada para empresas industriales.',
+          'Conversemos sobre cómo nuestras soluciones tecnológicas - páginas web corporativas, aplicaciones móviles, análisis de datos, tiendas en línea y consultoría - pueden reducir costos operativos y mejorar tiempos de entrega en Monterrey con tecnología especializada para empresas industriales.',
         buttonText: 'Solicitar Análisis de Operación',
       },
     },
