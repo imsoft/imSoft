@@ -125,7 +125,7 @@ export function ProjectForm({ dict, lang, project }: ProjectFormProps) {
   const [statusOpen, setStatusOpen] = useState(false)
   const [companies, setCompanies] = useState<Array<{ value: string; label: string }>>([])
   const [isLoadingCompanies, setIsLoadingCompanies] = useState(true)
-  const [technologies, setTechnologies] = useState<Array<{ id: string; name_es?: string; name_en?: string; name?: string }>>([])
+  const [technologies, setTechnologies] = useState<Array<{ id: string; name_es?: string; name_en?: string; name?: string; logo_url?: string }>>([])
   const [isLoadingTechnologies, setIsLoadingTechnologies] = useState(true)
   const isEditing = !!project
 
@@ -221,7 +221,7 @@ export function ProjectForm({ dict, lang, project }: ProjectFormProps) {
         const supabase = createClient()
         const { data, error } = await supabase
           .from('technologies')
-          .select('id, name_es, name_en, name')
+          .select('id, name_es, name_en, name, logo_url')
           .order('name_es', { ascending: true })
 
         if (error) throw error
@@ -1061,7 +1061,17 @@ export function ProjectForm({ dict, lang, project }: ProjectFormProps) {
                                     }}
                                   />
                                 </FormControl>
-                                <FormLabel className="font-normal cursor-pointer">
+                                <FormLabel className="font-normal cursor-pointer flex items-center gap-2">
+                                  {tech.logo_url && (
+                                    <Image
+                                      src={tech.logo_url}
+                                      alt={techName}
+                                      width={24}
+                                      height={24}
+                                      className="object-contain"
+                                      unoptimized
+                                    />
+                                  )}
                                   {techName}
                                 </FormLabel>
                               </FormItem>
