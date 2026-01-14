@@ -276,7 +276,7 @@ export function CompanyForm({ dict, lang, company }: CompanyFormProps) {
                     {previewImage ? (
                       <div className="flex flex-col items-start gap-4">
                         <div className="relative inline-block">
-                          <div className="relative h-40 w-40 overflow-hidden rounded-lg border-2 border-border bg-muted/50 p-2">
+                          <div className="relative h-40 w-40 overflow-hidden rounded-lg border-2 border-border bg-white p-2">
                             <Image
                               src={previewImage}
                               alt={form.watch('name') || 'Logo'}

@@ -324,7 +324,7 @@ export function ClientProjectForm({ dict, lang, companyId, companyName }: Client
                       <Input
                         {...field}
                         readOnly
-                        className="!border-2 !border-border bg-muted cursor-not-allowed"
+                        className="!border-2 !border-border bg-white cursor-not-allowed"
                       />
                     </FormControl>
                     <FormMessage />

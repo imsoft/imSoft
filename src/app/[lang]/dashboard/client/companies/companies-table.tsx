@@ -96,7 +96,7 @@ export function CompaniesTable({ companies, dict, lang }: CompaniesTableProps) {
                 />
               </div>
             ) : (
-              <div className="flex h-10 w-10 items-center justify-center rounded-md bg-muted">
+              <div className="flex h-10 w-10 items-center justify-center rounded-md bg-white">
                 <Building2 className="h-5 w-5 text-muted-foreground" />
               </div>
             )}

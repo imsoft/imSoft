@@ -436,7 +436,7 @@ export function AdminCompanyForm({ dict, lang, initialData }: AdminCompanyFormPr
                                 )}
                               </div>
                             ) : (
-                              <div className="size-32 rounded-xl border-2 border-dashed border-muted-foreground/25 bg-muted/50 flex items-center justify-center">
+                              <div className="size-32 rounded-xl border-2 border-dashed border-muted-foreground/25 bg-white flex items-center justify-center">
                                 <Building2 className="size-12 text-muted-foreground/40" />
                               </div>
                             )}

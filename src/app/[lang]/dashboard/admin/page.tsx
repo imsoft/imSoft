@@ -121,19 +121,19 @@ export default async function AdminDashboardPage({ params }: {
 
       {/* Estadísticas */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <div className="rounded-lg border bg-card p-6">
+        <div className="rounded-lg border bg-white p-6">
           <div className="text-2xl font-bold">{stats.projects}</div>
           <p className="text-sm text-muted-foreground">
             {lang === 'en' ? 'Active Projects' : 'Proyectos Activos'}
           </p>
         </div>
-        <div className="rounded-lg border bg-card p-6">
+        <div className="rounded-lg border bg-white p-6">
           <div className="text-2xl font-bold">{stats.quotations}</div>
           <p className="text-sm text-muted-foreground">
             {lang === 'en' ? 'Quotations' : 'Cotizaciones'}
           </p>
         </div>
-        <div className="rounded-lg border bg-card p-6">
+        <div className="rounded-lg border bg-white p-6">
           <div className="text-2xl font-bold">{stats.contacts}</div>
           <p className="text-sm text-muted-foreground">
             {lang === 'en' ? 'CRM Contacts' : 'Contactos CRM'}

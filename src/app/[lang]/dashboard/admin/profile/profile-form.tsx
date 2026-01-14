@@ -169,7 +169,7 @@ export function ProfileForm({ dict, lang, user }: ProfileFormProps) {
                 />
               </div>
             ) : (
-              <div className="w-24 h-24 rounded-full bg-muted flex items-center justify-center border-2 border-border">
+              <div className="w-24 h-24 rounded-full bg-white flex items-center justify-center border-2 border-border">
                 <User className="h-12 w-12 text-muted-foreground" />
               </div>
             )}

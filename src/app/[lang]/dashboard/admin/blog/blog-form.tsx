@@ -419,7 +419,7 @@ export function BlogForm({ dict, lang, post }: BlogFormProps) {
                       <Input 
                         {...field} 
                         readOnly={!isEditing}
-                        className={`!border-2 !border-border ${!isEditing ? "bg-muted cursor-not-allowed" : ""}`}
+                        className={`!border-2 !border-border ${!isEditing ? "bg-white cursor-not-allowed" : ""}`}
                       />
                     </FormControl>
                     <FormMessage />

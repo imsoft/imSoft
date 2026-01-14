@@ -143,7 +143,7 @@ export function BlogTable({ posts, authorsMap, dict, lang }: BlogTableWithAuthor
                 />
               </div>
             ) : (
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white">
                 <ImageIcon className="h-5 w-5 text-muted-foreground" />
               </div>
             )}
@@ -197,7 +197,7 @@ export function BlogTable({ posts, authorsMap, dict, lang }: BlogTableWithAuthor
       cell: ({ row }) => {
         const published = row.getValue("published") as boolean
         return (
-          <span className={`px-2 py-1 rounded text-xs ${published ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200'}`}>
+          <span className={`px-2 py-1 rounded text-xs ${published ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : 'bg-white text-gray-800 dark:bg-gray-800 dark:text-gray-200'}`}>
             {published ? (lang === 'en' ? 'Published' : 'Publicado') : (lang === 'en' ? 'Draft' : 'Borrador')}
           </span>
         )

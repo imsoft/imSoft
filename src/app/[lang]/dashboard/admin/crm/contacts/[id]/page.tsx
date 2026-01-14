@@ -67,7 +67,7 @@ export default async function ContactDetailPage({ params }: {
 
   const statusColors: Record<string, string> = {
     active: 'bg-green-500/10 text-green-700 dark:text-green-400',
-    inactive: 'bg-gray-500/10 text-gray-700 dark:text-gray-400',
+    inactive: 'bg-white text-gray-700 dark:text-gray-400',
     lost: 'bg-red-500/10 text-red-700 dark:text-red-400',
   }
 

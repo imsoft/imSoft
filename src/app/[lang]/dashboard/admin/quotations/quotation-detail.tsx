@@ -102,8 +102,9 @@ export function QuotationDetail({ quotation, questions, dict, lang }: QuotationD
         })
       }
 
-      // Color de marca: #6366f1 (indigo)
-      const brandColor = { r: 99, g: 102, b: 241 }
+      // Color primario de marca: oklch(0.6723 0.1606 244.9955)
+      // Convertido a RGB: aproximadamente rgb(102, 106, 234)
+      const brandColor = { r: 102, g: 106, b: 234 }
 
       // Header con color de marca
       doc.setFillColor(brandColor.r, brandColor.g, brandColor.b)
@@ -400,6 +401,20 @@ export function QuotationDetail({ quotation, questions, dict, lang }: QuotationD
 
   return (
     <div className="space-y-6">
+      {/* Título y Descripción */}
+      {(quotation.title || quotation.description) && (
+        <Card className="bg-white">
+          <CardHeader>
+            <CardTitle>{quotation.title || (lang === 'en' ? 'Quotation Details' : 'Detalles de la Cotización')}</CardTitle>
+          </CardHeader>
+          {quotation.description && (
+            <CardContent>
+              <p className="text-base whitespace-pre-wrap text-foreground">{quotation.description}</p>
+            </CardContent>
+          )}
+        </Card>
+      )}
+
       {/* Action Buttons */}
       <div className="flex gap-3">
         <Button
@@ -497,6 +512,14 @@ export function QuotationDetail({ quotation, questions, dict, lang }: QuotationD
               </label>
               <p className="text-base font-medium">{serviceName || '-'}</p>
             </div>
+            {quotation.title && (
+              <div>
+                <label className="text-sm font-medium text-muted-foreground">
+                  {lang === 'en' ? 'Title' : 'Título'}
+                </label>
+                <p className="text-base font-medium">{quotation.title}</p>
+              </div>
+            )}
             <div>
               <label className="text-sm font-medium text-muted-foreground">
                 {lang === 'en' ? 'Created At' : 'Fecha de Creación'}
@@ -514,6 +537,14 @@ export function QuotationDetail({ quotation, questions, dict, lang }: QuotationD
               </div>
             )}
           </div>
+          {quotation.description && (
+            <div className="mt-4">
+              <label className="text-sm font-medium text-muted-foreground">
+                {lang === 'en' ? 'Description' : 'Descripción'}
+              </label>
+              <p className="text-base whitespace-pre-wrap text-foreground mt-2">{quotation.description}</p>
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -606,7 +637,7 @@ export function QuotationDetail({ quotation, questions, dict, lang }: QuotationD
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Botón para obtener recomendación de IA */}
-          <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
+          <div className="flex items-center justify-between p-4 bg-white rounded-lg">
             <div>
               <p className="font-medium mb-1">
                 {lang === 'en' ? 'AI Recommendation' : 'Recomendación de IA'}

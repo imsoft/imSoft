@@ -65,7 +65,7 @@ export default async function EditProjectPage({ params }: {
           <ProjectForm dict={dict} lang={lang} project={project} />
         </TabsContent>
         <TabsContent value="payments" className="space-y-6 mt-6">
-          <div className="bg-white dark:bg-gray-900 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
+          <div className="bg-white rounded-lg p-6 border border-gray-200 dark:border-gray-700">
             <ProjectPaymentsManager 
               projectId={id} 
               projectCurrency={project.currency || 'MXN'}

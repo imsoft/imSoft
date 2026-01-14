@@ -136,7 +136,7 @@ export function PortfolioTable({ portfolio, dict, lang }: PortfolioTableProps) {
             />
           </div>
         ) : (
-          <div className="w-16 h-16 rounded-md bg-muted flex items-center justify-center">
+          <div className="w-16 h-16 rounded-md bg-white flex items-center justify-center">
             <span className="text-xs text-muted-foreground">
               {lang === 'en' ? 'No image' : 'Sin imagen'}
             </span>

@@ -72,7 +72,7 @@ export function ContactsTable({ contacts, dict, lang }: ContactsTableProps) {
 
   const statusColors: Record<string, string> = {
     active: 'bg-green-500/10 text-green-700 dark:text-green-400',
-    inactive: 'bg-gray-500/10 text-gray-700 dark:text-gray-400',
+    inactive: 'bg-white text-gray-700 dark:text-gray-400',
     lost: 'bg-red-500/10 text-red-700 dark:text-red-400',
   }
 
@@ -92,7 +92,7 @@ export function ContactsTable({ contacts, dict, lang }: ContactsTableProps) {
     <Card className="overflow-hidden bg-card">
       <div className="overflow-x-auto">
         <table className="w-full">
-          <thead className="border-b bg-muted/50">
+          <thead className="border-b bg-white">
             <tr>
               <th className="px-6 py-3 text-left text-sm font-medium">
                 {lang === 'en' ? 'Name' : 'Nombre'}
@@ -119,7 +119,7 @@ export function ContactsTable({ contacts, dict, lang }: ContactsTableProps) {
           </thead>
           <tbody className="divide-y">
             {contacts.map((contact) => (
-              <tr key={contact.id} className="hover:bg-muted/50">
+              <tr key={contact.id} className="hover:bg-gray-50">
                 <td className="px-6 py-4">
                   <div>
                     <p className="font-medium">

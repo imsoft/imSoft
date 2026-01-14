@@ -113,7 +113,7 @@ export function ActivitiesTable({ activities, dict, lang }: ActivitiesTableProps
     <Card className="overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full">
-          <thead className="border-b bg-muted/50">
+          <thead className="border-b bg-white">
             <tr>
               <th className="px-6 py-3 text-left text-sm font-medium">
                 {lang === 'en' ? 'Type' : 'Tipo'}
@@ -140,7 +140,7 @@ export function ActivitiesTable({ activities, dict, lang }: ActivitiesTableProps
           </thead>
           <tbody className="divide-y">
             {activities.map((activity: any) => (
-              <tr key={activity.id} className="hover:bg-muted/50">
+              <tr key={activity.id} className="hover:bg-gray-50">
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-2">
                     {getActivityIcon(activity.activity_type)}

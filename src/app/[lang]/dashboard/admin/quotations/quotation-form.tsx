@@ -33,6 +33,7 @@ import type { Dictionary, Locale } from '@/app/[lang]/dictionaries'
 import type { QuotationQuestion } from '@/types/database'
 import { Calculator, Save } from 'lucide-react'
 import { Checkbox } from '@/components/ui/checkbox'
+import Image from 'next/image'
 
 const quotationSchema = z.object({
   service_id: z.string().min(1, 'El servicio es requerido'),
@@ -61,7 +62,7 @@ export function QuotationForm({ services, dict, lang, userId }: QuotationFormPro
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [questions, setQuestions] = useState<QuotationQuestion[]>([])
-  const [technologies, setTechnologies] = useState<Array<{ id: string; name_es?: string; name_en?: string; name?: string }>>([])
+  const [technologies, setTechnologies] = useState<Array<{ id: string; name_es?: string; name_en?: string; name?: string; logo_url?: string }>>([])
   const [isLoadingTechnologies, setIsLoadingTechnologies] = useState(true)
   const [isLoadingQuestions, setIsLoadingQuestions] = useState(false)
   const [subtotal, setSubtotal] = useState(0)
@@ -139,7 +140,7 @@ export function QuotationForm({ services, dict, lang, userId }: QuotationFormPro
         const supabase = createClient()
         const { data, error } = await supabase
           .from('technologies')
-          .select('id, name_es, name_en, name')
+          .select('id, name_es, name_en, name, logo_url')
           .order('name_es', { ascending: true })
 
         if (error) throw error
@@ -468,7 +469,7 @@ export function QuotationForm({ services, dict, lang, userId }: QuotationFormPro
                               return (
                                 <FormItem
                                   key={tech.id}
-                                  className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-3 bg-white dark:bg-card"
+                                  className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-3 bg-white dark:bg-card"
                                 >
                                   <FormControl>
                                     <Checkbox
@@ -484,9 +485,31 @@ export function QuotationForm({ services, dict, lang, userId }: QuotationFormPro
                                       }}
                                     />
                                   </FormControl>
-                                  <FormLabel className="font-normal cursor-pointer">
-                                    {techName}
-                                  </FormLabel>
+                                  {tech.logo_url ? (
+                                    <div className="flex items-center gap-3 flex-1">
+                                      <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded border bg-white">
+                                        <Image
+                                          src={tech.logo_url}
+                                          alt={techName}
+                                          fill
+                                          className="object-contain p-1"
+                                          onError={(e) => {
+                                            const target = e.target as HTMLImageElement
+                                            if (target.parentElement) {
+                                              target.parentElement.style.display = 'none'
+                                            }
+                                          }}
+                                        />
+                                      </div>
+                                      <FormLabel className="font-normal cursor-pointer flex-1">
+                                        {techName}
+                                      </FormLabel>
+                                    </div>
+                                  ) : (
+                                    <FormLabel className="font-normal cursor-pointer flex-1">
+                                      {techName}
+                                    </FormLabel>
+                                  )}
                                 </FormItem>
                               )
                             }}

@@ -62,7 +62,7 @@ export function SettingsForm({ dict, lang }: SettingsFormProps) {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="h-10 bg-muted animate-pulse rounded-md" />
+            <div className="h-10 bg-white animate-pulse rounded-md" />
           </CardContent>
         </Card>
         <Card>
@@ -76,7 +76,7 @@ export function SettingsForm({ dict, lang }: SettingsFormProps) {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="h-10 bg-muted animate-pulse rounded-md" />
+            <div className="h-10 bg-white animate-pulse rounded-md" />
           </CardContent>
         </Card>
       </div>

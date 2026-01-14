@@ -90,7 +90,7 @@ export function DealsTable({ deals, dict, lang }: DealsTableProps) {
     <Card className="overflow-hidden bg-card">
       <div className="overflow-x-auto">
         <table className="w-full">
-          <thead className="border-b bg-muted/50">
+          <thead className="border-b bg-white">
             <tr>
               <th className="px-6 py-3 text-left text-sm font-medium">
                 {lang === 'en' ? 'Deal Name' : 'Nombre del Negocio'}
@@ -117,7 +117,7 @@ export function DealsTable({ deals, dict, lang }: DealsTableProps) {
           </thead>
           <tbody className="divide-y">
             {deals.map((deal: any) => (
-              <tr key={deal.id} className="hover:bg-muted/50">
+              <tr key={deal.id} className="hover:bg-gray-50">
                 <td className="px-6 py-4">
                   <div>
                     <p className="font-medium">{deal.title}</p>

@@ -377,7 +377,7 @@ export function ServiceForm({ dict, lang, service }: ServiceFormProps) {
                       <Input 
                         {...field} 
                         readOnly={!isEditing}
-                        className={`!border-2 !border-border ${!isEditing ? "bg-muted cursor-not-allowed" : ""}`}
+                        className={`!border-2 !border-border ${!isEditing ? "bg-white cursor-not-allowed" : ""}`}
                       />
                     </FormControl>
                     <FormMessage />

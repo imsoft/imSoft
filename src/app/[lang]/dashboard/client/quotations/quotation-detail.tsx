@@ -51,7 +51,7 @@ export function QuotationDetail({ quotation, questions, dict, lang }: QuotationD
     <div className="space-y-6">
       {/* Título y Descripción */}
       {(quotation.title || quotation.description) && (
-        <div className="bg-white dark:bg-gray-900 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
+        <div className="bg-white rounded-lg p-6 border border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between gap-4 mb-4">
             <h2 className="text-xl font-bold">{quotation.title || (lang === 'en' ? 'Quotation Details' : 'Detalles de la Cotización')}</h2>
           </div>
@@ -190,7 +190,7 @@ export function QuotationDetail({ quotation, questions, dict, lang }: QuotationD
 
       {/* Notas */}
       {quotation.notes && (
-        <div className="bg-white dark:bg-gray-900 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
+        <div className="bg-white rounded-lg p-6 border border-gray-200 dark:border-gray-700">
           <h2 className="text-xl font-bold mb-4">{lang === 'en' ? 'Notes' : 'Notas'}</h2>
           <p className="text-sm whitespace-pre-wrap">{quotation.notes}</p>
         </div>

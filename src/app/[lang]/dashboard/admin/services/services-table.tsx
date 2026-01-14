@@ -139,7 +139,7 @@ export function ServicesTable({ services, dict, lang }: ServicesTableProps) {
                 />
               </div>
             ) : (
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white">
                 <ImageIcon className="h-5 w-5 text-muted-foreground" />
               </div>
             )}

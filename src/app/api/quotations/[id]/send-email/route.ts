@@ -76,6 +76,11 @@ export async function POST(
       }).format(amount)
     }
 
+    // Color primario de marca: oklch(0.6723 0.1606 244.9955) convertido a RGB
+    // Aproximación RGB: rgb(102, 106, 234) = #666aea
+    const primaryColor = '#666aea'
+    const primaryColorDark = '#5555d9' // Versión más oscura para gradientes
+
     // Generar HTML del email
     const answersHTML = quotation.answers && Object.keys(quotation.answers).length > 0
       ? Object.entries(quotation.answers).map(([questionId, answer]) => {
@@ -119,14 +124,14 @@ export async function POST(
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
         </head>
         <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-          <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; border-radius: 10px 10px 0 0; text-align: center;">
+          <div style="background: ${primaryColor}; padding: 30px; border-radius: 10px 10px 0 0; text-align: center;">
             <h1 style="color: white; margin: 0; font-size: 24px;">imSoft</h1>
             <p style="color: white; margin: 10px 0 0 0; font-size: 18px;">Cotización</p>
           </div>
 
           <div style="background: #f8f9fa; padding: 30px; border-radius: 0 0 10px 10px;">
             <div style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px;">
-              <h2 style="color: #667eea; margin-top: 0; font-size: 20px; border-bottom: 2px solid #667eea; padding-bottom: 10px;">Información General</h2>
+              <h2 style="color: ${primaryColor}; margin-top: 0; font-size: 20px; border-bottom: 2px solid ${primaryColor}; padding-bottom: 10px;">Información General</h2>
               <table style="width: 100%;">
                 <tr>
                   <td style="padding: 8px 0; font-weight: bold; color: #555; width: 150px;">Cliente:</td>
@@ -160,14 +165,14 @@ export async function POST(
             </div>
 
             <div style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px;">
-              <h2 style="color: #667eea; margin-top: 0; font-size: 20px; border-bottom: 2px solid #667eea; padding-bottom: 10px;">Respuestas del Cuestionario</h2>
+              <h2 style="color: ${primaryColor}; margin-top: 0; font-size: 20px; border-bottom: 2px solid ${primaryColor}; padding-bottom: 10px;">Respuestas del Cuestionario</h2>
               <table style="width: 100%;">
                 ${answersHTML}
               </table>
             </div>
 
             <div style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-              <h2 style="color: #667eea; margin-top: 0; font-size: 20px; border-bottom: 2px solid #667eea; padding-bottom: 10px;">Resumen del Precio</h2>
+              <h2 style="color: ${primaryColor}; margin-top: 0; font-size: 20px; border-bottom: 2px solid ${primaryColor}; padding-bottom: 10px;">Resumen del Precio</h2>
               <table style="width: 100%;">
                 <tr>
                   <td style="padding: 8px 0; color: #555;">Subtotal:</td>
@@ -177,9 +182,9 @@ export async function POST(
                   <td style="padding: 8px 0; color: #555;">IVA (16%):</td>
                   <td style="padding: 8px 0; text-align: right; font-weight: bold;">${formatCurrency(quotation.iva)}</td>
                 </tr>
-                <tr style="border-top: 2px solid #667eea;">
-                  <td style="padding: 12px 0; font-size: 18px; font-weight: bold; color: #667eea;">Total:</td>
-                  <td style="padding: 12px 0; text-align: right; font-size: 18px; font-weight: bold; color: #667eea;">${formatCurrency(quotation.total)}</td>
+                <tr style="border-top: 2px solid ${primaryColor};">
+                  <td style="padding: 12px 0; font-size: 18px; font-weight: bold; color: ${primaryColor};">Total:</td>
+                  <td style="padding: 12px 0; text-align: right; font-size: 18px; font-weight: bold; color: ${primaryColor};">${formatCurrency(quotation.total)}</td>
                 </tr>
               </table>
             </div>
