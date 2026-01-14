@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
 
     // Enviar email con Resend
     const { data: emailData, error: emailError } = await resend.emails.send({
-      from: 'imSoft <noreply@imsoft.io>',
+      from: 'imSoft <weareimsoft@gmail.com>',
       to: [clientEmail],
       subject: `Actualización de tu proyecto: ${project.title_es || project.title_en}`,
       html: `

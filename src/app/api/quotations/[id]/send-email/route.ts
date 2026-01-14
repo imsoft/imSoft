@@ -206,8 +206,9 @@ export async function POST(
     }
 
     // Determinar el remitente según si el dominio está verificado
-    // Si no tienes dominio verificado en Resend, usa el dominio de prueba
-    const fromEmail = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev'
+    // Si no tienes dominio verificado en Resend, usa el email verificado
+    // Para producción, configura RESEND_FROM_EMAIL con un dominio verificado
+    const fromEmail = process.env.RESEND_FROM_EMAIL || 'weareimsoft@gmail.com'
     const fromName = 'imSoft'
     
     // Enviar email

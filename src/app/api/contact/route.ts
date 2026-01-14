@@ -59,7 +59,7 @@ export async function POST(request: Request) {
     // Enviar email de notificación al administrador
     try {
       await resend.emails.send({
-        from: 'imSoft Contact Form <noreply@imsoft.io>',
+        from: 'imSoft Contact Form <weareimsoft@gmail.com>',
         to: adminEmail,
         replyTo: email,
         subject: `Nuevo mensaje de contacto de ${firstName} ${lastName}`,
