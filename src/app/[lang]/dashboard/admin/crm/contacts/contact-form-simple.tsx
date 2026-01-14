@@ -16,6 +16,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 import { createClient } from '@/lib/supabase/client'
 import { Contact } from '@/types/database'
 
@@ -25,6 +26,7 @@ const contactSchema = z.object({
   email: z.string().email('Invalid email address'),
   phone: z.string().optional(),
   company: z.string().optional(),
+  company_description: z.string().optional(),
 })
 
 type ContactFormValues = z.infer<typeof contactSchema>
@@ -47,6 +49,7 @@ export function ContactFormSimple({ contact, lang, userId }: ContactFormProps) {
       email: contact?.email || '',
       phone: contact?.phone || '',
       company: contact?.company || '',
+      company_description: contact?.notes || '',
     },
   })
 
@@ -55,14 +58,22 @@ export function ContactFormSimple({ contact, lang, userId }: ContactFormProps) {
     const supabase = createClient()
 
     try {
+      // Preparar datos para guardar (company_description se guarda en notes)
+      const contactData = {
+        first_name: values.first_name,
+        last_name: values.last_name,
+        email: values.email,
+        phone: values.phone || null,
+        company: values.company || null,
+        notes: values.company_description || null,
+        updated_at: new Date().toISOString(),
+      }
+
       if (contact) {
         // Update existing contact
         const { error } = await supabase
           .from('contacts')
-          .update({
-            ...values,
-            updated_at: new Date().toISOString(),
-          })
+          .update(contactData)
           .eq('id', contact.id)
 
         if (error) throw error
@@ -71,7 +82,7 @@ export function ContactFormSimple({ contact, lang, userId }: ContactFormProps) {
         const { error } = await supabase
           .from('contacts')
           .insert({
-            ...values,
+            ...contactData,
             contact_type: 'lead',
             status: 'active',
             created_by: userId,
@@ -163,6 +174,23 @@ export function ContactFormSimple({ contact, lang, userId }: ContactFormProps) {
                   <FormLabel>{lang === 'en' ? 'Company' : 'Empresa'}</FormLabel>
                   <FormControl>
                     <Input {...field} className="!border-2 !border-border" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="company_description"
+              render={({ field }) => (
+                <FormItem className="md:col-span-2">
+                  <FormLabel>{lang === 'en' ? 'Company Description' : 'Descripción de la Empresa'}</FormLabel>
+                  <FormControl>
+                    <Textarea 
+                      {...field} 
+                      className="!border-2 !border-border min-h-[100px]" 
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
