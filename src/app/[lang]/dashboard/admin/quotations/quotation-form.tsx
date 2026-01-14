@@ -74,31 +74,37 @@ export function QuotationForm({ services, dict, lang, userId }: QuotationFormPro
 
   // Eliminar servicios duplicados por ID y nombre usando useMemo para mejor rendimiento
   const uniqueServices = useMemo(() => {
-    if (!services || services.length === 0) return []
-    
-    // Primero eliminar duplicados por ID
-    const byId = new Map<string, typeof services[0]>()
-    services.forEach(service => {
-      if (!byId.has(service.id)) {
-        byId.set(service.id, service)
-      }
-    })
-    
-    // Luego eliminar duplicados por nombre (título)
-    const seenTitles = new Set<string>()
-    const result: typeof services = []
-    
-    for (const service of Array.from(byId.values())) {
-      const title = (lang === 'es' ? service.title_es : service.title_en)?.toLowerCase().trim() || ''
-      const titleKey = title || `__no_title_${service.id}__`
+    try {
+      if (!services || !Array.isArray(services) || services.length === 0) return []
       
-      if (!seenTitles.has(titleKey)) {
-        seenTitles.add(titleKey)
-        result.push(service)
+      // Primero eliminar duplicados por ID
+      const byId = new Map<string, typeof services[0]>()
+      services.forEach(service => {
+        if (service && service.id && !byId.has(service.id)) {
+          byId.set(service.id, service)
+        }
+      })
+      
+      // Luego eliminar duplicados por nombre (título)
+      const seenTitles = new Set<string>()
+      const result: typeof services = []
+      
+      for (const service of Array.from(byId.values())) {
+        if (!service || !service.id) continue
+        const title = (lang === 'es' ? service.title_es : service.title_en)?.toLowerCase().trim() || ''
+        const titleKey = title || `__no_title_${service.id}__`
+        
+        if (!seenTitles.has(titleKey)) {
+          seenTitles.add(titleKey)
+          result.push(service)
+        }
       }
+      
+      return result
+    } catch (error) {
+      console.error('Error processing unique services:', error)
+      return []
     }
-    
-    return result
   }, [services, lang])
 
   const form = useForm<QuotationFormValues>({
@@ -137,16 +143,21 @@ export function QuotationForm({ services, dict, lang, userId }: QuotationFormPro
 
       // Inicializar respuestas con valores por defecto
       const defaultAnswers: Record<string, any> = {}
-      data?.forEach(q => {
-        if (q.question_type === 'yes_no') {
-          defaultAnswers[q.id] = 'no'
-        } else if (q.question_type === 'number') {
-          defaultAnswers[q.id] = 1
-        } else if (q.question_type === 'range') {
-          defaultAnswers[q.id] = 1
-        }
-      })
-      form.setValue('answers', defaultAnswers)
+      if (data && Array.isArray(data)) {
+        data.forEach(q => {
+          if (!q || !q.id) return
+          if (q.question_type === 'yes_no') {
+            defaultAnswers[q.id] = 'no'
+          } else if (q.question_type === 'number') {
+            defaultAnswers[q.id] = 1
+          } else if (q.question_type === 'range') {
+            defaultAnswers[q.id] = 1
+          }
+        })
+      }
+      if (Object.keys(defaultAnswers).length > 0) {
+        form.setValue('answers', defaultAnswers)
+      }
     } catch (error) {
       console.error('Error loading questions:', error)
       toast.error(lang === 'en' ? 'Error loading questions' : 'Error al cargar preguntas')
@@ -166,48 +177,66 @@ export function QuotationForm({ services, dict, lang, userId }: QuotationFormPro
 
   // Función para calcular precio - usar useCallback para evitar recreaciones innecesarias
   const calculatePrice = useCallback(() => {
+    if (!questions || questions.length === 0) {
+      setSubtotal(0)
+      setIva(0)
+      setTotal(0)
+      return
+    }
+
     let calculatedSubtotal = 0
 
-    // Obtener los valores más recientes del formulario
-    const currentAnswers = form.getValues('answers') || answers
+    try {
+      // Obtener los valores más recientes del formulario
+      const currentAnswers = form.getValues('answers') || answers || {}
 
-    questions.forEach(question => {
-      const answer = currentAnswers[question.id]
+      questions.forEach(question => {
+        if (!question || !question.id) return
 
-      if (!answer && !question.is_required) return
+        const answer = currentAnswers[question.id]
 
-      switch (question.question_type) {
-        case 'multiple_choice':
-          if (answer && question.options) {
-            const selectedOption = question.options.find(opt =>
-              (opt.label_es === answer || opt.label_en === answer)
-            )
-            if (selectedOption) {
-              calculatedSubtotal += selectedOption.price
+        if (!answer && !question.is_required) return
+
+        switch (question.question_type) {
+          case 'multiple_choice':
+            if (answer && question.options && Array.isArray(question.options)) {
+              const selectedOption = question.options.find(opt =>
+                (opt.label_es === answer || opt.label_en === answer)
+              )
+              if (selectedOption && typeof selectedOption.price === 'number') {
+                calculatedSubtotal += selectedOption.price
+              }
             }
-          }
-          break
+            break
 
-        case 'yes_no':
-          if (answer === 'yes') {
-            calculatedSubtotal += question.base_price
-          }
-          break
+          case 'yes_no':
+            if (answer === 'yes' && typeof question.base_price === 'number') {
+              calculatedSubtotal += question.base_price
+            }
+            break
 
-        case 'number':
-        case 'range':
-          const numValue = Number(answer) || 0
-          calculatedSubtotal += question.base_price + (numValue * question.price_multiplier)
-          break
-      }
-    })
+          case 'number':
+          case 'range':
+            const numValue = Number(answer) || 0
+            const basePrice = typeof question.base_price === 'number' ? question.base_price : 0
+            const multiplier = typeof question.price_multiplier === 'number' ? question.price_multiplier : 0
+            calculatedSubtotal += basePrice + (numValue * multiplier)
+            break
+        }
+      })
 
-    const calculatedIva = calculatedSubtotal * IVA_RATE
-    const calculatedTotal = calculatedSubtotal + calculatedIva
+      const calculatedIva = calculatedSubtotal * IVA_RATE
+      const calculatedTotal = calculatedSubtotal + calculatedIva
 
-    setSubtotal(calculatedSubtotal)
-    setIva(calculatedIva)
-    setTotal(calculatedTotal)
+      setSubtotal(calculatedSubtotal)
+      setIva(calculatedIva)
+      setTotal(calculatedTotal)
+    } catch (error) {
+      console.error('Error calculating price:', error)
+      setSubtotal(0)
+      setIva(0)
+      setTotal(0)
+    }
   }, [questions, answers, form])
 
   // Calcular precio en tiempo real cuando cambian las respuestas
@@ -269,11 +298,14 @@ export function QuotationForm({ services, dict, lang, userId }: QuotationFormPro
         if (error) throw error
 
         // Transformar los datos para asegurar el tipo correcto
-        const dealsData = (data || []).map((deal: any) => ({
-          id: deal.id,
-          title: deal.title,
-          contacts: deal.contacts && !Array.isArray(deal.contacts) ? deal.contacts : null,
-        }))
+        const dealsData = (data || []).map((deal: any) => {
+          if (!deal || !deal.id) return null
+          return {
+            id: deal.id,
+            title: deal.title || '',
+            contacts: deal.contacts && !Array.isArray(deal.contacts) ? deal.contacts : null,
+          }
+        }).filter((deal): deal is NonNullable<typeof deal> => deal !== null)
         setDeals(dealsData)
       } catch (error) {
         console.error('Error fetching deals:', error)
@@ -557,66 +589,79 @@ export function QuotationForm({ services, dict, lang, userId }: QuotationFormPro
                         {lang === 'en' ? 'No technologies available' : 'No hay tecnologías disponibles'}
                       </div>
                     ) : (
-                      technologies.map((tech) => {
-                        const techName = lang === 'es' 
-                          ? (tech.name_es || tech.name || '')
-                          : (tech.name_en || tech.name || '')
-                        return (
-                          <FormField
-                            key={tech.id}
-                            control={form.control}
-                            name="technology_ids"
-                            render={({ field }) => {
-                              return (
-                                <FormItem
-                                  key={tech.id}
-                                  className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-3 bg-white dark:bg-card"
-                                >
-                                  <FormControl>
-                                    <Checkbox
-                                      checked={field.value?.includes(tech.id)}
-                                      onCheckedChange={(checked) => {
-                                        return checked
-                                          ? field.onChange([...field.value, tech.id])
-                                          : field.onChange(
-                                              field.value?.filter(
-                                                (value) => value !== tech.id
-                                              )
-                                            )
-                                      }}
-                                    />
-                                  </FormControl>
-                                  {tech.logo_url ? (
-                                    <div className="flex items-center gap-3 flex-1">
-                                      <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded border bg-white">
-                                        <Image
-                                          src={tech.logo_url}
-                                          alt={techName}
-                                          fill
-                                          className="object-contain p-1"
-                                          onError={(e) => {
-                                            const target = e.target as HTMLImageElement
-                                            if (target.parentElement) {
-                                              target.parentElement.style.display = 'none'
+                      technologies
+                        .filter((tech) => tech && tech.id)
+                        .map((tech) => {
+                          const techName = lang === 'es' 
+                            ? (tech?.name_es || tech?.name || '')
+                            : (tech?.name_en || tech?.name || '')
+                          if (!tech || !tech.id) return null
+                          
+                          return (
+                            <FormField
+                              key={tech.id}
+                              control={form.control}
+                              name="technology_ids"
+                              render={({ field }) => {
+                                const currentValue = Array.isArray(field.value) ? field.value : []
+                                return (
+                                  <FormItem
+                                    key={tech.id}
+                                    className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-3 bg-white dark:bg-card"
+                                  >
+                                    <FormControl>
+                                      <Checkbox
+                                        checked={currentValue.includes(tech.id)}
+                                        onCheckedChange={(checked) => {
+                                          try {
+                                            if (checked) {
+                                              field.onChange([...currentValue, tech.id])
+                                            } else {
+                                              field.onChange(currentValue.filter((value: string) => value !== tech.id))
                                             }
-                                          }}
-                                        />
+                                          } catch (error) {
+                                            console.error('Error updating technology selection:', error)
+                                          }
+                                        }}
+                                      />
+                                    </FormControl>
+                                    {tech.logo_url ? (
+                                      <div className="flex items-center gap-3 flex-1">
+                                        <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded border bg-white">
+                                          <Image
+                                            src={tech.logo_url}
+                                            alt={techName || 'Technology logo'}
+                                            fill
+                                            className="object-contain p-1"
+                                            unoptimized
+                                            onError={(e) => {
+                                              try {
+                                                const target = e.target as HTMLImageElement
+                                                if (target?.parentElement) {
+                                                  target.parentElement.style.display = 'none'
+                                                }
+                                              } catch (error) {
+                                                console.error('Error handling image error:', error)
+                                              }
+                                            }}
+                                          />
+                                        </div>
+                                        <FormLabel className="font-normal cursor-pointer flex-1">
+                                          {techName}
+                                        </FormLabel>
                                       </div>
+                                    ) : (
                                       <FormLabel className="font-normal cursor-pointer flex-1">
                                         {techName}
                                       </FormLabel>
-                                    </div>
-                                  ) : (
-                                    <FormLabel className="font-normal cursor-pointer flex-1">
-                                      {techName}
-                                    </FormLabel>
-                                  )}
-                                </FormItem>
-                              )
-                            }}
-                          />
-                        )
-                      })
+                                    )}
+                                  </FormItem>
+                                )
+                              }}
+                            />
+                          )
+                        })
+                        .filter(Boolean)
                     )}
                   </div>
                   <FormMessage />
