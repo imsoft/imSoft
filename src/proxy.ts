@@ -35,17 +35,27 @@ export async function proxy(request: NextRequest) {
           return request.cookies.getAll()
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) => request.cookies.set(name, value))
-          cookiesToSet.forEach(({ name, value, options }) =>
-            response.cookies.set(name, value, options)
-          )
+          cookiesToSet.forEach(({ name, value, options }) => {
+            request.cookies.set(name, value)
+            // Establecer cookie en la respuesta con opciones que aseguren persistencia
+            response.cookies.set(name, value, {
+              ...options,
+              path: options?.path || '/',
+              sameSite: (options?.sameSite as 'lax' | 'strict' | 'none') || 'lax',
+              secure: options?.secure ?? (process.env.NODE_ENV === 'production'),
+              httpOnly: options?.httpOnly ?? false,
+              // Si no hay maxAge, establecer uno por defecto para cookies de sesión
+              maxAge: options?.maxAge || (name.includes('auth-token') || name.includes('supabase') ? 60 * 60 * 24 * 7 : undefined),
+            })
+          })
         },
       },
     }
   )
 
-  // Refrescar la sesión si está expirada
-  await supabase.auth.getUser()
+  // Refrescar la sesión automáticamente
+  // Esto actualiza las cookies de sesión si están cerca de expirar
+  await supabase.auth.getSession()
 
   return response
 }
