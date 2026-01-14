@@ -12,6 +12,7 @@ import {
   DragStartEvent,
   DragOverEvent,
   DragEndEvent,
+  useDroppable,
 } from '@dnd-kit/core'
 import {
   SortableContext,
@@ -42,6 +43,32 @@ const STAGES: { id: DealStage; label_en: string; label_es: string; color: string
   { id: 'closed_won', label_en: 'Won', label_es: 'Ganado', color: 'bg-green-500' },
   { id: 'closed_lost', label_en: 'Lost', label_es: 'Perdido', color: 'bg-red-500' },
 ]
+
+// Componente para la columna droppable
+function DroppableColumn({
+  id,
+  children
+}: {
+  id: string
+  children: React.ReactNode
+}) {
+  const { setNodeRef, isOver } = useDroppable({
+    id,
+  })
+
+  return (
+    <div
+      ref={setNodeRef}
+      className={`flex flex-col gap-3 min-h-[200px] p-2 rounded-lg border-2 border-dashed transition-colors ${
+        isOver
+          ? 'border-primary bg-primary/5'
+          : 'border-muted-foreground/20'
+      }`}
+    >
+      {children}
+    </div>
+  )
+}
 
 export function KanbanBoard({ deals: initialDeals, lang }: KanbanBoardProps) {
   const router = useRouter()
@@ -226,14 +253,11 @@ export function KanbanBoard({ deals: initialDeals, lang }: KanbanBoardProps) {
                 items={stageDeals.map((d) => d.id)}
                 strategy={verticalListSortingStrategy}
               >
-                <div
-                  data-stage={stage.id}
-                  className="flex flex-col gap-3 min-h-[200px] p-2 rounded-lg border-2 border-dashed border-transparent hover:border-muted transition-colors"
-                >
+                <DroppableColumn id={stage.id}>
                   {stageDeals.map((deal) => (
                     <DealCard key={deal.id} deal={deal} lang={lang} />
                   ))}
-                </div>
+                </DroppableColumn>
               </SortableContext>
             </div>
           )
