@@ -335,7 +335,7 @@ export function QuotationForm({ services, dict, lang, userId }: QuotationFormPro
       const quotationData = {
         user_id: userId,
         service_id: values.service_id,
-        deal_id: values.deal_id || null,
+        deal_id: values.deal_id && values.deal_id !== '__none__' ? values.deal_id : null,
         title: values.title,
         description: values.description || null,
         client_name: values.client_name,
@@ -522,33 +522,40 @@ export function QuotationForm({ services, dict, lang, userId }: QuotationFormPro
               <FormItem>
                 <FormLabel>{lang === 'en' ? 'Associated Deal (Optional)' : 'Negocio Asociado (Opcional)'}</FormLabel>
                 <FormControl>
-                  <Select onValueChange={field.onChange} value={field.value || ''}>
+                  <Select 
+                    onValueChange={(value) => {
+                      field.onChange(value === '__none__' ? '' : value)
+                    }} 
+                    value={field.value && field.value !== '' ? field.value : undefined}
+                  >
                     <SelectTrigger className="w-full !border-2 !border-border">
                       <SelectValue placeholder={lang === 'en' ? 'Select a deal...' : 'Selecciona un negocio...'} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">{lang === 'en' ? 'None' : 'Ninguno'}</SelectItem>
+                      <SelectItem value="__none__">{lang === 'en' ? 'None' : 'Ninguno'}</SelectItem>
                       {isLoadingDeals ? (
-                        <SelectItem value="" disabled>
+                        <div className="px-2 py-1.5 text-sm text-muted-foreground">
                           {lang === 'en' ? 'Loading deals...' : 'Cargando negocios...'}
-                        </SelectItem>
+                        </div>
                       ) : (
-                        deals.map((deal) => {
-                          const contacts = deal.contacts && typeof deal.contacts === 'object' && !Array.isArray(deal.contacts)
-                            ? deal.contacts
-                            : null
-                          const contactName = contacts
-                            ? `${contacts.first_name || ''} ${contacts.last_name || ''}`.trim() || contacts.company || ''
-                            : ''
-                          const displayText = contactName
-                            ? `${deal.title} - ${contactName}`
-                            : deal.title
-                          return (
-                            <SelectItem key={deal.id} value={deal.id}>
-                              {displayText}
-                            </SelectItem>
-                          )
-                        })
+                        deals
+                          .filter((deal) => deal && deal.id)
+                          .map((deal) => {
+                            const contacts = deal.contacts && typeof deal.contacts === 'object' && !Array.isArray(deal.contacts)
+                              ? deal.contacts
+                              : null
+                            const contactName = contacts
+                              ? `${contacts.first_name || ''} ${contacts.last_name || ''}`.trim() || contacts.company || ''
+                              : ''
+                            const displayText = contactName
+                              ? `${deal.title} - ${contactName}`
+                              : deal.title
+                            return (
+                              <SelectItem key={deal.id} value={deal.id}>
+                                {displayText}
+                              </SelectItem>
+                            )
+                          })
                       )}
                     </SelectContent>
                   </Select>
