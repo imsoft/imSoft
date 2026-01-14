@@ -94,6 +94,14 @@ export async function POST(
       .order('sent_at', { ascending: false })
       .limit(10)
 
+    // Obtener todos los servicios de imSoft para la etapa de Prospección
+    const { data: allServicesData } = await supabase
+      .from('services')
+      .select('id, title_es, title_en, description_es, description_en')
+      .order('created_at', { ascending: true })
+    
+    const allServices = allServicesData || []
+
     const contactName = `${deal.contacts.first_name} ${deal.contacts.last_name}`
     const formatCurrency = (amount: number) => {
       return new Intl.NumberFormat('es-MX', {
@@ -124,6 +132,31 @@ export async function POST(
       emailHistoryText += `\nIMPORTANTE: Este es el email #${emailHistory.length + 1} en esta etapa. Asegúrate de que el contenido sea diferente y progresivo, mostrando avance en la relación.`
     } else {
       emailHistoryText = '\n\nEste es el PRIMER email que se enviará en esta etapa. Debe ser un email inicial y profesional.'
+    }
+
+    // Construir texto de servicios para etapa de Prospección
+    let servicesText = ''
+    if (deal.stage === 'qualification' && allServices.length > 0) {
+      const servicesList = allServices.map((service: any, index: number) => {
+        const title = service.title_es || service.title_en || 'Servicio'
+        const description = service.description_es || service.description_en || ''
+        return `${index + 1}. ${title}${description ? ` - ${description.substring(0, 150)}...` : ''}`
+      }).join('\n')
+      
+      servicesText = `\n\nSERVICIOS DE IMSOFT (Para etapa de Prospección):
+${servicesList}
+
+IMPORTANTE PARA ETAPA DE PROSPECCIÓN:
+- Debes incluir UNA idea o mejora específica para CADA servicio de imSoft listado arriba
+- Cada idea debe ser relevante para el negocio "${deal.title}" y la empresa "${deal.contacts.company || contactName}"
+- Las ideas deben ser concretas, accionables y mostrar valor potencial
+- Presenta las ideas de forma organizada (puedes usar una lista con viñetas)
+- Después de presentar todas las ideas, incluye una LLAMADA A LA ACCIÓN clara que invite a:
+  * Una reunión virtual (videollamada)
+  * Una reunión presencial
+  * Una llamada telefónica
+- La llamada a la acción debe ser específica y ofrecer flexibilidad en el método de contacto
+`
     }
 
     const prompt = `Eres un experto en comunicación comercial y ventas B2B. Genera un email personalizado y profesional en español para un cliente potencial.
@@ -157,6 +190,7 @@ ${(deal.quotations as any).description ? `- Descripción: ${(deal.quotations as 
 ` : ''}
 
 ${emailHistoryText}
+${servicesText}
 
 INSTRUCCIONES:
 1. PRIMERO genera el cuerpo del email completo, luego crea un asunto que resuma perfectamente el contenido
@@ -164,8 +198,8 @@ INSTRUCCIONES:
 3. El tono debe ser apropiado para la etapa "${stageLabel}"
 4. Si hay historial de emails, el nuevo email debe mostrar progreso y no repetir información
 5. Incluye información específica del negocio y contacto para personalización
-6. El email debe ser conciso pero completo (máximo 300 palabras en el cuerpo)
-7. Incluye una llamada a la acción clara y relevante para la etapa
+6. El email debe ser conciso pero completo${deal.stage === 'qualification' ? ' (máximo 500 palabras en el cuerpo para incluir todas las ideas)' : ' (máximo 300 palabras en el cuerpo)'}
+7. Incluye una llamada a la acción clara y relevante para la etapa${deal.stage === 'qualification' ? ' (debe incluir opciones para reunión virtual, presencial o llamada telefónica)' : ''}
 8. Al final del email, incluye una firma profesional con:
    - Nombre: Brandon Uriel García Ramos
    - Empresa: imSoft
