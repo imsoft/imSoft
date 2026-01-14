@@ -24,6 +24,7 @@ Este documento explica cómo configurar el envío de cotizaciones por WhatsApp u
    - Ve a la consola de Twilio: https://console.twilio.com/
    - Navega a **Messaging** → **Try it out** → **Send a WhatsApp message**
    - Twilio te proporcionará un número de prueba (formato: `whatsapp:+14155238886`)
+   - O usa tu número de WhatsApp Business: `whatsapp:+523325365558`
    - Este número solo funciona con números verificados en tu cuenta
 
 2. **Para Producción** (requiere número de WhatsApp Business):
@@ -45,13 +46,14 @@ Agrega las siguientes variables a tu archivo `.env.local`:
 ```env
 TWILIO_ACCOUNT_SID=tu_account_sid_aqui
 TWILIO_AUTH_TOKEN=tu_auth_token_aqui
-TWILIO_WHATSAPP_NUMBER=+14155238886
+TWILIO_WHATSAPP_NUMBER=+523325365558
 ```
 
 **Nota**: 
-- Para desarrollo, usa el número de prueba de Twilio
-- El formato debe ser: `+14155238886` (sin el prefijo `whatsapp:`)
-- En producción, usa tu número de WhatsApp Business verificado
+- Para desarrollo, puedes usar el número de prueba de Twilio: `+14155238886`
+- Para producción, usa tu número de WhatsApp Business: `+523325365558`
+- El formato debe ser: `+523325365558` (sin el prefijo `whatsapp:`)
+- El código automáticamente agrega el prefijo `whatsapp:` cuando envía mensajes
 
 ### Paso 5: Verificar la Instalación
 

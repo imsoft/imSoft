@@ -241,7 +241,7 @@ export async function POST(
         return NextResponse.json(
           { 
             error: 'WhatsApp number not configured in Twilio',
-            details: 'The WhatsApp number specified in TWILIO_WHATSAPP_NUMBER is not active or verified in your Twilio account. Please verify the number in Twilio Console → Messaging → Try it out → Send a WhatsApp message, or use the sandbox number: whatsapp:+14155238886'
+            details: 'The WhatsApp number specified in TWILIO_WHATSAPP_NUMBER is not active or verified in your Twilio account. Please verify the number in Twilio Console → Messaging → Try it out → Send a WhatsApp message. Your configured number: +523325365558'
           },
           { status: 500 }
         )
