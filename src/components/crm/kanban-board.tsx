@@ -18,7 +18,6 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
 import { Card } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { DealCard } from './deal-card'
 import type { Deal, DealStage } from '@/types/database'
 import { useRouter } from 'next/navigation'
@@ -48,6 +47,7 @@ export function KanbanBoard({ deals: initialDeals, lang }: KanbanBoardProps) {
   const router = useRouter()
   const [deals, setDeals] = useState(initialDeals)
   const [activeDeal, setActiveDeal] = useState<Deal | null>(null)
+  const [originalStage, setOriginalStage] = useState<DealStage | null>(null)
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -109,6 +109,7 @@ export function KanbanBoard({ deals: initialDeals, lang }: KanbanBoardProps) {
     const { active } = event
     const deal = deals.find((d) => d.id === active.id)
     setActiveDeal(deal || null)
+    setOriginalStage(deal?.stage || null)
   }
 
   const handleDragOver = (event: DragOverEvent) => {
@@ -133,15 +134,21 @@ export function KanbanBoard({ deals: initialDeals, lang }: KanbanBoardProps) {
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event
 
-    setActiveDeal(null)
-
-    if (!over) return
+    if (!over || !originalStage) {
+      setActiveDeal(null)
+      setOriginalStage(null)
+      return
+    }
 
     const activeDeal = deals.find((d) => d.id === active.id)
-    if (!activeDeal) return
+    if (!activeDeal) {
+      setActiveDeal(null)
+      setOriginalStage(null)
+      return
+    }
 
     const overStage = STAGES.find((s) => s.id === over.id)?.id
-    if (overStage && activeDeal.stage !== overStage) {
+    if (overStage && originalStage !== overStage) {
       // Actualizar en la base de datos
       try {
         const response = await fetch(`/api/crm/deals/${activeDeal.id}/stage`, {
@@ -162,12 +169,15 @@ export function KanbanBoard({ deals: initialDeals, lang }: KanbanBoardProps) {
         setDeals((prevDeals) =>
           prevDeals.map((d) =>
             d.id === activeDeal.id
-              ? { ...d, stage: activeDeal.stage }
+              ? { ...d, stage: originalStage }
               : d
           )
         )
       }
     }
+
+    setActiveDeal(null)
+    setOriginalStage(null)
   }
 
   return (
