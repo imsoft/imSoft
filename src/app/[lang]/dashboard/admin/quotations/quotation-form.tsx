@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
@@ -120,6 +120,41 @@ export function QuotationForm({ services, dict, lang, userId }: QuotationFormPro
   const selectedServiceId = form.watch('service_id')
   const answers = form.watch('answers')
 
+  // Función para cargar preguntas - usar useCallback para evitar recreaciones innecesarias
+  const loadQuestions = useCallback(async (serviceId: string) => {
+    setIsLoadingQuestions(true)
+    try {
+      const supabase = createClient()
+      const { data, error } = await supabase
+        .from('quotation_questions')
+        .select('*')
+        .eq('service_id', serviceId)
+        .order('order_index')
+
+      if (error) throw error
+
+      setQuestions(data || [])
+
+      // Inicializar respuestas con valores por defecto
+      const defaultAnswers: Record<string, any> = {}
+      data?.forEach(q => {
+        if (q.question_type === 'yes_no') {
+          defaultAnswers[q.id] = 'no'
+        } else if (q.question_type === 'number') {
+          defaultAnswers[q.id] = 1
+        } else if (q.question_type === 'range') {
+          defaultAnswers[q.id] = 1
+        }
+      })
+      form.setValue('answers', defaultAnswers)
+    } catch (error) {
+      console.error('Error loading questions:', error)
+      toast.error(lang === 'en' ? 'Error loading questions' : 'Error al cargar preguntas')
+    } finally {
+      setIsLoadingQuestions(false)
+    }
+  }, [form, lang])
+
   // Cargar preguntas cuando cambia el servicio
   useEffect(() => {
     if (selectedServiceId) {
@@ -127,14 +162,60 @@ export function QuotationForm({ services, dict, lang, userId }: QuotationFormPro
     } else {
       setQuestions([])
     }
-  }, [selectedServiceId])
+  }, [selectedServiceId, loadQuestions])
+
+  // Función para calcular precio - usar useCallback para evitar recreaciones innecesarias
+  const calculatePrice = useCallback(() => {
+    let calculatedSubtotal = 0
+
+    // Obtener los valores más recientes del formulario
+    const currentAnswers = form.getValues('answers') || answers
+
+    questions.forEach(question => {
+      const answer = currentAnswers[question.id]
+
+      if (!answer && !question.is_required) return
+
+      switch (question.question_type) {
+        case 'multiple_choice':
+          if (answer && question.options) {
+            const selectedOption = question.options.find(opt =>
+              (opt.label_es === answer || opt.label_en === answer)
+            )
+            if (selectedOption) {
+              calculatedSubtotal += selectedOption.price
+            }
+          }
+          break
+
+        case 'yes_no':
+          if (answer === 'yes') {
+            calculatedSubtotal += question.base_price
+          }
+          break
+
+        case 'number':
+        case 'range':
+          const numValue = Number(answer) || 0
+          calculatedSubtotal += question.base_price + (numValue * question.price_multiplier)
+          break
+      }
+    })
+
+    const calculatedIva = calculatedSubtotal * IVA_RATE
+    const calculatedTotal = calculatedSubtotal + calculatedIva
+
+    setSubtotal(calculatedSubtotal)
+    setIva(calculatedIva)
+    setTotal(calculatedTotal)
+  }, [questions, answers, form])
 
   // Calcular precio en tiempo real cuando cambian las respuestas
   useEffect(() => {
     if (questions.length > 0) {
       calculatePrice()
     }
-  }, [answers, questions])
+  }, [answers, questions, calculatePrice])
 
   // Cargar tecnologías
   useEffect(() => {
@@ -163,7 +244,7 @@ export function QuotationForm({ services, dict, lang, userId }: QuotationFormPro
       }
     }
     fetchTechnologies()
-  }, [])
+  }, [lang])
 
   // Cargar deals
   useEffect(() => {
@@ -207,86 +288,9 @@ export function QuotationForm({ services, dict, lang, userId }: QuotationFormPro
       }
     }
     fetchDeals()
-  }, [])
+  }, [lang])
 
-  async function loadQuestions(serviceId: string) {
-    setIsLoadingQuestions(true)
-    try {
-      const supabase = createClient()
-      const { data, error } = await supabase
-        .from('quotation_questions')
-        .select('*')
-        .eq('service_id', serviceId)
-        .order('order_index')
 
-      if (error) throw error
-
-      setQuestions(data || [])
-
-      // Inicializar respuestas con valores por defecto
-      const defaultAnswers: Record<string, any> = {}
-      data?.forEach(q => {
-        if (q.question_type === 'yes_no') {
-          defaultAnswers[q.id] = 'no'
-        } else if (q.question_type === 'number') {
-          defaultAnswers[q.id] = 1
-        } else if (q.question_type === 'range') {
-          defaultAnswers[q.id] = 1
-        }
-      })
-      form.setValue('answers', defaultAnswers)
-    } catch (error) {
-      console.error('Error loading questions:', error)
-      toast.error(lang === 'en' ? 'Error loading questions' : 'Error al cargar preguntas')
-    } finally {
-      setIsLoadingQuestions(false)
-    }
-  }
-
-  function calculatePrice() {
-    let calculatedSubtotal = 0
-
-    // Obtener los valores más recientes del formulario
-    const currentAnswers = form.getValues('answers') || answers
-
-    questions.forEach(question => {
-      const answer = currentAnswers[question.id]
-
-      if (!answer && !question.is_required) return
-
-      switch (question.question_type) {
-        case 'multiple_choice':
-          if (answer && question.options) {
-            const selectedOption = question.options.find(opt =>
-              (opt.label_es === answer || opt.label_en === answer)
-            )
-            if (selectedOption) {
-              calculatedSubtotal += selectedOption.price
-            }
-          }
-          break
-
-        case 'yes_no':
-          if (answer === 'yes') {
-            calculatedSubtotal += question.base_price
-          }
-          break
-
-        case 'number':
-        case 'range':
-          const numValue = Number(answer) || 0
-          calculatedSubtotal += question.base_price + (numValue * question.price_multiplier)
-          break
-      }
-    })
-
-    const calculatedIva = calculatedSubtotal * IVA_RATE
-    const calculatedTotal = calculatedSubtotal + calculatedIva
-
-    setSubtotal(calculatedSubtotal)
-    setIva(calculatedIva)
-    setTotal(calculatedTotal)
-  }
 
   async function onSubmit(values: QuotationFormValues) {
     setIsSubmitting(true)
