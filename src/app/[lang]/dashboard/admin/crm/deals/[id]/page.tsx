@@ -6,6 +6,7 @@ import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { ArrowLeft, Edit, DollarSign, Calendar, TrendingUp, User, Briefcase } from 'lucide-react'
 import Link from 'next/link'
+import { SendEmailButton } from './send-email-button'
 
 export default async function DealDetailPage({ params }: {
   params: Promise<{ lang: string; id: string }>
@@ -130,12 +131,15 @@ export default async function DealDetailPage({ params }: {
             </p>
           </div>
         </div>
-        <Button asChild>
-          <Link href={`/${lang}/dashboard/admin/crm/deals/${id}/edit`}>
-            <Edit className="mr-2 h-4 w-4" />
-            {lang === 'en' ? 'Edit' : 'Editar'}
-          </Link>
-        </Button>
+        <div className="flex gap-2">
+          <SendEmailButton dealId={id} dealStage={deal.stage} lang={lang} />
+          <Button asChild>
+            <Link href={`/${lang}/dashboard/admin/crm/deals/${id}/edit`}>
+              <Edit className="mr-2 h-4 w-4" />
+              {lang === 'en' ? 'Edit' : 'Editar'}
+            </Link>
+          </Button>
+        </div>
       </div>
 
       {/* Overview */}
