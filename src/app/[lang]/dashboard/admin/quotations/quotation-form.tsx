@@ -41,7 +41,10 @@ const quotationSchema = z.object({
   title: z.string().min(1, 'El título es requerido'),
   description: z.string().optional(),
   client_name: z.string().min(1, 'El nombre del cliente es requerido'),
-  client_email: z.string().email('Email inválido'),
+  client_email: z.string().optional().refine((val) => {
+    if (!val || val.trim() === '') return true
+    return z.string().email().safeParse(val).success
+  }, 'Email inválido'),
   client_phone: z.string().optional(),
   client_company: z.string().optional(),
   answers: z.record(z.any()),
@@ -334,11 +337,11 @@ export function QuotationForm({ services, dict, lang, userId }: QuotationFormPro
         service_id: values.service_id,
         deal_id: values.deal_id || null,
         title: values.title,
-        description: values.description,
+        description: values.description || null,
         client_name: values.client_name,
-        client_email: values.client_email,
-        client_phone: values.client_phone || null,
-        client_company: values.client_company,
+        client_email: values.client_email && values.client_email.trim() !== '' ? values.client_email : null,
+        client_phone: values.client_phone && values.client_phone.trim() !== '' ? values.client_phone : null,
+        client_company: values.client_company && values.client_company.trim() !== '' ? values.client_company : null,
         answers: values.answers,
         subtotal,
         iva,
