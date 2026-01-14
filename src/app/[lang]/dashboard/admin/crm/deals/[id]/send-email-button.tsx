@@ -16,6 +16,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 interface SendEmailButtonProps {
   dealId: string
@@ -191,18 +192,50 @@ export function SendEmailButton({ dealId, dealStage, lang, contactEmail }: SendE
               <Label htmlFor="email-body">
                 {lang === 'en' ? 'Body' : 'Cuerpo'} *
               </Label>
-              <Textarea
-                id="email-body"
-                value={emailBody}
-                onChange={(e) => setEmailBody(e.target.value)}
-                placeholder={lang === 'en' ? 'Email body (HTML supported)' : 'Cuerpo del correo (HTML soportado)'}
-                className="!border-2 !border-border min-h-[300px] font-mono text-sm"
-              />
-              <p className="text-xs text-muted-foreground">
-                {lang === 'en' 
-                  ? 'You can use HTML tags to format the email body.'
-                  : 'Puedes usar etiquetas HTML para formatear el cuerpo del correo.'}
-              </p>
+              <Tabs defaultValue="preview" className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="preview">
+                    {lang === 'en' ? 'Preview' : 'Vista Previa'}
+                  </TabsTrigger>
+                  <TabsTrigger value="html">
+                    {lang === 'en' ? 'HTML Editor' : 'Editor HTML'}
+                  </TabsTrigger>
+                </TabsList>
+                <TabsContent value="preview" className="mt-2">
+                  <div 
+                    className="!border-2 !border-border min-h-[300px] max-h-[400px] overflow-y-auto rounded-md"
+                    style={{ 
+                      maxWidth: '100%',
+                      wordWrap: 'break-word',
+                      backgroundColor: '#f8f9fa'
+                    }}
+                  >
+                    <iframe
+                      srcDoc={emailBody || '<p style="color: #666; padding: 20px;">No hay contenido para mostrar</p>'}
+                      className="w-full h-full min-h-[300px] border-0 rounded-md"
+                      title="Email Preview"
+                      sandbox="allow-same-origin"
+                      style={{
+                        backgroundColor: 'transparent'
+                      }}
+                    />
+                  </div>
+                </TabsContent>
+                <TabsContent value="html" className="mt-2">
+                  <Textarea
+                    id="email-body"
+                    value={emailBody}
+                    onChange={(e) => setEmailBody(e.target.value)}
+                    placeholder={lang === 'en' ? 'Email body (HTML supported)' : 'Cuerpo del correo (HTML soportado)'}
+                    className="!border-2 !border-border min-h-[300px] font-mono text-sm"
+                  />
+                  <p className="text-xs text-muted-foreground mt-2">
+                    {lang === 'en' 
+                      ? 'You can use HTML tags to format the email body.'
+                      : 'Puedes usar etiquetas HTML para formatear el cuerpo del correo.'}
+                  </p>
+                </TabsContent>
+              </Tabs>
             </div>
           </div>
 
