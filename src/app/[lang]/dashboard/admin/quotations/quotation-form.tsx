@@ -126,7 +126,9 @@ export function QuotationForm({ services, dict, lang, userId }: QuotationFormPro
 
   // Calcular precio en tiempo real cuando cambian las respuestas
   useEffect(() => {
-    calculatePrice()
+    if (questions.length > 0) {
+      calculatePrice()
+    }
   }, [answers, questions])
 
   // Cargar tecnologías
@@ -195,8 +197,11 @@ export function QuotationForm({ services, dict, lang, userId }: QuotationFormPro
   function calculatePrice() {
     let calculatedSubtotal = 0
 
+    // Obtener los valores más recientes del formulario
+    const currentAnswers = form.getValues('answers') || answers
+
     questions.forEach(question => {
-      const answer = answers[question.id]
+      const answer = currentAnswers[question.id]
 
       if (!answer && !question.is_required) return
 
@@ -532,7 +537,11 @@ export function QuotationForm({ services, dict, lang, userId }: QuotationFormPro
                             <RadioGroup
                               value={answers[question.id] || ''}
                               onValueChange={(value) => {
-                                form.setValue(`answers.${question.id}`, value)
+                                form.setValue(`answers.${question.id}`, value, { shouldValidate: true })
+                                // Forzar recálculo del precio
+                                setTimeout(() => {
+                                  calculatePrice()
+                                }, 0)
                               }}
                             >
                               {question.options.map((option, optIndex) => {
@@ -559,7 +568,11 @@ export function QuotationForm({ services, dict, lang, userId }: QuotationFormPro
                             <RadioGroup
                               value={answers[question.id] || 'no'}
                               onValueChange={(value) => {
-                                form.setValue(`answers.${question.id}`, value)
+                                form.setValue(`answers.${question.id}`, value, { shouldValidate: true })
+                                // Forzar recálculo del precio
+                                setTimeout(() => {
+                                  calculatePrice()
+                                }, 0)
                               }}
                             >
                               <div className="flex items-center space-x-2 py-2">
@@ -589,7 +602,11 @@ export function QuotationForm({ services, dict, lang, userId }: QuotationFormPro
                                 min="1"
                                 value={answers[question.id] || 1}
                                 onChange={(e) => {
-                                  form.setValue(`answers.${question.id}`, parseInt(e.target.value) || 1)
+                                  form.setValue(`answers.${question.id}`, parseInt(e.target.value) || 1, { shouldValidate: true })
+                                  // Forzar recálculo del precio
+                                  setTimeout(() => {
+                                    calculatePrice()
+                                  }, 0)
                                 }}
                                 className="!border-2 !border-border w-full"
                               />
@@ -609,7 +626,11 @@ export function QuotationForm({ services, dict, lang, userId }: QuotationFormPro
                                 step={1}
                                 value={[answers[question.id] || 1]}
                                 onValueChange={([value]) => {
-                                  form.setValue(`answers.${question.id}`, value)
+                                  form.setValue(`answers.${question.id}`, value, { shouldValidate: true })
+                                  // Forzar recálculo del precio
+                                  setTimeout(() => {
+                                    calculatePrice()
+                                  }, 0)
                                 }}
                                 className="w-full"
                               />
