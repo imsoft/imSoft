@@ -132,7 +132,7 @@ export default async function DealDetailPage({ params }: {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="icon" asChild>
-            <Link href={`/${lang}/dashboard/admin/crm/deals`}>
+            <Link href={`/${lang}/dashboard/admin/crm`}>
               <ArrowLeft className="h-4 w-4" />
             </Link>
           </Button>
