@@ -205,30 +205,48 @@ export async function POST(
               <h2 style="color: ${primaryColor}; margin-top: 0; font-size: 20px; border-bottom: 2px solid ${primaryColor}; padding-bottom: 10px; text-align: center;">¿Tienes Preguntas o Quieres Continuar?</h2>
               <p style="text-align: center; color: #555; margin-bottom: 20px;">Estamos aquí para ayudarte. Elige la forma que prefieras para contactarnos:</p>
               
-              <div style="display: flex; flex-direction: row; gap: 15px; justify-content: center; align-items: center; flex-wrap: wrap; max-width: 600px; margin: 0 auto;">
-                <!-- Botón WhatsApp -->
-                <a href="https://wa.me/523325365558?text=${encodeURIComponent(`Hola, soy ${quotation.client_name} y me interesa el proyecto: ${quotation.title || serviceName}. Me gustaría obtener más información.`)}" 
-                   style="display: inline-block; background: #25D366; color: white; text-align: center; padding: 10px 18px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 13px; transition: background 0.3s; white-space: nowrap;">
-                  💬 WhatsApp
-                </a>
-                
-                <!-- Botón Email -->
-                <a href="mailto:weareimsoft@gmail.com?subject=${encodeURIComponent(`Consulta sobre: ${quotation.title || serviceName}`)}&body=${encodeURIComponent(`Hola,\n\nSoy ${quotation.client_name}${quotation.client_company ? ` de ${quotation.client_company}` : ''} y me interesa el proyecto: ${quotation.title || serviceName}.\n\nMe gustaría obtener más información.\n\nSaludos,\n${quotation.client_name}`)}" 
-                   style="display: inline-block; background: ${primaryColor}; color: white; text-align: center; padding: 10px 18px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 13px; transition: background 0.3s; white-space: nowrap;">
-                  ✉️ Email
-                </a>
-                
-                <!-- Botón Contacto -->
-                <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io'}/es/contact" 
-                   style="display: inline-block; background: #f8f9fa; color: ${primaryColor}; text-align: center; padding: 10px 18px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 13px; border: 2px solid ${primaryColor}; transition: background 0.3s; white-space: nowrap;">
-                  📋 Contacto
-                </a>
-              </div>
+              <table cellpadding="0" cellspacing="0" border="0" style="width: 100%; margin: 0 auto;">
+                <tr>
+                  <td style="text-align: center; padding: 10px 0;">
+                    <table cellpadding="0" cellspacing="0" border="0" style="margin: 0 auto;">
+                      <tr>
+                        <!-- Botón WhatsApp -->
+                        <td style="padding-right: 15px;">
+                          <a href="https://wa.me/523325365558?text=${encodeURIComponent(`Hola, soy ${quotation.client_name} y me interesa el proyecto: ${quotation.title || serviceName}. Me gustaría obtener más información.`)}" 
+                             style="display: inline-block; background: #25D366; color: white; text-align: center; padding: 10px 18px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 13px; white-space: nowrap;">
+                            💬 WhatsApp
+                          </a>
+                        </td>
+                        <!-- Botón Email -->
+                        <td style="padding-right: 15px;">
+                          <a href="mailto:weareimsoft@gmail.com?subject=${encodeURIComponent(`Consulta sobre: ${quotation.title || serviceName}`)}&body=${encodeURIComponent(`Hola,\n\nSoy ${quotation.client_name}${quotation.client_company ? ` de ${quotation.client_company}` : ''} y me interesa el proyecto: ${quotation.title || serviceName}.\n\nMe gustaría obtener más información.\n\nSaludos,\n${quotation.client_name}`)}" 
+                             style="display: inline-block; background: ${primaryColor}; color: white; text-align: center; padding: 10px 18px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 13px; white-space: nowrap;">
+                            ✉️ Email
+                          </a>
+                        </td>
+                        <!-- Botón Contacto -->
+                        <td>
+                          <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io'}/es/contact" 
+                             style="display: inline-block; background: #f8f9fa; color: ${primaryColor}; text-align: center; padding: 10px 18px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 13px; border: 2px solid ${primaryColor}; white-space: nowrap;">
+                            📋 Contacto
+                          </a>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
             </div>
 
-            <div style="background: white; text-align: center; margin-top: 30px; padding: 20px; border-top: 1px solid #e5e7eb; color: #6b7280; font-size: 12px;">
-              <p style="margin: 0 0 8px 0;">Este es un correo automático de imSoft. Por favor, no responda a este correo.</p>
-              <p style="margin: 0; font-size: 11px; color: #9ca3af;">El precio mostrado es una estimación y puede variar según los detalles del proyecto y la negociación.</p>
+            <div style="background: white; text-align: center; margin-top: 30px; padding: 30px 20px; border-top: 1px solid #e5e7eb; color: #6b7280; font-size: 12px;">
+              <table cellpadding="0" cellspacing="0" border="0" style="width: 100%;">
+                <tr>
+                  <td style="vertical-align: middle; text-align: center; padding: 20px 0;">
+                    <p style="margin: 0 0 8px 0;">Este es un correo automático de imSoft. Por favor, no responda a este correo.</p>
+                    <p style="margin: 0; font-size: 11px; color: #9ca3af;">El precio mostrado es una estimación y puede variar según los detalles del proyecto y la negociación.</p>
+                  </td>
+                </tr>
+              </table>
             </div>
 
             <!-- Firma Electrónica -->
