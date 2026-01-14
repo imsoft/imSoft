@@ -117,7 +117,7 @@ export function DealFormSimple({ deal, contacts, quotations, lang, userId }: Dea
         if (error) throw error
       }
 
-      router.push(`/${lang}/dashboard/admin/crm/deals`)
+      router.push(`/${lang}/dashboard/admin/crm`)
       router.refresh()
     } catch (error) {
       console.error('Error saving deal:', error)

@@ -283,7 +283,7 @@ export function DealContactForm({ deal, contacts, quotations, lang, userId }: De
         if (dealError) throw dealError
       }
 
-      router.push(`/${lang}/dashboard/admin/crm/deals`)
+      router.push(`/${lang}/dashboard/admin/crm`)
       router.refresh()
     } catch (error: any) {
       console.error('Error saving deal and contact:', error)
