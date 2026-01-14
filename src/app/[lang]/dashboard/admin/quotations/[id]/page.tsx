@@ -22,7 +22,8 @@ export default async function QuotationDetailPage({ params }: {
     redirect(`/${lang}/login`)
   }
 
-  // Obtener la cotización con información del servicio y deal
+  // Obtener la cotización con información del servicio
+  // Hacer la consulta en dos pasos para evitar problemas con relaciones anidadas
   const { data: quotation, error } = await supabase
     .from('quotations')
     .select(`
@@ -31,17 +32,6 @@ export default async function QuotationDetailPage({ params }: {
         id,
         title_es,
         title_en
-      ),
-      deals (
-        id,
-        title,
-        stage,
-        value,
-        contacts (
-          first_name,
-          last_name,
-          company
-        )
       )
     `)
     .eq('id', id)
@@ -55,6 +45,42 @@ export default async function QuotationDetailPage({ params }: {
   if (!quotation) {
     notFound()
   }
+
+  // Obtener información del deal si existe
+  // Manejar errores silenciosamente si el deal no existe o hay problemas de permisos
+  let dealData = null
+  if (quotation.deal_id) {
+    const { data: deal, error: dealError } = await supabase
+      .from('deals')
+      .select(`
+        id,
+        title,
+        stage,
+        value,
+        contact_id,
+        contacts (
+          id,
+          first_name,
+          last_name,
+          company
+        )
+      `)
+      .eq('id', quotation.deal_id)
+      .single()
+    
+    // Si hay error al obtener el deal, simplemente continuamos sin él
+    // No es crítico para mostrar la cotización
+    if (!dealError && deal) {
+      dealData = deal
+    } else if (dealError) {
+      console.warn('Error fetching deal for quotation:', dealError)
+    }
+  }
+
+  // Combinar los datos si hay deal
+  const quotationWithDeal = dealData 
+    ? { ...quotation, deals: dealData }
+    : quotation
 
   // Obtener las preguntas del cuestionario para mostrar los textos
   // Solo si hay service_id
@@ -87,7 +113,7 @@ export default async function QuotationDetailPage({ params }: {
           </p>
         </div>
       </div>
-      <QuotationDetail quotation={quotation} questions={questions || []} dict={dict} lang={lang} />
+      <QuotationDetail quotation={quotationWithDeal} questions={questions || []} dict={dict} lang={lang} />
     </div>
   )
 }
