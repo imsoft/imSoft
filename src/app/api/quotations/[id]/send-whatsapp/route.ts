@@ -174,13 +174,33 @@ export async function POST(
     // Validar y formatear el número de WhatsApp de Twilio
     let twilioWhatsAppNumber = process.env.TWILIO_WHATSAPP_NUMBER.trim()
     
-    // Si el número no tiene el prefijo 'whatsapp:', agregarlo
-    if (!twilioWhatsAppNumber.startsWith('whatsapp:')) {
-      // Si tiene el prefijo +, mantenerlo, sino agregarlo
-      if (!twilioWhatsAppNumber.startsWith('+')) {
-        twilioWhatsAppNumber = '+' + twilioWhatsAppNumber
+    // Detectar si estamos usando el sandbox de Twilio
+    // El número del sandbox de Twilio es +14155238886
+    // En el sandbox, el número "From" siempre debe ser el del sandbox
+    // El número del usuario solo puede ser usado como "To" (destinatario)
+    const twilioSandboxNumber = 'whatsapp:+14155238886'
+    
+    // Verificar si estamos en modo sandbox:
+    // 1. Si TWILIO_SANDBOX_MODE está explícitamente en 'true'
+    // 2. Si el número configurado es el del sandbox
+    // 3. Si el número configurado NO es el del sandbox (por defecto, asumimos sandbox para desarrollo)
+    const isSandboxMode = process.env.TWILIO_SANDBOX_MODE === 'true' || 
+                          twilioWhatsAppNumber.includes('14155238886') ||
+                          (process.env.NODE_ENV !== 'production' && !process.env.TWILIO_WHATSAPP_BUSINESS_VERIFIED)
+    
+    // En modo sandbox, siempre usar el número del sandbox como remitente
+    if (isSandboxMode) {
+      twilioWhatsAppNumber = twilioSandboxNumber
+    } else {
+      // Para producción con número de WhatsApp Business verificado
+      // Si el número no tiene el prefijo 'whatsapp:', agregarlo
+      if (!twilioWhatsAppNumber.startsWith('whatsapp:')) {
+        // Si tiene el prefijo +, mantenerlo, sino agregarlo
+        if (!twilioWhatsAppNumber.startsWith('+')) {
+          twilioWhatsAppNumber = '+' + twilioWhatsAppNumber
+        }
+        twilioWhatsAppNumber = `whatsapp:${twilioWhatsAppNumber}`
       }
-      twilioWhatsAppNumber = `whatsapp:${twilioWhatsAppNumber}`
     }
 
     // Obtener las preguntas del cuestionario
@@ -241,7 +261,7 @@ export async function POST(
         return NextResponse.json(
           { 
             error: 'WhatsApp number not configured in Twilio',
-            details: 'The WhatsApp number specified in TWILIO_WHATSAPP_NUMBER is not active or verified in your Twilio account. Please verify the number in Twilio Console → Messaging → Try it out → Send a WhatsApp message. Your configured number: +523325365558'
+            details: `El número de WhatsApp no está activo o verificado en tu cuenta de Twilio. Para usar el sandbox, el número remitente debe ser el número del sandbox de Twilio (whatsapp:+14155238886). Tu número ${process.env.TWILIO_WHATSAPP_NUMBER} solo puede ser usado como destinatario en el sandbox. Para producción, necesitas un número de WhatsApp Business verificado.`
           },
           { status: 500 }
         )

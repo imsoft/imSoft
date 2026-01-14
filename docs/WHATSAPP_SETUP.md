@@ -43,17 +43,30 @@ Este documento explica cómo configurar el envío de cotizaciones por WhatsApp u
 
 Agrega las siguientes variables a tu archivo `.env.local`:
 
+**Para Desarrollo (Sandbox):**
+```env
+TWILIO_ACCOUNT_SID=tu_account_sid_aqui
+TWILIO_AUTH_TOKEN=tu_auth_token_aqui
+TWILIO_WHATSAPP_NUMBER=+14155238886
+TWILIO_SANDBOX_MODE=true
+```
+
+**Para Producción (WhatsApp Business):**
 ```env
 TWILIO_ACCOUNT_SID=tu_account_sid_aqui
 TWILIO_AUTH_TOKEN=tu_auth_token_aqui
 TWILIO_WHATSAPP_NUMBER=+523325365558
+TWILIO_SANDBOX_MODE=false
+TWILIO_WHATSAPP_BUSINESS_VERIFIED=true
 ```
 
-**Nota**: 
-- Para desarrollo, puedes usar el número de prueba de Twilio: `+14155238886`
-- Para producción, usa tu número de WhatsApp Business: `+523325365558`
+**Notas Importantes**: 
+- **En modo Sandbox**: El número "From" (remitente) siempre será `whatsapp:+14155238886` (número del sandbox de Twilio)
+- Tu número personal (`+523325365558`) solo puede ser usado como "To" (destinatario) en el sandbox
+- Para agregar tu número como participante del sandbox, envía un mensaje a `+1 415 523 8886` con el código `join imagine-raw`
 - El formato debe ser: `+523325365558` (sin el prefijo `whatsapp:`)
 - El código automáticamente agrega el prefijo `whatsapp:` cuando envía mensajes
+- Para producción, necesitas un número de WhatsApp Business verificado por Twilio
 
 ### Paso 5: Verificar la Instalación
 
