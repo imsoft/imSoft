@@ -5,6 +5,7 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Plus, Users, DollarSign, TrendingUp, CheckCircle2 } from 'lucide-react'
 import Link from 'next/link'
+import { KanbanBoard } from '@/components/crm/kanban-board'
 
 export default async function CRMPage({ params }: {
   params: Promise<{ lang: string }>
@@ -68,40 +69,21 @@ export default async function CRMPage({ params }: {
 
   const monthlyRevenue = wonDealsThisMonth?.reduce((sum, deal) => sum + (deal.value || 0), 0) || 0
 
-  // Obtener actividades recientes
-  const { data: recentActivities } = await supabase
-    .from('activities')
-    .select(`
-      *,
-      contacts (
-        first_name,
-        last_name,
-        company
-      ),
-      deals (
-        title
-      )
-    `)
-    .order('created_at', { ascending: false })
-    .limit(5)
-
-  // Obtener deals recientes
-  const { data: recentDeals } = await supabase
+  // Obtener todos los deals con información relacionada para el Kanban board
+  const { data: deals } = await supabase
     .from('deals')
     .select(`
       *,
       contacts (
+        id,
         first_name,
         last_name,
+        email,
+        phone,
         company
-      ),
-      services (
-        title_es,
-        title_en
       )
     `)
     .order('created_at', { ascending: false })
-    .limit(5)
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat(lang === 'en' ? 'en-US' : 'es-MX', {
@@ -208,91 +190,8 @@ export default async function CRMPage({ params }: {
         </Card>
       </div>
 
-      {/* Two Column Layout */}
-      <div className="grid gap-6 lg:grid-cols-2">
-        {/* Recent Deals */}
-        <Card className="p-6 bg-white">
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-lg font-semibold">
-              {lang === 'en' ? 'Recent Deals' : 'Negocios Recientes'}
-            </h2>
-            <Button variant="ghost" size="sm" asChild>
-              <Link href={`/${lang}/dashboard/admin/crm/deals`}>
-                {lang === 'en' ? 'View All' : 'Ver Todos'}
-              </Link>
-            </Button>
-          </div>
-          <div className="space-y-4">
-            {recentDeals && recentDeals.length > 0 ? (
-              recentDeals.map((deal: any) => (
-                <div key={deal.id} className="flex items-start justify-between border-b pb-4 last:border-0">
-                  <div className="flex-1">
-                    <p className="font-medium">{deal.title}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {deal.contacts?.first_name} {deal.contacts?.last_name}
-                      {deal.contacts?.company && ` - ${deal.contacts.company}`}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {deal.services ? (lang === 'en' ? deal.services.title_en : deal.services.title_es) : ''}
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-semibold">{formatCurrency(deal.value)}</p>
-                    <p className="text-xs text-muted-foreground capitalize">{deal.stage.replace('_', ' ')}</p>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <p className="text-center text-sm text-muted-foreground py-8">
-                {lang === 'en' ? 'No deals yet' : 'No hay negocios todavía'}
-              </p>
-            )}
-          </div>
-        </Card>
-
-        {/* Recent Activities */}
-        <Card className="p-6 bg-white">
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-lg font-semibold">
-              {lang === 'en' ? 'Recent Activities' : 'Actividades Recientes'}
-            </h2>
-            <Button variant="ghost" size="sm" asChild>
-              <Link href={`/${lang}/dashboard/admin/crm/activities`}>
-                {lang === 'en' ? 'View All' : 'Ver Todas'}
-              </Link>
-            </Button>
-          </div>
-          <div className="space-y-4">
-            {recentActivities && recentActivities.length > 0 ? (
-              recentActivities.map((activity: any) => (
-                <div key={activity.id} className="flex items-start justify-between border-b pb-4 last:border-0">
-                  <div className="flex-1">
-                    <p className="font-medium capitalize">{activity.activity_type}: {activity.subject}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {activity.contacts?.first_name} {activity.contacts?.last_name}
-                      {activity.contacts?.company && ` - ${activity.contacts.company}`}
-                    </p>
-                    {activity.deals && (
-                      <p className="text-xs text-muted-foreground">
-                        {lang === 'en' ? 'Deal' : 'Negocio'}: {activity.deals.title}
-                      </p>
-                    )}
-                  </div>
-                  <div className="text-right">
-                    <p className="text-xs text-muted-foreground">
-                      {new Date(activity.created_at).toLocaleDateString(lang === 'en' ? 'en-US' : 'es-MX')}
-                    </p>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <p className="text-center text-sm text-muted-foreground py-8">
-                {lang === 'en' ? 'No activities yet' : 'No hay actividades todavía'}
-              </p>
-            )}
-          </div>
-        </Card>
-      </div>
+      {/* Kanban Board */}
+      <KanbanBoard deals={deals || []} lang={lang} />
     </div>
   )
 }
