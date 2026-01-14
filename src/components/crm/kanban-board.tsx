@@ -37,7 +37,7 @@ interface KanbanBoardProps {
 }
 
 const STAGES: { id: DealStage; label_en: string; label_es: string; color: string }[] = [
-  { id: 'qualification', label_en: 'Qualification', label_es: 'Calificación', color: 'bg-blue-500' },
+  { id: 'qualification', label_en: 'Prospecting', label_es: 'Prospección', color: 'bg-blue-500' },
   { id: 'proposal', label_en: 'Proposal', label_es: 'Propuesta', color: 'bg-purple-500' },
   { id: 'negotiation', label_en: 'Negotiation', label_es: 'Negociación', color: 'bg-orange-500' },
   { id: 'closed_won', label_en: 'Won', label_es: 'Ganado', color: 'bg-green-500' },

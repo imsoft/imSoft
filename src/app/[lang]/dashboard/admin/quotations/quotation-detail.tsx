@@ -455,7 +455,7 @@ export function QuotationDetail({ quotation, questions, dict, lang }: QuotationD
         description: quotation.description || null,
         value: quotation.final_price || quotation.total,
         currency: 'MXN',
-        stage: 'qualification',
+        stage: 'qualification', // Note: stage value remains 'qualification' in DB, but displayed as 'Prospección'
         probability: 50,
         created_by: user.id,
       }

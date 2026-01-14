@@ -16,7 +16,7 @@ const getEmailTemplate = (stage: string, dealTitle: string, contactName: string,
   const primaryColor = '#1e9df1'
 
   const templates: Record<string, { subject: { en: string; es: string }, content: { en: string; es: string }, cta: { en: string; es: string } }> = {
-    qualification: {
+    prospecting: {
       subject: {
         en: `Discover how we can help you - ${dealTitle}`,
         es: `Descubre cómo podemos ayudarte - ${dealTitle}`
@@ -180,7 +180,9 @@ const getEmailTemplate = (stage: string, dealTitle: string, contactName: string,
     }
   }
 
-  return templates[stage] || templates.qualification
+  // Map 'qualification' stage to 'prospecting' template for display purposes
+  const templateKey = stage === 'qualification' ? 'prospecting' : stage
+  return templates[templateKey] || templates.prospecting
 }
 
 export async function POST(

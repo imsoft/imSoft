@@ -45,7 +45,7 @@ export function DealsTable({ deals, dict, lang }: DealsTableProps) {
 
   const getStageLabel = (stage: string) => {
     const labels: Record<string, { en: string; es: string }> = {
-      qualification: { en: 'Qualification', es: 'Calificación' },
+      qualification: { en: 'Prospecting', es: 'Prospección' },
       proposal: { en: 'Proposal', es: 'Propuesta' },
       negotiation: { en: 'Negotiation', es: 'Negociación' },
       closed_won: { en: 'Closed Won', es: 'Ganado' },

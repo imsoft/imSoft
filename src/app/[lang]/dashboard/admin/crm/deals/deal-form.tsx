@@ -250,7 +250,7 @@ export function DealForm({ deal, contacts, services, lang, userId }: DealFormPro
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="qualification">{lang === 'en' ? 'Qualification' : 'Calificación'}</SelectItem>
+                      <SelectItem value="qualification">{lang === 'en' ? 'Prospecting' : 'Prospección'}</SelectItem>
                       <SelectItem value="proposal">{lang === 'en' ? 'Proposal' : 'Propuesta'}</SelectItem>
                       <SelectItem value="negotiation">{lang === 'en' ? 'Negotiation' : 'Negociación'}</SelectItem>
                       <SelectItem value="closed_won">{lang === 'en' ? 'Closed Won' : 'Ganado'}</SelectItem>
