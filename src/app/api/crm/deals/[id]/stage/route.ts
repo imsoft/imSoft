@@ -38,14 +38,28 @@ export async function PATCH(
     }
 
     // Actualizar el stage del deal
+    // Si se cambia el estado, resetear email_sent a false (excepto si vuelve al mismo estado)
+    const { data: currentDeal } = await supabase
+      .from('deals')
+      .select('stage')
+      .eq('id', id)
+      .single()
+
+    const updateData: any = {
+      stage,
+      updated_at: new Date().toISOString(),
+      // Si se marca como closed_won, guardar la fecha de cierre
+      ...(stage === 'closed_won' && { actual_close_date: new Date().toISOString() }),
+    }
+
+    // Si se cambia el estado (no es el mismo), resetear email_sent
+    if (currentDeal && currentDeal.stage !== stage) {
+      updateData.email_sent = false
+    }
+
     const { data, error } = await supabase
       .from('deals')
-      .update({
-        stage,
-        updated_at: new Date().toISOString(),
-        // Si se marca como closed_won, guardar la fecha de cierre
-        ...(stage === 'closed_won' && { actual_close_date: new Date().toISOString() }),
-      })
+      .update(updateData)
       .eq('id', id)
       .select()
       .single()

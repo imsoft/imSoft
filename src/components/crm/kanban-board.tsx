@@ -37,6 +37,7 @@ interface KanbanBoardProps {
 }
 
 const STAGES: { id: DealStage; label_en: string; label_es: string; color: string }[] = [
+  { id: 'no_contact', label_en: 'No Contact', label_es: 'Sin Contacto', color: 'bg-gray-500' },
   { id: 'qualification', label_en: 'Prospecting', label_es: 'Prospección', color: 'bg-blue-500' },
   { id: 'proposal', label_en: 'Proposal', label_es: 'Propuesta', color: 'bg-purple-500' },
   { id: 'negotiation', label_en: 'Negotiation', label_es: 'Negociación', color: 'bg-orange-500' },
@@ -92,6 +93,7 @@ export function KanbanBoard({ deals: initialDeals, lang }: KanbanBoardProps) {
   // Agrupar deals por stage
   const dealsByStage = useMemo(() => {
     const grouped: Record<DealStage, typeof deals> = {
+      no_contact: [],
       qualification: [],
       proposal: [],
       negotiation: [],
@@ -111,6 +113,7 @@ export function KanbanBoard({ deals: initialDeals, lang }: KanbanBoardProps) {
   // Calcular valor total por stage
   const stageValues = useMemo(() => {
     const values: Record<DealStage, number> = {
+      no_contact: 0,
       qualification: 0,
       proposal: 0,
       negotiation: 0,

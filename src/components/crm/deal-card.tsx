@@ -4,7 +4,7 @@ import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { DollarSign, User, GripVertical } from 'lucide-react'
+import { DollarSign, User, GripVertical, Mail, MailCheck } from 'lucide-react'
 import Link from 'next/link'
 import type { Deal } from '@/types/database'
 
@@ -105,14 +105,38 @@ export function DealCard({ deal, lang }: DealCardProps) {
             </div>
           )}
 
-          {/* Probability badge si existe */}
-          {deal.probability !== null && deal.probability !== undefined && (
-            <div className="flex justify-end">
+          {/* Badges: Email enviado y Probability */}
+          <div className="flex items-center justify-between gap-2">
+            {/* Badge de correo enviado */}
+            {deal.stage !== 'no_contact' && (
+              <Badge 
+                variant={deal.email_sent ? "default" : "outline"}
+                className={`text-xs flex items-center gap-1 ${
+                  deal.email_sent 
+                    ? 'bg-green-500/10 text-green-700 dark:text-green-400 border-green-500/20' 
+                    : 'bg-gray-500/10 text-gray-700 dark:text-gray-400 border-gray-500/20'
+                }`}
+              >
+                {deal.email_sent ? (
+                  <>
+                    <MailCheck className="h-3 w-3" />
+                    {lang === 'en' ? 'Email Sent' : 'Correo Enviado'}
+                  </>
+                ) : (
+                  <>
+                    <Mail className="h-3 w-3" />
+                    {lang === 'en' ? 'No Email' : 'Sin Correo'}
+                  </>
+                )}
+              </Badge>
+            )}
+            {/* Probability badge si existe */}
+            {deal.probability !== null && deal.probability !== undefined && (
               <Badge variant="outline" className="text-xs">
                 {deal.probability}%
               </Badge>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </Card>
     </div>

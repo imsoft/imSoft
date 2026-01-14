@@ -34,7 +34,7 @@ const dealSchema = z.object({
   contact_id: z.string().min(1, 'Contact is required'),
   service_id: z.string().optional(),
   value: z.coerce.number().min(0, 'Value must be positive'),
-  stage: z.enum(['qualification', 'proposal', 'negotiation', 'closed_won', 'closed_lost']),
+  stage: z.enum(['no_contact', 'qualification', 'proposal', 'negotiation', 'closed_won', 'closed_lost']),
   probability: z.coerce.number().min(0).max(100).optional(),
   expected_close_date: z.string().optional(),
 })
@@ -61,7 +61,7 @@ export function DealForm({ deal, contacts, services, lang, userId }: DealFormPro
       contact_id: deal?.contact_id || '',
       service_id: deal?.service_id || '',
       value: deal?.value || 0,
-      stage: deal?.stage || 'qualification',
+      stage: deal?.stage || 'no_contact',
       probability: deal?.probability || 0,
       expected_close_date: deal?.expected_close_date || '',
     },
@@ -250,6 +250,7 @@ export function DealForm({ deal, contacts, services, lang, userId }: DealFormPro
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
+                      <SelectItem value="no_contact">{lang === 'en' ? 'No Contact' : 'Sin Contacto'}</SelectItem>
                       <SelectItem value="qualification">{lang === 'en' ? 'Prospecting' : 'Prospección'}</SelectItem>
                       <SelectItem value="proposal">{lang === 'en' ? 'Proposal' : 'Propuesta'}</SelectItem>
                       <SelectItem value="negotiation">{lang === 'en' ? 'Negotiation' : 'Negociación'}</SelectItem>

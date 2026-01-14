@@ -84,6 +84,7 @@ export default async function DealDetailPage({ params }: {
 
   const getStageLabel = (stage: string) => {
     const labels: Record<string, { en: string; es: string }> = {
+      no_contact: { en: 'No Contact', es: 'Sin Contacto' },
       qualification: { en: 'Prospecting', es: 'Prospección' },
       proposal: { en: 'Proposal', es: 'Propuesta' },
       negotiation: { en: 'Negotiation', es: 'Negociación' },
@@ -94,6 +95,7 @@ export default async function DealDetailPage({ params }: {
   }
 
   const stageColors: Record<string, string> = {
+    no_contact: 'bg-gray-500/10 text-gray-700 dark:text-gray-400',
     qualification: 'bg-blue-500/10 text-blue-700 dark:text-blue-400',
     proposal: 'bg-purple-500/10 text-purple-700 dark:text-purple-400',
     negotiation: 'bg-orange-500/10 text-orange-700 dark:text-orange-400',

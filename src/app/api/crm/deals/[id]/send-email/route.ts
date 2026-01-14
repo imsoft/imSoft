@@ -16,6 +16,32 @@ const getEmailTemplate = (stage: string, dealTitle: string, contactName: string,
   const primaryColor = '#1e9df1'
 
   const templates: Record<string, { subject: { en: string; es: string }, content: { en: string; es: string }, cta: { en: string; es: string } }> = {
+    no_contact: {
+      subject: {
+        en: `Let's start a conversation - ${dealTitle}`,
+        es: `Iniciemos una conversación - ${dealTitle}`
+      },
+      content: {
+        en: `
+          <h2 style="color: ${primaryColor}; margin-top: 0;">Hello! We'd love to connect</h2>
+          <p>Dear ${contactName},</p>
+          <p>We noticed your interest in <strong>${dealTitle}</strong> and would love to start a conversation with you.</p>
+          <p>At imSoft, we specialize in creating custom digital solutions that transform businesses. We'd be happy to discuss how we can help you achieve your goals.</p>
+          <p>Would you be available for a brief call this week to explore how we can work together?</p>
+        `,
+        es: `
+          <h2 style="color: ${primaryColor}; margin-top: 0;">¡Hola! Nos encantaría conectarnos</h2>
+          <p>Estimado/a ${contactName},</p>
+          <p>Notamos tu interés en <strong>${dealTitle}</strong> y nos encantaría iniciar una conversación contigo.</p>
+          <p>En imSoft nos especializamos en crear soluciones digitales a la medida que transforman negocios. Estaríamos encantados de discutir cómo podemos ayudarte a alcanzar tus objetivos.</p>
+          <p>¿Estarías disponible para una breve llamada esta semana para explorar cómo podemos trabajar juntos?</p>
+        `
+      },
+      cta: {
+        en: 'Let\'s Talk',
+        es: 'Hablemos'
+      }
+    },
     prospecting: {
       subject: {
         en: `Discover how we can help you - ${dealTitle}`,
@@ -182,7 +208,7 @@ const getEmailTemplate = (stage: string, dealTitle: string, contactName: string,
 
   // Map 'qualification' stage to 'prospecting' template for display purposes
   const templateKey = stage === 'qualification' ? 'prospecting' : stage
-  return templates[templateKey] || templates.prospecting
+  return templates[templateKey] || templates.no_contact || templates.prospecting
 }
 
 export async function POST(
@@ -418,6 +444,17 @@ export async function POST(
         },
         { status: 500 }
       )
+    }
+
+    // Marcar email_sent como true después de enviar exitosamente
+    const { error: updateError } = await supabase
+      .from('deals')
+      .update({ email_sent: true })
+      .eq('id', id)
+
+    if (updateError) {
+      console.error('Error updating email_sent:', updateError)
+      // No fallar la respuesta si solo falla la actualización del flag
     }
 
     return NextResponse.json({ success: true, data })

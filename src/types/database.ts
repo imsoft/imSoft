@@ -228,7 +228,7 @@ export interface ProjectTask {
 
 export type ContactType = 'lead' | 'prospect' | 'customer' | 'partner'
 export type ContactStatus = 'active' | 'inactive' | 'lost'
-export type DealStage = 'qualification' | 'proposal' | 'negotiation' | 'closed_won' | 'closed_lost'
+export type DealStage = 'no_contact' | 'qualification' | 'proposal' | 'negotiation' | 'closed_won' | 'closed_lost'
 export type ActivityType = 'call' | 'email' | 'meeting' | 'note' | 'task'
 export type ActivityStatus = 'completed' | 'scheduled' | 'cancelled'
 export type ActivityOutcome = 'successful' | 'unsuccessful' | 'no_answer' | 'rescheduled'
@@ -270,6 +270,7 @@ export interface Deal {
   currency: string
   stage: DealStage
   probability?: number
+  email_sent?: boolean
   expected_close_date?: string
   actual_close_date?: string
   lost_reason?: string

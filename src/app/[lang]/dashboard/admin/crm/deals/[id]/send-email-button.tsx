@@ -17,6 +17,7 @@ export function SendEmailButton({ dealId, dealStage, lang }: SendEmailButtonProp
 
   const getStageLabel = (stage: string) => {
     const labels: Record<string, { en: string; es: string }> = {
+      no_contact: { en: 'No Contact', es: 'Sin Contacto' },
       qualification: { en: 'Prospecting', es: 'Prospección' },
       proposal: { en: 'Proposal', es: 'Propuesta' },
       negotiation: { en: 'Negotiation', es: 'Negociación' },

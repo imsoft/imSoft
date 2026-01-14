@@ -31,7 +31,7 @@ const dealSchema = z.object({
   contact_id: z.string().min(1, 'Contact is required'),
   quotation_id: z.string().optional(),
   value: z.coerce.number().min(0, 'Value must be positive'),
-  stage: z.enum(['qualification', 'proposal', 'negotiation', 'closed_won', 'closed_lost']),
+  stage: z.enum(['no_contact', 'qualification', 'proposal', 'negotiation', 'closed_won', 'closed_lost']),
 })
 
 type DealFormValues = z.infer<typeof dealSchema>
@@ -56,7 +56,7 @@ export function DealFormSimple({ deal, contacts, quotations, lang, userId }: Dea
       contact_id: deal?.contact_id || '',
       quotation_id: undefined,
       value: deal?.value || 0,
-      stage: deal?.stage || 'qualification',
+      stage: deal?.stage || 'no_contact',
     },
   })
 
@@ -129,6 +129,7 @@ export function DealFormSimple({ deal, contacts, quotations, lang, userId }: Dea
 
   const getStageLabel = (stage: string) => {
     const labels: Record<string, { en: string; es: string }> = {
+      no_contact: { en: 'No Contact', es: 'Sin Contacto' },
       qualification: { en: 'Prospecting', es: 'Prospección' },
       proposal: { en: 'Proposal', es: 'Propuesta' },
       negotiation: { en: 'Negotiation', es: 'Negociación' },
@@ -265,6 +266,7 @@ export function DealFormSimple({ deal, contacts, quotations, lang, userId }: Dea
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
+                        <SelectItem value="no_contact">{getStageLabel('no_contact')}</SelectItem>
                         <SelectItem value="qualification">{getStageLabel('qualification')}</SelectItem>
                         <SelectItem value="proposal">{getStageLabel('proposal')}</SelectItem>
                         <SelectItem value="negotiation">{getStageLabel('negotiation')}</SelectItem>
