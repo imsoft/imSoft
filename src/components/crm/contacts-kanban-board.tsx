@@ -244,12 +244,12 @@ export function ContactsKanbanBoard({ contacts: initialContacts, lang }: Contact
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
-      <div className="grid grid-cols-5 gap-4 pb-4">
+      <div className="grid grid-cols-5 gap-4 pb-4 w-full" style={{ minWidth: '1400px' }}>
         {STAGES.map((stage) => {
           const stageContacts = contactsByStatus[stage.id] || []
 
           return (
-            <div key={stage.id} className="flex flex-col">
+            <div key={stage.id} className="flex flex-col min-w-[250px]">
               <Card className={`p-4 ${stage.color} border-2 h-full min-h-[600px]`}>
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="font-semibold text-lg">
