@@ -99,7 +99,7 @@ export function DataTable<TData, TValue>({
               onChange={(event) =>
                 table.getColumn('name')?.setFilterValue(event.target.value)
               }
-              className="border-2"
+              className="w-full border-2"
             />
           </div>
 
@@ -113,7 +113,7 @@ export function DataTable<TData, TValue>({
               onChange={(event) =>
                 table.getColumn('email')?.setFilterValue(event.target.value)
               }
-              className="border-2"
+              className="w-full border-2"
             />
           </div>
 
@@ -127,7 +127,7 @@ export function DataTable<TData, TValue>({
               onChange={(event) =>
                 table.getColumn('company')?.setFilterValue(event.target.value)
               }
-              className="border-2"
+              className="w-full border-2"
             />
           </div>
 
@@ -140,7 +140,7 @@ export function DataTable<TData, TValue>({
                 table.getColumn('status')?.setFilterValue(value === 'all' ? '' : value)
               }
             >
-              <SelectTrigger id="status-filter" className="border-2">
+              <SelectTrigger id="status-filter" className="w-full border-2">
                 <SelectValue placeholder={lang === 'en' ? 'All statuses' : 'Todos los estados'} />
               </SelectTrigger>
               <SelectContent>
@@ -165,7 +165,7 @@ export function DataTable<TData, TValue>({
                 table.getColumn('contact_type')?.setFilterValue(value === 'all' ? '' : value)
               }
             >
-              <SelectTrigger id="type-filter" className="border-2">
+              <SelectTrigger id="type-filter" className="w-full border-2">
                 <SelectValue placeholder={lang === 'en' ? 'All types' : 'Todos los tipos'} />
               </SelectTrigger>
               <SelectContent>
@@ -268,7 +268,7 @@ export function DataTable<TData, TValue>({
             value={pageSize.toString()}
             onValueChange={(value) => setPageSize(Number(value))}
           >
-            <SelectTrigger className="h-8 w-[70px] border-2">
+            <SelectTrigger className="h-8 w-full border-2">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
