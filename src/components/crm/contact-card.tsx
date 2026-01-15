@@ -6,7 +6,7 @@ import { CSS } from '@dnd-kit/utilities'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { GripVertical, Mail, Phone, Building2, Loader2 } from 'lucide-react'
+import { GripVertical, Mail, Phone, Building2, Loader2, User } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
@@ -86,14 +86,37 @@ export function ContactCard({ contact, lang }: ContactCardProps) {
           {/* Content */}
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-2 mb-2">
-              <Link
-                href={`/${lang}/dashboard/admin/crm/contacts/${contact.id}`}
-                className="flex-1 min-w-0 group"
-              >
-                <h3 className="font-semibold text-sm group-hover:text-primary transition-colors truncate">
-                  {contact.first_name} {contact.last_name}
-                </h3>
-              </Link>
+              {(!contact.first_name && !contact.last_name) ? (
+                // Si no hay nombre, mostrar icono que redirige a send-email
+                contact.email ? (
+                  <Link
+                    href={`/${lang}/dashboard/admin/crm/contacts/${contact.id}/send-email`}
+                    className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary transition-colors group"
+                  >
+                    <Mail className="h-4 w-4 flex-shrink-0" />
+                    <span className="text-xs italic">
+                      {lang === 'en' ? 'No name - Send email' : 'Sin nombre - Enviar correo'}
+                    </span>
+                  </Link>
+                ) : (
+                  <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                    <User className="h-4 w-4 flex-shrink-0" />
+                    <span className="text-xs italic">
+                      {lang === 'en' ? 'No name' : 'Sin nombre'}
+                    </span>
+                  </div>
+                )
+              ) : (
+                // Si hay nombre, mostrar nombre normal
+                <Link
+                  href={`/${lang}/dashboard/admin/crm/contacts/${contact.id}`}
+                  className="flex-1 min-w-0 group"
+                >
+                  <h3 className="font-semibold text-sm group-hover:text-primary transition-colors truncate">
+                    {contact.first_name} {contact.last_name}
+                  </h3>
+                </Link>
+              )}
             </div>
 
             {/* Contact Info */}
