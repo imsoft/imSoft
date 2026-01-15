@@ -71,7 +71,7 @@ export async function POST(
     }
 
     // Determinar el remitente
-    const fromEmail = process.env.RESEND_FROM_EMAIL || 'weareimsoft@gmail.com'
+    const fromEmail = process.env.RESEND_FROM_EMAIL || 'contacto@imsoft.io'
     const fromName = 'imSoft'
     
     // Enviar email
