@@ -198,6 +198,7 @@ IMPORTANTE:
 - Usa etiquetas HTML apropiadas: <h2>, <p>, <strong>, <ul>, <li>, etc.
 - NO incluyas el header/footer de imSoft (solo el contenido del cuerpo)
 - El estilo debe ser inline cuando sea necesario
+- IMPORTANTE: Cuando uses listas (<ul> o <ol>), asegúrate de que cada elemento <li> tenga suficiente espacio. Usa <br> o párrafos <p> entre elementos de lista si es necesario para mejor legibilidad
 - El asunto y el cuerpo deben estar perfectamente alineados en contenido y propósito
 
 Responde SOLO con un JSON válido con esta estructura:
@@ -258,6 +259,19 @@ Responde SOLO con un JSON válido con esta estructura:
 
           <div style="background: #f8f9fa; padding: 30px; border-radius: 0 0 10px 10px;">
             <div style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px;">
+              <style>
+                ul, ol {
+                  margin: 15px 0;
+                  padding-left: 25px;
+                }
+                li {
+                  margin: 10px 0;
+                  line-height: 1.8;
+                }
+                ul li, ol li {
+                  padding-bottom: 8px;
+                }
+              </style>
               ${emailData.body || ''}
             </div>
 
