@@ -23,7 +23,7 @@ import { Badge } from '@/components/ui/badge'
 import { ContactCard } from './contact-card'
 import type { Contact, ContactStatus } from '@/types/database'
 import { useRouter } from 'next/navigation'
-import { Rocket, Target, TrendingUp, Trophy, AlertCircle, Zap, Star, Gamepad2 } from 'lucide-react'
+import { Rocket, Target, TrendingUp, Trophy, AlertCircle } from 'lucide-react'
 
 interface ContactsKanbanBoardProps {
   contacts: Contact[]
@@ -192,7 +192,7 @@ export function ContactsKanbanBoard({ contacts: initialContacts, lang }: Contact
   const getEmptyStateContent = (stageId: ContactStatus) => {
     const emptyStates: Record<ContactStatus, { icon: React.ReactNode; message: { en: string; es: string }; emoji: string }> = {
       no_contact: {
-        icon: <Target className="h-8 w-8 text-blue-500 animate-pulse" />,
+        icon: <Target className="h-8 w-8 text-blue-500" />,
         message: {
           en: 'Ready to start? Add your first contact! 🎯',
           es: '¡Listo para comenzar! Agrega tu primer contacto 🎯'
@@ -200,7 +200,7 @@ export function ContactsKanbanBoard({ contacts: initialContacts, lang }: Contact
         emoji: '🎯'
       },
       qualification: {
-        icon: <Rocket className="h-8 w-8 text-blue-600 animate-bounce" />,
+        icon: <Rocket className="h-8 w-8 text-blue-600" />,
         message: {
           en: 'Let\'s find new opportunities! 🚀',
           es: '¡Busquemos nuevas oportunidades! 🚀'
@@ -208,7 +208,7 @@ export function ContactsKanbanBoard({ contacts: initialContacts, lang }: Contact
         emoji: '🚀'
       },
       negotiation: {
-        icon: <TrendingUp className="h-8 w-8 text-purple-600 animate-pulse" />,
+        icon: <TrendingUp className="h-8 w-8 text-purple-600" />,
         message: {
           en: 'Time to close deals! 💼',
           es: '¡Es hora de cerrar negocios! 💼'
@@ -216,7 +216,7 @@ export function ContactsKanbanBoard({ contacts: initialContacts, lang }: Contact
         emoji: '💼'
       },
       closed_won: {
-        icon: <Trophy className="h-8 w-8 text-green-600 animate-pulse" />,
+        icon: <Trophy className="h-8 w-8 text-green-600" />,
         message: {
           en: 'Victory! 🏆 Keep up the great work!',
           es: '¡Victoria! 🏆 ¡Sigue así!'
@@ -284,7 +284,6 @@ export function ContactsKanbanBoard({ contacts: initialContacts, lang }: Contact
                         return (
                           <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
                             <div className="mb-4 relative">
-                              <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-primary/10 to-primary/20 rounded-full blur-lg animate-pulse"></div>
                               <div className="relative bg-gradient-to-br from-primary/10 to-primary/5 p-6 rounded-full border-2 border-dashed border-primary/30">
                                 {emptyContent.icon}
                               </div>
@@ -293,11 +292,6 @@ export function ContactsKanbanBoard({ contacts: initialContacts, lang }: Contact
                               <p className="text-base font-semibold text-foreground/80 leading-relaxed">
                                 {lang === 'en' ? emptyContent.message.en : emptyContent.message.es}
                               </p>
-                              <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground/70">
-                                <Zap className="h-3 w-3 text-yellow-500 animate-pulse" />
-                                <span>{lang === 'en' ? 'Level up your pipeline!' : '¡Sube de nivel tu pipeline!'}</span>
-                                <Star className="h-3 w-3 text-yellow-500 animate-pulse" />
-                              </div>
                             </div>
                           </div>
                         )
