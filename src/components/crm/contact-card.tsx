@@ -71,7 +71,7 @@ export function ContactCard({ contact, lang }: ContactCardProps) {
   }
 
   return (
-    <div ref={setNodeRef} style={style} className="touch-none">
+    <div ref={setNodeRef} style={style}>
       <Card className="p-4 bg-white hover:shadow-md transition-shadow cursor-grab active:cursor-grabbing border-2 border-transparent hover:border-primary/20">
         <div className="flex items-start gap-3">
           {/* Drag Handle */}
