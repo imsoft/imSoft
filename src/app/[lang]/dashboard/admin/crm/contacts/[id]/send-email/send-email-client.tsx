@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Skeleton } from '@/components/ui/skeleton'
 import { ArrowLeft, Mail, Sparkles, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import { toast } from 'sonner'
@@ -153,42 +154,50 @@ export function SendEmailPageClient({
         <div className="space-y-4">
           <div>
             <Label htmlFor="subject">{lang === 'en' ? 'Subject' : 'Asunto'} *</Label>
-            <Input
-              id="subject"
-              value={emailSubject}
-              onChange={(e) => setEmailSubject(e.target.value)}
-              placeholder={lang === 'en' ? 'Email subject...' : 'Asunto del correo...'}
-              className="mt-1"
-            />
+            {isGeneratingAI ? (
+              <Skeleton className="mt-1 h-10 w-full" />
+            ) : (
+              <Input
+                id="subject"
+                value={emailSubject}
+                onChange={(e) => setEmailSubject(e.target.value)}
+                placeholder={lang === 'en' ? 'Email subject...' : 'Asunto del correo...'}
+                className="mt-1 border-2"
+              />
+            )}
           </div>
 
           <div>
             <Label htmlFor="body">{lang === 'en' ? 'Email Body' : 'Cuerpo del Correo'} *</Label>
-            <Tabs defaultValue="preview" className="mt-1">
-              <TabsList>
-                <TabsTrigger value="preview">{lang === 'en' ? 'Preview' : 'Vista Previa'}</TabsTrigger>
-                <TabsTrigger value="editor">{lang === 'en' ? 'HTML Editor' : 'Editor HTML'}</TabsTrigger>
-              </TabsList>
-              <TabsContent value="preview" className="mt-4">
-                <div className="border rounded-lg overflow-hidden" style={{ minHeight: '400px' }}>
-                  <iframe
-                    srcDoc={emailBody}
-                    className="w-full h-full"
-                    style={{ minHeight: '400px', border: 'none' }}
-                    title="Email Preview"
+            {isGeneratingAI ? (
+              <Skeleton className="mt-1 h-[400px] w-full" />
+            ) : (
+              <Tabs defaultValue="preview" className="mt-1">
+                <TabsList>
+                  <TabsTrigger value="preview">{lang === 'en' ? 'Preview' : 'Vista Previa'}</TabsTrigger>
+                  <TabsTrigger value="editor">{lang === 'en' ? 'HTML Editor' : 'Editor HTML'}</TabsTrigger>
+                </TabsList>
+                <TabsContent value="preview" className="mt-4">
+                  <div className="border-2 rounded-lg overflow-hidden" style={{ minHeight: '400px' }}>
+                    <iframe
+                      srcDoc={emailBody}
+                      className="w-full h-full"
+                      style={{ minHeight: '400px', border: 'none' }}
+                      title="Email Preview"
+                    />
+                  </div>
+                </TabsContent>
+                <TabsContent value="editor" className="mt-4">
+                  <Textarea
+                    id="body"
+                    value={emailBody}
+                    onChange={(e) => setEmailBody(e.target.value)}
+                    placeholder={lang === 'en' ? 'Email body (HTML)...' : 'Cuerpo del correo (HTML)...'}
+                    className="min-h-[400px] font-mono text-sm border-2"
                   />
-                </div>
-              </TabsContent>
-              <TabsContent value="editor" className="mt-4">
-                <Textarea
-                  id="body"
-                  value={emailBody}
-                  onChange={(e) => setEmailBody(e.target.value)}
-                  placeholder={lang === 'en' ? 'Email body (HTML)...' : 'Cuerpo del correo (HTML)...'}
-                  className="min-h-[400px] font-mono text-sm"
-                />
-              </TabsContent>
-            </Tabs>
+                </TabsContent>
+              </Tabs>
+            )}
           </div>
 
           <div className="flex justify-end gap-4 pt-4">

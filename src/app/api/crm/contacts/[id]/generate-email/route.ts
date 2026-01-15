@@ -299,11 +299,8 @@ Responde SOLO con un JSON válido con esta estructura:
               </table>
             </div>
 
-            <!-- Disclaimer y Firma -->
+            <!-- Firma -->
             <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center; vertical-align: middle;">
-              <p style="font-size: 12px; color: #666; margin: 0 0 15px 0; line-height: 1.5;">
-                Este es un correo automático de imSoft. Por favor, no responda a este correo.
-              </p>
               <table cellpadding="0" cellspacing="0" border="0" style="font-family: Geist, Geist_Mono, -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, Roboto, Arial, sans-serif; color:#0b0b0b; margin: 0 auto;">
                 <tr>
                   <!-- LOGO -->
