@@ -180,11 +180,36 @@ export function ContactFormSimple({ contact, lang, userId }: ContactFormProps) {
               control={form.control}
               name="company"
               render={({ field }) => (
-                <FormItem className="md:col-span-2">
+                <FormItem>
                   <FormLabel>{lang === 'en' ? 'Company' : 'Empresa'}</FormLabel>
                   <FormControl>
                     <Input {...field} className="!border-2 !border-border" />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="status"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{lang === 'en' ? 'Status' : 'Estado'}</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger className="w-full !border-2 !border-border">
+                        <SelectValue placeholder={lang === 'en' ? 'Select status' : 'Seleccionar estado'} />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="no_contact">{lang === 'en' ? 'No Contact' : 'Sin Contacto'}</SelectItem>
+                      <SelectItem value="qualification">{lang === 'en' ? 'Prospecting' : 'Prospección'}</SelectItem>
+                      <SelectItem value="negotiation">{lang === 'en' ? 'Negotiation' : 'Negociación'}</SelectItem>
+                      <SelectItem value="closed_won">{lang === 'en' ? 'Won' : 'Ganados'}</SelectItem>
+                      <SelectItem value="closed_lost">{lang === 'en' ? 'Lost' : 'Perdidos'}</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
@@ -202,31 +227,6 @@ export function ContactFormSimple({ contact, lang, userId }: ContactFormProps) {
                       className="!border-2 !border-border min-h-[100px]" 
                     />
                   </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="status"
-              render={({ field }) => (
-                <FormItem className="md:col-span-2">
-                  <FormLabel>{lang === 'en' ? 'Status' : 'Estado'}</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger className="!border-2 !border-border">
-                        <SelectValue placeholder={lang === 'en' ? 'Select status' : 'Seleccionar estado'} />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="no_contact">{lang === 'en' ? 'No Contact' : 'Sin Contacto'}</SelectItem>
-                      <SelectItem value="qualification">{lang === 'en' ? 'Prospecting' : 'Prospección'}</SelectItem>
-                      <SelectItem value="negotiation">{lang === 'en' ? 'Negotiation' : 'Negociación'}</SelectItem>
-                      <SelectItem value="closed_won">{lang === 'en' ? 'Won' : 'Ganados'}</SelectItem>
-                      <SelectItem value="closed_lost">{lang === 'en' ? 'Lost' : 'Perdidos'}</SelectItem>
-                    </SelectContent>
-                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
