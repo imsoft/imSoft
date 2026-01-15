@@ -3,7 +3,7 @@ import { notFound, redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Users } from 'lucide-react'
+import { Users, TrendingUp } from 'lucide-react'
 import Link from 'next/link'
 import { ContactsKanbanBoard } from '@/components/crm/contacts-kanban-board'
 
@@ -79,9 +79,17 @@ export default async function CRMPage({ params }: {
             </div>
             <Users className="size-8 text-muted-foreground" />
           </div>
-          <p className="mt-2 text-xs text-muted-foreground">
-            {activeLeads || 0} {lang === 'en' ? 'active leads' : 'leads activos'}
-          </p>
+        </Card>
+        <Card className="p-6 bg-white">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">
+                {lang === 'en' ? 'Active Leads' : 'Leads Activos'}
+              </p>
+              <p className="text-2xl font-bold">{activeLeads || 0}</p>
+            </div>
+            <TrendingUp className="size-8 text-muted-foreground" />
+          </div>
         </Card>
       </div>
 
