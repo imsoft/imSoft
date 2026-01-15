@@ -98,7 +98,7 @@ export function DataTable<TData, TValue>({
               onChange={(event) =>
                 table.getColumn('name')?.setFilterValue(event.target.value)
               }
-              className="w-full border border-gray-500 dark:border-gray-400"
+              className="w-full border-[0.5px] border-gray-500 dark:border-gray-400"
             />
           </div>
 
@@ -111,7 +111,7 @@ export function DataTable<TData, TValue>({
               onChange={(event) =>
                 table.getColumn('email')?.setFilterValue(event.target.value)
               }
-              className="w-full border border-gray-500 dark:border-gray-400"
+              className="w-full border-[0.5px] border-gray-500 dark:border-gray-400"
             />
           </div>
 
@@ -124,7 +124,7 @@ export function DataTable<TData, TValue>({
               onChange={(event) =>
                 table.getColumn('company')?.setFilterValue(event.target.value)
               }
-              className="w-full border border-gray-500 dark:border-gray-400"
+              className="w-full border-[0.5px] border-gray-500 dark:border-gray-400"
             />
           </div>
 
@@ -137,7 +137,7 @@ export function DataTable<TData, TValue>({
                 table.getColumn('status')?.setFilterValue(value === 'all' ? '' : value)
               }
             >
-              <SelectTrigger id="status-filter" className="w-full border border-gray-500 dark:border-gray-400">
+              <SelectTrigger id="status-filter" className="w-full border-[0.5px] border-gray-500 dark:border-gray-400">
                 <SelectValue placeholder={lang === 'en' ? 'All statuses' : 'Todos los estados'} />
               </SelectTrigger>
               <SelectContent>
@@ -162,7 +162,7 @@ export function DataTable<TData, TValue>({
                 table.getColumn('contact_type')?.setFilterValue(value === 'all' ? '' : value)
               }
             >
-              <SelectTrigger id="type-filter" className="w-full border border-gray-500 dark:border-gray-400">
+              <SelectTrigger id="type-filter" className="w-full border-[0.5px] border-gray-500 dark:border-gray-400">
                 <SelectValue placeholder={lang === 'en' ? 'All types' : 'Todos los tipos'} />
               </SelectTrigger>
               <SelectContent>
@@ -179,7 +179,7 @@ export function DataTable<TData, TValue>({
           <div className="flex items-end justify-end">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="border border-gray-500 dark:border-gray-400">
+                <Button variant="outline" className="border-[0.5px] border-gray-500 dark:border-gray-400">
                   {lang === 'en' ? 'Columns' : 'Columnas'} <ChevronDown className="ml-2 h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
@@ -265,7 +265,7 @@ export function DataTable<TData, TValue>({
             value={pageSize.toString()}
             onValueChange={(value) => setPageSize(Number(value))}
           >
-            <SelectTrigger className="h-8 w-full border border-gray-500 dark:border-gray-400">
+            <SelectTrigger className="h-8 w-full border-[0.5px] border-gray-500 dark:border-gray-400">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
