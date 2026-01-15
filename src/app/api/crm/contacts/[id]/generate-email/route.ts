@@ -266,7 +266,7 @@ Responde SOLO con un JSON válido con esta estructura:
                 }
                 li {
                   margin: 10px 0;
-                  line-height: 1.8;
+                  line-height: 1.5;
                 }
                 ul li, ol li {
                   padding-bottom: 8px;
