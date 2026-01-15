@@ -5,8 +5,11 @@ import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { User, GripVertical, Mail, Phone, Building2 } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { GripVertical, Mail, Phone, Building2, Loader2 } from 'lucide-react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 import type { Contact } from '@/types/database'
 
 interface ContactCardProps {
@@ -15,6 +18,9 @@ interface ContactCardProps {
 }
 
 export function ContactCard({ contact, lang }: ContactCardProps) {
+  const router = useRouter()
+  const [isSendingEmail, setIsSendingEmail] = useState(false)
+  
   const {
     attributes,
     listeners,
@@ -28,6 +34,18 @@ export function ContactCard({ contact, lang }: ContactCardProps) {
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.3 : 1,
+  }
+
+  const handleEmailClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    
+    if (!contact.email) {
+      toast.error(lang === 'en' ? 'Contact email is required' : 'Se requiere el correo del contacto')
+      return
+    }
+
+    router.push(`/${lang}/dashboard/admin/crm/contacts/${contact.id}/send-email`)
   }
 
   const getStatusColor = (status: string) => {
@@ -100,11 +118,26 @@ export function ContactCard({ contact, lang }: ContactCardProps) {
               )}
             </div>
 
-            {/* Badge de Estado */}
-            <div className="flex items-center gap-2 flex-wrap">
+            {/* Badge de Estado y Botón de Email */}
+            <div className="flex items-center justify-between gap-2 flex-wrap">
               <Badge variant="outline" className={`text-xs ${getStatusColor(contact.status)}`}>
                 {getStatusLabel(contact.status)}
               </Badge>
+              {contact.email && contact.status !== 'no_contact' && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-6 px-2 text-xs"
+                  onClick={handleEmailClick}
+                  disabled={isSendingEmail}
+                >
+                  {isSendingEmail ? (
+                    <Loader2 className="h-3 w-3 animate-spin" />
+                  ) : (
+                    <Mail className="h-3 w-3" />
+                  )}
+                </Button>
+              )}
             </div>
           </div>
         </div>

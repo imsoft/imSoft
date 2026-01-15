@@ -196,12 +196,12 @@ export function ContactsKanbanBoard({ contacts: initialContacts, lang }: Contact
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 overflow-x-auto pb-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 pb-4">
         {STAGES.map((stage) => {
           const stageContacts = contactsByStatus[stage.id] || []
 
           return (
-            <div key={stage.id} className="flex flex-col min-w-[280px]">
+            <div key={stage.id} className="flex flex-col">
               <Card className={`p-4 ${stage.color} border-2`}>
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="font-semibold text-lg">

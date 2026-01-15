@@ -94,12 +94,22 @@ export default async function ContactDetailPage({ params }: {
             </p>
           </div>
         </div>
-        <Button asChild>
-          <Link href={`/${lang}/dashboard/admin/crm/contacts/${id}/edit`}>
-            <Edit className="mr-2 h-4 w-4" />
-            {lang === 'en' ? 'Edit' : 'Editar'}
-          </Link>
-        </Button>
+        <div className="flex gap-2">
+          {contact.email && contact.status !== 'no_contact' && (
+            <Button variant="outline" asChild>
+              <Link href={`/${lang}/dashboard/admin/crm/contacts/${id}/send-email`}>
+                <Mail className="mr-2 h-4 w-4" />
+                {lang === 'en' ? 'Send Email' : 'Enviar Email'}
+              </Link>
+            </Button>
+          )}
+          <Button asChild>
+            <Link href={`/${lang}/dashboard/admin/crm/contacts/${id}/edit`}>
+              <Edit className="mr-2 h-4 w-4" />
+              {lang === 'en' ? 'Edit' : 'Editar'}
+            </Link>
+          </Button>
+        </div>
       </div>
 
       {/* Basic Information */}
