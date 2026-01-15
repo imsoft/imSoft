@@ -23,6 +23,7 @@ import { Badge } from '@/components/ui/badge'
 import { ContactCard } from './contact-card'
 import type { Contact, ContactStatus } from '@/types/database'
 import { useRouter } from 'next/navigation'
+import { Rocket, Target, TrendingUp, Trophy, AlertCircle, Zap, Star, Gamepad2 } from 'lucide-react'
 
 interface ContactsKanbanBoardProps {
   contacts: Contact[]
@@ -188,6 +189,53 @@ export function ContactsKanbanBoard({ contacts: initialContacts, lang }: Contact
     return lang === 'en' ? stage?.label_en || stageId : stage?.label_es || stageId
   }
 
+  const getEmptyStateContent = (stageId: ContactStatus) => {
+    const emptyStates: Record<ContactStatus, { icon: React.ReactNode; message: { en: string; es: string }; emoji: string }> = {
+      no_contact: {
+        icon: <Target className="h-8 w-8 text-blue-500 animate-pulse" />,
+        message: {
+          en: 'Ready to start? Add your first contact! 🎯',
+          es: '¡Listo para comenzar! Agrega tu primer contacto 🎯'
+        },
+        emoji: '🎯'
+      },
+      qualification: {
+        icon: <Rocket className="h-8 w-8 text-blue-600 animate-bounce" />,
+        message: {
+          en: 'Let\'s find new opportunities! 🚀',
+          es: '¡Busquemos nuevas oportunidades! 🚀'
+        },
+        emoji: '🚀'
+      },
+      negotiation: {
+        icon: <TrendingUp className="h-8 w-8 text-purple-600 animate-pulse" />,
+        message: {
+          en: 'Time to close deals! 💼',
+          es: '¡Es hora de cerrar negocios! 💼'
+        },
+        emoji: '💼'
+      },
+      closed_won: {
+        icon: <Trophy className="h-8 w-8 text-green-600 animate-pulse" />,
+        message: {
+          en: 'Victory! 🏆 Keep up the great work!',
+          es: '¡Victoria! 🏆 ¡Sigue así!'
+        },
+        emoji: '🏆'
+      },
+      closed_lost: {
+        icon: <AlertCircle className="h-8 w-8 text-red-500" />,
+        message: {
+          en: 'Learn and move forward! 💪',
+          es: '¡Aprende y sigue adelante! 💪'
+        },
+        emoji: '💪'
+      },
+    }
+
+    return emptyStates[stageId] || emptyStates.no_contact
+  }
+
   return (
     <DndContext
       sensors={sensors}
@@ -231,11 +279,29 @@ export function ContactsKanbanBoard({ contacts: initialContacts, lang }: Contact
                           lang={lang}
                         />
                       ))}
-                      {stageContacts.length === 0 && !overId && (
-                        <div className="text-center text-sm text-muted-foreground py-8">
-                          {lang === 'en' ? 'No contacts' : 'Sin contactos'}
-                        </div>
-                      )}
+                      {stageContacts.length === 0 && !overId && (() => {
+                        const emptyContent = getEmptyStateContent(stage.id)
+                        return (
+                          <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
+                            <div className="mb-4 relative">
+                              <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-primary/10 to-primary/20 rounded-full blur-lg animate-pulse"></div>
+                              <div className="relative bg-gradient-to-br from-primary/10 to-primary/5 p-6 rounded-full border-2 border-dashed border-primary/30">
+                                {emptyContent.icon}
+                              </div>
+                            </div>
+                            <div className="space-y-2">
+                              <p className="text-base font-semibold text-foreground/80 leading-relaxed">
+                                {lang === 'en' ? emptyContent.message.en : emptyContent.message.es}
+                              </p>
+                              <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground/70">
+                                <Zap className="h-3 w-3 text-yellow-500 animate-pulse" />
+                                <span>{lang === 'en' ? 'Level up your pipeline!' : '¡Sube de nivel tu pipeline!'}</span>
+                                <Star className="h-3 w-3 text-yellow-500 animate-pulse" />
+                              </div>
+                            </div>
+                          </div>
+                        )
+                      })()}
                     </div>
                   </DroppableColumn>
                 </SortableContext>
