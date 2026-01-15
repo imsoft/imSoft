@@ -94,12 +94,11 @@ export function DataTable<TData, TValue>({
             <Label htmlFor="name-filter">{lang === 'en' ? 'Name' : 'Nombre'}</Label>
             <Input
               id="name-filter"
-              placeholder={lang === 'en' ? 'Search by name...' : 'Buscar por nombre...'}
               value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
               onChange={(event) =>
                 table.getColumn('name')?.setFilterValue(event.target.value)
               }
-              className="w-full border-2"
+              className="w-full border-[3px] border-gray-500 dark:border-gray-400"
             />
           </div>
 
@@ -108,12 +107,11 @@ export function DataTable<TData, TValue>({
             <Label htmlFor="email-filter">{lang === 'en' ? 'Email' : 'Correo'}</Label>
             <Input
               id="email-filter"
-              placeholder={lang === 'en' ? 'Search by email...' : 'Buscar por correo...'}
               value={(table.getColumn('email')?.getFilterValue() as string) ?? ''}
               onChange={(event) =>
                 table.getColumn('email')?.setFilterValue(event.target.value)
               }
-              className="w-full border-2"
+              className="w-full border-[3px] border-gray-500 dark:border-gray-400"
             />
           </div>
 
@@ -122,12 +120,11 @@ export function DataTable<TData, TValue>({
             <Label htmlFor="company-filter">{lang === 'en' ? 'Company' : 'Empresa'}</Label>
             <Input
               id="company-filter"
-              placeholder={lang === 'en' ? 'Search by company...' : 'Buscar por empresa...'}
               value={(table.getColumn('company')?.getFilterValue() as string) ?? ''}
               onChange={(event) =>
                 table.getColumn('company')?.setFilterValue(event.target.value)
               }
-              className="w-full border-2"
+              className="w-full border-[3px] border-gray-500 dark:border-gray-400"
             />
           </div>
 
@@ -140,7 +137,7 @@ export function DataTable<TData, TValue>({
                 table.getColumn('status')?.setFilterValue(value === 'all' ? '' : value)
               }
             >
-              <SelectTrigger id="status-filter" className="w-full border-2">
+              <SelectTrigger id="status-filter" className="w-full border-[3px] border-gray-500 dark:border-gray-400">
                 <SelectValue placeholder={lang === 'en' ? 'All statuses' : 'Todos los estados'} />
               </SelectTrigger>
               <SelectContent>
@@ -165,7 +162,7 @@ export function DataTable<TData, TValue>({
                 table.getColumn('contact_type')?.setFilterValue(value === 'all' ? '' : value)
               }
             >
-              <SelectTrigger id="type-filter" className="w-full border-2">
+              <SelectTrigger id="type-filter" className="w-full border-[3px] border-gray-500 dark:border-gray-400">
                 <SelectValue placeholder={lang === 'en' ? 'All types' : 'Todos los tipos'} />
               </SelectTrigger>
               <SelectContent>
@@ -182,7 +179,7 @@ export function DataTable<TData, TValue>({
           <div className="flex items-end">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="w-full md:w-auto">
+                <Button variant="outline" className="w-full">
                   {lang === 'en' ? 'Columns' : 'Columnas'} <ChevronDown className="ml-2 h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
@@ -268,7 +265,7 @@ export function DataTable<TData, TValue>({
             value={pageSize.toString()}
             onValueChange={(value) => setPageSize(Number(value))}
           >
-            <SelectTrigger className="h-8 w-full border-2">
+            <SelectTrigger className="h-8 w-full border-[3px] border-gray-500 dark:border-gray-400">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
