@@ -55,6 +55,7 @@ export function DataTable<TData, TValue>({
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
+  const [pageSize, setPageSize] = React.useState(10)
 
   const table = useReactTable({
     data,
@@ -72,8 +73,16 @@ export function DataTable<TData, TValue>({
       columnFilters,
       columnVisibility,
       rowSelection,
+      pagination: {
+        pageSize,
+        pageIndex: 0,
+      },
     },
   })
+
+  React.useEffect(() => {
+    table.setPageSize(pageSize)
+  }, [pageSize, table])
 
   return (
     <div className="w-full">
@@ -250,28 +259,54 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} {lang === 'en' ? 'of' : 'de'}{' '}
-          {table.getFilteredRowModel().rows.length} {lang === 'en' ? 'row(s) selected.' : 'fila(s) seleccionada(s).'}
+      <div className="flex items-center justify-between py-4">
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-muted-foreground">
+            {lang === 'en' ? 'Rows per page:' : 'Filas por página:'}
+          </span>
+          <Select
+            value={pageSize.toString()}
+            onValueChange={(value) => setPageSize(Number(value))}
+          >
+            <SelectTrigger className="h-8 w-[70px] border-2">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="10">10</SelectItem>
+              <SelectItem value="20">20</SelectItem>
+              <SelectItem value="30">30</SelectItem>
+              <SelectItem value="50">50</SelectItem>
+              <SelectItem value="100">100</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
-        <div className="space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            {lang === 'en' ? 'Previous' : 'Anterior'}
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            {lang === 'en' ? 'Next' : 'Siguiente'}
-          </Button>
+        <div className="flex items-center gap-4">
+          <div className="text-sm text-muted-foreground">
+            {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1} -{' '}
+            {Math.min(
+              (table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize,
+              table.getFilteredRowModel().rows.length
+            )}{' '}
+            {lang === 'en' ? 'of' : 'de'} {table.getFilteredRowModel().rows.length}
+          </div>
+          <div className="space-x-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+            >
+              {lang === 'en' ? 'Previous' : 'Anterior'}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+            >
+              {lang === 'en' ? 'Next' : 'Siguiente'}
+            </Button>
+          </div>
         </div>
       </div>
     </div>
