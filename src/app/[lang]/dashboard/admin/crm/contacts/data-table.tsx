@@ -98,7 +98,7 @@ export function DataTable<TData, TValue>({
               onChange={(event) =>
                 table.getColumn('name')?.setFilterValue(event.target.value)
               }
-              className="w-full border-[3px] border-gray-500 dark:border-gray-400"
+              className="w-full border-2 border-gray-500 dark:border-gray-400"
             />
           </div>
 
@@ -111,7 +111,7 @@ export function DataTable<TData, TValue>({
               onChange={(event) =>
                 table.getColumn('email')?.setFilterValue(event.target.value)
               }
-              className="w-full border-[3px] border-gray-500 dark:border-gray-400"
+              className="w-full border-2 border-gray-500 dark:border-gray-400"
             />
           </div>
 
@@ -124,7 +124,7 @@ export function DataTable<TData, TValue>({
               onChange={(event) =>
                 table.getColumn('company')?.setFilterValue(event.target.value)
               }
-              className="w-full border-[3px] border-gray-500 dark:border-gray-400"
+              className="w-full border-2 border-gray-500 dark:border-gray-400"
             />
           </div>
 
@@ -176,14 +176,14 @@ export function DataTable<TData, TValue>({
           </div>
 
           {/* Botón de Columnas */}
-          <div className="flex items-end">
+          <div className="flex items-end justify-end">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="w-full">
+                <Button variant="outline" className="border-2 border-gray-500 dark:border-gray-400">
                   {lang === 'en' ? 'Columns' : 'Columnas'} <ChevronDown className="ml-2 h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
+              <DropdownMenuContent align="end" className="w-48">
                 {table
                   .getAllColumns()
                   .filter((column) => column.getCanHide())
@@ -265,7 +265,7 @@ export function DataTable<TData, TValue>({
             value={pageSize.toString()}
             onValueChange={(value) => setPageSize(Number(value))}
           >
-            <SelectTrigger className="h-8 w-full border-[3px] border-gray-500 dark:border-gray-400">
+            <SelectTrigger className="h-8 w-full border-2 border-gray-500 dark:border-gray-400">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
