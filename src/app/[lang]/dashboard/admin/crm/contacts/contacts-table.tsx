@@ -2,14 +2,11 @@
 
 import { Contact } from '@/types/database'
 import { Card } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Eye, Edit, Trash2, Mail, Phone } from 'lucide-react'
-import Link from 'next/link'
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
-import { formatPhoneNumber } from '@/lib/utils/format-phone'
+import { DataTable } from './data-table'
+import { createColumns } from './columns'
 
 interface ContactsTableProps {
   contacts: Contact[]
@@ -44,41 +41,7 @@ export function ContactsTable({ contacts, dict, lang }: ContactsTableProps) {
     setIsDeleting(null)
   }
 
-  const getContactTypeLabel = (type: string) => {
-    const labels: Record<string, { en: string; es: string }> = {
-      lead: { en: 'Lead', es: 'Lead' },
-      prospect: { en: 'Prospect', es: 'Prospecto' },
-      customer: { en: 'Customer', es: 'Cliente' },
-      partner: { en: 'Partner', es: 'Socio' },
-    }
-    return lang === 'en' ? labels[type]?.en || type : labels[type]?.es || type
-  }
-
-  const getStatusLabel = (status: string) => {
-    const labels: Record<string, { en: string; es: string }> = {
-      no_contact: { en: 'No Contact', es: 'Sin Contacto' },
-      qualification: { en: 'Prospecting', es: 'Prospección' },
-      negotiation: { en: 'Negotiation', es: 'Negociación' },
-      closed_won: { en: 'Won', es: 'Ganado' },
-      closed_lost: { en: 'Lost', es: 'Perdido' },
-    }
-    return lang === 'en' ? labels[status]?.en || status : labels[status]?.es || status
-  }
-
-  const contactTypeColors: Record<string, string> = {
-    lead: 'bg-blue-500/10 text-blue-700 dark:text-blue-400',
-    prospect: 'bg-purple-500/10 text-purple-700 dark:text-purple-400',
-    customer: 'bg-green-500/10 text-green-700 dark:text-green-400',
-    partner: 'bg-orange-500/10 text-orange-700 dark:text-orange-400',
-  }
-
-  const statusColors: Record<string, string> = {
-    no_contact: 'bg-gray-500/10 text-gray-700 dark:text-gray-400',
-    qualification: 'bg-blue-500/10 text-blue-700 dark:text-blue-400',
-    negotiation: 'bg-purple-500/10 text-purple-700 dark:text-purple-400',
-    closed_won: 'bg-green-500/10 text-green-700 dark:text-green-400',
-    closed_lost: 'bg-red-500/10 text-red-700 dark:text-red-400',
-  }
+  const columns = createColumns({ lang, onDelete: handleDelete, isDeleting })
 
   if (contacts.length === 0) {
     return (
@@ -93,104 +56,8 @@ export function ContactsTable({ contacts, dict, lang }: ContactsTableProps) {
   }
 
   return (
-    <Card className="overflow-hidden bg-white">
-      <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead className="border-b bg-white">
-            <tr>
-              <th className="px-6 py-3 text-left text-sm font-medium">
-                {lang === 'en' ? 'Name' : 'Nombre'}
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-medium">
-                {lang === 'en' ? 'Email' : 'Correo'}
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-medium">
-                {lang === 'en' ? 'Company' : 'Empresa'}
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-medium">
-                {lang === 'en' ? 'Type' : 'Tipo'}
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-medium">
-                {lang === 'en' ? 'Status' : 'Estado'}
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-medium">
-                {lang === 'en' ? 'Contact' : 'Contacto'}
-              </th>
-              <th className="px-6 py-3 text-right text-sm font-medium">
-                {lang === 'en' ? 'Actions' : 'Acciones'}
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y">
-            {contacts.map((contact) => (
-              <tr key={contact.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4">
-                  <div>
-                    <p className="font-medium">
-                      {contact.first_name} {contact.last_name}
-                    </p>
-                    {contact.job_title && (
-                      <p className="text-sm text-muted-foreground">{contact.job_title}</p>
-                    )}
-                  </div>
-                </td>
-                <td className="px-6 py-4">
-                  <div className="flex items-center gap-2">
-                    <Mail className="size-4 text-muted-foreground" />
-                    <span className="text-sm">{contact.email}</span>
-                  </div>
-                </td>
-                <td className="px-6 py-4">
-                  <span className="text-sm">{contact.company || '-'}</span>
-                </td>
-                <td className="px-6 py-4">
-                  <Badge className={contactTypeColors[contact.contact_type]}>
-                    {getContactTypeLabel(contact.contact_type)}
-                  </Badge>
-                </td>
-                <td className="px-6 py-4">
-                  <Badge className={statusColors[contact.status]}>
-                    {getStatusLabel(contact.status)}
-                  </Badge>
-                </td>
-                <td className="px-6 py-4">
-                  {contact.phone ? (
-                    <div className="flex items-center gap-2">
-                      <Phone className="size-4 text-muted-foreground" />
-                      <span className="text-sm">{formatPhoneNumber(contact.phone)}</span>
-                    </div>
-                  ) : (
-                    <span className="text-sm text-muted-foreground">-</span>
-                  )}
-                </td>
-                <td className="px-6 py-4 text-right">
-                  <div className="flex items-center justify-end gap-2">
-                    <Button variant="ghost" size="icon" asChild>
-                      <Link href={`/${lang}/dashboard/admin/crm/contacts/${contact.id}`}>
-                        <Eye className="size-4" />
-                      </Link>
-                    </Button>
-                    <Button variant="ghost" size="icon" asChild>
-                      <Link href={`/${lang}/dashboard/admin/crm/contacts/${contact.id}/edit`}>
-                        <Edit className="size-4" />
-                      </Link>
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleDelete(contact.id)}
-                      disabled={isDeleting === contact.id}
-                      className="text-destructive hover:text-destructive"
-                    >
-                      <Trash2 className="size-4 text-destructive" />
-                    </Button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+    <Card className="p-6 bg-white">
+      <DataTable columns={columns} data={contacts} lang={lang} />
     </Card>
   )
 }
