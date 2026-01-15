@@ -303,16 +303,16 @@ export function ContactsKanbanBoard({ contacts: initialContacts, lang }: Contact
                   </Badge>
                 </div>
 
-                <SortableContext
-                  id={stage.id}
-                  items={stageContacts.map((c) => c.id)}
-                  strategy={verticalListSortingStrategy}
+                <DroppableColumn 
+                  id={stage.id} 
+                  hasContacts={stageContacts.length > 0}
+                  isOver={overId === stage.id}
+                  lang={lang}
                 >
-                  <DroppableColumn 
-                    id={stage.id} 
-                    hasContacts={stageContacts.length > 0}
-                    isOver={overId === stage.id}
-                    lang={lang}
+                  <SortableContext
+                    id={stage.id}
+                    items={stageContacts.map((c) => c.id)}
+                    strategy={verticalListSortingStrategy}
                   >
                     <div className="space-y-3">
                       {stageContacts.map((contact) => (
@@ -340,8 +340,8 @@ export function ContactsKanbanBoard({ contacts: initialContacts, lang }: Contact
                         )
                       })()}
                     </div>
-                  </DroppableColumn>
-                </SortableContext>
+                  </SortableContext>
+                </DroppableColumn>
               </Card>
             </div>
           )
