@@ -21,8 +21,8 @@ import { createClient } from '@/lib/supabase/client'
 import { Contact } from '@/types/database'
 
 const contactSchema = z.object({
-  first_name: z.string().min(2, 'First name is required'),
-  last_name: z.string().min(2, 'Last name is required'),
+  first_name: z.string().optional(),
+  last_name: z.string().optional(),
   email: z.string().email('Invalid email address'),
   phone: z.string().optional(),
   company: z.string().optional(),
@@ -60,8 +60,8 @@ export function ContactFormSimple({ contact, lang, userId }: ContactFormProps) {
     try {
       // Preparar datos para guardar (company_description se guarda en notes)
       const contactData = {
-        first_name: values.first_name,
-        last_name: values.last_name,
+        first_name: values.first_name || null,
+        last_name: values.last_name || null,
         email: values.email,
         phone: values.phone || null,
         company: values.company || null,
@@ -115,7 +115,7 @@ export function ContactFormSimple({ contact, lang, userId }: ContactFormProps) {
               name="first_name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{lang === 'en' ? 'First Name' : 'Nombre'} *</FormLabel>
+                  <FormLabel>{lang === 'en' ? 'First Name' : 'Nombre'}</FormLabel>
                   <FormControl>
                     <Input {...field} className="!border-2 !border-border" />
                   </FormControl>
@@ -129,7 +129,7 @@ export function ContactFormSimple({ contact, lang, userId }: ContactFormProps) {
               name="last_name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{lang === 'en' ? 'Last Name' : 'Apellido'} *</FormLabel>
+                  <FormLabel>{lang === 'en' ? 'Last Name' : 'Apellido'}</FormLabel>
                   <FormControl>
                     <Input {...field} className="!border-2 !border-border" />
                   </FormControl>
