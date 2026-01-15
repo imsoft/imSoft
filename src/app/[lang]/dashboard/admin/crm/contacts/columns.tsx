@@ -100,6 +100,11 @@ export function createColumns({ lang, onDelete, isDeleting }: ColumnsProps): Col
         const nameB = `${rowB.original.first_name || ''} ${rowB.original.last_name || ''}`.trim()
         return nameA.localeCompare(nameB)
       },
+      filterFn: (row, id, value) => {
+        if (!value) return true
+        const name = `${row.original.first_name || ''} ${row.original.last_name || ''}`.trim().toLowerCase()
+        return name.includes((value as string).toLowerCase())
+      },
     },
     {
       accessorKey: 'email',
@@ -125,11 +130,9 @@ export function createColumns({ lang, onDelete, isDeleting }: ColumnsProps): Col
         )
       },
       filterFn: (row, id, value) => {
+        if (!value) return true
         const email = row.original.email?.toLowerCase() || ''
-        const name = `${row.original.first_name || ''} ${row.original.last_name || ''}`.trim().toLowerCase()
-        const company = row.original.company?.toLowerCase() || ''
-        const searchValue = (value as string)?.toLowerCase() || ''
-        return email.includes(searchValue) || name.includes(searchValue) || company.includes(searchValue)
+        return email.includes((value as string).toLowerCase())
       },
     },
     {
@@ -149,6 +152,11 @@ export function createColumns({ lang, onDelete, isDeleting }: ColumnsProps): Col
       cell: ({ row }) => {
         return <span className="text-sm">{row.original.company || '-'}</span>
       },
+      filterFn: (row, id, value) => {
+        if (!value) return true
+        const company = row.original.company?.toLowerCase() || ''
+        return company.includes((value as string).toLowerCase())
+      },
     },
     {
       accessorKey: 'contact_type',
@@ -161,6 +169,10 @@ export function createColumns({ lang, onDelete, isDeleting }: ColumnsProps): Col
           </Badge>
         )
       },
+      filterFn: (row, id, value) => {
+        if (!value || value === 'all') return true
+        return row.original.contact_type === value
+      },
     },
     {
       accessorKey: 'status',
@@ -172,6 +184,10 @@ export function createColumns({ lang, onDelete, isDeleting }: ColumnsProps): Col
             {getStatusLabel(status)}
           </Badge>
         )
+      },
+      filterFn: (row, id, value) => {
+        if (!value || value === 'all') return true
+        return row.original.status === value
       },
     },
     {

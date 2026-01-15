@@ -24,6 +24,14 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Label } from '@/components/ui/label'
+import {
   Table,
   TableBody,
   TableCell,
@@ -69,41 +77,128 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="w-full">
-      <div className="flex items-center py-4">
-        <Input
-          placeholder={lang === 'en' ? 'Filter contacts...' : 'Filtrar contactos...'}
-          value={(table.getColumn('email')?.getFilterValue() as string) ?? ''}
-          onChange={(event) =>
-            table.getColumn('email')?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              {lang === 'en' ? 'Columns' : 'Columnas'} <ChevronDown className="ml-2 h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                )
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
+      {/* Filtros */}
+      <div className="space-y-4 py-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Filtro por Nombre */}
+          <div className="space-y-2">
+            <Label htmlFor="name-filter">{lang === 'en' ? 'Name' : 'Nombre'}</Label>
+            <Input
+              id="name-filter"
+              placeholder={lang === 'en' ? 'Search by name...' : 'Buscar por nombre...'}
+              value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
+              onChange={(event) =>
+                table.getColumn('name')?.setFilterValue(event.target.value)
+              }
+              className="border-2"
+            />
+          </div>
+
+          {/* Filtro por Email */}
+          <div className="space-y-2">
+            <Label htmlFor="email-filter">{lang === 'en' ? 'Email' : 'Correo'}</Label>
+            <Input
+              id="email-filter"
+              placeholder={lang === 'en' ? 'Search by email...' : 'Buscar por correo...'}
+              value={(table.getColumn('email')?.getFilterValue() as string) ?? ''}
+              onChange={(event) =>
+                table.getColumn('email')?.setFilterValue(event.target.value)
+              }
+              className="border-2"
+            />
+          </div>
+
+          {/* Filtro por Empresa */}
+          <div className="space-y-2">
+            <Label htmlFor="company-filter">{lang === 'en' ? 'Company' : 'Empresa'}</Label>
+            <Input
+              id="company-filter"
+              placeholder={lang === 'en' ? 'Search by company...' : 'Buscar por empresa...'}
+              value={(table.getColumn('company')?.getFilterValue() as string) ?? ''}
+              onChange={(event) =>
+                table.getColumn('company')?.setFilterValue(event.target.value)
+              }
+              className="border-2"
+            />
+          </div>
+
+          {/* Filtro por Estado */}
+          <div className="space-y-2">
+            <Label htmlFor="status-filter">{lang === 'en' ? 'Status' : 'Estado'}</Label>
+            <Select
+              value={(table.getColumn('status')?.getFilterValue() as string) ?? 'all'}
+              onValueChange={(value) =>
+                table.getColumn('status')?.setFilterValue(value === 'all' ? '' : value)
+              }
+            >
+              <SelectTrigger id="status-filter" className="border-2">
+                <SelectValue placeholder={lang === 'en' ? 'All statuses' : 'Todos los estados'} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{lang === 'en' ? 'All statuses' : 'Todos los estados'}</SelectItem>
+                <SelectItem value="no_contact">{lang === 'en' ? 'No Contact' : 'Sin Contacto'}</SelectItem>
+                <SelectItem value="qualification">{lang === 'en' ? 'Prospecting' : 'Prospección'}</SelectItem>
+                <SelectItem value="negotiation">{lang === 'en' ? 'Negotiation' : 'Negociación'}</SelectItem>
+                <SelectItem value="closed_won">{lang === 'en' ? 'Won' : 'Ganado'}</SelectItem>
+                <SelectItem value="closed_lost">{lang === 'en' ? 'Lost' : 'Perdido'}</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Filtro por Tipo */}
+          <div className="space-y-2">
+            <Label htmlFor="type-filter">{lang === 'en' ? 'Type' : 'Tipo'}</Label>
+            <Select
+              value={(table.getColumn('contact_type')?.getFilterValue() as string) ?? 'all'}
+              onValueChange={(value) =>
+                table.getColumn('contact_type')?.setFilterValue(value === 'all' ? '' : value)
+              }
+            >
+              <SelectTrigger id="type-filter" className="border-2">
+                <SelectValue placeholder={lang === 'en' ? 'All types' : 'Todos los tipos'} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{lang === 'en' ? 'All types' : 'Todos los tipos'}</SelectItem>
+                <SelectItem value="lead">{lang === 'en' ? 'Lead' : 'Lead'}</SelectItem>
+                <SelectItem value="prospect">{lang === 'en' ? 'Prospect' : 'Prospecto'}</SelectItem>
+                <SelectItem value="customer">{lang === 'en' ? 'Customer' : 'Cliente'}</SelectItem>
+                <SelectItem value="partner">{lang === 'en' ? 'Partner' : 'Socio'}</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Botón de Columnas */}
+          <div className="flex items-end">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="w-full md:w-auto">
+                  {lang === 'en' ? 'Columns' : 'Columnas'} <ChevronDown className="ml-2 h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                {table
+                  .getAllColumns()
+                  .filter((column) => column.getCanHide())
+                  .map((column) => {
+                    return (
+                      <DropdownMenuCheckboxItem
+                        key={column.id}
+                        className="capitalize"
+                        checked={column.getIsVisible()}
+                        onCheckedChange={(value) =>
+                          column.toggleVisibility(!!value)
+                        }
+                      >
+                        {column.id}
+                      </DropdownMenuCheckboxItem>
+                    )
+                  })}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </div>
       </div>
       <div className="overflow-hidden rounded-md border">
         <Table>
