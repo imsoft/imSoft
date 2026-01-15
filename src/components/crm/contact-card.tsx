@@ -30,30 +30,24 @@ export function ContactCard({ contact, lang }: ContactCardProps) {
     opacity: isDragging ? 0.5 : 1,
   }
 
-  const getContactTypeLabel = (type: string) => {
-    const labels: Record<string, { en: string; es: string }> = {
-      lead: { en: 'Lead', es: 'Lead' },
-      prospect: { en: 'Prospect', es: 'Prospecto' },
-      customer: { en: 'Customer', es: 'Cliente' },
-      partner: { en: 'Partner', es: 'Socio' },
-    }
-    return lang === 'en' ? labels[type]?.en || type : labels[type]?.es || type
-  }
-
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
-      active: 'bg-green-500/10 text-green-700 dark:text-green-400 border-green-500/20',
-      inactive: 'bg-gray-500/10 text-gray-700 dark:text-gray-400 border-gray-500/20',
-      lost: 'bg-red-500/10 text-red-700 dark:text-red-400 border-red-500/20',
+      no_contact: 'bg-gray-500/10 text-gray-700 dark:text-gray-400 border-gray-500/20',
+      qualification: 'bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/20',
+      negotiation: 'bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-500/20',
+      closed_won: 'bg-green-500/10 text-green-700 dark:text-green-400 border-green-500/20',
+      closed_lost: 'bg-red-500/10 text-red-700 dark:text-red-400 border-red-500/20',
     }
     return colors[status] || 'bg-gray-500/10 text-gray-700 dark:text-gray-400 border-gray-500/20'
   }
 
   const getStatusLabel = (status: string) => {
     const labels: Record<string, { en: string; es: string }> = {
-      active: { en: 'Active', es: 'Activo' },
-      inactive: { en: 'Inactive', es: 'Inactivo' },
-      lost: { en: 'Lost', es: 'Perdido' },
+      no_contact: { en: 'No Contact', es: 'Sin Contacto' },
+      qualification: { en: 'Prospecting', es: 'Prospección' },
+      negotiation: { en: 'Negotiation', es: 'Negociación' },
+      closed_won: { en: 'Won', es: 'Ganado' },
+      closed_lost: { en: 'Lost', es: 'Perdido' },
     }
     return lang === 'en' ? labels[status]?.en || status : labels[status]?.es || status
   }
@@ -106,11 +100,8 @@ export function ContactCard({ contact, lang }: ContactCardProps) {
               )}
             </div>
 
-            {/* Badges */}
+            {/* Badge de Estado */}
             <div className="flex items-center gap-2 flex-wrap">
-              <Badge variant="outline" className="text-xs">
-                {getContactTypeLabel(contact.contact_type)}
-              </Badge>
               <Badge variant="outline" className={`text-xs ${getStatusColor(contact.status)}`}>
                 {getStatusLabel(contact.status)}
               </Badge>

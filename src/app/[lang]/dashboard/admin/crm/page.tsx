@@ -36,8 +36,7 @@ export default async function CRMPage({ params }: {
   const { count: activeLeads } = await supabase
     .from('contacts')
     .select('*', { count: 'exact', head: true })
-    .eq('contact_type', 'lead')
-    .eq('status', 'active')
+    .eq('status', 'qualification')
 
   // Obtener todos los contactos para el Kanban board
   const { data: contacts } = await supabase

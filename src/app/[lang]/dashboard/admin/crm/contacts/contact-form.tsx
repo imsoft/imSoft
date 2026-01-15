@@ -34,7 +34,7 @@ const contactSchema = z.object({
   company: z.string().optional(),
   job_title: z.string().optional(),
   contact_type: z.enum(['lead', 'prospect', 'customer', 'partner']),
-  status: z.enum(['active', 'inactive', 'lost']),
+  status: z.enum(['no_contact', 'qualification', 'negotiation', 'closed_won', 'closed_lost']),
   source: z.string().optional(),
   address_street: z.string().optional(),
   address_city: z.string().optional(),
@@ -68,7 +68,7 @@ export function ContactForm({ contact, lang, userId }: ContactFormProps) {
       company: contact?.company || '',
       job_title: contact?.job_title || '',
       contact_type: contact?.contact_type || 'lead',
-      status: contact?.status || 'active',
+      status: contact?.status || 'no_contact',
       source: contact?.source || '',
       address_street: contact?.address_street || '',
       address_city: contact?.address_city || '',
@@ -237,9 +237,11 @@ export function ContactForm({ contact, lang, userId }: ContactFormProps) {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="active">{lang === 'en' ? 'Active' : 'Activo'}</SelectItem>
-                      <SelectItem value="inactive">{lang === 'en' ? 'Inactive' : 'Inactivo'}</SelectItem>
-                      <SelectItem value="lost">{lang === 'en' ? 'Lost' : 'Perdido'}</SelectItem>
+                      <SelectItem value="no_contact">{lang === 'en' ? 'No Contact' : 'Sin Contacto'}</SelectItem>
+                      <SelectItem value="qualification">{lang === 'en' ? 'Prospecting' : 'Prospección'}</SelectItem>
+                      <SelectItem value="negotiation">{lang === 'en' ? 'Negotiation' : 'Negociación'}</SelectItem>
+                      <SelectItem value="closed_won">{lang === 'en' ? 'Won' : 'Ganado'}</SelectItem>
+                      <SelectItem value="closed_lost">{lang === 'en' ? 'Lost' : 'Perdido'}</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />

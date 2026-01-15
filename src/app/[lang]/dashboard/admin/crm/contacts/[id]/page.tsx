@@ -51,9 +51,11 @@ export default async function ContactDetailPage({ params }: {
 
   const getStatusLabel = (status: string) => {
     const labels: Record<string, { en: string; es: string }> = {
-      active: { en: 'Active', es: 'Activo' },
-      inactive: { en: 'Inactive', es: 'Inactivo' },
-      lost: { en: 'Lost', es: 'Perdido' },
+      no_contact: { en: 'No Contact', es: 'Sin Contacto' },
+      qualification: { en: 'Prospecting', es: 'Prospección' },
+      negotiation: { en: 'Negotiation', es: 'Negociación' },
+      closed_won: { en: 'Won', es: 'Ganado' },
+      closed_lost: { en: 'Lost', es: 'Perdido' },
     }
     return lang === 'en' ? labels[status]?.en || status : labels[status]?.es || status
   }
@@ -66,9 +68,11 @@ export default async function ContactDetailPage({ params }: {
   }
 
   const statusColors: Record<string, string> = {
-    active: 'bg-green-500/10 text-green-700 dark:text-green-400',
-    inactive: 'bg-white text-gray-700 dark:text-gray-400',
-    lost: 'bg-red-500/10 text-red-700 dark:text-red-400',
+    no_contact: 'bg-gray-500/10 text-gray-700 dark:text-gray-400',
+    qualification: 'bg-blue-500/10 text-blue-700 dark:text-blue-400',
+    negotiation: 'bg-purple-500/10 text-purple-700 dark:text-purple-400',
+    closed_won: 'bg-green-500/10 text-green-700 dark:text-green-400',
+    closed_lost: 'bg-red-500/10 text-red-700 dark:text-red-400',
   }
 
   return (

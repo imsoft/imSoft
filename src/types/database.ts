@@ -227,7 +227,7 @@ export interface ProjectTask {
 // CRM System Interfaces
 
 export type ContactType = 'lead' | 'prospect' | 'customer' | 'partner'
-export type ContactStatus = 'active' | 'inactive' | 'lost'
+export type ContactStatus = 'no_contact' | 'qualification' | 'negotiation' | 'closed_won' | 'closed_lost'
 export type DealStage = 'no_contact' | 'qualification' | 'proposal' | 'negotiation' | 'closed_won' | 'closed_lost'
 export type ActivityType = 'call' | 'email' | 'meeting' | 'note' | 'task'
 export type ActivityStatus = 'completed' | 'scheduled' | 'cancelled'

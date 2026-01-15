@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import type { ContactType } from '@/types/database'
+import type { ContactStatus } from '@/types/database'
 
 export async function PATCH(
   request: Request,
@@ -28,37 +28,37 @@ export async function PATCH(
     }
 
     const body = await request.json()
-    const { contact_type } = body
+    const { status } = body
 
-    // Validar que contact_type sea válido
-    const validTypes: ContactType[] = ['lead', 'prospect', 'customer', 'partner']
-    if (!contact_type || !validTypes.includes(contact_type)) {
+    // Validar que status sea válido
+    const validStatuses: ContactStatus[] = ['no_contact', 'qualification', 'negotiation', 'closed_won', 'closed_lost']
+    if (!status || !validStatuses.includes(status)) {
       return NextResponse.json(
-        { error: 'Invalid contact_type' },
+        { error: 'Invalid status' },
         { status: 400 }
       )
     }
 
-    // Actualizar el tipo de contacto
+    // Actualizar el estado del contacto
     const { error } = await supabase
       .from('contacts')
       .update({
-        contact_type,
+        status,
         updated_at: new Date().toISOString(),
       })
       .eq('id', id)
 
     if (error) {
-      console.error('Error updating contact type:', error)
+      console.error('Error updating contact status:', error)
       return NextResponse.json(
-        { error: 'Failed to update contact type' },
+        { error: 'Failed to update contact status' },
         { status: 500 }
       )
     }
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('Error in PATCH /api/crm/contacts/[id]/type:', error)
+    console.error('Error in PATCH /api/crm/contacts/[id]/status:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

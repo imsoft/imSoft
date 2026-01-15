@@ -84,7 +84,7 @@ export function ContactFormSimple({ contact, lang, userId }: ContactFormProps) {
           .insert({
             ...contactData,
             contact_type: 'lead',
-            status: 'active',
+            status: 'no_contact',
             created_by: userId,
           })
 

@@ -21,7 +21,7 @@ import {
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { ContactCard } from './contact-card'
-import type { Contact, ContactType } from '@/types/database'
+import type { Contact, ContactStatus } from '@/types/database'
 import { useRouter } from 'next/navigation'
 
 interface ContactsKanbanBoardProps {
@@ -29,11 +29,12 @@ interface ContactsKanbanBoardProps {
   lang: string
 }
 
-const STAGES: { id: ContactType; label_en: string; label_es: string; color: string }[] = [
-  { id: 'lead', label_en: 'Leads', label_es: 'Leads', color: 'bg-blue-500/10' },
-  { id: 'prospect', label_en: 'Prospects', label_es: 'Prospectos', color: 'bg-purple-500/10' },
-  { id: 'customer', label_en: 'Customers', label_es: 'Clientes', color: 'bg-green-500/10' },
-  { id: 'partner', label_en: 'Partners', label_es: 'Socios', color: 'bg-orange-500/10' },
+const STAGES: { id: ContactStatus; label_en: string; label_es: string; color: string }[] = [
+  { id: 'no_contact', label_en: 'No Contact', label_es: 'Sin Contacto', color: 'bg-gray-500/10' },
+  { id: 'qualification', label_en: 'Prospecting', label_es: 'Prospección', color: 'bg-blue-500/10' },
+  { id: 'negotiation', label_en: 'Negotiation', label_es: 'Negociación', color: 'bg-purple-500/10' },
+  { id: 'closed_won', label_en: 'Won', label_es: 'Ganados', color: 'bg-green-500/10' },
+  { id: 'closed_lost', label_en: 'Lost', label_es: 'Perdidos', color: 'bg-red-500/10' },
 ]
 
 function DroppableColumn({ id, hasContacts, children }: { id: string; hasContacts: boolean; children: React.ReactNode }) {
@@ -55,7 +56,7 @@ export function ContactsKanbanBoard({ contacts: initialContacts, lang }: Contact
   const router = useRouter()
   const [contacts, setContacts] = useState(initialContacts)
   const [activeContact, setActiveContact] = useState<Contact | null>(null)
-  const [originalType, setOriginalType] = useState<ContactType | null>(null)
+  const [originalStatus, setOriginalStatus] = useState<ContactStatus | null>(null)
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -66,18 +67,23 @@ export function ContactsKanbanBoard({ contacts: initialContacts, lang }: Contact
     useSensor(KeyboardSensor)
   )
 
-  // Agrupar contactos por tipo
-  const contactsByType = useMemo(() => {
-    const grouped: Record<ContactType, typeof contacts> = {
-      lead: [],
-      prospect: [],
-      customer: [],
-      partner: [],
+  // Agrupar contactos por estado
+  const contactsByStatus = useMemo(() => {
+    const grouped: Record<ContactStatus, typeof contacts> = {
+      no_contact: [],
+      qualification: [],
+      negotiation: [],
+      closed_won: [],
+      closed_lost: [],
     }
 
     contacts.forEach((contact) => {
-      if (grouped[contact.contact_type]) {
-        grouped[contact.contact_type].push(contact)
+      // Si el contacto tiene un status válido, agruparlo
+      if (grouped[contact.status as ContactStatus]) {
+        grouped[contact.status as ContactStatus].push(contact)
+      } else {
+        // Si no tiene un status válido, ponerlo en no_contact por defecto
+        grouped.no_contact.push(contact)
       }
     })
 
@@ -88,7 +94,7 @@ export function ContactsKanbanBoard({ contacts: initialContacts, lang }: Contact
     const { active } = event
     const contact = contacts.find((c) => c.id === active.id)
     setActiveContact(contact || null)
-    setOriginalType(contact?.contact_type || null)
+    setOriginalStatus((contact?.status as ContactStatus) || 'no_contact')
   }
 
   const handleDragOver = (event: DragOverEvent) => {
@@ -100,65 +106,65 @@ export function ContactsKanbanBoard({ contacts: initialContacts, lang }: Contact
 
     if (!over || active.id === over.id) {
       setActiveContact(null)
-      setOriginalType(null)
+      setOriginalStatus(null)
       return
     }
 
     const contactId = active.id as string
-    const newType = over.id as ContactType
+    const newStatus = over.id as ContactStatus
 
-    // Verificar que el nuevo tipo sea válido
-    if (!STAGES.find((s) => s.id === newType)) {
+    // Verificar que el nuevo estado sea válido
+    if (!STAGES.find((s) => s.id === newStatus)) {
       setActiveContact(null)
-      setOriginalType(null)
+      setOriginalStatus(null)
       return
     }
 
     const contact = contacts.find((c) => c.id === contactId)
-    if (!contact || contact.contact_type === newType) {
+    if (!contact || contact.status === newStatus) {
       setActiveContact(null)
-      setOriginalType(null)
+      setOriginalStatus(null)
       return
     }
 
     // Optimistic update
     setContacts((prevContacts) =>
       prevContacts.map((c) =>
-        c.id === contactId ? { ...c, contact_type: newType } : c
+        c.id === contactId ? { ...c, status: newStatus } : c
       )
     )
 
     try {
       // Actualizar en la base de datos
-      const response = await fetch(`/api/crm/contacts/${contactId}/type`, {
+      const response = await fetch(`/api/crm/contacts/${contactId}/status`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ contact_type: newType }),
+        body: JSON.stringify({ status: newStatus }),
       })
 
       if (!response.ok) {
-        throw new Error('Failed to update contact type')
+        throw new Error('Failed to update contact status')
       }
 
       // Refrescar la página para obtener datos actualizados
       router.refresh()
     } catch (error) {
-      console.error('Error updating contact type:', error)
+      console.error('Error updating contact status:', error)
       // Revertir el cambio optimista
       setContacts((prevContacts) =>
         prevContacts.map((c) =>
-          c.id === contactId ? { ...c, contact_type: originalType || c.contact_type } : c
+          c.id === contactId ? { ...c, status: originalStatus || (c.status as ContactStatus) } : c
         )
       )
     } finally {
       setActiveContact(null)
-      setOriginalType(null)
+      setOriginalStatus(null)
     }
   }
 
-  const getStageLabel = (stageId: ContactType) => {
+  const getStageLabel = (stageId: ContactStatus) => {
     const stage = STAGES.find((s) => s.id === stageId)
     return lang === 'en' ? stage?.label_en || stageId : stage?.label_es || stageId
   }
@@ -171,9 +177,9 @@ export function ContactsKanbanBoard({ contacts: initialContacts, lang }: Contact
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 overflow-x-auto pb-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 overflow-x-auto pb-4">
         {STAGES.map((stage) => {
-          const stageContacts = contactsByType[stage.id] || []
+          const stageContacts = contactsByStatus[stage.id] || []
 
           return (
             <div key={stage.id} className="flex flex-col min-w-[280px]">
