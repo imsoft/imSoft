@@ -37,16 +37,28 @@ const STAGES: { id: ContactStatus; label_en: string; label_es: string; color: st
   { id: 'closed_lost', label_en: 'Lost', label_es: 'Perdidos', color: 'bg-red-500/10' },
 ]
 
-function DroppableColumn({ id, hasContacts, children }: { id: string; hasContacts: boolean; children: React.ReactNode }) {
-  const { setNodeRef } = useDroppable({ id })
+function DroppableColumn({ id, hasContacts, children, isOver, lang }: { id: string; hasContacts: boolean; children: React.ReactNode; isOver?: boolean; lang: string }) {
+  const { setNodeRef, isOver: droppableIsOver } = useDroppable({ id })
+  const showDropIndicator = isOver || droppableIsOver
 
   return (
     <div
       ref={setNodeRef}
-      className={`h-full min-h-[400px] rounded-lg p-4 transition-colors ${
-        hasContacts ? 'bg-gray-50/50' : 'bg-gray-50/30'
+      className={`h-full min-h-[400px] rounded-lg p-4 transition-all duration-200 ${
+        showDropIndicator
+          ? 'bg-primary/5 border-2 border-dashed border-primary ring-2 ring-primary/20'
+          : hasContacts
+          ? 'bg-gray-50/50 border-2 border-transparent'
+          : 'bg-gray-50/30 border-2 border-transparent'
       }`}
     >
+      {showDropIndicator && (
+        <div className="mb-3 text-center animate-pulse">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-primary/10 text-primary rounded-full text-xs font-medium border border-primary/30">
+            <span className="text-primary font-semibold">↓ {lang === 'en' ? 'Drop here' : 'Soltar aquí'} ↓</span>
+          </div>
+        </div>
+      )}
       {children}
     </div>
   )
@@ -57,6 +69,7 @@ export function ContactsKanbanBoard({ contacts: initialContacts, lang }: Contact
   const [contacts, setContacts] = useState(initialContacts)
   const [activeContact, setActiveContact] = useState<Contact | null>(null)
   const [originalStatus, setOriginalStatus] = useState<ContactStatus | null>(null)
+  const [overId, setOverId] = useState<string | null>(null)
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -98,12 +111,15 @@ export function ContactsKanbanBoard({ contacts: initialContacts, lang }: Contact
   }
 
   const handleDragOver = (event: DragOverEvent) => {
-    // Puedes agregar lógica aquí si necesitas feedback visual durante el arrastre
+    const { over } = event
+    setOverId(over ? over.id as string : null)
   }
 
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event
 
+    setOverId(null)
+    
     if (!over || active.id === over.id) {
       setActiveContact(null)
       setOriginalStatus(null)
@@ -117,6 +133,7 @@ export function ContactsKanbanBoard({ contacts: initialContacts, lang }: Contact
     if (!STAGES.find((s) => s.id === newStatus)) {
       setActiveContact(null)
       setOriginalStatus(null)
+      setOverId(null)
       return
     }
 
@@ -124,6 +141,7 @@ export function ContactsKanbanBoard({ contacts: initialContacts, lang }: Contact
     if (!contact || contact.status === newStatus) {
       setActiveContact(null)
       setOriginalStatus(null)
+      setOverId(null)
       return
     }
 
@@ -161,6 +179,7 @@ export function ContactsKanbanBoard({ contacts: initialContacts, lang }: Contact
     } finally {
       setActiveContact(null)
       setOriginalStatus(null)
+      setOverId(null)
     }
   }
 
@@ -198,7 +217,12 @@ export function ContactsKanbanBoard({ contacts: initialContacts, lang }: Contact
                   items={stageContacts.map((c) => c.id)}
                   strategy={verticalListSortingStrategy}
                 >
-                  <DroppableColumn id={stage.id} hasContacts={stageContacts.length > 0}>
+                  <DroppableColumn 
+                    id={stage.id} 
+                    hasContacts={stageContacts.length > 0}
+                    isOver={overId === stage.id}
+                    lang={lang}
+                  >
                     <div className="space-y-3">
                       {stageContacts.map((contact) => (
                         <ContactCard
@@ -207,7 +231,7 @@ export function ContactsKanbanBoard({ contacts: initialContacts, lang }: Contact
                           lang={lang}
                         />
                       ))}
-                      {stageContacts.length === 0 && (
+                      {stageContacts.length === 0 && !overId && (
                         <div className="text-center text-sm text-muted-foreground py-8">
                           {lang === 'en' ? 'No contacts' : 'Sin contactos'}
                         </div>
@@ -223,7 +247,7 @@ export function ContactsKanbanBoard({ contacts: initialContacts, lang }: Contact
 
       <DragOverlay>
         {activeContact ? (
-          <div className="opacity-80 rotate-3 scale-105">
+          <div className="opacity-90 rotate-2 scale-105 shadow-2xl border-2 border-primary/50">
             <ContactCard contact={activeContact} lang={lang} />
           </div>
         ) : null}
