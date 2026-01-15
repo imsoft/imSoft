@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
+import * as React from 'react'
 import {
   DndContext,
   DragOverlay,
@@ -71,6 +72,15 @@ export function ContactsKanbanBoard({ contacts: initialContacts, lang }: Contact
   const [activeContact, setActiveContact] = useState<Contact | null>(null)
   const [originalStatus, setOriginalStatus] = useState<ContactStatus | null>(null)
   const [overId, setOverId] = useState<string | null>(null)
+  const [isUpdating, setIsUpdating] = useState(false)
+
+  // Sincronizar contacts cuando initialContacts cambia (después de refresh)
+  // Pero solo si no estamos en medio de una actualización
+  React.useEffect(() => {
+    if (!isUpdating) {
+      setContacts(initialContacts)
+    }
+  }, [initialContacts, isUpdating])
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -182,6 +192,7 @@ export function ContactsKanbanBoard({ contacts: initialContacts, lang }: Contact
     }
 
     // Optimistic update
+    setIsUpdating(true)
     setContacts((prevContacts) =>
       prevContacts.map((c) =>
         c.id === contactId ? { ...c, status: newStatus } : c
@@ -207,11 +218,13 @@ export function ContactsKanbanBoard({ contacts: initialContacts, lang }: Contact
       const result = await response.json()
       console.log('Contact status updated successfully:', result)
 
-      // El estado ya fue actualizado optimísticamente, solo refrescar para sincronizar con el servidor
-      // Usar setTimeout para dar tiempo a que la actualización se complete
+      // El estado ya fue actualizado optimísticamente y la API confirmó el éxito
+      // Permitir que el useEffect sincronice después de un delay
       setTimeout(() => {
+        setIsUpdating(false)
+        // Refrescar en background para sincronizar otros componentes (estadísticas, etc)
         router.refresh()
-      }, 100)
+      }, 1000)
     } catch (error) {
       console.error('Error updating contact status:', error)
       // Revertir el cambio optimista
@@ -220,6 +233,7 @@ export function ContactsKanbanBoard({ contacts: initialContacts, lang }: Contact
           c.id === contactId ? { ...c, status: originalStatus || (c.status as ContactStatus) } : c
         )
       )
+      setIsUpdating(false)
     } finally {
       setActiveContact(null)
       setOriginalStatus(null)
