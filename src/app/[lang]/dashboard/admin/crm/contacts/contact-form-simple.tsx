@@ -17,6 +17,13 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { createClient } from '@/lib/supabase/client'
 import { Contact } from '@/types/database'
 
@@ -27,6 +34,7 @@ const contactSchema = z.object({
   phone: z.string().optional(),
   company: z.string().optional(),
   company_description: z.string().optional(),
+  status: z.enum(['no_contact', 'qualification', 'negotiation', 'closed_won', 'closed_lost']),
 })
 
 type ContactFormValues = z.infer<typeof contactSchema>
@@ -50,6 +58,7 @@ export function ContactFormSimple({ contact, lang, userId }: ContactFormProps) {
       phone: contact?.phone || '',
       company: contact?.company || '',
       company_description: contact?.notes || '',
+      status: (contact?.status as 'no_contact' | 'qualification' | 'negotiation' | 'closed_won' | 'closed_lost') || 'no_contact',
     },
   })
 
@@ -66,6 +75,7 @@ export function ContactFormSimple({ contact, lang, userId }: ContactFormProps) {
         phone: values.phone || null,
         company: values.company || null,
         notes: values.company_description || null,
+        status: values.status,
         updated_at: new Date().toISOString(),
       }
 
@@ -192,6 +202,31 @@ export function ContactFormSimple({ contact, lang, userId }: ContactFormProps) {
                       className="!border-2 !border-border min-h-[100px]" 
                     />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="status"
+              render={({ field }) => (
+                <FormItem className="md:col-span-2">
+                  <FormLabel>{lang === 'en' ? 'Status' : 'Estado'}</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger className="!border-2 !border-border">
+                        <SelectValue placeholder={lang === 'en' ? 'Select status' : 'Seleccionar estado'} />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="no_contact">{lang === 'en' ? 'No Contact' : 'Sin Contacto'}</SelectItem>
+                      <SelectItem value="qualification">{lang === 'en' ? 'Prospecting' : 'Prospección'}</SelectItem>
+                      <SelectItem value="negotiation">{lang === 'en' ? 'Negotiation' : 'Negociación'}</SelectItem>
+                      <SelectItem value="closed_won">{lang === 'en' ? 'Won' : 'Ganados'}</SelectItem>
+                      <SelectItem value="closed_lost">{lang === 'en' ? 'Lost' : 'Perdidos'}</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
