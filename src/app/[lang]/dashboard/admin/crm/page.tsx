@@ -94,7 +94,9 @@ export default async function CRMPage({ params }: {
       </div>
 
       {/* Contacts Kanban Board */}
-      <ContactsKanbanBoard contacts={contacts || []} lang={lang} />
+      <div className="overflow-x-auto">
+        <ContactsKanbanBoard contacts={contacts || []} lang={lang} />
+      </div>
     </div>
   )
 }
