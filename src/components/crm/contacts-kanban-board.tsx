@@ -113,7 +113,19 @@ export function ContactsKanbanBoard({ contacts: initialContacts, lang }: Contact
 
   const handleDragOver = (event: DragOverEvent) => {
     const { over } = event
-    setOverId(over ? over.id as string : null)
+    if (over) {
+      // Si el over es una card, buscar su columna padre
+      const contact = contacts.find((c) => c.id === over.id)
+      if (contact) {
+        // Si es una card, usar el status de esa card (columna actual)
+        setOverId(contact.status as string)
+      } else {
+        // Si es directamente una columna, usar su ID
+        setOverId(over.id as string)
+      }
+    } else {
+      setOverId(null)
+    }
   }
 
   const handleDragEnd = async (event: DragEndEvent) => {
@@ -121,17 +133,30 @@ export function ContactsKanbanBoard({ contacts: initialContacts, lang }: Contact
 
     setOverId(null)
     
-    if (!over || active.id === over.id) {
+    if (!over) {
       setActiveContact(null)
       setOriginalStatus(null)
       return
     }
 
     const contactId = active.id as string
-    const newStatus = over.id as ContactStatus
+    
+    // Determinar el nuevo estado
+    let newStatus: ContactStatus | null = null
+    
+    // Si el over es directamente una columna (stage)
+    if (STAGES.find((s) => s.id === over.id)) {
+      newStatus = over.id as ContactStatus
+    } else {
+      // Si el over es una card, obtener el status de esa card (columna actual)
+      const overContact = contacts.find((c) => c.id === over.id)
+      if (overContact) {
+        newStatus = overContact.status as ContactStatus
+      }
+    }
 
-    // Verificar que el nuevo estado sea válido
-    if (!STAGES.find((s) => s.id === newStatus)) {
+    // Si no se pudo determinar el nuevo estado, cancelar
+    if (!newStatus || !STAGES.find((s) => s.id === newStatus)) {
       setActiveContact(null)
       setOriginalStatus(null)
       setOverId(null)
@@ -164,6 +189,8 @@ export function ContactsKanbanBoard({ contacts: initialContacts, lang }: Contact
       })
 
       if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        console.error('Failed to update contact status:', errorData)
         throw new Error('Failed to update contact status')
       }
 
