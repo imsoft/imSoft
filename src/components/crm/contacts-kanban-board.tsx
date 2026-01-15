@@ -114,14 +114,19 @@ export function ContactsKanbanBoard({ contacts: initialContacts, lang }: Contact
   const handleDragOver = (event: DragOverEvent) => {
     const { over } = event
     if (over) {
-      // Si el over es una card, buscar su columna padre
-      const contact = contacts.find((c) => c.id === over.id)
-      if (contact) {
-        // Si es una card, usar el status de esa card (columna actual)
-        setOverId(contact.status as string)
-      } else {
-        // Si es directamente una columna, usar su ID
+      // Verificar si el over es directamente una columna (stage)
+      const isStage = STAGES.find((s) => s.id === over.id)
+      if (isStage) {
         setOverId(over.id as string)
+      } else {
+        // Si es una card, buscar en qué columna está esa card
+        const contact = contacts.find((c) => c.id === over.id)
+        if (contact) {
+          // Usar el status de esa card para identificar la columna
+          setOverId(contact.status as string)
+        } else {
+          setOverId(null)
+        }
       }
     } else {
       setOverId(null)
@@ -144,11 +149,13 @@ export function ContactsKanbanBoard({ contacts: initialContacts, lang }: Contact
     // Determinar el nuevo estado
     let newStatus: ContactStatus | null = null
     
-    // Si el over es directamente una columna (stage)
-    if (STAGES.find((s) => s.id === over.id)) {
+    // Verificar si el over es directamente una columna (stage)
+    const isStage = STAGES.find((s) => s.id === over.id)
+    if (isStage) {
+      // Si es directamente una columna, usar su ID
       newStatus = over.id as ContactStatus
     } else {
-      // Si el over es una card, obtener el status de esa card (columna actual)
+      // Si el over es una card, obtener el status de esa card para identificar la columna
       const overContact = contacts.find((c) => c.id === over.id)
       if (overContact) {
         newStatus = overContact.status as ContactStatus
@@ -157,11 +164,14 @@ export function ContactsKanbanBoard({ contacts: initialContacts, lang }: Contact
 
     // Si no se pudo determinar el nuevo estado, cancelar
     if (!newStatus || !STAGES.find((s) => s.id === newStatus)) {
+      console.log('No se pudo determinar el nuevo estado:', { overId: over.id, newStatus })
       setActiveContact(null)
       setOriginalStatus(null)
       setOverId(null)
       return
     }
+
+    console.log('Actualizando contacto:', { contactId, from: originalStatus, to: newStatus })
 
     const contact = contacts.find((c) => c.id === contactId)
     if (!contact || contact.status === newStatus) {
@@ -194,8 +204,14 @@ export function ContactsKanbanBoard({ contacts: initialContacts, lang }: Contact
         throw new Error('Failed to update contact status')
       }
 
-      // Refrescar la página para obtener datos actualizados
-      router.refresh()
+      const result = await response.json()
+      console.log('Contact status updated successfully:', result)
+
+      // El estado ya fue actualizado optimísticamente, solo refrescar para sincronizar con el servidor
+      // Usar setTimeout para dar tiempo a que la actualización se complete
+      setTimeout(() => {
+        router.refresh()
+      }, 100)
     } catch (error) {
       console.error('Error updating contact status:', error)
       // Revertir el cambio optimista
