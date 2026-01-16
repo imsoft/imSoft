@@ -1,7 +1,7 @@
 'use client'
 
 import { ColumnDef } from '@tanstack/react-table'
-import { ArrowUpDown, MoreHorizontal, Eye, Edit, Trash2, Mail, Phone } from 'lucide-react'
+import { ArrowUpDown, MoreHorizontal, Eye, Edit, Trash2, Mail, Phone, Copy, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -15,6 +15,57 @@ import {
 import Link from 'next/link'
 import type { Contact } from '@/types/database'
 import { formatPhoneNumber } from '@/lib/utils/format-phone'
+import { useState } from 'react'
+import { toast } from 'sonner'
+
+function DescriptionCell({ description, lang }: { description: string | null | undefined; lang: string }) {
+  const [copied, setCopied] = useState(false)
+
+  const handleCopy = async () => {
+    if (!description) return
+    
+    try {
+      await navigator.clipboard.writeText(description)
+      setCopied(true)
+      toast.success(lang === 'en' ? 'Description copied to clipboard' : 'Descripción copiada al portapapeles')
+      setTimeout(() => setCopied(false), 2000)
+    } catch (error) {
+      console.error('Failed to copy:', error)
+      toast.error(lang === 'en' ? 'Failed to copy' : 'Error al copiar')
+    }
+  }
+
+  if (!description) {
+    return <span className="text-sm text-muted-foreground">-</span>
+  }
+
+  // Truncar a 100 caracteres
+  const maxLength = 100
+  const truncated = description.length > maxLength 
+    ? description.substring(0, maxLength) + '...'
+    : description
+
+  return (
+    <div className="flex items-center gap-2 max-w-[300px]">
+      <span className="text-sm truncate" title={description}>
+        {truncated}
+      </span>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="h-6 w-6 flex-shrink-0"
+        onClick={handleCopy}
+        title={lang === 'en' ? 'Copy description' : 'Copiar descripción'}
+      >
+        {copied ? (
+          <Check className="h-3 w-3 text-green-600" />
+        ) : (
+          <Copy className="h-3 w-3" />
+        )}
+      </Button>
+    </div>
+  )
+}
 
 interface ColumnsProps {
   lang: string
@@ -156,6 +207,13 @@ export function createColumns({ lang, onDelete, isDeleting }: ColumnsProps): Col
         if (!value) return true
         const company = row.original.company?.toLowerCase() || ''
         return company.includes((value as string).toLowerCase())
+      },
+    },
+    {
+      accessorKey: 'notes',
+      header: lang === 'en' ? 'Company Description' : 'Descripción de Empresa',
+      cell: ({ row }) => {
+        return <DescriptionCell description={row.original.notes} lang={lang} />
       },
     },
     {
