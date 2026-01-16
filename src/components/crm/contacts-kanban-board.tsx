@@ -53,6 +53,7 @@ function DroppableColumn({ id, hasContacts, children, isOver, lang }: { id: stri
           ? 'bg-gray-50/50 border-2 border-transparent'
           : 'bg-gray-50/30 border-2 border-transparent'
       }`}
+      style={{ minHeight: '400px' }}
     >
       {showDropIndicator && (
         <div className="mb-3 text-center animate-pulse">
@@ -122,20 +123,30 @@ export function ContactsKanbanBoard({ contacts: initialContacts, lang }: Contact
   }
 
   const handleDragOver = (event: DragOverEvent) => {
-    const { over } = event
+    const { over, active } = event
     if (over) {
       // Verificar si el over es directamente una columna (stage)
       const isStage = STAGES.find((s) => s.id === over.id)
       if (isStage) {
+        console.log('DragOver sobre columna:', over.id)
         setOverId(over.id as string)
       } else {
-        // Si es una card, buscar en qué columna está esa card
+        // Si el over es una card, buscar en qué columna está esa card
         const contact = contacts.find((c) => c.id === over.id)
         if (contact) {
           // Usar el status de esa card para identificar la columna
+          console.log('DragOver sobre card, columna:', contact.status)
           setOverId(contact.status as string)
         } else {
-          setOverId(null)
+          // Si no encontramos el contacto, puede ser que estemos sobre el área vacía de una columna
+          // Intentar detectar la columna padre usando el active (el elemento que estamos arrastrando)
+          const activeContact = contacts.find((c) => c.id === active.id)
+          if (activeContact) {
+            // Si estamos arrastrando y no hay over válido, mantener el overId actual o buscar la columna más cercana
+            console.log('DragOver sin contacto válido, manteniendo estado actual')
+          } else {
+            setOverId(null)
+          }
         }
       }
     } else {
@@ -163,12 +174,20 @@ export function ContactsKanbanBoard({ contacts: initialContacts, lang }: Contact
     const isStage = STAGES.find((s) => s.id === over.id)
     if (isStage) {
       // Si es directamente una columna, usar su ID
+      console.log('Drop sobre columna directa:', over.id)
       newStatus = over.id as ContactStatus
     } else {
       // Si el over es una card, obtener el status de esa card para identificar la columna
       const overContact = contacts.find((c) => c.id === over.id)
       if (overContact) {
+        console.log('Drop sobre card, usando status de card:', overContact.status)
         newStatus = overContact.status as ContactStatus
+      } else {
+        // Si no encontramos el contacto pero tenemos un overId, usar ese
+        if (overId) {
+          console.log('Drop sin contacto válido, usando overId:', overId)
+          newStatus = overId as ContactStatus
+        }
       }
     }
 
@@ -336,8 +355,12 @@ export function ContactsKanbanBoard({ contacts: initialContacts, lang }: Contact
                           lang={lang}
                         />
                       ))}
-                      {stageContacts.length === 0 && !overId && (() => {
+                      {stageContacts.length === 0 && (() => {
                         const emptyContent = getEmptyStateContent(stage.id)
+                        // Si hay un drag activo sobre esta columna, no mostrar el empty state (ya se muestra el indicador de drop)
+                        if (overId === stage.id) {
+                          return null
+                        }
                         return (
                           <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
                             <div className="mb-4 relative">
