@@ -4,7 +4,7 @@ import "./globals.css";
 import { notFound } from 'next/navigation';
 import { getDictionary, hasLocale } from './dictionaries';
 import { ThemeProvider } from '@/components/theme-provider';
-import { ConditionalAnalytics } from '@/components/analytics/conditional-analytics';
+import { Analytics } from '@vercel/analytics/next';
 import { Toaster } from '@/components/ui/sonner';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
 import Script from 'next/script';
@@ -90,7 +90,7 @@ export default async function RootLayout({
           disableTransitionOnChange
         >
           {children}
-          <ConditionalAnalytics />
+          <Analytics />
           <CookieBanner lang={lang as 'es' | 'en'} dict={dict} />
           <CookiePreferences lang={lang as 'es' | 'en'} dict={dict} />
           <Toaster />
