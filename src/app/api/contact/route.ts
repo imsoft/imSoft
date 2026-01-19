@@ -41,16 +41,13 @@ export async function POST(request: Request) {
 
     if (dbError) {
       console.error('Error guardando mensaje:', dbError);
-      console.error('Detalles del error:', {
-        code: dbError.code,
-        message: dbError.message,
-        details: dbError.details,
-        hint: dbError.hint
-      });
       return NextResponse.json(
         { 
           error: 'Error al guardar el mensaje',
-          details: process.env.NODE_ENV === 'development' ? dbError.message : undefined
+          code: dbError.code,
+          message: dbError.message,
+          details: dbError.details,
+          hint: dbError.hint
         },
         { status: 500 }
       );
