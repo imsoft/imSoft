@@ -148,8 +148,10 @@ export function AdminSidebar({ dict, lang, user }: AdminSidebarProps) {
     if (itemUrl === `/${lang}/dashboard/admin`) {
       return pathname === itemUrl
     }
-    // Para otras rutas, activar si el pathname comienza con la URL del item
-    return pathname.startsWith(itemUrl)
+    // Para otras rutas, activar si el pathname coincide exactamente
+    // o si comienza con la URL del item seguida de "/"
+    // Esto evita que /contact se active cuando estamos en /contact-messages
+    return pathname === itemUrl || pathname.startsWith(itemUrl + '/')
   }
 
   return (
