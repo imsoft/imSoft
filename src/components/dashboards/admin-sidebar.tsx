@@ -29,7 +29,8 @@ import {
   Building2,
   Receipt,
   UserCog,
-  Code
+  Code,
+  Mail
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -90,6 +91,11 @@ export function AdminSidebar({ dict, lang, user }: AdminSidebarProps) {
       title: dict.dashboard.admin.nav.contact,
       url: `/${lang}/dashboard/admin/contact`,
       icon: Contact,
+    },
+    {
+      title: dict.dashboard.admin.nav.contactMessages,
+      url: `/${lang}/dashboard/admin/contact-messages`,
+      icon: Mail,
     },
     {
       title: dict.dashboard.admin.nav.quotations,
