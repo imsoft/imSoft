@@ -151,6 +151,10 @@ export function ContactFormSimple({ contact, lang, userId }: ContactFormProps) {
               )}
             />
 
+          </div>
+
+          {/* Fila de contacto: Correo, Teléfono, Instagram */}
+          <div className="grid gap-4 md:grid-cols-3 mt-4">
             <FormField
               control={form.control}
               name="email"
@@ -186,16 +190,15 @@ export function ContactFormSimple({ contact, lang, userId }: ContactFormProps) {
                 <FormItem>
                   <FormLabel>Instagram</FormLabel>
                   <FormControl>
-                    <Input
-                      {...field}
-                      placeholder="@usuario"
-                      className="!border-2 !border-border"
-                    />
+                    <Input {...field} className="!border-2 !border-border" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2 mt-4">
 
             <FormField
               control={form.control}
