@@ -33,6 +33,7 @@ const contactSchema = z.object({
   email: z.string().email('Invalid email address'),
   phone: z.string().optional(),
   company: z.string().optional(),
+  instagram_url: z.string().optional(),
   company_description: z.string().optional(),
   status: z.enum(['no_contact', 'qualification', 'negotiation', 'closed_won', 'closed_lost']),
 })
@@ -57,6 +58,7 @@ export function ContactFormSimple({ contact, lang, userId }: ContactFormProps) {
       email: contact?.email || '',
       phone: contact?.phone || '',
       company: contact?.company || '',
+      instagram_url: contact?.instagram_url || '',
       company_description: contact?.notes || '',
       status: (contact?.status as 'no_contact' | 'qualification' | 'negotiation' | 'closed_won' | 'closed_lost') || 'no_contact',
     },
@@ -74,6 +76,7 @@ export function ContactFormSimple({ contact, lang, userId }: ContactFormProps) {
         email: values.email,
         phone: values.phone || null,
         company: values.company || null,
+        instagram_url: values.instagram_url || null,
         notes: values.company_description || null,
         status: values.status,
         updated_at: new Date().toISOString(),
@@ -170,6 +173,24 @@ export function ContactFormSimple({ contact, lang, userId }: ContactFormProps) {
                   <FormLabel>{lang === 'en' ? 'Phone' : 'Teléfono'}</FormLabel>
                   <FormControl>
                     <Input {...field} className="!border-2 !border-border" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="instagram_url"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Instagram</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      placeholder="@usuario"
+                      className="!border-2 !border-border"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

@@ -251,6 +251,7 @@ export interface Contact {
   address_country?: string
   address_postal_code?: string
   linkedin_url?: string
+  instagram_url?: string
   website_url?: string
   notes?: string
   assigned_to?: string
