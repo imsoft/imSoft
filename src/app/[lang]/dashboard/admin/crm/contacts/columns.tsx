@@ -1,7 +1,7 @@
 'use client'
 
 import { ColumnDef } from '@tanstack/react-table'
-import { ArrowUpDown, MoreHorizontal, Eye, Edit, Trash2, Mail, Phone, Copy, Check } from 'lucide-react'
+import { ArrowUpDown, MoreHorizontal, Eye, Edit, Trash2, Mail, Copy, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -14,7 +14,6 @@ import {
 } from '@/components/ui/dropdown-menu'
 import Link from 'next/link'
 import type { Contact } from '@/types/database'
-import { formatPhoneNumber } from '@/lib/utils/format-phone'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
@@ -43,6 +42,46 @@ function EmailCell({ email, lang }: { email: string; lang: string }) {
         className="h-6 w-6 flex-shrink-0"
         onClick={handleCopy}
         title={lang === 'en' ? 'Copy email' : 'Copiar correo'}
+      >
+        {copied ? (
+          <Check className="h-3 w-3 text-green-600" />
+        ) : (
+          <Copy className="h-3 w-3" />
+        )}
+      </Button>
+    </div>
+  )
+}
+
+function InstagramCell({ instagram, lang }: { instagram: string | null | undefined; lang: string }) {
+  const [copied, setCopied] = useState(false)
+
+  const handleCopy = async () => {
+    if (!instagram) return
+    try {
+      await navigator.clipboard.writeText(instagram)
+      setCopied(true)
+      toast.success(lang === 'en' ? 'Instagram copied to clipboard' : 'Instagram copiado al portapapeles')
+      setTimeout(() => setCopied(false), 2000)
+    } catch (error) {
+      console.error('Failed to copy:', error)
+      toast.error(lang === 'en' ? 'Failed to copy' : 'Error al copiar')
+    }
+  }
+
+  if (!instagram) {
+    return <span className="text-sm text-muted-foreground">-</span>
+  }
+
+  return (
+    <div className="flex items-center gap-2">
+      <span className="text-sm">{instagram}</span>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="h-6 w-6 flex-shrink-0"
+        onClick={handleCopy}
+        title={lang === 'en' ? 'Copy Instagram' : 'Copiar Instagram'}
       >
         {copied ? (
           <Check className="h-3 w-3 text-green-600" />
@@ -110,16 +149,6 @@ interface ColumnsProps {
 }
 
 export function createColumns({ lang, onDelete, isDeleting }: ColumnsProps): ColumnDef<Contact>[] {
-  const getContactTypeLabel = (type: string) => {
-    const labels: Record<string, { en: string; es: string }> = {
-      lead: { en: 'Lead', es: 'Lead' },
-      prospect: { en: 'Prospect', es: 'Prospecto' },
-      customer: { en: 'Customer', es: 'Cliente' },
-      partner: { en: 'Partner', es: 'Socio' },
-    }
-    return lang === 'en' ? labels[type]?.en || type : labels[type]?.es || type
-  }
-
   const getStatusLabel = (status: string) => {
     const labels: Record<string, { en: string; es: string }> = {
       no_contact: { en: 'No Contact', es: 'Sin Contacto' },
@@ -129,13 +158,6 @@ export function createColumns({ lang, onDelete, isDeleting }: ColumnsProps): Col
       closed_lost: { en: 'Lost', es: 'Perdido' },
     }
     return lang === 'en' ? labels[status]?.en || status : labels[status]?.es || status
-  }
-
-  const contactTypeColors: Record<string, string> = {
-    lead: 'bg-blue-500/10 text-blue-700 dark:text-blue-400',
-    prospect: 'bg-purple-500/10 text-purple-700 dark:text-purple-400',
-    customer: 'bg-green-500/10 text-green-700 dark:text-green-400',
-    partner: 'bg-orange-500/10 text-orange-700 dark:text-orange-400',
   }
 
   const statusColors: Record<string, string> = {
@@ -247,19 +269,10 @@ export function createColumns({ lang, onDelete, isDeleting }: ColumnsProps): Col
       },
     },
     {
-      accessorKey: 'contact_type',
-      header: lang === 'en' ? 'Type' : 'Tipo',
+      accessorKey: 'instagram_url',
+      header: 'Instagram',
       cell: ({ row }) => {
-        const type = row.original.contact_type
-        return (
-          <Badge className={contactTypeColors[type] || ''}>
-            {getContactTypeLabel(type)}
-          </Badge>
-        )
-      },
-      filterFn: (row, id, value) => {
-        if (!value || value === 'all') return true
-        return row.original.contact_type === value
+        return <InstagramCell instagram={row.original.instagram_url} lang={lang} />
       },
     },
     {
@@ -273,24 +286,9 @@ export function createColumns({ lang, onDelete, isDeleting }: ColumnsProps): Col
           </Badge>
         )
       },
-      filterFn: (row, id, value) => {
+      filterFn: (row, _id, value) => {
         if (!value || value === 'all') return true
         return row.original.status === value
-      },
-    },
-    {
-      accessorKey: 'phone',
-      header: lang === 'en' ? 'Contact' : 'Contacto',
-      cell: ({ row }) => {
-        const contact = row.original
-        return contact.phone ? (
-          <div className="flex items-center gap-2">
-            <Phone className="size-4 text-muted-foreground" />
-            <span className="text-sm">{formatPhoneNumber(contact.phone)}</span>
-          </div>
-        ) : (
-          <span className="text-sm text-muted-foreground">-</span>
-        )
       },
     },
     {
