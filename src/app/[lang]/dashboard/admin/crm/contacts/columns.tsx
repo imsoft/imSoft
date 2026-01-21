@@ -18,12 +18,48 @@ import { formatPhoneNumber } from '@/lib/utils/format-phone'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
+function EmailCell({ email, lang }: { email: string; lang: string }) {
+  const [copied, setCopied] = useState(false)
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(email)
+      setCopied(true)
+      toast.success(lang === 'en' ? 'Email copied to clipboard' : 'Correo copiado al portapapeles')
+      setTimeout(() => setCopied(false), 2000)
+    } catch (error) {
+      console.error('Failed to copy:', error)
+      toast.error(lang === 'en' ? 'Failed to copy' : 'Error al copiar')
+    }
+  }
+
+  return (
+    <div className="flex items-center gap-2">
+      <Mail className="size-4 text-muted-foreground" />
+      <span className="text-sm">{email}</span>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="h-6 w-6 flex-shrink-0"
+        onClick={handleCopy}
+        title={lang === 'en' ? 'Copy email' : 'Copiar correo'}
+      >
+        {copied ? (
+          <Check className="h-3 w-3 text-green-600" />
+        ) : (
+          <Copy className="h-3 w-3" />
+        )}
+      </Button>
+    </div>
+  )
+}
+
 function DescriptionCell({ description, lang }: { description: string | null | undefined; lang: string }) {
   const [copied, setCopied] = useState(false)
 
   const handleCopy = async () => {
     if (!description) return
-    
+
     try {
       await navigator.clipboard.writeText(description)
       setCopied(true)
@@ -41,7 +77,7 @@ function DescriptionCell({ description, lang }: { description: string | null | u
 
   // Truncar a 100 caracteres
   const maxLength = 100
-  const truncated = description.length > maxLength 
+  const truncated = description.length > maxLength
     ? description.substring(0, maxLength) + '...'
     : description
 
@@ -172,15 +208,9 @@ export function createColumns({ lang, onDelete, isDeleting }: ColumnsProps): Col
         )
       },
       cell: ({ row }) => {
-        const contact = row.original
-        return (
-          <div className="flex items-center gap-2">
-            <Mail className="size-4 text-muted-foreground" />
-            <span className="text-sm">{contact.email}</span>
-          </div>
-        )
+        return <EmailCell email={row.original.email} lang={lang} />
       },
-      filterFn: (row, id, value) => {
+      filterFn: (row, _id, value) => {
         if (!value) return true
         const email = row.original.email?.toLowerCase() || ''
         return email.includes((value as string).toLowerCase())
