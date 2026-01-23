@@ -38,6 +38,7 @@ import { Button } from "@/components/ui/button"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
+import { useSidebar } from "@/components/ui/sidebar"
 import type { Dictionary, Locale } from '@/app/[lang]/dictionaries'
 import type { AdminSidebarProps } from '@/types/dashboard'
 
@@ -45,6 +46,8 @@ export function AdminSidebar({ dict, lang, user }: AdminSidebarProps) {
   const avatarUrl = user.user_metadata?.avatar_url
   const pathname = usePathname()
   const router = useRouter()
+  const { state } = useSidebar()
+  const isCollapsed = state === 'collapsed'
 
   const menuItems = [
     {
@@ -161,21 +164,37 @@ export function AdminSidebar({ dict, lang, user }: AdminSidebarProps) {
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild tooltip="imSoft">
               <Link href={`/${lang}/dashboard/admin`}>
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg overflow-hidden p-1.5">
-                  <Image
-                    src="/logos/isotype-imsoft-blue.png"
-                    alt="imSoft"
-                    width={20}
-                    height={20}
-                    className="dark:hidden object-contain"
-                  />
-                  <Image
-                    src="/logos/isotype-imsoft-white.png"
-                    alt="imSoft"
-                    width={20}
-                    height={20}
-                    className="hidden dark:block object-contain"
-                  />
+                <div className={`flex aspect-square items-center justify-center rounded-lg overflow-hidden transition-all ${
+                  isCollapsed 
+                    ? 'size-10 bg-gradient-to-br from-blue-500 to-purple-600 p-2 shadow-md' 
+                    : 'size-8 p-1.5'
+                }`}>
+                  {isCollapsed ? (
+                    <Image
+                      src="/logos/isotype-imsoft-white.png"
+                      alt="imSoft"
+                      width={24}
+                      height={24}
+                      className="object-contain"
+                    />
+                  ) : (
+                    <>
+                      <Image
+                        src="/logos/isotype-imsoft-blue.png"
+                        alt="imSoft"
+                        width={20}
+                        height={20}
+                        className="dark:hidden object-contain"
+                      />
+                      <Image
+                        src="/logos/isotype-imsoft-white.png"
+                        alt="imSoft"
+                        width={20}
+                        height={20}
+                        className="hidden dark:block object-contain"
+                      />
+                    </>
+                  )}
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">imSoft</span>
@@ -213,18 +232,26 @@ export function AdminSidebar({ dict, lang, user }: AdminSidebarProps) {
             <SidebarMenuButton size="lg" asChild tooltip={dict.dashboard.common.profile}>
               <Link href={`/${lang}/dashboard/admin/profile`}>
                 {avatarUrl ? (
-                  <div className="flex aspect-square size-8 items-center justify-center rounded-full overflow-hidden border border-sidebar-border">
+                  <div className={`flex aspect-square items-center justify-center rounded-full overflow-hidden border transition-all ${
+                    isCollapsed 
+                      ? 'size-10 border-2 border-sidebar-border shadow-md' 
+                      : 'size-8 border border-sidebar-border'
+                  }`}>
                     <Image
                       src={avatarUrl}
                       alt="Profile"
-                      width={32}
-                      height={32}
+                      width={isCollapsed ? 40 : 32}
+                      height={isCollapsed ? 40 : 32}
                       className="object-cover"
                     />
                   </div>
                 ) : (
-                  <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                    <User className="size-4" />
+                  <div className={`flex aspect-square items-center justify-center rounded-full transition-all ${
+                    isCollapsed 
+                      ? 'size-10 bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-md' 
+                      : 'size-8 rounded-lg bg-sidebar-primary text-sidebar-primary-foreground'
+                  }`}>
+                    <User className={isCollapsed ? 'size-5' : 'size-4'} />
                   </div>
                 )}
                 <div className="grid flex-1 text-left text-sm leading-tight">
@@ -234,8 +261,13 @@ export function AdminSidebar({ dict, lang, user }: AdminSidebarProps) {
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" onClick={handleLogout} tooltip={dict.dashboard.common.logout}>
-              <LogOut className="size-4" />
+            <SidebarMenuButton 
+              size="lg" 
+              onClick={handleLogout} 
+              tooltip={dict.dashboard.common.logout}
+              className={isCollapsed ? 'hover:bg-red-50 dark:hover:bg-red-950/20 hover:text-red-600 dark:hover:text-red-400' : ''}
+            >
+              <LogOut className={isCollapsed ? 'size-5' : 'size-4'} />
               <span>{dict.dashboard.common.logout}</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
