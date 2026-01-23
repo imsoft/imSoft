@@ -26,6 +26,7 @@ import { usePathname } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
+import { useSidebar } from "@/components/ui/sidebar"
 import type { Dictionary, Locale } from '@/app/[lang]/dictionaries'
 import type { ClientSidebarProps } from '@/types/dashboard'
 
@@ -33,6 +34,8 @@ export function ClientSidebar({ dict, lang, user }: ClientSidebarProps) {
   const avatarUrl = user.user_metadata?.avatar_url
   const pathname = usePathname()
   const router = useRouter()
+  const { state } = useSidebar()
+  const isCollapsed = state === 'collapsed'
 
   const menuItems = [
     {
@@ -87,21 +90,37 @@ export function ClientSidebar({ dict, lang, user }: ClientSidebarProps) {
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild tooltip="imSoft">
               <Link href={`/${lang}/dashboard/client`}>
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg overflow-hidden p-1.5">
-                  <Image
-                    src="/logos/isotype-imsoft-blue.png"
-                    alt="imSoft"
-                    width={20}
-                    height={20}
-                    className="dark:hidden object-contain"
-                  />
-                  <Image
-                    src="/logos/isotype-imsoft-white.png"
-                    alt="imSoft"
-                    width={20}
-                    height={20}
-                    className="hidden dark:block object-contain"
-                  />
+                <div className={`flex aspect-square items-center justify-center rounded-lg overflow-hidden transition-all ${
+                  isCollapsed 
+                    ? 'size-8 bg-gradient-to-br from-blue-500 to-purple-600 p-1.5' 
+                    : 'size-8 p-1.5'
+                }`}>
+                  {isCollapsed ? (
+                    <Image
+                      src="/logos/isotype-imsoft-white.png"
+                      alt="imSoft"
+                      width={20}
+                      height={20}
+                      className="object-contain"
+                    />
+                  ) : (
+                    <>
+                      <Image
+                        src="/logos/isotype-imsoft-blue.png"
+                        alt="imSoft"
+                        width={20}
+                        height={20}
+                        className="dark:hidden object-contain"
+                      />
+                      <Image
+                        src="/logos/isotype-imsoft-white.png"
+                        alt="imSoft"
+                        width={20}
+                        height={20}
+                        className="hidden dark:block object-contain"
+                      />
+                    </>
+                  )}
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">imSoft</span>
@@ -160,9 +179,14 @@ export function ClientSidebar({ dict, lang, user }: ClientSidebarProps) {
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" onClick={handleLogout} tooltip={dict.dashboard.common.logout}>
+            <SidebarMenuButton 
+              size="lg" 
+              onClick={handleLogout} 
+              tooltip={dict.dashboard.common.logout}
+              className="hover:bg-red-50 dark:hover:bg-red-950/20 hover:text-red-600 dark:hover:text-red-400"
+            >
               <LogOut className="size-4" />
-              <span>{dict.dashboard.common.logout}</span>
+              <span className="group-data-[collapsible=icon]:hidden">{dict.dashboard.common.logout}</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
