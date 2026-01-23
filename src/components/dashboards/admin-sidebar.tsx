@@ -164,19 +164,21 @@ export function AdminSidebar({ dict, lang, user }: AdminSidebarProps) {
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild tooltip="imSoft">
               <Link href={`/${lang}/dashboard/admin`}>
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg overflow-hidden p-1.5">
+                <div className={`flex aspect-square items-center justify-center rounded-lg overflow-hidden ${
+                  isCollapsed ? 'size-10 p-2' : 'size-8 p-1.5'
+                }`}>
                   <Image
                     src="/logos/isotype-imsoft-blue.png"
                     alt="imSoft"
-                    width={20}
-                    height={20}
+                    width={isCollapsed ? 28 : 20}
+                    height={isCollapsed ? 28 : 20}
                     className="dark:hidden object-contain"
                   />
                   <Image
                     src="/logos/isotype-imsoft-white.png"
                     alt="imSoft"
-                    width={20}
-                    height={20}
+                    width={isCollapsed ? 28 : 20}
+                    height={isCollapsed ? 28 : 20}
                     className="hidden dark:block object-contain"
                   />
                 </div>
@@ -216,17 +218,17 @@ export function AdminSidebar({ dict, lang, user }: AdminSidebarProps) {
             <SidebarMenuButton size="lg" asChild tooltip={dict.dashboard.common.profile}>
               <Link href={`/${lang}/dashboard/admin/profile`}>
                 {avatarUrl ? (
-                  <div className="flex aspect-square size-8 items-center justify-center rounded-full overflow-hidden border border-sidebar-border">
+                  <div className="flex size-8 shrink-0 items-center justify-center rounded-full overflow-hidden border border-sidebar-border">
                     <Image
                       src={avatarUrl}
                       alt="Profile"
                       width={32}
                       height={32}
-                      className="object-cover w-full h-full"
+                      className="object-cover rounded-full"
                     />
                   </div>
                 ) : (
-                  <div className="flex aspect-square size-8 items-center justify-center rounded-full bg-sidebar-primary text-sidebar-primary-foreground">
+                  <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-sidebar-primary text-sidebar-primary-foreground">
                     <User className="size-4" />
                   </div>
                 )}
