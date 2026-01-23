@@ -165,20 +165,20 @@ export function AdminSidebar({ dict, lang, user }: AdminSidebarProps) {
             <SidebarMenuButton size="lg" asChild tooltip="imSoft">
               <Link href={`/${lang}/dashboard/admin`}>
                 <div className={`flex aspect-square items-center justify-center rounded-lg overflow-hidden ${
-                  isCollapsed ? 'size-10 p-2' : 'size-8 p-1.5'
+                  isCollapsed ? 'size-14 p-2.5' : 'size-8 p-1.5'
                 }`}>
                   <Image
                     src="/logos/isotype-imsoft-blue.png"
                     alt="imSoft"
-                    width={isCollapsed ? 28 : 20}
-                    height={isCollapsed ? 28 : 20}
+                    width={isCollapsed ? 40 : 20}
+                    height={isCollapsed ? 40 : 20}
                     className="dark:hidden object-contain"
                   />
                   <Image
                     src="/logos/isotype-imsoft-white.png"
                     alt="imSoft"
-                    width={isCollapsed ? 28 : 20}
-                    height={isCollapsed ? 28 : 20}
+                    width={isCollapsed ? 40 : 20}
+                    height={isCollapsed ? 40 : 20}
                     className="hidden dark:block object-contain"
                   />
                 </div>
