@@ -18,7 +18,7 @@ export async function generateMetadata({
   params: Promise<{ lang: string; slug: string }>;
 }): Promise<Metadata> {
   const { lang, slug } = await params;
-  
+
   const supabase = createSupabaseClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
@@ -50,7 +50,7 @@ export async function generateMetadata({
     : (service.description_es || service.description || '');
 
   const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io';
-  const url = `${SITE_URL}/${lang}/${lang === 'es' ? 'servicios' : 'services'}/${slug}`;
+  const url = `${SITE_URL}/${lang}/services/${slug}`;
   const image = service.image_url || `${SITE_URL}/logos/logo-imsoft-blue.png`;
 
   return generateSEOMetadata({
@@ -63,7 +63,7 @@ export async function generateMetadata({
       ? ['servicio', 'tecnología', 'desarrollo de software', 'consultoría']
       : ['service', 'technology', 'software development', 'consulting'],
     alternateUrls: {
-      es: `${SITE_URL}/es/servicios/${slug}`,
+      es: `${SITE_URL}/es/services/${slug}`,
       en: `${SITE_URL}/en/services/${slug}`,
     },
   }, lang);
@@ -78,7 +78,6 @@ export default async function ServicePage({ params }: {
 
   const dict = await getDictionary(lang);
 
-  // Crear cliente de Supabase con service role
   const supabase = createSupabaseClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
@@ -91,7 +90,6 @@ export default async function ServicePage({ params }: {
     }
   );
 
-  // Obtener datos de contacto
   let contactData = undefined;
   try {
     const { data } = await supabase
@@ -104,7 +102,6 @@ export default async function ServicePage({ params }: {
     // Error fetching contact data - silently fail
   }
 
-  // Obtener el servicio por slug
   const { data: service, error } = await supabase
     .from('services')
     .select('*')
@@ -115,7 +112,6 @@ export default async function ServicePage({ params }: {
     notFound();
   }
 
-  // Obtener el contenido según el idioma
   const title = lang === 'en'
     ? (service.title_en || service.title || '')
     : (service.title_es || service.title || '');
@@ -129,10 +125,9 @@ export default async function ServicePage({ params }: {
     : (service.benefits_es || service.benefits_en || []);
 
   const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io';
-  const serviceUrl = `${SITE_URL}/${lang}/servicios/${slug}`;
+  const serviceUrl = `${SITE_URL}/${lang}/services/${slug}`;
   const serviceImage = service.image_url || `${SITE_URL}/logos/logo-imsoft-blue.png`;
 
-  // Structured data para Service
   const serviceStructuredData = generateStructuredData({
     type: 'Service',
     data: {
@@ -144,13 +139,12 @@ export default async function ServicePage({ params }: {
     },
   });
 
-  // Breadcrumb structured data
   const breadcrumbStructuredData = generateStructuredData({
     type: 'BreadcrumbList',
     data: {
       items: [
-        { name: lang === 'es' ? 'Inicio' : 'Home', url: `${SITE_URL}/${lang}` },
-        { name: lang === 'es' ? 'Servicios' : 'Services', url: `${SITE_URL}/${lang}/servicios` },
+        { name: dict.common?.home ?? 'Home', url: `${SITE_URL}/${lang}` },
+        { name: dict.nav?.services ?? 'Services', url: `${SITE_URL}/${lang}/services` },
         { name: title, url: serviceUrl },
       ],
     },
@@ -166,7 +160,6 @@ export default async function ServicePage({ params }: {
         <article className="py-16 md:py-24 bg-background">
           <div className="mx-auto max-w-7xl px-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-              {/* Left column - Title and Image */}
               <div>
                 <h1 className="text-4xl md:text-5xl font-bold mb-6">
                   {title}
@@ -185,7 +178,6 @@ export default async function ServicePage({ params }: {
                 )}
               </div>
 
-              {/* Right column - Description and benefits */}
               <div>
                 <div className="prose prose-lg dark:prose-invert max-w-none mb-8">
                   <p className="text-lg text-muted-foreground leading-relaxed">
@@ -197,7 +189,7 @@ export default async function ServicePage({ params }: {
                   <Card className="bg-white dark:bg-gray-900">
                     <CardContent className="p-6">
                       <h2 className="text-2xl font-bold mb-4">
-                        {lang === 'en' ? 'Benefits' : 'Beneficios'}
+                        {dict.serviceDetail?.benefits ?? 'Benefits'}
                       </h2>
                       <ul className="space-y-3">
                         {benefits.map((benefit: string, index: number) => (
@@ -211,14 +203,13 @@ export default async function ServicePage({ params }: {
                   </Card>
                 )}
 
-                {/* CTA Button */}
                 <div className="mt-8">
                   <Magnet padding={50} disabled={false} magnetStrength={10}>
                     <Link
                       href={`/${lang}/contact`}
                       className="inline-flex items-center justify-center rounded-md bg-primary px-8 py-3 text-sm font-semibold text-primary-foreground shadow-sm hover:bg-primary/90 transition-colors"
                     >
-                      {lang === 'en' ? 'Request a Quote' : 'Solicitar Cotización'}
+                      {dict.serviceDetail?.requestQuote ?? 'Request Quote'}
                     </Link>
                   </Magnet>
                 </div>

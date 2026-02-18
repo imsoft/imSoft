@@ -52,7 +52,7 @@ export function CookieBanner({ lang, dict }: CookieBannerProps) {
                   </Link>
                   <span>•</span>
                   <Link
-                    href={`/${lang}/aviso-de-privacidad`}
+                    href={`/${lang}/privacy-policy`}
                     className="underline underline-offset-4 hover:text-foreground transition-colors"
                   >
                     {dict.cookies?.banner?.privacyPolicy || 'Aviso de Privacidad'}

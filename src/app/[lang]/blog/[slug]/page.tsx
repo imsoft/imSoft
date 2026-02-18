@@ -167,8 +167,8 @@ export default async function BlogPostPage({ params }: {
     type: 'BreadcrumbList',
     data: {
       items: [
-        { name: lang === 'es' ? 'Inicio' : 'Home', url: `${SITE_URL}/${lang}` },
-        { name: lang === 'es' ? 'Blog' : 'Blog', url: `${SITE_URL}/${lang}/blog` },
+        { name: dict.common?.home ?? 'Home', url: `${SITE_URL}/${lang}` },
+        { name: dict.blog?.title ?? 'Blog', url: `${SITE_URL}/${lang}/blog` },
         { name: title, url: articleUrl },
       ],
     },

@@ -16,20 +16,16 @@ export async function generateMetadata({
   params: Promise<{ lang: string }>;
 }): Promise<Metadata> {
   const { lang } = await params;
-  
+  const dict = await getDictionary(lang as 'es' | 'en');
   const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io';
   const url = `${SITE_URL}/${lang}/blog`;
 
   return generateSEOMetadata({
-    title: lang === 'es' 
-      ? 'Blog - Artículos sobre Tecnología y Desarrollo'
-      : 'Blog - Technology and Development Articles',
-    description: lang === 'es'
-      ? 'Descubre artículos sobre desarrollo de software, tecnología, transformación digital y mejores prácticas en el mundo tech.'
-      : 'Discover articles about software development, technology, digital transformation and best practices in the tech world.',
+    title: dict.blog?.metaTitle ?? 'Blog',
+    description: dict.blog?.metaDescription ?? '',
     url,
     type: 'website',
-    tags: lang === 'es' 
+    tags: lang === 'es'
       ? ['blog', 'tecnología', 'desarrollo', 'artículos']
       : ['blog', 'technology', 'development', 'articles'],
   }, lang);
@@ -102,8 +98,8 @@ export default async function BlogPage({ params }: {
     type: 'BreadcrumbList',
     data: {
       items: [
-        { name: lang === 'es' ? 'Inicio' : 'Home', url: `${SITE_URL}/${lang}` },
-        { name: lang === 'es' ? 'Blog' : 'Blog', url: `${SITE_URL}/${lang}/blog` },
+        { name: dict.common?.home ?? 'Home', url: `${SITE_URL}/${lang}` },
+        { name: dict.blog?.title ?? 'Blog', url: `${SITE_URL}/${lang}/blog` },
       ],
     },
   });
@@ -118,17 +114,17 @@ export default async function BlogPage({ params }: {
           <div className="mx-auto max-w-7xl px-6">
             <div className="text-center mb-12">
               <h1 className="text-4xl md:text-5xl font-bold mb-4">
-                {dict.blog.title}
+                {dict.blog?.title ?? 'Blog'}
               </h1>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                {dict.blog.subtitle}
+                {dict.blog?.subtitle ?? ''}
               </p>
             </div>
             
             {blogPosts.length === 0 ? (
               <div className="text-center py-16">
                 <p className="text-muted-foreground text-lg">
-                  {dict.blog.noPosts}
+                  {dict.blog?.noPosts ?? 'No posts available yet.'}
                 </p>
               </div>
             ) : (
@@ -160,7 +156,7 @@ export default async function BlogPage({ params }: {
                             {post.date}
                           </span>
                           <span className="text-sm font-medium text-primary">
-                            {dict.blog.readMore} →
+                            {dict.blog?.readMore ?? 'Read more'} →
                           </span>
                         </div>
                       </CardContent>

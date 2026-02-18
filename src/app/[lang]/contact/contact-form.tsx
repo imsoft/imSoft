@@ -19,21 +19,26 @@ import type { Dictionary } from '../dictionaries'
 import type { ContactFormProps } from '@/types/components'
 import Magnet from "@/components/ui/magnet"
 
-const createFormSchema = (dict: Dictionary) => z.object({
-  firstName: z.string().min(2, {
-    message: dict.contact.form.validation.firstNameMin,
-  }),
-  lastName: z.string().min(2, {
-    message: dict.contact.form.validation.lastNameMin,
-  }),
-  email: z.string().email({
-    message: dict.contact.form.validation.emailInvalid,
-  }),
-  phoneNumber: z.string().optional(),
-  message: z.string().min(10, {
-    message: dict.contact.form.validation.messageMin,
-  }),
-})
+const formValidation = (dict: Dictionary) => {
+  const v = (dict.contact?.form as { validation?: Record<string, string> })?.validation;
+  return {
+    firstNameMin: v?.firstNameMin ?? 'First name must be at least 2 characters.',
+    lastNameMin: v?.lastNameMin ?? 'Last name must be at least 2 characters.',
+    emailInvalid: v?.emailInvalid ?? 'Must be a valid email.',
+    messageMin: v?.messageMin ?? 'Message must be at least 10 characters.',
+  };
+};
+
+const createFormSchema = (dict: Dictionary) => {
+  const val = formValidation(dict);
+  return z.object({
+    firstName: z.string().min(2, { message: val.firstNameMin }),
+    lastName: z.string().min(2, { message: val.lastNameMin }),
+    email: z.string().email({ message: val.emailInvalid }),
+    phoneNumber: z.string().optional(),
+    message: z.string().min(10, { message: val.messageMin }),
+  });
+};
 
 export default function ContactForm({ dict }: ContactFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -99,7 +104,7 @@ export default function ContactForm({ dict }: ContactFormProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-sm font-semibold">
-                  {dict.contact.form.firstName}
+                  {(dict.contact?.form as Record<string, string> | undefined)?.firstName ?? 'First name'}
                 </FormLabel>
                 <FormControl>
                   <Input
@@ -118,7 +123,7 @@ export default function ContactForm({ dict }: ContactFormProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-sm font-semibold">
-                  {dict.contact.form.lastName}
+                  {(dict.contact?.form as Record<string, string> | undefined)?.lastName ?? 'Last name'}
                 </FormLabel>
                 <FormControl>
                   <Input
@@ -137,7 +142,7 @@ export default function ContactForm({ dict }: ContactFormProps) {
             render={({ field }) => (
               <FormItem className="sm:col-span-2">
                 <FormLabel className="text-sm font-semibold">
-                  {dict.contact.form.email}
+                  {(dict.contact?.form as Record<string, string> | undefined)?.email ?? 'Email'}
                 </FormLabel>
                 <FormControl>
                   <Input
@@ -157,7 +162,7 @@ export default function ContactForm({ dict }: ContactFormProps) {
             render={({ field }) => (
               <FormItem className="sm:col-span-2">
                 <FormLabel className="text-sm font-semibold">
-                  {dict.contact.form.phoneNumber}
+                  {(dict.contact?.form as Record<string, string> | undefined)?.phoneNumber ?? 'Phone number'}
                 </FormLabel>
                 <FormControl>
                   <Input
@@ -177,7 +182,7 @@ export default function ContactForm({ dict }: ContactFormProps) {
             render={({ field }) => (
               <FormItem className="sm:col-span-2">
                 <FormLabel className="text-sm font-semibold">
-                  {dict.contact.form.message}
+                  {(dict.contact?.form as Record<string, string> | undefined)?.message ?? 'Message'}
                 </FormLabel>
                 <FormControl>
                   <Textarea
@@ -194,13 +199,13 @@ export default function ContactForm({ dict }: ContactFormProps) {
 
         {submitStatus === 'success' && (
           <div className="p-4 rounded-lg bg-green-500/10 border border-green-500/20 text-green-600 dark:text-green-400">
-            {dict.contact.form.success}
+            {(dict.contact?.form as Record<string, string> | undefined)?.success ?? 'Message sent successfully!'}
           </div>
         )}
 
         {submitStatus === 'error' && (
           <div className="p-4 rounded-lg bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400">
-            {dict.contact.form.error}
+            {(dict.contact?.form as Record<string, string> | undefined)?.error ?? 'Error sending message. Please try again.'}
           </div>
         )}
 
@@ -212,7 +217,7 @@ export default function ContactForm({ dict }: ContactFormProps) {
               size="lg"
               className="rounded-md bg-primary px-3.5 py-2.5 text-center text-sm font-semibold text-primary-foreground shadow-xs hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
             >
-              {isSubmitting ? dict.contact.form.sending : dict.contact.form.send}
+              {isSubmitting ? (dict.contact?.form as Record<string, string> | undefined)?.sending ?? 'Sending...' : (dict.contact?.form as Record<string, string> | undefined)?.send ?? 'Send message'}
             </Button>
           </Magnet>
         </div>

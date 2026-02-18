@@ -121,14 +121,15 @@ export function FooterSection({ dict, lang, contactData }: FooterSectionProps) {
   }
   const navigation = {
     solutions: [
-      { id: 'marketing', name: dict.footer.solutions.items.marketing, href: `/${lang}/${lang === 'es' ? 'servicios' : 'services'}/${lang === 'es' ? 'aplicaciones-web' : 'web-applications'}` },
-      { id: 'analytics', name: dict.footer.solutions.items.analytics, href: `/${lang}/${lang === 'es' ? 'servicios' : 'services'}/${lang === 'es' ? 'aplicaciones-moviles' : 'mobile-applications'}` },
-      { id: 'automation', name: dict.footer.solutions.items.automation, href: `/${lang}/${lang === 'es' ? 'servicios' : 'services'}/${lang === 'es' ? 'consultoria-tecnologica' : 'technology-consulting'}` },
-      { id: 'commerce', name: dict.footer.solutions.items.commerce, href: `/${lang}/${lang === 'es' ? 'servicios' : 'services'}` },
-      { id: 'insights', name: dict.footer.solutions.items.insights, href: `/${lang}/${lang === 'es' ? 'portafolio' : 'portfolio'}` },
+      // Slugs deben coincidir con la tabla services (p. ej. seed: aplicaciones-web, aplicaciones-moviles, consultoria-tecnologica)
+      { id: 'marketing', name: dict.footer.solutions.items.marketing, href: `/${lang}/services/aplicaciones-web` },
+      { id: 'analytics', name: dict.footer.solutions.items.analytics, href: `/${lang}/services/aplicaciones-moviles` },
+      { id: 'automation', name: dict.footer.solutions.items.automation, href: `/${lang}/services/consultoria-tecnologica` },
+      { id: 'commerce', name: dict.footer.solutions.items.commerce, href: `/${lang}/services` },
+      { id: 'insights', name: dict.footer.solutions.items.insights, href: `/${lang}/portfolio` },
     ],
     support: [
-      { id: 'quote', name: dict.nav.quote, href: lang === 'es' ? `/${lang}/cotizador` : `/${lang}/quote` },
+      { id: 'quote', name: dict.nav.quote, href: `/${lang}/quote` },
       { id: 'submitTicket', name: dict.footer.support.items.submitTicket, href: `/${lang}/contact` },
       { id: 'documentation', name: dict.footer.support.items.documentation, href: `/${lang}/blog` },
     ],
@@ -138,8 +139,8 @@ export function FooterSection({ dict, lang, contactData }: FooterSectionProps) {
       { id: 'jobs', name: dict.footer.company.items.jobs, href: `/${lang}/contact` },
     ],
     legal: [
-      { id: 'terms', name: dict.footer.legal.items.terms, href: `/${lang}/${lang === 'es' ? 'terminos-y-condiciones' : 'terms-and-conditions'}` },
-      { id: 'privacy', name: dict.footer.legal.items.privacy, href: `/${lang}/${lang === 'es' ? 'aviso-de-privacidad' : 'privacy-policy'}` },
+      { id: 'terms', name: dict.footer.legal.items.terms, href: `/${lang}/terms-and-conditions` },
+      { id: 'privacy', name: dict.footer.legal.items.privacy, href: `/${lang}/privacy-policy` },
       { id: 'cookies', name: dict.footer.legal.items.cookies, href: `/${lang}/cookie-policy` },
     ],
   }

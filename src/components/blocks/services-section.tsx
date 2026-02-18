@@ -35,7 +35,7 @@ export function ServicesSection({ dict, lang, services }: ServicesSectionClientP
           {displayServices.map((service) => (
             <Link
               key={service.id}
-              href={`/${lang}/servicios/${service.slug}`}
+              href={`/${lang}/services/${service.slug}`}
               className="flex flex-col items-center group cursor-pointer"
             >
               <TiltedCard

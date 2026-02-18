@@ -42,13 +42,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       },
     },
     {
-      url: `${SITE_URL}/es/servicios`,
+      url: `${SITE_URL}/es/services`,
       lastModified: new Date(),
       changeFrequency: 'weekly',
       priority: 0.9,
       alternates: {
         languages: {
-          es: `${SITE_URL}/es/servicios`,
+          es: `${SITE_URL}/es/services`,
           en: `${SITE_URL}/en/services`,
         },
       },
@@ -60,7 +60,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.9,
       alternates: {
         languages: {
-          es: `${SITE_URL}/es/servicios`,
+          es: `${SITE_URL}/es/services`,
           en: `${SITE_URL}/en/services`,
         },
       },
@@ -138,13 +138,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       },
     },
     {
-      url: `${SITE_URL}/es/terminos-y-condiciones`,
+      url: `${SITE_URL}/es/terms-and-conditions`,
       lastModified: new Date(),
       changeFrequency: 'yearly',
       priority: 0.3,
       alternates: {
         languages: {
-          es: `${SITE_URL}/es/terminos-y-condiciones`,
+          es: `${SITE_URL}/es/terms-and-conditions`,
           en: `${SITE_URL}/en/terms-and-conditions`,
         },
       },
@@ -156,19 +156,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.3,
       alternates: {
         languages: {
-          es: `${SITE_URL}/es/terminos-y-condiciones`,
+          es: `${SITE_URL}/es/terms-and-conditions`,
           en: `${SITE_URL}/en/terms-and-conditions`,
         },
       },
     },
     {
-      url: `${SITE_URL}/es/aviso-de-privacidad`,
+      url: `${SITE_URL}/es/privacy-policy`,
       lastModified: new Date(),
       changeFrequency: 'yearly',
       priority: 0.3,
       alternates: {
         languages: {
-          es: `${SITE_URL}/es/aviso-de-privacidad`,
+          es: `${SITE_URL}/es/privacy-policy`,
           en: `${SITE_URL}/en/privacy-policy`,
         },
       },
@@ -180,19 +180,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.3,
       alternates: {
         languages: {
-          es: `${SITE_URL}/es/aviso-de-privacidad`,
+          es: `${SITE_URL}/es/privacy-policy`,
           en: `${SITE_URL}/en/privacy-policy`,
         },
       },
     },
     {
-      url: `${SITE_URL}/es/cotizador`,
+      url: `${SITE_URL}/es/quote`,
       lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.8,
       alternates: {
         languages: {
-          es: `${SITE_URL}/es/cotizador`,
+          es: `${SITE_URL}/es/quote`,
           en: `${SITE_URL}/en/quote`,
         },
       },
@@ -204,7 +204,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
       alternates: {
         languages: {
-          es: `${SITE_URL}/es/cotizador`,
+          es: `${SITE_URL}/es/quote`,
           en: `${SITE_URL}/en/quote`,
         },
       },
@@ -251,13 +251,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     if (services) {
       services.forEach((service) => {
         routes.push({
-          url: `${SITE_URL}/es/servicios/${service.slug}`,
+          url: `${SITE_URL}/es/services/${service.slug}`,
           lastModified: service.updated_at ? new Date(service.updated_at) : new Date(),
           changeFrequency: 'weekly',
           priority: 0.7,
           alternates: {
             languages: {
-              es: `${SITE_URL}/es/servicios/${service.slug}`,
+              es: `${SITE_URL}/es/services/${service.slug}`,
               en: `${SITE_URL}/en/services/${service.slug}`,
             },
           },
@@ -269,7 +269,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           priority: 0.7,
           alternates: {
             languages: {
-              es: `${SITE_URL}/es/servicios/${service.slug}`,
+              es: `${SITE_URL}/es/services/${service.slug}`,
               en: `${SITE_URL}/en/services/${service.slug}`,
             },
           },

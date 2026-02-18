@@ -210,7 +210,7 @@ export const HeroHeader = ({ dict, lang }: HeroHeaderProps) => {
         { name: dict.nav.services, href: `/${lang}/services` },
         { name: dict.nav.portfolio, href: `/${lang}/portfolio` },
         { name: dict.nav.blog, href: `/${lang}/blog` },
-        { name: dict.nav.quote, href: lang === 'es' ? `/${lang}/cotizador` : `/${lang}/quote` },
+        { name: dict.nav.quote, href: `/${lang}/quote` },
         { name: dict.nav.contact, href: `/${lang}/contact` },
     ]
     const [menuState, setMenuState] = React.useState(false)

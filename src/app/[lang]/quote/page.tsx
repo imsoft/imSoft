@@ -11,21 +11,14 @@ export async function generateMetadata({ params }: {
 }): Promise<Metadata> {
   const { lang } = await params
   const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io'
-
-  const title = lang === 'es'
-    ? 'Cotizador en Línea - Obtén tu Presupuesto'
-    : 'Online Quote - Get Your Estimate'
-
-  const description = lang === 'es'
-    ? 'Obtén una cotización instantánea para tu proyecto de software. Responde unas preguntas simples y recibe un presupuesto detallado al instante.'
-    : 'Get an instant quote for your software project. Answer a few simple questions and receive a detailed estimate instantly.'
-
+  if (!hasLocale(lang)) return { title: 'Quote | imSoft', description: '' }
+  const dict = await getDictionary(lang)
   return {
-    title: `${title} | imSoft`,
-    description,
+    title: `${dict.quote?.metaTitle ?? 'Quote'} | imSoft`,
+    description: dict.quote?.metaDescription ?? '',
     openGraph: {
-      title: `${title} | imSoft`,
-      description,
+      title: `${dict.quote?.metaTitle ?? 'Quote'} | imSoft`,
+      description: dict.quote?.metaDescription ?? '',
       type: 'website',
       locale: lang === 'es' ? 'es_MX' : 'en_US',
       url: `${SITE_URL}/${lang}/quote`,
@@ -33,9 +26,9 @@ export async function generateMetadata({ params }: {
     alternates: {
       canonical: `${SITE_URL}/${lang}/quote`,
       languages: {
-        'es': `${SITE_URL}/es/cotizador`,
+        'es': `${SITE_URL}/es/quote`,
         'en': `${SITE_URL}/en/quote`,
-        'x-default': `${SITE_URL}/es/cotizador`,
+        'x-default': `${SITE_URL}/en/quote`,
       },
     },
   }
@@ -71,12 +64,10 @@ export default async function QuotePage({ params }: {
         <div className="container mx-auto px-4 py-12 max-w-4xl">
           <div className="text-center mb-10">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              {lang === 'en' ? 'Get Your Quote' : 'Obtén tu Cotización'}
+              {dict.quote?.title ?? 'Request a Quote'}
             </h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              {lang === 'en'
-                ? 'Answer a few questions and get an instant quote for your project'
-                : 'Responde algunas preguntas y obtén una cotización instantánea para tu proyecto'}
+              {dict.quote?.subtitle ?? ''}
             </p>
           </div>
 
@@ -89,11 +80,7 @@ export default async function QuotePage({ params }: {
           </div>
 
           <div className="mt-8 text-center text-sm text-muted-foreground">
-            <p>
-              {lang === 'en'
-                ? 'This is an automated estimate. Final pricing may vary based on specific requirements.'
-                : 'Esta es una estimación automatizada. El precio final puede variar según los requisitos específicos.'}
-            </p>
+            <p>{dict.quote?.disclaimer ?? ''}</p>
           </div>
         </div>
       </main>

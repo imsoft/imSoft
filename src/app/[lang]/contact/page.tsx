@@ -21,13 +21,11 @@ export async function generateMetadata({
   const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io';
   const url = `${SITE_URL}/${lang}/contact`;
 
+  if (!hasLocale(lang)) return generateSEOMetadata({}, lang);
+  const dict = await getDictionary(lang);
   return generateSEOMetadata({
-    title: lang === 'es'
-      ? 'Contacto - Contáctanos para Soluciones Tecnológicas'
-      : 'Contact - Contact Us for Technology Solutions',
-    description: lang === 'es'
-      ? 'Contáctanos para discutir tus necesidades tecnológicas. Ofrecemos consultoría, desarrollo de software y soluciones personalizadas.'
-      : 'Contact us to discuss your technology needs. We offer consulting, software development and custom solutions.',
+    title: dict.contact?.metaTitle ?? 'Contact',
+    description: dict.contact?.metaDescription ?? '',
     url,
     type: 'website',
     tags: lang === 'es'
@@ -80,8 +78,8 @@ export default async function ContactPage({ params }: {
     type: 'BreadcrumbList',
     data: {
       items: [
-        { name: lang === 'es' ? 'Inicio' : 'Home', url: `${SITE_URL}/${lang}` },
-        { name: lang === 'es' ? 'Contacto' : 'Contact', url: `${SITE_URL}/${lang}/contact` },
+        { name: dict.common?.home ?? 'Home', url: `${SITE_URL}/${lang}` },
+        { name: dict.contact?.title ?? 'Contact', url: `${SITE_URL}/${lang}/contact` },
       ],
     },
   });
@@ -101,16 +99,16 @@ export default async function ContactPage({ params }: {
             <div className="relative px-6 pt-24 pb-20 sm:pt-32 lg:static lg:px-8 lg:py-48">
               <div className="mx-auto max-w-xl lg:mx-0 lg:max-w-lg">
                 <h2 className="text-4xl font-semibold tracking-tight text-pretty text-foreground sm:text-5xl">
-                  {dict.contact.getInTouch}
+                  {dict.contact?.getInTouch ?? 'Get in touch'}
                 </h2>
                 <p className="mt-6 text-lg leading-8 text-muted-foreground">
-                  {dict.contact.description}
+                  {dict.contact?.description ?? ''}
                 </p>
                 <dl className="mt-10 space-y-4 text-base leading-7 text-muted-foreground">
                   {contactData?.address && (
                     <div className="flex gap-x-4">
                       <dt className="flex-none">
-                        <span className="sr-only">{dict.contact.address.label}</span>
+                        <span className="sr-only">{dict.contact?.address?.label ?? 'Address'}</span>
                         <Building2 aria-hidden="true" className="h-7 w-6 text-muted-foreground" />
                       </dt>
                       <dd className="whitespace-pre-line">
@@ -121,7 +119,7 @@ export default async function ContactPage({ params }: {
                   {contactData?.phone && (
                     <div className="flex gap-x-4">
                       <dt className="flex-none">
-                        <span className="sr-only">{dict.contact.phone.label}</span>
+                        <span className="sr-only">{dict.contact?.phone?.label ?? 'Phone'}</span>
                         <Phone aria-hidden="true" className="h-7 w-6 text-muted-foreground" />
                       </dt>
                       <dd>
@@ -137,7 +135,7 @@ export default async function ContactPage({ params }: {
                   {contactData?.email && (
                     <div className="flex gap-x-4">
                       <dt className="flex-none">
-                        <span className="sr-only">{dict.contact.email.label}</span>
+                        <span className="sr-only">{dict.contact?.email?.label ?? 'Email'}</span>
                         <Mail aria-hidden="true" className="h-7 w-6 text-muted-foreground" />
                       </dt>
                       <dd>

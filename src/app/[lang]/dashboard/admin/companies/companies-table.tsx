@@ -260,9 +260,9 @@ export function AdminCompaniesTable({ companies, dict, lang }: AdminCompaniesTab
       <Dialog open={deleteDialogOpen && deletingId !== null} onOpenChange={setDeleteDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{dict.companies.deleteConfirm.title}</DialogTitle>
+            <DialogTitle>{dict.companies.deleteConfirm?.title}</DialogTitle>
             <DialogDescription>
-              {dict.companies.deleteConfirm.description}
+              {dict.companies.deleteConfirm?.description}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

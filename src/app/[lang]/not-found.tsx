@@ -4,6 +4,8 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { usePathname } from 'next/navigation'
 import React, { useRef, useEffect } from 'react'
+import enDict from './dictionaries/en.json'
+import esDict from './dictionaries/es.json'
 
 function NoiseContainer() {
   const grainRef = useRef<HTMLCanvasElement | null>(null)
@@ -70,10 +72,13 @@ function NoiseContainer() {
   )
 }
 
+const dicts = { en: enDict, es: esDict }
+
 export default function NotFound() {
   const pathname = usePathname()
-  const lang = pathname?.split('/')[1] || 'es'
-  
+  const lang = (pathname?.split('/')[1] === 'en' ? 'en' : 'es') as 'en' | 'es'
+  const dict = (dicts[lang] as { notFound?: { title?: string; message?: string; goBackHome?: string } }).notFound ?? { title: 'Not Found', message: 'The page you are looking for does not exist.', goBackHome: 'Go back home' }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-background relative overflow-hidden">
       <div style={{width: '600px', height: '400px', position: 'relative', overflow: 'hidden'}}>
@@ -83,17 +88,14 @@ export default function NotFound() {
         <div className="text-center px-6">
           <h1 className="text-9xl font-bold text-foreground mb-4">404</h1>
           <h2 className="text-3xl font-semibold text-foreground mb-4">
-            {lang === 'en' ? 'Page not found' : 'Página no encontrada'}
+            {dict.title}
           </h2>
           <p className="text-lg text-muted-foreground mb-8 max-w-md mx-auto">
-            {lang === 'en' 
-              ? "Sorry, the page you're looking for doesn't exist or has been moved."
-              : "Lo sentimos, la página que estás buscando no existe o ha sido movida."
-            }
+            {dict.message}
           </p>
           <Button asChild size="lg">
             <Link href={`/${lang}`}>
-              {lang === 'en' ? 'Go back home' : 'Volver al inicio'}
+              {dict.goBackHome}
             </Link>
           </Button>
         </div>
