@@ -9,6 +9,7 @@ import Link from 'next/link';
 import { Card, CardContent } from "@/components/ui/card";
 import Magnet from "@/components/ui/magnet";
 import { generateMetadata as generateSEOMetadata, generateStructuredData } from '@/lib/seo';
+import { resolveServiceContent } from '@/lib/service-fallbacks';
 import { StructuredData } from '@/components/seo/structured-data';
 import type { Metadata } from 'next';
 
@@ -31,11 +32,13 @@ export async function generateMetadata({
     }
   );
 
-  const { data: service } = await supabase
+  const { data: serviceRow } = await supabase
     .from('services')
     .select('*')
     .eq('slug', slug)
     .single();
+
+  const service = resolveServiceContent(slug, serviceRow);
 
   if (!service) {
     return generateSEOMetadata({}, lang);
@@ -102,13 +105,15 @@ export default async function ServicePage({ params }: {
     // Error fetching contact data - silently fail
   }
 
-  const { data: service, error } = await supabase
+  const { data: serviceRow } = await supabase
     .from('services')
     .select('*')
     .eq('slug', slug)
     .single();
 
-  if (error || !service) {
+  const service = resolveServiceContent(slug, serviceRow);
+
+  if (!service) {
     notFound();
   }
 

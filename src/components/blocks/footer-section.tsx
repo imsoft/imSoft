@@ -131,7 +131,6 @@ export function FooterSection({ dict, lang, contactData }: FooterSectionProps) {
     support: [
       { id: 'quote', name: dict.nav.quote, href: `/${lang}/quote` },
       { id: 'submitTicket', name: dict.footer.support.items.submitTicket, href: `/${lang}/contact` },
-      { id: 'documentation', name: dict.footer.support.items.documentation, href: `/${lang}/blog` },
     ],
     company: [
       { id: 'about', name: dict.footer.company.items.about, href: `/${lang}` },
