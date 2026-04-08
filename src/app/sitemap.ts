@@ -2,6 +2,7 @@ import { MetadataRoute } from 'next';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import type { City, Industry } from '@/types/landing-pages';
+import { hreflangLanguageAlternates } from '@/lib/seo';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io';
 
@@ -23,10 +24,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'daily',
       priority: 1,
       alternates: {
-        languages: {
-          es: `${SITE_URL}/es`,
-          en: `${SITE_URL}/en`,
-        },
+        languages: hreflangLanguageAlternates(`${SITE_URL}/es`, `${SITE_URL}/en`),
       },
     },
     {
@@ -35,10 +33,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'daily',
       priority: 1,
       alternates: {
-        languages: {
-          es: `${SITE_URL}/es`,
-          en: `${SITE_URL}/en`,
-        },
+        languages: hreflangLanguageAlternates(`${SITE_URL}/es`, `${SITE_URL}/en`),
       },
     },
     {
@@ -47,10 +42,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'weekly',
       priority: 0.9,
       alternates: {
-        languages: {
-          es: `${SITE_URL}/es/services`,
-          en: `${SITE_URL}/en/services`,
-        },
+        languages: hreflangLanguageAlternates(
+          `${SITE_URL}/es/services`,
+          `${SITE_URL}/en/services`,
+        ),
       },
     },
     {
@@ -59,10 +54,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'weekly',
       priority: 0.9,
       alternates: {
-        languages: {
-          es: `${SITE_URL}/es/services`,
-          en: `${SITE_URL}/en/services`,
-        },
+        languages: hreflangLanguageAlternates(
+          `${SITE_URL}/es/services`,
+          `${SITE_URL}/en/services`,
+        ),
       },
     },
     {
@@ -71,10 +66,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'weekly',
       priority: 0.8,
       alternates: {
-        languages: {
-          es: `${SITE_URL}/es/portfolio`,
-          en: `${SITE_URL}/en/portfolio`,
-        },
+        languages: hreflangLanguageAlternates(
+          `${SITE_URL}/es/portfolio`,
+          `${SITE_URL}/en/portfolio`,
+        ),
       },
     },
     {
@@ -83,10 +78,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'weekly',
       priority: 0.8,
       alternates: {
-        languages: {
-          es: `${SITE_URL}/es/portfolio`,
-          en: `${SITE_URL}/en/portfolio`,
-        },
+        languages: hreflangLanguageAlternates(
+          `${SITE_URL}/es/portfolio`,
+          `${SITE_URL}/en/portfolio`,
+        ),
       },
     },
     {
@@ -95,10 +90,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'daily',
       priority: 0.8,
       alternates: {
-        languages: {
-          es: `${SITE_URL}/es/blog`,
-          en: `${SITE_URL}/en/blog`,
-        },
+        languages: hreflangLanguageAlternates(`${SITE_URL}/es/blog`, `${SITE_URL}/en/blog`),
       },
     },
     {
@@ -107,10 +99,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'daily',
       priority: 0.8,
       alternates: {
-        languages: {
-          es: `${SITE_URL}/es/blog`,
-          en: `${SITE_URL}/en/blog`,
-        },
+        languages: hreflangLanguageAlternates(`${SITE_URL}/es/blog`, `${SITE_URL}/en/blog`),
       },
     },
     {
@@ -119,10 +108,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'monthly',
       priority: 0.7,
       alternates: {
-        languages: {
-          es: `${SITE_URL}/es/contact`,
-          en: `${SITE_URL}/en/contact`,
-        },
+        languages: hreflangLanguageAlternates(
+          `${SITE_URL}/es/contact`,
+          `${SITE_URL}/en/contact`,
+        ),
       },
     },
     {
@@ -131,10 +120,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'monthly',
       priority: 0.7,
       alternates: {
-        languages: {
-          es: `${SITE_URL}/es/contact`,
-          en: `${SITE_URL}/en/contact`,
-        },
+        languages: hreflangLanguageAlternates(
+          `${SITE_URL}/es/contact`,
+          `${SITE_URL}/en/contact`,
+        ),
       },
     },
     {
@@ -143,10 +132,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'yearly',
       priority: 0.3,
       alternates: {
-        languages: {
-          es: `${SITE_URL}/es/terms-and-conditions`,
-          en: `${SITE_URL}/en/terms-and-conditions`,
-        },
+        languages: hreflangLanguageAlternates(
+          `${SITE_URL}/es/terms-and-conditions`,
+          `${SITE_URL}/en/terms-and-conditions`,
+        ),
       },
     },
     {
@@ -155,10 +144,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'yearly',
       priority: 0.3,
       alternates: {
-        languages: {
-          es: `${SITE_URL}/es/terms-and-conditions`,
-          en: `${SITE_URL}/en/terms-and-conditions`,
-        },
+        languages: hreflangLanguageAlternates(
+          `${SITE_URL}/es/terms-and-conditions`,
+          `${SITE_URL}/en/terms-and-conditions`,
+        ),
       },
     },
     {
@@ -167,10 +156,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'yearly',
       priority: 0.3,
       alternates: {
-        languages: {
-          es: `${SITE_URL}/es/privacy-policy`,
-          en: `${SITE_URL}/en/privacy-policy`,
-        },
+        languages: hreflangLanguageAlternates(
+          `${SITE_URL}/es/privacy-policy`,
+          `${SITE_URL}/en/privacy-policy`,
+        ),
       },
     },
     {
@@ -179,10 +168,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'yearly',
       priority: 0.3,
       alternates: {
-        languages: {
-          es: `${SITE_URL}/es/privacy-policy`,
-          en: `${SITE_URL}/en/privacy-policy`,
-        },
+        languages: hreflangLanguageAlternates(
+          `${SITE_URL}/es/privacy-policy`,
+          `${SITE_URL}/en/privacy-policy`,
+        ),
       },
     },
     {
@@ -191,10 +180,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'monthly',
       priority: 0.8,
       alternates: {
-        languages: {
-          es: `${SITE_URL}/es/quote`,
-          en: `${SITE_URL}/en/quote`,
-        },
+        languages: hreflangLanguageAlternates(`${SITE_URL}/es/quote`, `${SITE_URL}/en/quote`),
       },
     },
     {
@@ -203,10 +189,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'monthly',
       priority: 0.8,
       alternates: {
-        languages: {
-          es: `${SITE_URL}/es/quote`,
-          en: `${SITE_URL}/en/quote`,
-        },
+        languages: hreflangLanguageAlternates(`${SITE_URL}/es/quote`, `${SITE_URL}/en/quote`),
       },
     },
   ];
@@ -231,10 +214,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           changeFrequency: 'monthly',
           priority: 0.8,
           alternates: {
-            languages: {
-              es: `${SITE_URL}/es/${city}/${industry}`,
-              en: `${SITE_URL}/en/${city}/${industry}`,
-            },
+            languages: hreflangLanguageAlternates(
+              `${SITE_URL}/es/${city}/${industry}`,
+              `${SITE_URL}/en/${city}/${industry}`,
+            ),
           },
         });
       });
@@ -256,10 +239,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           changeFrequency: 'weekly',
           priority: 0.7,
           alternates: {
-            languages: {
-              es: `${SITE_URL}/es/services/${service.slug}`,
-              en: `${SITE_URL}/en/services/${service.slug}`,
-            },
+            languages: hreflangLanguageAlternates(
+              `${SITE_URL}/es/services/${service.slug}`,
+              `${SITE_URL}/en/services/${service.slug}`,
+            ),
           },
         });
         routes.push({
@@ -268,10 +251,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           changeFrequency: 'weekly',
           priority: 0.7,
           alternates: {
-            languages: {
-              es: `${SITE_URL}/es/services/${service.slug}`,
-              en: `${SITE_URL}/en/services/${service.slug}`,
-            },
+            languages: hreflangLanguageAlternates(
+              `${SITE_URL}/es/services/${service.slug}`,
+              `${SITE_URL}/en/services/${service.slug}`,
+            ),
           },
         });
       });
@@ -293,10 +276,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           changeFrequency: 'monthly',
           priority: 0.6,
           alternates: {
-            languages: {
-              es: `${SITE_URL}/es/blog/${post.slug}`,
-              en: `${SITE_URL}/en/blog/${post.slug}`,
-            },
+            languages: hreflangLanguageAlternates(
+              `${SITE_URL}/es/blog/${post.slug}`,
+              `${SITE_URL}/en/blog/${post.slug}`,
+            ),
           },
         });
         routes.push({
@@ -305,10 +288,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           changeFrequency: 'monthly',
           priority: 0.6,
           alternates: {
-            languages: {
-              es: `${SITE_URL}/es/blog/${post.slug}`,
-              en: `${SITE_URL}/en/blog/${post.slug}`,
-            },
+            languages: hreflangLanguageAlternates(
+              `${SITE_URL}/es/blog/${post.slug}`,
+              `${SITE_URL}/en/blog/${post.slug}`,
+            ),
           },
         });
       });

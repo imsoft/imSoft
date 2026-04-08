@@ -2,6 +2,26 @@ import { Metadata } from 'next';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io';
 const SITE_NAME = 'imSoft';
+
+/** Países donde ofrecéis servicio (schema.org / coherencia con SEO internacional). */
+export const SEO_AREA_SERVED_COUNTRIES = [
+  { '@type': 'Country', name: 'Mexico' },
+  { '@type': 'Country', name: 'United States' },
+  { '@type': 'Country', name: 'Canada' },
+  { '@type': 'Country', name: 'Germany' },
+] as const;
+
+/**
+ * Hreflang para sitio bilingüe: español orientado a México (es-MX) e inglés genérico (en)
+ * para búsquedas en EE. UU., Canadá, Alemania, etc. x-default = versión principal (ES).
+ */
+export function hreflangLanguageAlternates(esUrl: string, enUrl: string): Record<string, string> {
+  return {
+    'es-MX': esUrl,
+    en: enUrl,
+    'x-default': esUrl,
+  };
+}
 const DEFAULT_DESCRIPTION_ES = 'Soluciones tecnológicas modernas para empresas. Desarrollo de software, consultoría tecnológica y servicios de transformación digital.';
 const DEFAULT_DESCRIPTION_EN = 'Modern technological solutions for businesses. Software development, technology consulting and digital transformation services.';
 
@@ -79,19 +99,17 @@ export function generateMetadata(config: SEOConfig, lang: string = 'es'): Metada
     },
     alternates: {
       canonical: canonicalUrl,
-      languages: alternateUrls ? {
-        'es': alternateUrls.es || `${SITE_URL}/es`,
-        'en': alternateUrls.en || `${SITE_URL}/en`,
-        'x-default': alternateUrls.es || `${SITE_URL}/es`,
-      } : {
-        'es': `${SITE_URL}/es`,
-        'en': `${SITE_URL}/en`,
-        'x-default': `${SITE_URL}/es`,
-      },
+      languages: alternateUrls
+        ? hreflangLanguageAlternates(
+            alternateUrls.es || `${SITE_URL}/es`,
+            alternateUrls.en || `${SITE_URL}/en`,
+          )
+        : hreflangLanguageAlternates(`${SITE_URL}/es`, `${SITE_URL}/en`),
     },
     openGraph: {
       type: type === 'article' ? 'article' : 'website',
-      locale: lang === 'es' ? 'es_ES' : 'en_US',
+      locale: lang === 'es' ? 'es_MX' : 'en_US',
+      alternateLocale: lang === 'es' ? ['en_US'] : ['es_MX'],
       url: canonicalUrl,
       siteName: SITE_NAME,
       title: fullTitle,
@@ -152,9 +170,9 @@ export function generateStructuredData(config: {
           telephone: data.phone || '',
           contactType: 'customer service',
           email: data.email || '',
-          areaServed: 'MX',
           availableLanguage: ['Spanish', 'English'],
         },
+        areaServed: [...SEO_AREA_SERVED_COUNTRIES],
         address: {
           '@type': 'PostalAddress',
           addressCountry: 'MX',
@@ -190,10 +208,7 @@ export function generateStructuredData(config: {
           name: SITE_NAME,
           url: baseUrl,
         },
-        areaServed: {
-          '@type': 'Country',
-          name: 'Mexico',
-        },
+        areaServed: [...SEO_AREA_SERVED_COUNTRIES],
         description: data.description || '',
         name: data.name || '',
         url: data.url || baseUrl,

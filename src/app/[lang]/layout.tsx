@@ -6,7 +6,7 @@ import { getDictionary, hasLocale } from './dictionaries';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Analytics } from '@vercel/analytics/next';
 import { Toaster } from '@/components/ui/sonner';
-import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
+import { generateMetadata as generateSEOMetadata, SEO_AREA_SERVED_COUNTRIES } from '@/lib/seo';
 import Script from 'next/script';
 import { CookieBanner } from '@/components/cookies/cookie-banner';
 import { CookiePreferences } from '@/components/cookies/cookie-preferences';
@@ -55,6 +55,7 @@ export default async function RootLayout({
     name: 'imSoft',
     url: SITE_URL,
     logo: `${SITE_URL}/logos/logo-imsoft-blue.png`,
+    areaServed: [...SEO_AREA_SERVED_COUNTRIES],
     contactPoint: {
       '@type': 'ContactPoint',
       contactType: 'customer service',
@@ -64,7 +65,11 @@ export default async function RootLayout({
   };
 
   return (
-    <html lang={lang} suppressHydrationWarning className="overflow-x-hidden">
+    <html
+      lang={lang === 'es' ? 'es-MX' : 'en'}
+      suppressHydrationWarning
+      className="overflow-x-hidden"
+    >
       <head>
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#6366f1" />
