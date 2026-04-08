@@ -33,13 +33,15 @@ function EmailCell({ email, lang }: { email: string; lang: string }) {
   }
 
   return (
-    <div className="flex items-center gap-2">
-      <Mail className="size-4 text-muted-foreground" />
-      <span className="text-sm">{email}</span>
+    <div className="flex min-w-0 max-w-[min(20rem,50vw)] items-center gap-2">
+      <Mail className="size-4 shrink-0 text-muted-foreground" />
+      <span className="min-w-0 truncate text-sm" title={email}>
+        {email}
+      </span>
       <Button
         variant="ghost"
         size="icon"
-        className="h-6 w-6 flex-shrink-0"
+        className="h-6 w-6 shrink-0"
         onClick={handleCopy}
         title={lang === 'en' ? 'Copy email' : 'Copiar correo'}
       >
@@ -74,12 +76,14 @@ function InstagramCell({ instagram, lang }: { instagram: string | null | undefin
   }
 
   return (
-    <div className="flex items-center gap-2">
-      <span className="text-sm">{instagram}</span>
+    <div className="flex min-w-0 max-w-[min(18rem,45vw)] items-center gap-2">
+      <span className="min-w-0 truncate text-sm" title={instagram}>
+        {instagram}
+      </span>
       <Button
         variant="ghost"
         size="icon"
-        className="h-6 w-6 flex-shrink-0"
+        className="h-6 w-6 shrink-0"
         onClick={handleCopy}
         title={lang === 'en' ? 'Copy Instagram' : 'Copiar Instagram'}
       >
@@ -128,7 +132,7 @@ function DescriptionCell({ description, lang }: { description: string | null | u
       <Button
         variant="ghost"
         size="icon"
-        className="h-6 w-6 flex-shrink-0"
+        className="h-6 w-6 shrink-0"
         onClick={handleCopy}
         title={lang === 'en' ? 'Copy description' : 'Copiar descripción'}
       >
@@ -253,7 +257,12 @@ export function createColumns({ lang, onDelete, isDeleting }: ColumnsProps): Col
         )
       },
       cell: ({ row }) => {
-        return <span className="text-sm">{row.original.company || '-'}</span>
+        const company = row.original.company || '-'
+        return (
+          <span className="block max-w-[min(14rem,35vw)] truncate text-sm" title={company !== '-' ? company : undefined}>
+            {company}
+          </span>
+        )
       },
       filterFn: (row, id, value) => {
         if (!value) return true

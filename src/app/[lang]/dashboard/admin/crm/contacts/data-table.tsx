@@ -85,7 +85,7 @@ export function DataTable<TData, TValue>({
   }, [pageSize, table])
 
   return (
-    <div className="w-full">
+    <div className="w-full min-w-0 max-w-full">
       {/* Filtros */}
       <div className="space-y-4 py-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -206,8 +206,8 @@ export function DataTable<TData, TValue>({
           </div>
         </div>
       </div>
-      <div className="overflow-x-auto rounded-md border">
-        <Table className="min-w-full">
+      <div className="max-w-full overflow-x-auto rounded-md border">
+        <Table className="min-w-max w-full">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
@@ -256,8 +256,8 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-between py-4">
-        <div className="flex items-center gap-2">
+      <div className="flex min-w-0 flex-col gap-3 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+        <div className="flex min-w-0 shrink-0 items-center gap-2">
           <span className="text-sm text-muted-foreground">
             {lang === 'en' ? 'Rows per page:' : 'Filas por página:'}
           </span>
@@ -277,8 +277,8 @@ export function DataTable<TData, TValue>({
             </SelectContent>
           </Select>
         </div>
-        <div className="flex items-center gap-4">
-          <div className="text-sm text-muted-foreground">
+        <div className="flex min-w-0 flex-wrap items-center gap-2 sm:gap-4">
+          <div className="text-sm text-muted-foreground whitespace-nowrap">
             {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1} -{' '}
             {Math.min(
               (table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize,
