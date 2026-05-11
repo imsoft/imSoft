@@ -1,232 +1,213 @@
-# imSoft - Soluciones Tecnológicas Modernas
+# imSoft — Soluciones Tecnológicas Modernas
 
-Aplicación web moderna desarrollada con Next.js 16 para ofrecer soluciones tecnológicas, servicios de desarrollo de software, consultoría y transformación digital.
+Aplicación web moderna desarrollada con Next.js para ofrecer servicios de desarrollo de software, consultoría tecnológica y transformación digital.
 
-## 🚀 Características
+## Características
 
-- **Multiidioma**: Soporte completo para español e inglés
-- **Dashboard Administrativo**: Gestión completa de proyectos, clientes, servicios, blog y más
-- **Dashboard de Cliente**: Portal para que los clientes gestionen sus proyectos y cotizaciones
-- **Sistema CRM**: Gestión de contactos, actividades y deals
-- **Sistema de Cotizaciones**: Creación y gestión de cotizaciones personalizadas con preguntas dinámicas
-- **Blog**: Sistema de blog con editor rico (Lexical)
-- **Portfolio**: Showcase de proyectos completados
-- **Pagos con Stripe**: Integración completa con Stripe para enlaces de pago y webhooks
-- **SEO Optimizado**: Metadata dinámica, sitemap, robots.txt y structured data
-- **PWA Ready**: Configuración completa para Progressive Web App
+- **Multiidioma** — Soporte completo para español (es-MX) e inglés (en) con hreflang y rutas prefijadas
+- **Dashboard Administrativo** — Gestión de proyectos, clientes, servicios, blog, portafolio, testimonios y más
+- **Dashboard de Cliente** — Portal para que los clientes vean y gestionen sus proyectos
+- **Sistema CRM** — Gestión de contactos, deals, actividades y pipeline de ventas
+- **Blog** — Sistema de blog con editor rico (Lexical) y soporte bilingüe
+- **Portafolio** — Showcase de proyectos completados
+- **Pagos con Stripe** — Integración para crear y gestionar enlaces de pago e installments
+- **SEO al 100%** — Metadata dinámica, sitemap, robots.txt, structured data (JSON-LD), OG images dinámicas y hreflang
+- **PWA Ready** — Manifest, iconos y soporte offline configurados
 
-## 🛠️ Tecnologías
+## Stack tecnológico
 
-- **Framework**: Next.js 16.1.1 (App Router)
-- **Lenguaje**: TypeScript
-- **Base de Datos**: Supabase (PostgreSQL)
-- **Autenticación**: Supabase Auth
-- **Pagos**: Stripe
-- **UI Components**: Radix UI + shadcn/ui
-- **Estilos**: Tailwind CSS 4
-- **Formularios**: React Hook Form + Zod
-- **Editor de Texto**: Lexical
-- **Animaciones**: GSAP, Motion
-- **Drag & Drop**: @dnd-kit
-- **Email**: Resend
+| Categoría | Tecnología |
+|-----------|-----------|
+| Framework | Next.js 16.2 (App Router) |
+| Lenguaje | TypeScript 6 |
+| Base de datos | Supabase (PostgreSQL) |
+| Autenticación | Supabase Auth |
+| Pagos | Stripe 22 |
+| UI | shadcn/ui + Radix UI + Tailwind CSS 4 |
+| Formularios | React Hook Form 7 + Zod 4 |
+| Editor de texto | Lexical |
+| Animaciones | GSAP + Motion |
+| Drag & Drop | @dnd-kit |
+| Email | Resend |
+| Deploy | Vercel |
 
-## 📋 Requisitos Previos
+## Requisitos
 
-- Node.js 18+ 
-- pnpm (recomendado) o npm/yarn
+- Node.js 18+
+- pnpm
 - Cuenta de Supabase
-- Cuenta de Stripe (opcional, para funcionalidad de pagos)
+- Cuenta de Stripe (para funcionalidad de pagos)
 
-## 🔧 Instalación
+## Instalación
 
-1. Clona el repositorio:
 ```bash
-git clone <repository-url>
-cd imsoft
-```
+# 1. Clonar el repositorio
+git clone https://github.com/imsoft/imSoft.git
+cd imSoft
 
-2. Instala las dependencias:
-```bash
+# 2. Instalar dependencias
 pnpm install
-```
 
-3. Configura las variables de entorno (ver sección de configuración)
+# 3. Configurar variables de entorno
+cp .env.example .env.local
+# Editar .env.local con tus credenciales
 
-4. Ejecuta el servidor de desarrollo:
-```bash
+# 4. Iniciar servidor de desarrollo
 pnpm dev
 ```
 
-5. Abre [http://localhost:3000](http://localhost:3000) en tu navegador
+Abre [http://localhost:3000](http://localhost:3000) en tu navegador.
 
-## ⚙️ Configuración de Variables de Entorno
+## Variables de entorno
 
-Crea un archivo `.env.local` en la raíz del proyecto con las siguientes variables:
+Crea un archivo `.env.local` con las siguientes variables:
 
-### Supabase (Requerido)
 ```env
-NEXT_PUBLIC_SUPABASE_URL=tu_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=tu_supabase_anon_key
-SUPABASE_SERVICE_ROLE_KEY=tu_supabase_service_role_key
-```
+# Supabase (requerido)
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
 
-### Stripe (Opcional - para funcionalidad de pagos)
-```env
-STRIPE_SECRET_KEY=sk_live_... o sk_test_...
-STRIPE_WEBHOOK_SECRET=whsec_...
-```
+# Stripe (requerido para pagos)
+STRIPE_SECRET_KEY=
+STRIPE_WEBHOOK_SECRET=
 
-### Otros
-```env
+# App
 NEXT_PUBLIC_SITE_URL=https://imsoft.io
-RESEND_API_KEY=tu_resend_api_key (opcional, para emails)
+
+# Resend (requerido para emails)
+RESEND_API_KEY=
+
+# SEO — verificación en buscadores (opcional)
+NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION=
+NEXT_PUBLIC_BING_VERIFICATION=
+NEXT_PUBLIC_YANDEX_VERIFICATION=
 ```
 
-## 📜 Scripts Disponibles
+## Scripts
 
 ```bash
-# Desarrollo
-pnpm dev          # Inicia el servidor de desarrollo
-
-# Producción
-pnpm build        # Construye la aplicación para producción
-pnpm start        # Inicia el servidor de producción
-
-# Linting
-pnpm lint         # Ejecuta ESLint
+pnpm dev      # Servidor de desarrollo
+pnpm build    # Build de producción
+pnpm start    # Servidor de producción
+pnpm lint     # ESLint
 ```
 
-## 📁 Estructura del Proyecto
+## Estructura del proyecto
 
 ```
-imsoft/
-├── src/
-│   ├── app/                    # Rutas de Next.js (App Router)
-│   │   ├── [lang]/            # Rutas con internacionalización
-│   │   │   ├── dashboard/     # Dashboards (admin y client)
-│   │   │   ├── blog/          # Blog público
-│   │   │   ├── portfolio/     # Portfolio público
-│   │   │   └── servicios/     # Páginas de servicios
-│   │   ├── api/               # API Routes
-│   │   └── sitemap.ts         # Generación de sitemap
-│   ├── components/            # Componentes React
-│   │   ├── blocks/            # Componentes de bloques (hero, footer, etc.)
-│   │   ├── dashboards/        # Componentes del dashboard
-│   │   ├── projects/          # Componentes de proyectos
-│   │   └── ui/                # Componentes UI (shadcn)
-│   ├── lib/                   # Utilidades y helpers
-│   │   ├── supabase/          # Clientes de Supabase
-│   │   ├── stripe.ts          # Configuración de Stripe
-│   │   └── seo.ts             # Utilidades de SEO
-│   └── types/                 # Tipos TypeScript
-├── scripts/                   # Scripts SQL para configuración de BD
-├── public/                    # Archivos estáticos
-└── docs/                      # Documentación adicional
+src/
+├── app/
+│   ├── [lang]/                  # Rutas públicas (es / en)
+│   │   ├── [city]/[service]/    # Landing pages por ciudad y servicio
+│   │   ├── blog/                # Blog público
+│   │   ├── portfolio/           # Portafolio
+│   │   ├── services/            # Servicios
+│   │   ├── contact/             # Contacto
+│   │   ├── dashboard/
+│   │   │   ├── admin/           # Dashboard administrativo
+│   │   │   └── client/          # Dashboard de cliente
+│   │   ├── dictionaries/        # Traducciones es.json / en.json
+│   │   └── opengraph-image.tsx  # OG image dinámica
+│   ├── api/                     # API Routes
+│   ├── sitemap.ts               # Sitemap dinámico
+│   └── robots.ts                # Robots.txt
+├── components/
+│   ├── blocks/                  # Secciones (hero, footer, servicios…)
+│   ├── dashboards/              # Sidebars de admin y cliente
+│   ├── seo/                     # Componente StructuredData
+│   └── ui/                      # Componentes shadcn/ui
+├── lib/
+│   ├── supabase/                # Clientes server / client / admin
+│   ├── seo.ts                   # generateMetadata y generateStructuredData
+│   └── stripe.ts                # Configuración de Stripe
+└── types/
+    └── database.ts              # Interfaces TypeScript del modelo de datos
+scripts/                         # Scripts SQL para setup de la BD
+docs/                            # Documentación de módulos y configuración
+supabase/
+└── migrations/                  # Migraciones de base de datos
 ```
 
-## 🗄️ Base de Datos
+## Base de datos
 
-El proyecto utiliza Supabase (PostgreSQL). Los scripts SQL para configurar la base de datos se encuentran en la carpeta `scripts/`.
+El proyecto usa Supabase (PostgreSQL). Los scripts SQL están en `scripts/`.
 
-### Tablas principales:
-- `users` - Usuarios del sistema
-- `projects` - Proyectos
-- `companies` - Empresas/clientes
-- `services` - Servicios ofrecidos
-- `blog` - Posts del blog
-- `portfolio` - Proyectos del portfolio
-- `quotations` - Cotizaciones
-- `quotation_questions` - Preguntas de cotizaciones
-- `project_payments` - Pagos de proyectos
-- `testimonials` - Testimonios
-- `contact` - Información de contacto
-- Y más...
+### Tablas principales
 
-## 🔐 Autenticación y Roles
+| Tabla | Descripción |
+|-------|-------------|
+| `users` | Usuarios del sistema |
+| `companies` | Empresas/clientes |
+| `projects` | Proyectos |
+| `project_payments` | Pagos de proyectos |
+| `project_tasks` | Tareas de proyectos |
+| `services` | Servicios ofrecidos |
+| `blog` | Posts del blog |
+| `portfolio` | Proyectos del portafolio |
+| `testimonials` | Testimonios |
+| `contact` | Información de contacto |
+| `contact_messages` | Mensajes del formulario de contacto |
+| `contacts` | Contactos CRM |
+| `deals` | Deals CRM |
+| `activities` | Actividades CRM |
+| `technologies` | Tecnologías |
+| `feedbacks` | Feedbacks de clientes |
 
-El sistema soporta dos tipos de usuarios:
-- **Admin**: Acceso completo al dashboard administrativo
-- **Client**: Acceso al dashboard de cliente para gestionar sus proyectos
+## Autenticación y roles
 
-Los roles se gestionan a través de `user_metadata.role` en Supabase Auth.
+El sistema maneja dos roles de usuario mediante `user_metadata.role` en Supabase Auth:
 
-## 💳 Integración con Stripe
+- **admin** — Acceso completo al dashboard administrativo
+- **client** — Acceso al dashboard de cliente
 
-### Configuración de Webhooks
+Para asignar el rol admin a un usuario, usa el script `scripts/set-admin-role.sql`.
 
-1. Crea un webhook endpoint en Stripe Dashboard
+## Stripe — Configuración de webhooks
+
+1. Crea un endpoint en el Stripe Dashboard
 2. URL: `https://imsoft.io/api/webhooks/stripe`
-3. Eventos a escuchar:
+3. Eventos requeridos:
    - `checkout.session.completed`
-   - `checkout.session.async_payment_failed`
    - `payment_intent.succeeded`
    - `payment_intent.payment_failed`
    - `charge.failed`
-4. Copia el "Signing secret" y agrégalo a `STRIPE_WEBHOOK_SECRET`
+4. Copia el "Signing secret" en `STRIPE_WEBHOOK_SECRET`
 
-## 🌐 Internacionalización
+## Internacionalización
 
-El proyecto soporta español (`es`) e inglés (`en`). Las rutas están prefijadas con el idioma:
-- `/es` - Versión en español
-- `/en` - Versión en inglés
+Las rutas están prefijadas por idioma:
 
-Los diccionarios se encuentran en `src/app/[lang]/dictionaries/`
+- `/es/...` — Español (México)
+- `/en/...` — Inglés
 
-## 📱 PWA
+Los diccionarios están en `src/app/[lang]/dictionaries/es.json` y `en.json`.
 
-El proyecto está configurado como Progressive Web App. El manifest se encuentra en `public/manifest.json` y los iconos en `public/manifest/`.
+## SEO
 
-## 🔍 SEO
+- Sitemap dinámico en `/sitemap.xml` con hreflang es-MX / en / x-default
+- `robots.txt` configurado en `/robots.txt`
+- `generateMetadata` en todas las páginas públicas
+- Structured Data (JSON-LD): Organization, WebSite, LocalBusiness, Service, Article, BreadcrumbList
+- OG images dinámicas vía `ImageResponse`
+- Preconnect a Supabase, ImageKit y Unsplash
 
-- Sitemap dinámico en `/sitemap.xml`
-- Robots.txt en `/robots.txt`
-- Metadata dinámica para todas las páginas
-- Structured Data (JSON-LD) para mejor indexación
-- Open Graph y Twitter Cards
+## PWA
 
-## 🚀 Despliegue
+Manifest en `public/manifest.json` con iconos en `public/manifest/` (Android, iOS, Windows 11).
 
-### Vercel (Recomendado)
+## Despliegue
 
-1. Conecta tu repositorio a Vercel
+### Vercel (recomendado)
+
+1. Conecta el repositorio a Vercel
 2. Configura las variables de entorno
-3. Deploy automático en cada push
+3. El deploy es automático en cada push a `main`
 
-### Otros proveedores
+## Licencia
 
-El proyecto puede desplegarse en cualquier plataforma que soporte Next.js:
-- Netlify
-- AWS Amplify
-- Railway
-- Render
-- etc.
-
-## 📚 Documentación Adicional
-
-Consulta la carpeta `docs/` para documentación específica sobre:
-- Configuración de base de datos
-- Sistema de cotizaciones
-- Sistema CRM
-- Configuración de Google OAuth
-- Y más...
-
-## 🤝 Contribución
-
-Las contribuciones son bienvenidas. Por favor:
-1. Fork el proyecto
-2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
-
-## 📄 Licencia
-
-Este proyecto es privado y propiedad de imSoft.
-
-## 📞 Contacto
-
-Para más información, visita [https://imsoft.io](https://imsoft.io)
+Proyecto privado — propiedad de imSoft. Todos los derechos reservados.
 
 ---
 
-Desarrollado con ❤️ por imSoft
+[imsoft.io](https://imsoft.io)
