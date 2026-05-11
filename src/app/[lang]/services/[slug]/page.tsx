@@ -5,7 +5,6 @@ import { notFound } from 'next/navigation';
 import Image from "next/image";
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { Check } from 'lucide-react';
-import Link from 'next/link';
 import { Card, CardContent } from "@/components/ui/card";
 import Magnet from "@/components/ui/magnet";
 import { generateMetadata as generateSEOMetadata, generateStructuredData } from '@/lib/seo';
@@ -210,12 +209,18 @@ export default async function ServicePage({ params }: {
 
                 <div className="mt-8">
                   <Magnet padding={50} disabled={false} magnetStrength={10}>
-                    <Link
-                      href={`/${lang}/contact`}
+                    <a
+                      href={`https://wa.me/523325365558?text=${encodeURIComponent(
+                        lang === 'es'
+                          ? `Hola imSoft, me interesa conocer más sobre el servicio de *${title}*. ¿Podemos agendar una llamada?`
+                          : `Hi imSoft, I'm interested in learning more about your *${title}* service. Can we schedule a call?`
+                      )}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="inline-flex items-center justify-center rounded-md bg-primary px-8 py-3 text-sm font-semibold text-primary-foreground shadow-sm hover:bg-primary/90 transition-colors"
                     >
-                      {dict.serviceDetail?.requestQuote ?? 'Request Quote'}
-                    </Link>
+                      {dict.serviceDetail?.requestQuote ?? 'Request Information'}
+                    </a>
                   </Magnet>
                 </div>
               </div>
