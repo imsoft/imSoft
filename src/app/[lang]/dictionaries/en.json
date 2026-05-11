@@ -336,18 +336,38 @@
   },
   "services": {
     "title": "Our Services",
-    "subtitle": "We offer comprehensive technology solutions to help your business grow",
+    "subtitle": "Modern technology solutions to grow your business in today's market",
     "webApps": {
-      "title": "Web Applications",
-      "description": "We develop modern and scalable web applications using the latest technologies."
+      "title": "Custom Software",
+      "description": "The exact software your business needs, built with modern technologies and adapted to your processes."
     },
     "mobileApps": {
       "title": "Mobile Applications",
-      "description": "We create native and hybrid mobile applications for iOS and Android."
+      "description": "Native and cross-platform apps for iOS and Android with user-centered design."
     },
     "consulting": {
       "title": "Technology Consulting",
-      "description": "Strategic advice to optimize your technological processes."
+      "description": "Technology diagnosis and roadmap to modernize your operation with well-founded decisions."
+    },
+    "ai": {
+      "title": "Artificial Intelligence",
+      "description": "Chatbots, predictive analytics, and intelligent automation integrated directly into your business."
+    },
+    "automation": {
+      "title": "Process Automation",
+      "description": "We eliminate repetitive manual work so your team can focus on what really matters."
+    },
+    "ecommerce": {
+      "title": "Online Stores",
+      "description": "Custom or Shopify e-commerce with Mexican payments, inventory, and order management."
+    },
+    "maintenance": {
+      "title": "Maintenance & Support",
+      "description": "Monthly plans to keep your platform always secure, updated, and running perfectly."
+    },
+    "integrations": {
+      "title": "System Integrations",
+      "description": "We connect all your tools so they work together and eliminate manual data entry."
     }
   },
   "serviceDetail": {

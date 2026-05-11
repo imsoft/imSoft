@@ -336,18 +336,38 @@
   },
   "services": {
     "title": "Nuestros Servicios",
-    "subtitle": "Ofrecemos soluciones tecnológicas integrales para ayudar a tu negocio a crecer",
+    "subtitle": "Soluciones tecnológicas modernas para hacer crecer tu negocio en el mercado actual",
     "webApps": {
-      "title": "Aplicaciones Web",
-      "description": "Desarrollamos aplicaciones web modernas y escalables utilizando las últimas tecnologías."
+      "title": "Software a Medida",
+      "description": "El software exacto que tu negocio necesita, construido con tecnologías modernas y adaptado a tus procesos."
     },
     "mobileApps": {
       "title": "Aplicaciones Móviles",
-      "description": "Creamos aplicaciones móviles nativas e híbridas para iOS y Android."
+      "description": "Apps nativas y multiplataforma para iOS y Android con diseño centrado en el usuario."
     },
     "consulting": {
       "title": "Consultoría Tecnológica",
-      "description": "Asesoramiento estratégico para optimizar tus procesos tecnológicos."
+      "description": "Diagnóstico y hoja de ruta tecnológica para modernizar tu operación con decisiones bien fundamentadas."
+    },
+    "ai": {
+      "title": "Inteligencia Artificial",
+      "description": "Chatbots, análisis predictivo y automatización inteligente integrados directamente en tu negocio."
+    },
+    "automation": {
+      "title": "Automatización de Procesos",
+      "description": "Eliminamos el trabajo manual repetitivo para que tu equipo se enfoque en lo que realmente importa."
+    },
+    "ecommerce": {
+      "title": "Tiendas en Línea",
+      "description": "E-commerce a medida o sobre Shopify con pagos mexicanos, inventario y gestión de pedidos."
+    },
+    "maintenance": {
+      "title": "Mantenimiento y Soporte",
+      "description": "Planes mensuales para que tu plataforma siempre esté segura, actualizada y funcionando perfecto."
+    },
+    "integrations": {
+      "title": "Integraciones de Sistemas",
+      "description": "Conectamos todas tus herramientas para que trabajen juntas y eliminen la captura manual de datos."
     }
   },
   "serviceDetail": {
