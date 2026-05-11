@@ -350,6 +350,9 @@
       "description": "Asesoramiento estratégico para optimizar tus procesos tecnológicos."
     }
   },
+  "serviceDetail": {
+    "benefits": "Beneficios"
+  },
   "portfolio": {
     "title": "Nuestro Portafolio",
     "subtitle": "Proyectos completados con éxito que demuestran nuestra experiencia"

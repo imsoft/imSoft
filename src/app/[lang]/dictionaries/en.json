@@ -350,6 +350,9 @@
       "description": "Strategic advice to optimize your technological processes."
     }
   },
+  "serviceDetail": {
+    "benefits": "Benefits"
+  },
   "portfolio": {
     "title": "Our Portfolio",
     "subtitle": "Successfully completed projects that showcase our expertise"
