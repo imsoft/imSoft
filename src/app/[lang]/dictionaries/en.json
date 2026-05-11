@@ -388,7 +388,63 @@
   },
   "serviceDetail": {
     "benefits": "Benefits",
-    "requestQuote": "Request Information"
+    "requestQuote": "Request Information",
+    "howItWorks": {
+      "title": "How we work",
+      "steps": [
+        {
+          "number": "01",
+          "title": "Diagnosis call",
+          "description": "30 minutes to understand your business, your current processes, and what you want to achieve. No cost, no commitment, no sales pitch."
+        },
+        {
+          "number": "02",
+          "title": "Fixed-price proposal",
+          "description": "Within 48 hours you receive a document with the exact scope, delivery dates, and total cost. No surprise charges at the end."
+        },
+        {
+          "number": "03",
+          "title": "Development with visibility",
+          "description": "We work in 1-2 week sprints. You always know what's being built and can give feedback before it's too late to change it."
+        },
+        {
+          "number": "04",
+          "title": "Launch and first month",
+          "description": "We launch together. The first month of support is included: adjustments, team training, and production follow-up at no extra cost."
+        }
+      ]
+    },
+    "faq": {
+      "title": "Frequently asked questions",
+      "subtitle": "What people ask us most before starting a project.",
+      "items": [
+        {
+          "question": "How much does it cost?",
+          "answer": "Every project is different, so we don't publish list prices. What we do guarantee is a fixed price in the proposal — no additional charges at the end. Schedule the free diagnosis call and within 48 hours you'll have concrete numbers."
+        },
+        {
+          "question": "How long does it take?",
+          "answer": "A simple project can be ready in 4 to 6 weeks. A more complex one takes 2 to 4 months. We tell you exactly in the proposal, before we start, and we commit to meeting it."
+        },
+        {
+          "question": "What if I want to change something mid-project?",
+          "answer": "Minor adjustments have no extra cost. If the change affects the original scope, we present the options and cost before proceeding. You decide — we never surprise you."
+        },
+        {
+          "question": "Do I own the code or deliverables?",
+          "answer": "Yes, always. At project close we deliver full access to the repository, cloud systems, and all design files. No exclusivity clauses, no dependency on imSoft."
+        },
+        {
+          "question": "Is there support after launch?",
+          "answer": "The first month is included at no cost. After that, we offer monthly maintenance plans covering security updates, daily backups, bug fixes, and WhatsApp support with a guaranteed response time."
+        }
+      ]
+    },
+    "ctaBanner": {
+      "title": "Ready to take the next step?",
+      "description": "Tell us what you need. The first call is free, no commitment, no technical jargon.",
+      "button": "Talk to an expert"
+    }
   },
   "portfolio": {
     "title": "Our Portfolio",

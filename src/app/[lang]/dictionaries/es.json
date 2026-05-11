@@ -388,7 +388,63 @@
   },
   "serviceDetail": {
     "benefits": "Beneficios",
-    "requestQuote": "Solicitar información"
+    "requestQuote": "Solicitar información",
+    "howItWorks": {
+      "title": "¿Cómo trabajamos?",
+      "steps": [
+        {
+          "number": "01",
+          "title": "Llamada de diagnóstico",
+          "description": "30 minutos para entender tu negocio, tus procesos actuales y lo que quieres lograr. Sin costo, sin compromiso y sin presentaciones de ventas."
+        },
+        {
+          "number": "02",
+          "title": "Propuesta con precio fijo",
+          "description": "En 48 horas recibes un documento con el alcance exacto, las fechas de entrega y el costo total. Sin cobros sorpresa al finalizar."
+        },
+        {
+          "number": "03",
+          "title": "Desarrollo con visibilidad",
+          "description": "Trabajamos en entregas de 1-2 semanas. Siempre sabes qué se está construyendo y puedes dar feedback antes de que sea tarde para cambiarlo."
+        },
+        {
+          "number": "04",
+          "title": "Lanzamiento y primer mes",
+          "description": "Lanzamos juntos. El primer mes de soporte está incluido: ajustes, capacitación a tu equipo y seguimiento en producción sin costo extra."
+        }
+      ]
+    },
+    "faq": {
+      "title": "Preguntas frecuentes",
+      "subtitle": "Lo que más nos preguntan antes de empezar un proyecto.",
+      "items": [
+        {
+          "question": "¿Cuánto cuesta?",
+          "answer": "Cada proyecto es diferente, por eso no publicamos precios de lista. Lo que sí garantizamos es un precio fijo en la propuesta: sin cobros adicionales al cerrar. Agenda la llamada de diagnóstico gratuita y en 48 horas tienes números concretos."
+        },
+        {
+          "question": "¿Cuánto tiempo tarda en estar listo?",
+          "answer": "Un proyecto sencillo puede estar listo en 4 a 6 semanas. Uno más complejo tarda entre 2 y 4 meses. Te lo decimos exacto en la propuesta, antes de empezar, y nos comprometemos a cumplirlo."
+        },
+        {
+          "question": "¿Qué pasa si quiero cambiar algo a la mitad?",
+          "answer": "Los ajustes menores no tienen costo extra. Si el cambio modifica el alcance original, te presentamos las opciones y el costo antes de proceder. Tú decides, nunca te sorprendemos."
+        },
+        {
+          "question": "¿El código o los entregables son míos?",
+          "answer": "Sí, siempre. Al cerrar el proyecto entregamos acceso completo al repositorio, a los sistemas en la nube y a todos los archivos de diseño. Sin cláusulas de exclusividad ni dependencia de imSoft."
+        },
+        {
+          "question": "¿Tienen soporte después del lanzamiento?",
+          "answer": "El primer mes está incluido sin costo. Después, ofrecemos planes de mantenimiento mensual que cubren actualizaciones de seguridad, copias de seguridad diarias, corrección de bugs y soporte por WhatsApp con tiempo de respuesta garantizado."
+        }
+      ]
+    },
+    "ctaBanner": {
+      "title": "¿Listo para dar el siguiente paso?",
+      "description": "Cuéntanos qué necesitas. La primera llamada es gratuita, sin compromisos y sin lenguaje técnico.",
+      "button": "Hablar con un experto"
+    }
   },
   "portfolio": {
     "title": "Nuestro Portafolio",

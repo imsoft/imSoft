@@ -21,7 +21,13 @@ export type DictionaryStrict = DictFromJson & {
   }
   quote?: { title?: string; subtitle?: string; metaTitle?: string; metaDescription?: string; disclaimer?: string }
   notFound?: { title?: string; description?: string }
-  serviceDetail?: { benefits?: string; requestQuote?: string }
+  serviceDetail?: {
+    benefits?: string
+    requestQuote?: string
+    howItWorks?: { title?: string; steps?: { number: string; title: string; description: string }[] }
+    faq?: { title?: string; subtitle?: string; items?: { question: string; answer: string }[] }
+    ctaBanner?: { title?: string; description?: string; button?: string }
+  }
   contact?: {
     metaTitle?: string; metaDescription?: string; title?: string; getInTouch?: string; description?: string
     address?: { label?: string }; phone?: { label?: string }; email?: { label?: string }
