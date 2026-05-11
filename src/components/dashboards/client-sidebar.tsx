@@ -12,13 +12,12 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { 
-  LayoutDashboard, 
-  PanelsTopLeft, 
-  User, 
+import {
+  LayoutDashboard,
+  PanelsTopLeft,
+  User,
   LogOut,
   Building2,
-  Receipt,
   MessageSquare
 } from "lucide-react"
 import Link from "next/link"
@@ -53,12 +52,7 @@ export function ClientSidebar({ dict, lang, user }: ClientSidebarProps) {
       url: `/${lang}/dashboard/client/companies`,
       icon: Building2,
     },
-    {
-      title: dict.dashboard.client.nav.quotations,
-      url: `/${lang}/dashboard/client/quotations`,
-      icon: Receipt,
-    },
-    {
+{
       title: dict.dashboard.client.nav.feedback,
       url: `/${lang}/dashboard/client/feedback`,
       icon: MessageSquare,

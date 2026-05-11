@@ -3,7 +3,7 @@ import Stripe from 'stripe'
 // Solo inicializar Stripe si la clave está disponible (en runtime, no en build time)
 export const stripe = process.env.STRIPE_SECRET_KEY
   ? new Stripe(process.env.STRIPE_SECRET_KEY, {
-      apiVersion: '2025-12-15.clover',
+      apiVersion: '2026-04-22.dahlia',
       typescript: true,
     })
   : null

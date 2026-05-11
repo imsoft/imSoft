@@ -15,57 +15,6 @@ export interface Service {
   updated_at?: string
 }
 
-export interface QuotationQuestion {
-  id: string
-  service_id: string
-  question_es: string
-  question_en: string
-  question_type: 'multiple_choice' | 'multiple_selection' | 'number' | 'yes_no' | 'range'
-  options?: QuotationOption[]
-  base_price: number
-  price_multiplier: number
-  is_required: boolean
-  order_index: number
-  created_at?: string
-  updated_at?: string
-}
-
-export interface QuotationOption {
-  label_es: string
-  label_en: string
-  price: number
-}
-
-export interface Quotation {
-  id: string
-  user_id: string
-  service_id?: string
-  deal_id?: string
-  title?: string
-  description?: string
-  client_name?: string
-  client_email?: string
-  client_phone?: string
-  client_company?: string
-  answers: Record<string, any>
-  subtotal: number
-  iva: number
-  total: number
-  status: 'pending' | 'approved' | 'rejected' | 'converted'
-  notes?: string
-  valid_until?: string
-  final_price?: number
-  estimated_development_time?: number
-  ai_recommendation?: {
-    recommended_price?: number
-    recommended_time_days?: number
-    reasoning?: string
-    analysis?: string
-  }
-  created_at?: string
-  updated_at?: string
-}
-
 export interface PortfolioItem {
   id: string
   title_es?: string
@@ -264,7 +213,6 @@ export interface Deal {
   id: string
   contact_id?: string
   service_id?: string
-  quotation_id?: string
   title: string
   description?: string
   value: number
@@ -282,7 +230,6 @@ export interface Deal {
   updated_at?: string
   contacts?: Contact
   services?: Service
-  quotations?: Quotation
 }
 
 export interface Activity {

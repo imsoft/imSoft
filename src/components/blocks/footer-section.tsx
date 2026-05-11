@@ -129,8 +129,7 @@ export function FooterSection({ dict, lang, contactData }: FooterSectionProps) {
       { id: 'insights', name: dict.footer.solutions.items.insights, href: `/${lang}/portfolio` },
     ],
     support: [
-      { id: 'quote', name: dict.nav.quote, href: `/${lang}/quote` },
-      { id: 'submitTicket', name: dict.footer.support.items.submitTicket, href: `/${lang}/contact` },
+{ id: 'submitTicket', name: dict.footer.support.items.submitTicket, href: `/${lang}/contact` },
     ],
     company: [
       { id: 'about', name: dict.footer.company.items.about, href: `/${lang}` },

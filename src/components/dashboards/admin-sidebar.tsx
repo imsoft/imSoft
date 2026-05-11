@@ -27,7 +27,6 @@ import {
   MessageSquare,
   Contact,
   Building2,
-  Receipt,
   UserCog,
   Code,
   Mail
@@ -100,12 +99,7 @@ export function AdminSidebar({ dict, lang, user }: AdminSidebarProps) {
       url: `/${lang}/dashboard/admin/contact-messages`,
       icon: Mail,
     },
-    {
-      title: dict.dashboard.admin.nav.quotations,
-      url: `/${lang}/dashboard/admin/quotations`,
-      icon: Receipt,
-    },
-    {
+{
       title: dict.dashboard.admin.nav.feedbacks,
       url: `/${lang}/dashboard/admin/feedbacks`,
       icon: MessageSquare,

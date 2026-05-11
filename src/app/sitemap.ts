@@ -174,24 +174,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         ),
       },
     },
-    {
-      url: `${SITE_URL}/es/quote`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.8,
-      alternates: {
-        languages: hreflangLanguageAlternates(`${SITE_URL}/es/quote`, `${SITE_URL}/en/quote`),
-      },
-    },
-    {
-      url: `${SITE_URL}/en/quote`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.8,
-      alternates: {
-        languages: hreflangLanguageAlternates(`${SITE_URL}/es/quote`, `${SITE_URL}/en/quote`),
-      },
-    },
   ];
 
   // Agregar landing pages de ciudad + servicio

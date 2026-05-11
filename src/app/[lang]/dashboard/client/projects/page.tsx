@@ -67,20 +67,13 @@ export default async function ClientProjectsPage({ params }: {
             </EmptyMedia>
             <EmptyTitle>{dict.dashboard.empty.myProjects.title}</EmptyTitle>
             <EmptyDescription>
-              {dict.dashboard.empty.myProjects.description}{' '}
-              <Link 
-                href={`/${lang}/dashboard/client/quotations/new`}
-                className="text-primary hover:underline font-medium"
-              >
-                {lang === 'en' ? 'here' : 'aquí'}
-              </Link>
-              .
+              {dict.dashboard.empty.myProjects.description}
             </EmptyDescription>
           </EmptyHeader>
           <EmptyAction>
             <Button asChild>
-              <Link href={`/${lang}/dashboard/client/quotations/new`}>
-                {lang === 'en' ? 'Create Quotation' : 'Crear Cotización'}
+              <Link href={`/${lang}/contact`}>
+                {lang === 'en' ? 'Contact Us' : 'Contáctanos'}
               </Link>
             </Button>
           </EmptyAction>
