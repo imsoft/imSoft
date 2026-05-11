@@ -368,6 +368,14 @@
     "integrations": {
       "title": "System Integrations",
       "description": "We connect all your tools so they work together and eliminate manual data entry."
+    },
+    "uxui": {
+      "title": "UX/UI Design",
+      "description": "Interfaces that delight your users: research, Figma prototypes, and a dev-ready design system."
+    },
+    "securedev": {
+      "title": "Secure Development",
+      "description": "Software that resists attacks: OWASP Top 10, security audits, and robust authentication from the first commit."
     }
   },
   "serviceDetail": {

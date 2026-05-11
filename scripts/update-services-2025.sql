@@ -2,11 +2,24 @@
 -- Actualización de servicios imSoft — 2025
 -- Ejecutar en: Supabase Dashboard → SQL Editor
 -- =============================================================================
--- 1. Renombra "aplicaciones-web" → "software-a-medida" (mejor posicionamiento)
--- 2. Actualiza descripción y beneficios de servicios existentes
--- 3. Inserta 5 servicios nuevos: IA, Automatización, E-commerce,
+-- 1. Asigna iconos a servicios legacy (slugs en inglés, icon = NULL)
+-- 2. Renombra "aplicaciones-web" → "software-a-medida" (mejor posicionamiento)
+-- 3. Actualiza descripción y beneficios de servicios existentes
+-- 4. Inserta 5 servicios nuevos: IA, Automatización, E-commerce,
 --    Mantenimiento y Soporte, Integraciones de Sistemas
+-- 5. Inserta 2 servicios nuevos: Diseño UX/UI, Desarrollo Seguro
 -- =============================================================================
+
+
+-- -----------------------------------------------------------------------------
+-- 0. ICONOS PARA SERVICIOS LEGACY (slugs en inglés con icon = NULL)
+-- -----------------------------------------------------------------------------
+UPDATE public.services SET icon = '🌐', updated_at = NOW() WHERE slug = 'web-applications';
+UPDATE public.services SET icon = '📱', updated_at = NOW() WHERE slug = 'mobile-applications';
+UPDATE public.services SET icon = '🎯', updated_at = NOW() WHERE slug = 'technology-consulting';
+UPDATE public.services SET icon = '🖥️', updated_at = NOW() WHERE slug = 'web-pages';
+UPDATE public.services SET icon = '📊', updated_at = NOW() WHERE slug = 'data-analysis';
+UPDATE public.services SET icon = '🏪', updated_at = NOW() WHERE slug = 'online-store';
 
 
 -- -----------------------------------------------------------------------------
@@ -180,6 +193,60 @@ VALUES (
   '🔗',
   '["Integración con más de 100 plataformas y APIs", "Conectamos SAP, Salesforce, HubSpot, Zoho y más", "Sincronización con facturación electrónica SAT/CFDI", "APIs REST y Webhooks para conectar cualquier sistema", "Migración de datos sin pérdida de información", "Documentación técnica completa de cada integración"]'::jsonb,
   '["Integration with over 100 platforms and APIs", "We connect SAP, Salesforce, HubSpot, Zoho and more", "Sync with SAT/CFDI electronic invoicing", "REST APIs and Webhooks to connect any system", "Data migration without information loss", "Complete technical documentation for each integration"]'::jsonb
+)
+ON CONFLICT (slug) DO UPDATE SET
+  title_es       = EXCLUDED.title_es,
+  title_en       = EXCLUDED.title_en,
+  description_es = EXCLUDED.description_es,
+  description_en = EXCLUDED.description_en,
+  image_url      = EXCLUDED.image_url,
+  icon           = EXCLUDED.icon,
+  benefits_es    = EXCLUDED.benefits_es,
+  benefits_en    = EXCLUDED.benefits_en,
+  updated_at     = NOW();
+
+
+-- -----------------------------------------------------------------------------
+-- 9. DISEÑO UX/UI (NUEVO)
+-- -----------------------------------------------------------------------------
+INSERT INTO public.services (slug, title_es, title_en, description_es, description_en, image_url, icon, benefits_es, benefits_en)
+VALUES (
+  'diseno-ux-ui',
+  'Diseño UX/UI',
+  'UX/UI Design',
+  'Diseñamos interfaces que enamoran a tus usuarios y los convierten en clientes. Creamos la arquitectura de información, prototipos interactivos y el diseño visual de tu producto digital antes de escribir una sola línea de código. Reducimos re-trabajos, acortamos ciclos de desarrollo y entregamos experiencias que la gente quiere usar.',
+  'We design interfaces that delight your users and turn them into customers. We create the information architecture, interactive prototypes, and visual design of your digital product before writing a single line of code. We reduce rework, shorten development cycles, and deliver experiences people want to use.',
+  'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&h=600&fit=crop',
+  '🎨',
+  '["Research y análisis de usuarios objetivo", "Arquitectura de información y flujos de usuario", "Prototipado interactivo en Figma", "Sistema de diseño reutilizable (Design System)", "Pruebas de usabilidad con usuarios reales", "Entrega de assets listos para desarrollo"]'::jsonb,
+  '["Research and target user analysis", "Information architecture and user flows", "Interactive prototyping in Figma", "Reusable design system", "Usability testing with real users", "Dev-ready asset delivery"]'::jsonb
+)
+ON CONFLICT (slug) DO UPDATE SET
+  title_es       = EXCLUDED.title_es,
+  title_en       = EXCLUDED.title_en,
+  description_es = EXCLUDED.description_es,
+  description_en = EXCLUDED.description_en,
+  image_url      = EXCLUDED.image_url,
+  icon           = EXCLUDED.icon,
+  benefits_es    = EXCLUDED.benefits_es,
+  benefits_en    = EXCLUDED.benefits_en,
+  updated_at     = NOW();
+
+
+-- -----------------------------------------------------------------------------
+-- 10. DESARROLLO SEGURO (NUEVO)
+-- -----------------------------------------------------------------------------
+INSERT INTO public.services (slug, title_es, title_en, description_es, description_en, image_url, icon, benefits_es, benefits_en)
+VALUES (
+  'desarrollo-seguro',
+  'Desarrollo Seguro',
+  'Secure Development',
+  'Construimos software que resiste ataques desde el primer commit. Aplicamos las prácticas OWASP Top 10 en cada proyecto: autenticación robusta, cifrado de datos, validación de entradas, manejo seguro de secretos y revisión de dependencias. Si ya tienes una aplicación, la auditamos y reforzamos antes de que sea demasiado tarde.',
+  'We build software that resists attacks from the very first commit. We apply OWASP Top 10 practices in every project: robust authentication, data encryption, input validation, secure secrets management, and dependency review. If you already have an application, we audit and harden it before it''s too late.',
+  'https://images.unsplash.com/photo-1614064641938-3bbee52942c7?w=800&h=600&fit=crop',
+  '🔒',
+  '["Auditoría de seguridad de aplicaciones web existentes", "Implementación de OWASP Top 10 en proyectos nuevos", "Autenticación segura: OAuth2, MFA, sesiones cifradas", "Revisión y actualización de dependencias vulnerables", "Manejo seguro de secretos y variables de entorno", "Reporte ejecutivo con hallazgos y plan de remediación"]'::jsonb,
+  '["Security audit of existing web applications", "OWASP Top 10 implementation in new projects", "Secure authentication: OAuth2, MFA, encrypted sessions", "Vulnerable dependency review and updates", "Secure secrets and environment variable management", "Executive report with findings and remediation plan"]'::jsonb
 )
 ON CONFLICT (slug) DO UPDATE SET
   title_es       = EXCLUDED.title_es,
