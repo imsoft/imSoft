@@ -18,7 +18,9 @@ import {
   User,
   LogOut,
   Building2,
-  MessageSquare
+  MessageSquare,
+  Inbox,
+  CreditCard,
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -52,10 +54,20 @@ export function ClientSidebar({ dict, lang, user }: ClientSidebarProps) {
       url: `/${lang}/dashboard/client/companies`,
       icon: Building2,
     },
-{
+    {
       title: dict.dashboard.client.nav.feedback,
       url: `/${lang}/dashboard/client/feedback`,
       icon: MessageSquare,
+    },
+    {
+      title: dict.dashboard.client.nav.messages,
+      url: `/${lang}/dashboard/client/messages`,
+      icon: Inbox,
+    },
+    {
+      title: dict.dashboard.client.nav.billing,
+      url: `/${lang}/dashboard/client/billing`,
+      icon: CreditCard,
     },
   ]
 
