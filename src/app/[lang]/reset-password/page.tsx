@@ -7,6 +7,12 @@ import { getDictionary, hasLocale, type Locale, type Dictionary } from '../dicti
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { Skeleton } from '@/components/ui/skeleton'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Restablecer contraseña — imSoft',
+  robots: { index: false, follow: false },
+}
 
 function ResetPasswordContent({ dict, lang }: { dict: Dictionary, lang: Locale }) {
   return (

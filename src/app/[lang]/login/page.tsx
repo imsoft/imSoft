@@ -5,6 +5,12 @@ import { FooterSection } from "@/components/blocks/footer-section";
 import LoginForm from './login-form';
 import { Logo } from "@/components/blocks/hero-section";
 import { createClient } from '@/lib/supabase/server';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Iniciar sesión — imSoft',
+  robots: { index: false, follow: false },
+};
 
 export default async function LoginPage({ params }: {
   params: Promise<{ lang: string }>;

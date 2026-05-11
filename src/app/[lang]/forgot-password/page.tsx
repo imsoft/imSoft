@@ -5,6 +5,12 @@ import { FooterSection } from "@/components/blocks/footer-section";
 import ForgotPasswordForm from './forgot-password-form';
 import { Logo } from "@/components/blocks/hero-section";
 import { createClient } from '@/lib/supabase/server';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Recuperar contraseña — imSoft',
+  robots: { index: false, follow: false },
+};
 
 export default async function ForgotPasswordPage({ params }: {
   params: Promise<{ lang: string }>;

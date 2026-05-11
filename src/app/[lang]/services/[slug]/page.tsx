@@ -107,10 +107,16 @@ export default async function ServicePage({ params }: {
     },
   });
 
+  const faqStructuredData = faqItems.length > 0 ? generateStructuredData({
+    type: 'FAQPage',
+    data: { questions: faqItems.map((item) => ({ question: item.question, answer: item.answer })) },
+  }) : null;
+
   return (
     <>
       <StructuredData data={serviceStructuredData} id="service-structured-data" />
       <StructuredData data={breadcrumbStructuredData} id="breadcrumb-structured-data" />
+      {faqStructuredData && <StructuredData data={faqStructuredData} id="faq-structured-data" />}
       <div>
         <HeroHeader dict={dict} lang={lang} />
         <main className="pt-24">
@@ -133,7 +139,7 @@ export default async function ServicePage({ params }: {
                   <p className="text-lg text-muted-foreground leading-relaxed mb-8">{description}</p>
 
                   {benefits && benefits.length > 0 && (
-                    <Card className="bg-white dark:bg-gray-900 mb-8">
+                    <Card className="bg-card mb-8">
                       <CardContent className="p-6">
                         <h2 className="text-xl font-bold mb-4">
                           {dict.serviceDetail?.benefits ?? 'Benefits'}
@@ -176,7 +182,7 @@ export default async function ServicePage({ params }: {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
                   {steps.map((step, i) => (
                     <div key={i}>
-                      <div className="text-7xl font-black text-primary/10 leading-none mb-4 select-none">
+                      <div className="text-7xl font-black text-primary/20 leading-none mb-4 select-none">
                         {step.number}
                       </div>
                       <h3 className="font-bold text-lg mb-2">{step.title}</h3>
@@ -218,12 +224,12 @@ export default async function ServicePage({ params }: {
           )}
 
           {/* ── CTA Banner final ── */}
-          <section className="bg-slate-900 py-20 px-6">
+          <section className="bg-primary py-20 px-6">
             <div className="mx-auto max-w-2xl text-center">
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+              <h2 className="text-3xl md:text-4xl font-bold text-primary-foreground mb-4">
                 {dict.serviceDetail?.ctaBanner?.title ?? '¿Listo para dar el siguiente paso?'}
               </h2>
-              <p className="text-slate-400 text-lg mb-10 leading-relaxed">
+              <p className="text-primary-foreground/75 text-lg mb-10 leading-relaxed">
                 {dict.serviceDetail?.ctaBanner?.description ?? ''}
               </p>
               <a

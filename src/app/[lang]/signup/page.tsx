@@ -5,6 +5,12 @@ import { FooterSection } from "@/components/blocks/footer-section";
 import SignupForm from './signup-form';
 import { Logo } from "@/components/blocks/hero-section";
 import { createClient } from '@/lib/supabase/server';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Registrarse — imSoft',
+  robots: { index: false, follow: false },
+};
 
 export default async function SignupPage({ params }: {
   params: Promise<{ lang: string }>;
