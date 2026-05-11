@@ -351,7 +351,8 @@
     }
   },
   "serviceDetail": {
-    "benefits": "Benefits"
+    "benefits": "Benefits",
+    "requestQuote": "Request Information"
   },
   "portfolio": {
     "title": "Our Portfolio",
