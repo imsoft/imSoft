@@ -384,6 +384,14 @@
     "dataAnalysis": {
       "title": "Análisis de Datos",
       "description": "Dashboards interactivos en tiempo real que convierten tus datos en decisiones inteligentes de negocio."
+    },
+    "mvp": {
+      "title": "Desarrollo de MVP",
+      "description": "Tu producto funcional en 6-8 semanas. Solo las features que validan tu hipótesis, con stack escalable y listo para mostrar a inversores o primeros usuarios."
+    },
+    "webApps": {
+      "title": "Software a Medida",
+      "description": "Deja de adaptar tu negocio al software que existe. Portales, SaaS, sistemas de gestión — con stack moderno y el código 100% tuyo."
     }
   },
   "serviceDetail": {

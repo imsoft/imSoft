@@ -318,6 +318,43 @@ ON CONFLICT (slug) DO UPDATE SET
   updated_at     = NOW();
 
 
+-- -----------------------------------------------------------------------------
+-- 11. DESARROLLO DE MVP (NUEVO)
+-- -----------------------------------------------------------------------------
+INSERT INTO public.services (slug, title_es, title_en, description_es, description_en, image_url, icon, benefits_es, benefits_en)
+VALUES (
+  'desarrollo-de-mvp',
+  'Desarrollo de MVP',
+  'MVP Development',
+  'La diferencia entre un MVP que consigue usuarios y uno que se queda en el cajón es la velocidad y el foco. Construimos el núcleo de tu producto en 6 a 8 semanas: solo las funcionalidades que validan tu hipótesis, con el stack correcto para escalar si funciona y sin el peso de características que nadie pidió todavía.',
+  'The difference between an MVP that gets users and one that stays in the drawer is speed and focus. We build the core of your product in 6 to 8 weeks: only the features that validate your hypothesis, with the right stack to scale if it works, and without the weight of features nobody asked for yet.',
+  'https://images.unsplash.com/photo-1559028012-481c04fa702d?w=800&h=600&fit=crop',
+  '🚀',
+  '["Producto funcional en 6-8 semanas, listo para usuarios reales o inversores", "Solo las funcionalidades core — sin features que nadie validó todavía", "Stack escalable (Next.js + Supabase): si funciona, no hay que reescribir", "Autenticación, pagos y panel de administración incluidos desde el inicio", "Analytics integrado para medir adopción y comportamiento desde el día uno", "Iteración post-lanzamiento: te acompañamos las primeras semanas con base en feedback real"]'::jsonb,
+  '["Functional product in 6-8 weeks, ready for real users or investors", "Only core features — no features nobody has validated yet", "Scalable stack (Next.js + Supabase): if it works, no rewrite needed", "Authentication, payments, and admin panel included from the start", "Integrated analytics to measure adoption and behavior from day one", "Post-launch iteration: we support you the first weeks based on real user feedback"]'::jsonb
+)
+ON CONFLICT (slug) DO UPDATE SET
+  title_es       = EXCLUDED.title_es,
+  title_en       = EXCLUDED.title_en,
+  description_es = EXCLUDED.description_es,
+  description_en = EXCLUDED.description_en,
+  image_url      = EXCLUDED.image_url,
+  icon           = EXCLUDED.icon,
+  benefits_es    = EXCLUDED.benefits_es,
+  benefits_en    = EXCLUDED.benefits_en,
+  updated_at     = NOW();
+
+
+-- Actualizar Software a Medida para mencionar SaaS como caso de uso
+UPDATE public.services SET
+  description_es = 'Deja de adaptar tu negocio al software que existe — construimos el que tu operación realmente necesita. Plataformas web, portales internos, sistemas de gestión y productos SaaS: todo con Next.js, TypeScript y arquitecturas modernas que tus equipos adoptan desde el primer día porque fueron diseñados exactamente para ellos.',
+  description_en = 'Stop adapting your business to existing software — we build what your operation actually needs. Web platforms, internal portals, management systems, and SaaS products: all with Next.js, TypeScript, and modern architectures that your teams adopt from day one because they were designed exactly for them.',
+  benefits_es    = '["El código es tuyo — sin licencias ni dependencia de proveedores", "Stack moderno: Next.js 16, TypeScript, Supabase, Tailwind", "Casos de uso: portales internos, SaaS, plataformas B2B y sistemas de gestión", "IA integrada donde tenga sentido: búsqueda, resúmenes, asistentes", "Entregas incrementales: ves avances desde la primera semana", "Arquitectura lista para escalar sin reescribir desde cero"]'::jsonb,
+  benefits_en    = '["The code is yours — no licenses or vendor dependency", "Modern stack: Next.js 16, TypeScript, Supabase, Tailwind", "Use cases: internal portals, SaaS, B2B platforms, and management systems", "AI integrated where it makes sense: search, summaries, assistants", "Incremental delivery: you see progress from week one", "Architecture ready to scale without rewriting from scratch"]'::jsonb,
+  updated_at     = NOW()
+WHERE slug = 'software-a-medida';
+
+
 -- =============================================================================
 -- Verificación: muestra los servicios resultantes ordenados por fecha
 -- =============================================================================

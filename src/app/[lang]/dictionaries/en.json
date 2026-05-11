@@ -339,7 +339,7 @@
     "subtitle": "Modern technology solutions to grow your business in today's market",
     "webApps": {
       "title": "Custom Software",
-      "description": "Stop adapting your business to existing software. We build exactly what your operation needs, with a modern stack and 100% code ownership."
+      "description": "Stop adapting your business to existing software. Portals, SaaS, management systems — with a modern stack and 100% code ownership."
     },
     "mobileApps": {
       "title": "Mobile Applications",
@@ -384,6 +384,10 @@
     "dataAnalysis": {
       "title": "Data Analysis",
       "description": "Real-time interactive dashboards that turn your data into smart business decisions."
+    },
+    "mvp": {
+      "title": "MVP Development",
+      "description": "Your functional product in 6-8 weeks. Only the features that validate your hypothesis, with a scalable stack ready to show investors or first users."
     }
   },
   "serviceDetail": {
