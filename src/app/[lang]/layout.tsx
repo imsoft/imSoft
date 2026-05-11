@@ -76,7 +76,15 @@ export default async function RootLayout({
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="imSoft" />
-        <link rel="apple-touch-icon" href="/manifest/ios/180.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/manifest/ios/32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/manifest/ios/16.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/manifest/ios/180.png" />
+        {/* Preconnect a recursos críticos para mejorar FCP */}
+        <link rel="preconnect" href="https://wuttmqoohdsgbsdbanoj.supabase.co" />
+        <link rel="preconnect" href="https://ik.imagekit.io" />
+        <link rel="preconnect" href="https://images.unsplash.com" />
+        <link rel="dns-prefetch" href="https://lh3.googleusercontent.com" />
+        <link rel="dns-prefetch" href="https://avatars.githubusercontent.com" />
         <Script
           id="organization-structured-data"
           type="application/ld+json"

@@ -184,10 +184,37 @@ export default async function Home({ params }: {
     },
   });
 
+  // Structured data LocalBusiness — refuerza posicionamiento local
+  const localBusinessStructuredData = generateStructuredData({
+    type: 'LocalBusiness',
+    data: {
+      name: 'imSoft',
+      description: lang === 'es'
+        ? 'Desarrollo de software, consultoría tecnológica y transformación digital para empresas.'
+        : 'Software development, technology consulting and digital transformation for businesses.',
+      url: `${SITE_URL}/${lang}`,
+      image: `${SITE_URL}/logos/logo-imsoft-blue.png`,
+      phone: contactData?.phone || '',
+      email: contactData?.email || '',
+      city: 'Guadalajara',
+      state: 'Jalisco',
+      geo: { latitude: 20.6597, longitude: -103.3496 },
+      priceRange: '$$',
+      openingHours: 'Mo-Fr 09:00-18:00',
+      socialLinks: [
+        contactData?.facebook,
+        contactData?.instagram,
+        contactData?.linkedin,
+      ].filter(Boolean) as string[],
+      serviceArea: true,
+    },
+  });
+
   return (
     <>
       <StructuredData data={websiteStructuredData} id="website-structured-data" />
       <StructuredData data={organizationStructuredData} id="organization-structured-data" />
+      <StructuredData data={localBusinessStructuredData} id="local-business-structured-data" />
       <div className="overflow-x-hidden w-full">
         <HeroSection dict={dict} lang={lang} companies={companies || []} portfolioProjects={projects} blogTitles={blogTitles} />
         <ServicesSection dict={dict} lang={lang} services={services || []} />
