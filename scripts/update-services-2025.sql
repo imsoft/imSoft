@@ -12,14 +12,40 @@
 
 
 -- -----------------------------------------------------------------------------
--- 0. ICONOS PARA SERVICIOS LEGACY (slugs en inglés con icon = NULL)
+-- 0. ELIMINAR DUPLICADOS LEGACY (slugs en inglés que tienen equivalente nuevo)
 -- -----------------------------------------------------------------------------
-UPDATE public.services SET icon = '🌐', updated_at = NOW() WHERE slug = 'web-applications';
-UPDATE public.services SET icon = '📱', updated_at = NOW() WHERE slug = 'mobile-applications';
-UPDATE public.services SET icon = '🎯', updated_at = NOW() WHERE slug = 'technology-consulting';
-UPDATE public.services SET icon = '🖥️', updated_at = NOW() WHERE slug = 'web-pages';
-UPDATE public.services SET icon = '📊', updated_at = NOW() WHERE slug = 'data-analysis';
-UPDATE public.services SET icon = '🏪', updated_at = NOW() WHERE slug = 'online-store';
+-- Estos registros fueron reemplazados por versiones con slug en español
+-- y contenido actualizado. Se eliminan para evitar duplicados en el catálogo.
+DELETE FROM public.services WHERE slug = 'web-applications';    -- → software-a-medida
+DELETE FROM public.services WHERE slug = 'mobile-applications'; -- → aplicaciones-moviles
+DELETE FROM public.services WHERE slug = 'technology-consulting'; -- → consultoria-tecnologica
+DELETE FROM public.services WHERE slug = 'online-store';        -- → tiendas-en-linea
+
+-- Páginas Web y Análisis de datos no tienen equivalente nuevo — se actualizan
+-- con iconos y contenido mejorado para mantenerlos en el catálogo.
+UPDATE public.services SET
+  title_es       = 'Páginas Web',
+  title_en       = 'Web Pages',
+  description_es = 'Creamos páginas web profesionales, rápidas y optimizadas para Google. Ideal para negocios que necesitan presencia digital sin la complejidad de un sistema a medida: sitios corporativos, landings de campaña, portafolios y micrositios con diseño atractivo y carga ultrarrápida.',
+  description_en = 'We create professional, fast, and Google-optimized web pages. Ideal for businesses that need a digital presence without the complexity of a custom system: corporate sites, campaign landing pages, portfolios, and microsites with attractive design and ultra-fast loading.',
+  image_url      = 'https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?w=800&h=600&fit=crop',
+  icon           = '🖥️',
+  benefits_es    = '["Diseño responsive adaptado a todos los dispositivos", "Carga en menos de 2 segundos (Core Web Vitals)", "SEO técnico incluido desde el primer día", "Dominio, hosting y SSL configurados", "Integración con Google Analytics y Search Console", "Fácil de actualizar sin conocimientos técnicos"]'::jsonb,
+  benefits_en    = '["Responsive design adapted to all devices", "Loads in under 2 seconds (Core Web Vitals)", "Technical SEO included from day one", "Domain, hosting, and SSL configured", "Google Analytics and Search Console integration", "Easy to update without technical knowledge"]'::jsonb,
+  updated_at     = NOW()
+WHERE slug = 'web-pages';
+
+UPDATE public.services SET
+  title_es       = 'Análisis de Datos',
+  title_en       = 'Data Analysis',
+  description_es = 'Convertimos los datos de tu negocio en decisiones inteligentes. Conectamos tus fuentes de información (CRM, ERP, e-commerce, redes sociales) y construimos dashboards interactivos que muestran en tiempo real qué está funcionando, qué no, y dónde están las oportunidades de crecimiento.',
+  description_en = 'We turn your business data into smart decisions. We connect your information sources (CRM, ERP, e-commerce, social media) and build interactive dashboards that show in real time what''s working, what''s not, and where the growth opportunities are.',
+  image_url      = 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop',
+  icon           = '📊',
+  benefits_es    = '["Dashboards interactivos en tiempo real (Power BI, Metabase)", "Conexión con más de 50 fuentes de datos", "KPIs y métricas personalizadas para tu industria", "Reportes automáticos periódicos por email", "Análisis de cohortes, embudos y retención", "Capacitación para que tu equipo lea los datos solo"]'::jsonb,
+  benefits_en    = '["Real-time interactive dashboards (Power BI, Metabase)", "Connection to over 50 data sources", "Custom KPIs and metrics for your industry", "Automatic periodic reports via email", "Cohort, funnel, and retention analysis", "Training so your team can read the data on their own"]'::jsonb,
+  updated_at     = NOW()
+WHERE slug = 'data-analysis';
 
 
 -- -----------------------------------------------------------------------------

@@ -376,6 +376,14 @@
     "securedev": {
       "title": "Secure Development",
       "description": "Software that resists attacks: OWASP Top 10, security audits, and robust authentication from the first commit."
+    },
+    "webPages": {
+      "title": "Web Pages",
+      "description": "Professional, fast, and Google-optimized web pages: corporate sites, landing pages, and portfolios."
+    },
+    "dataAnalysis": {
+      "title": "Data Analysis",
+      "description": "Real-time interactive dashboards that turn your data into smart business decisions."
     }
   },
   "serviceDetail": {
