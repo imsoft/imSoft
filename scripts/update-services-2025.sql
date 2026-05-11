@@ -49,52 +49,84 @@ WHERE slug = 'data-analysis';
 
 
 -- -----------------------------------------------------------------------------
--- 1. SOFTWARE A MEDIDA (reemplaza "aplicaciones-web")
+-- 1. SOFTWARE A MEDIDA
 -- -----------------------------------------------------------------------------
-UPDATE public.services SET
-  slug              = 'software-a-medida',
-  title_es          = 'Software a Medida',
-  title_en          = 'Custom Software',
-  description_es    = 'Desarrollamos el software exacto que tu negocio necesita, sin moldes ni plantillas genéricas. Desde portales web y sistemas internos hasta plataformas complejas, construimos soluciones que se adaptan a tus procesos, crecen contigo y se integran con las herramientas que ya usas.',
-  description_en    = 'We develop the exact software your business needs, without generic templates or molds. From web portals and internal systems to complex platforms, we build solutions that adapt to your processes, grow with you, and integrate with the tools you already use.',
-  image_url         = 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&h=600&fit=crop',
-  icon              = '💻',
-  benefits_es       = '["Solución 100% adaptada a tus procesos de negocio", "Tecnologías modernas: React, Next.js, Node.js, TypeScript", "Arquitectura escalable que crece con tu empresa", "Panel de administración para gestionar tu contenido", "Integración con APIs, pagos y servicios externos", "Código limpio, documentado y de tu propiedad"]'::jsonb,
-  benefits_en       = '["100% solution adapted to your business processes", "Modern technologies: React, Next.js, Node.js, TypeScript", "Scalable architecture that grows with your company", "Admin panel to manage your content", "Integration with APIs, payments, and external services", "Clean, documented code that belongs to you"]'::jsonb,
-  updated_at        = NOW()
-WHERE slug = 'aplicaciones-web';
+INSERT INTO public.services (slug, title_es, title_en, description_es, description_en, image_url, icon, benefits_es, benefits_en)
+VALUES (
+  'software-a-medida',
+  'Software a Medida',
+  'Custom Software',
+  'Deja de adaptar tu negocio al software que existe — construimos el que tu operación realmente necesita. Usamos Next.js, TypeScript y arquitecturas modernas para entregar plataformas web, portales internos y sistemas de gestión que tus equipos adoptan desde el primer día, porque fueron diseñados exactamente para ellos.',
+  'Stop adapting your business to existing software — we build what your operation actually needs. We use Next.js, TypeScript, and modern architectures to deliver web platforms, internal portals, and management systems that your teams adopt from day one, because they were designed exactly for them.',
+  'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&h=600&fit=crop',
+  '💻',
+  '["El código es tuyo — sin licencias ni dependencia de proveedores", "Stack moderno: Next.js 16, TypeScript, Supabase, Tailwind", "Panel de administración incluido para que gestiones tu contenido", "IA integrada donde tenga sentido: búsqueda, resúmenes, asistentes", "Entregas incrementales: ves avances desde la primera semana", "Arquitectura lista para escalar sin reescribir desde cero"]'::jsonb,
+  '["The code is yours — no licenses or vendor dependency", "Modern stack: Next.js 16, TypeScript, Supabase, Tailwind", "Admin panel included so you manage your own content", "AI integrated where it makes sense: search, summaries, assistants", "Incremental delivery: you see progress from week one", "Architecture ready to scale without rewriting from scratch"]'::jsonb
+)
+ON CONFLICT (slug) DO UPDATE SET
+  title_es       = EXCLUDED.title_es,
+  title_en       = EXCLUDED.title_en,
+  description_es = EXCLUDED.description_es,
+  description_en = EXCLUDED.description_en,
+  image_url      = EXCLUDED.image_url,
+  icon           = EXCLUDED.icon,
+  benefits_es    = EXCLUDED.benefits_es,
+  benefits_en    = EXCLUDED.benefits_en,
+  updated_at     = NOW();
 
 
 -- -----------------------------------------------------------------------------
--- 2. APLICACIONES MÓVILES (actualización de contenido)
+-- 2. APLICACIONES MÓVILES
 -- -----------------------------------------------------------------------------
-UPDATE public.services SET
-  title_es          = 'Aplicaciones Móviles',
-  title_en          = 'Mobile Applications',
-  description_es    = 'Creamos apps móviles que tus clientes realmente usan. Desarrollamos aplicaciones nativas y multiplataforma para iOS y Android con diseño centrado en el usuario, rendimiento nativo y las funcionalidades que tu negocio necesita: pagos, notificaciones, geolocalización, cámara y más.',
-  description_en    = 'We create mobile apps that your customers actually use. We develop native and cross-platform applications for iOS and Android with user-centered design, native performance, and the features your business needs: payments, notifications, geolocation, camera, and more.',
-  image_url         = 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&h=600&fit=crop',
-  icon              = '📱',
-  benefits_es       = '["Apps nativas (Swift/Kotlin) y multiplataforma (React Native)", "Diseño UX/UI intuitivo y atractivo", "Publicación en App Store y Google Play incluida", "Pagos móviles: Stripe, Mercado Pago, Clip", "Notificaciones push y mensajería en tiempo real", "Modo offline y sincronización automática"]'::jsonb,
-  benefits_en       = '["Native (Swift/Kotlin) and cross-platform (React Native) apps", "Intuitive and attractive UX/UI design", "App Store and Google Play publication included", "Mobile payments: Stripe, Mercado Pago, Clip", "Push notifications and real-time messaging", "Offline mode and automatic sync"]'::jsonb,
-  updated_at        = NOW()
-WHERE slug = 'aplicaciones-moviles';
+INSERT INTO public.services (slug, title_es, title_en, description_es, description_en, image_url, icon, benefits_es, benefits_en)
+VALUES (
+  'aplicaciones-moviles',
+  'Aplicaciones Móviles',
+  'Mobile Applications',
+  'Tu negocio en el bolsillo de tus clientes — y funcionando sin internet. Desarrollamos apps con React Native y Expo que se sienten nativas en iOS y Android, con pagos integrados, notificaciones push, geolocalización y la capacidad de trabajar offline. Sin dos equipos de desarrollo, sin el doble de presupuesto.',
+  'Your business in your customers'' pocket — and working without internet. We develop apps with React Native and Expo that feel native on iOS and Android, with integrated payments, push notifications, geolocation, and the ability to work offline. No two development teams, no double the budget.',
+  'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&h=600&fit=crop',
+  '📱',
+  '["iOS y Android desde una sola base de código (React Native + Expo)", "Pagos en México: Mercado Pago, Clip, Stripe, OXXO", "Notificaciones push segmentadas por comportamiento del usuario", "Modo offline real: la app funciona sin señal y sincroniza después", "Publicación en App Store y Google Play gestionada por nosotros", "Acceso a cámara, GPS, biometría y sensores del dispositivo"]'::jsonb,
+  '["iOS and Android from a single codebase (React Native + Expo)", "Payments in Mexico: Mercado Pago, Clip, Stripe, OXXO", "Push notifications segmented by user behavior", "True offline mode: the app works without signal and syncs later", "App Store and Google Play publishing managed by us", "Access to camera, GPS, biometrics, and device sensors"]'::jsonb
+)
+ON CONFLICT (slug) DO UPDATE SET
+  title_es       = EXCLUDED.title_es,
+  title_en       = EXCLUDED.title_en,
+  description_es = EXCLUDED.description_es,
+  description_en = EXCLUDED.description_en,
+  image_url      = EXCLUDED.image_url,
+  icon           = EXCLUDED.icon,
+  benefits_es    = EXCLUDED.benefits_es,
+  benefits_en    = EXCLUDED.benefits_en,
+  updated_at     = NOW();
 
 
 -- -----------------------------------------------------------------------------
--- 3. CONSULTORÍA TECNOLÓGICA (actualización de contenido)
+-- 3. CONSULTORÍA TECNOLÓGICA
 -- -----------------------------------------------------------------------------
-UPDATE public.services SET
-  title_es          = 'Consultoría Tecnológica',
-  title_en          = 'Technology Consulting',
-  description_es    = 'Te ayudamos a tomar las decisiones tecnológicas correctas antes de invertir. Analizamos tu negocio, identificamos los cuellos de botella digitales y diseñamos una hoja de ruta clara y realista para modernizar tus operaciones, reducir costos y acelerar tu crecimiento.',
-  description_en    = 'We help you make the right technology decisions before you invest. We analyze your business, identify digital bottlenecks, and design a clear, realistic roadmap to modernize your operations, reduce costs, and accelerate your growth.',
-  image_url         = 'https://images.unsplash.com/photo-1553877522-43269d4ea984?w=800&h=600&fit=crop',
-  icon              = '🎯',
-  benefits_es       = '["Diagnóstico tecnológico completo de tu empresa", "Roadmap priorizado por impacto y costo", "Selección objetiva de tecnologías y proveedores", "Identificación de procesos automatizables", "Acompañamiento en la implementación", "Capacitación para tu equipo"]'::jsonb,
-  benefits_en       = '["Complete technology diagnosis of your company", "Roadmap prioritized by impact and cost", "Objective selection of technologies and vendors", "Identification of automatable processes", "Implementation support", "Training for your team"]'::jsonb,
-  updated_at        = NOW()
-WHERE slug = 'consultoria-tecnologica';
+INSERT INTO public.services (slug, title_es, title_en, description_es, description_en, image_url, icon, benefits_es, benefits_en)
+VALUES (
+  'consultoria-tecnologica',
+  'Consultoría Tecnológica',
+  'Technology Consulting',
+  'Antes de gastar en tecnología, entiende qué tecnología necesitas. Analizamos tu operación completa — desde los Excel que sostienen procesos críticos hasta los sistemas que nadie ya sabe cómo funcionan — y te entregamos un plan concreto: qué automatizar, qué comprar, qué construir y en qué orden para que cada peso invertido genere retorno real.',
+  'Before spending on technology, understand what technology you need. We analyze your entire operation — from the spreadsheets holding up critical processes to the systems nobody knows how they work anymore — and deliver a concrete plan: what to automate, what to buy, what to build, and in what order so every peso invested generates real return.',
+  'https://images.unsplash.com/photo-1553877522-43269d4ea984?w=800&h=600&fit=crop',
+  '🎯',
+  '["Diagnóstico de madurez digital: dónde estás vs dónde deberías estar", "Mapa de procesos con identificación de cuellos de botella reales", "Evaluación de IA: qué tareas de tu equipo puede hacer un modelo", "Comparativa objetiva: comprar software vs desarrollar a medida", "Roadmap de 90 días con entregables concretos y responsables", "Acompañamiento mensual para ajustar el plan según resultados"]'::jsonb,
+  '["Digital maturity diagnosis: where you are vs where you should be", "Process map with identification of real bottlenecks", "AI assessment: which of your team''s tasks a model can handle", "Objective comparison: buy software vs build custom", "90-day roadmap with concrete deliverables and owners", "Monthly follow-up to adjust the plan based on results"]'::jsonb
+)
+ON CONFLICT (slug) DO UPDATE SET
+  title_es       = EXCLUDED.title_es,
+  title_en       = EXCLUDED.title_en,
+  description_es = EXCLUDED.description_es,
+  description_en = EXCLUDED.description_en,
+  image_url      = EXCLUDED.image_url,
+  icon           = EXCLUDED.icon,
+  benefits_es    = EXCLUDED.benefits_es,
+  benefits_en    = EXCLUDED.benefits_en,
+  updated_at     = NOW();
 
 
 -- -----------------------------------------------------------------------------
