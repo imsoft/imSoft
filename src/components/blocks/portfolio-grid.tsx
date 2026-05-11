@@ -60,33 +60,23 @@ export function PortfolioGrid({ dict, lang, projects = [] }: PortfolioSectionPro
                 <h3 className="text-2xl font-bold mb-3 text-card-foreground">
                   {project.title}
                 </h3>
-                <p className="text-muted-foreground flex-grow">
+                <p className="text-muted-foreground grow">
                   {project.description}
                 </p>
               </div>
             )
 
+            const detailSlug = (project as any).slug || project.id
+
             return (
               <SpotlightCard
                 key={project.id}
-                className={cn(
-                  "custom-spotlight-card h-full bg-white dark:bg-gray-900",
-                  project.project_url && "cursor-pointer"
-                )}
+                className="custom-spotlight-card h-full bg-card cursor-pointer"
                 spotlightColor="rgba(0, 229, 255, 0.2)"
               >
-                {project.project_url ? (
-                  <Link
-                    href={project.project_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block h-full"
-                  >
-                    {cardContent}
-                  </Link>
-                ) : (
-                  cardContent
-                )}
+                <Link href={`/${lang}/portfolio/${detailSlug}`} className="block h-full">
+                  {cardContent}
+                </Link>
               </SpotlightCard>
             )
           })}

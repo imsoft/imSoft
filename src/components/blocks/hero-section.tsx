@@ -209,8 +209,9 @@ export const HeroHeader = ({ dict, lang }: HeroHeaderProps) => {
     const menuItems = [
         { name: dict.nav.services, href: `/${lang}/services` },
         { name: dict.nav.portfolio, href: `/${lang}/portfolio` },
+        { name: dict.nav.about, href: `/${lang}/about` },
         { name: dict.nav.blog, href: `/${lang}/blog` },
-{ name: dict.nav.contact, href: `/${lang}/contact` },
+        { name: dict.nav.contact, href: `/${lang}/contact` },
     ]
     const [menuState, setMenuState] = React.useState(false)
     const [isScrolled, setIsScrolled] = React.useState(false)

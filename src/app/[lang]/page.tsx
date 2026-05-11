@@ -1,5 +1,6 @@
 import { HeroSection } from "@/components/blocks/hero-section";
 import { ServicesSection } from "@/components/blocks/services-section";
+import { PricingSection } from "@/components/blocks/pricing-section";
 import { PortfolioSection } from "@/components/blocks/portfolio-section";
 import { TestimonialsSection } from "@/components/blocks/testimonials-section";
 import { FooterSection } from "@/components/blocks/footer-section";
@@ -218,6 +219,7 @@ export default async function Home({ params }: {
       <div className="overflow-x-hidden w-full">
         <HeroSection dict={dict} lang={lang} companies={companies || []} portfolioProjects={projects} blogTitles={blogTitles} />
         <ServicesSection dict={dict} lang={lang} services={services || []} />
+        <PricingSection dict={dict} lang={lang} />
         <PortfolioSection dict={dict} lang={lang} projects={projects} />
         <TestimonialsSection dict={dict} lang={lang} testimonials={formattedTestimonials} />
         <FooterSection dict={dict} lang={lang} contactData={contactData || undefined} />
