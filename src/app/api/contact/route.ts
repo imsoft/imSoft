@@ -58,9 +58,11 @@ export async function POST(request: Request) {
     const adminEmail = contactData?.email || 'contacto@imsoft.io';
 
     // Enviar email de notificación al administrador
+    const fromEmail = process.env.RESEND_FROM_EMAIL || 'contacto@imsoft.io';
+
     try {
       await resend.emails.send({
-        from: 'imSoft Contact Form <weareimsoft@gmail.com>',
+        from: `imSoft Contact Form <${fromEmail}>`,
         to: adminEmail,
         replyTo: email,
         subject: `Nuevo mensaje de contacto de ${firstName} ${lastName}`,
@@ -116,15 +118,28 @@ export async function POST(request: Request) {
           </html>
         `,
       });
-    } catch (emailError) {
-      console.error('Error enviando email:', emailError);
-      // No fallar la petición si el email falla, el mensaje ya está guardado en la BD
+    } catch (emailError: any) {
+      console.error('Error enviando email con Resend:', {
+        message: emailError?.message,
+        statusCode: emailError?.statusCode,
+        name: emailError?.name,
+        from: fromEmail,
+        to: adminEmail,
+      });
+      // El mensaje ya está guardado en BD — devolvemos éxito pero avisamos
+      return NextResponse.json({
+        success: true,
+        message: 'Mensaje guardado. Hubo un problema al enviar la notificación por email.',
+        emailSent: false,
+        data: messageData,
+      });
     }
 
     return NextResponse.json({
       success: true,
       message: 'Mensaje enviado correctamente',
-      data: messageData
+      emailSent: true,
+      data: messageData,
     });
 
   } catch (error) {
