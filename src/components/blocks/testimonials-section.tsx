@@ -8,13 +8,13 @@ import type { TestimonialsSectionProps } from '@/types/components'
 export function TestimonialsSection({ dict, lang, testimonials = [] }: TestimonialsSectionProps) {
 
   return (
-    <section className="py-16 md:py-24 bg-background">
+    <section className="py-16 md:py-24 bg-primary">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-bold mb-4">
+          <h2 className="text-4xl md:text-5xl font-bold mb-4 text-primary-foreground">
             {dict.testimonials.title}
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-lg text-primary-foreground/75 max-w-2xl mx-auto">
             {dict.testimonials.subtitle}
           </p>
         </div>
