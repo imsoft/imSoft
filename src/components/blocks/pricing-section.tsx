@@ -75,7 +75,7 @@ export function PricingSection({ dict, lang }: PricingSectionProps) {
               className={`relative rounded-2xl border p-8 flex flex-col gap-6 ${
                 tier.highlight
                   ? 'border-transparent bg-background shadow-2xl shadow-black/20'
-                  : 'border-primary-foreground/20 bg-primary-foreground/10'
+                  : 'border-white/80 bg-primary-foreground/10'
               }`}
             >
               {tier.highlight && (
