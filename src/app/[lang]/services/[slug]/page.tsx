@@ -10,6 +10,7 @@ import Magnet from "@/components/ui/magnet";
 import { generateMetadata as generateSEOMetadata, generateStructuredData } from '@/lib/seo';
 import { resolveServiceContent } from '@/lib/service-fallbacks';
 import { StructuredData } from '@/components/seo/structured-data';
+import { BreadcrumbNav } from '@/components/seo/breadcrumb-nav';
 import type { Metadata } from 'next';
 
 export async function generateMetadata({
@@ -74,6 +75,7 @@ export default async function ServicePage({ params }: {
   const service = resolveServiceContent(slug, serviceRow);
   if (!service) notFound();
 
+  const isEs = lang === 'es'
   const title = lang === 'en' ? (service.title_en || service.title || '') : (service.title_es || service.title || '');
   const description = lang === 'en' ? (service.description_en || service.description || '') : (service.description_es || service.description || '');
   const benefits = lang === 'en' ? (service.benefits_en || service.benefits_es || []) : (service.benefits_es || service.benefits_en || []);
@@ -127,6 +129,14 @@ export default async function ServicePage({ params }: {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
 
                 <div>
+                  <BreadcrumbNav
+                    className="mb-6"
+                    items={[
+                      { name: isEs ? 'Inicio' : 'Home', href: `/${lang}` },
+                      { name: isEs ? 'Servicios' : 'Services', href: `/${lang}/services` },
+                      { name: title },
+                    ]}
+                  />
                   <h1 className="text-4xl md:text-5xl font-bold mb-6">{title}</h1>
                   {service.image_url && (
                     <div className="relative w-full h-[400px] rounded-xl overflow-hidden">

@@ -185,6 +185,21 @@ export default async function Home({ params }: {
     },
   });
 
+  // Structured data Reviews — testimonios como schema Review
+  const reviewsStructuredData = formattedTestimonials.length > 0
+    ? generateStructuredData({
+        type: 'ReviewList',
+        data: {
+          reviews: formattedTestimonials.map((t) => ({
+            company: t.company,
+            content: lang === 'en'
+              ? (t.content_en || t.content || '')
+              : (t.content_es || t.content || ''),
+          })),
+        },
+      })
+    : null;
+
   // Structured data LocalBusiness — refuerza posicionamiento local
   const localBusinessStructuredData = generateStructuredData({
     type: 'LocalBusiness',
@@ -216,6 +231,7 @@ export default async function Home({ params }: {
       <StructuredData data={websiteStructuredData} id="website-structured-data" />
       <StructuredData data={organizationStructuredData} id="organization-structured-data" />
       <StructuredData data={localBusinessStructuredData} id="local-business-structured-data" />
+      {reviewsStructuredData && <StructuredData data={reviewsStructuredData} id="reviews-structured-data" />}
       <div className="overflow-x-hidden w-full">
         <HeroSection dict={dict} lang={lang} companies={companies || []} portfolioProjects={projects} blogTitles={blogTitles} />
         <ServicesSection dict={dict} lang={lang} services={services || []} />

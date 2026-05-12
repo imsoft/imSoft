@@ -9,6 +9,7 @@ import { StructuredData } from '@/components/seo/structured-data';
 import { ArrowLeft, ExternalLink, CheckCircle2, Quote } from 'lucide-react';
 import Link from 'next/link';
 import Magnet from '@/components/ui/magnet';
+import { BreadcrumbNav } from '@/components/seo/breadcrumb-nav';
 import type { Metadata } from 'next';
 
 export async function generateMetadata({
@@ -131,6 +132,15 @@ export default async function PortfolioDetailPage({
           {/* ── Hero ── */}
           <section className="py-16 md:py-20 bg-background">
             <div className="mx-auto max-w-5xl px-6">
+
+              <BreadcrumbNav
+                className="mb-8"
+                items={[
+                  { name: isEs ? 'Inicio' : 'Home', href: `/${lang}` },
+                  { name: isEs ? 'Portafolio' : 'Portfolio', href: `/${lang}/portfolio` },
+                  { name: title },
+                ]}
+              />
 
               <Link
                 href={`/${lang}/portfolio`}

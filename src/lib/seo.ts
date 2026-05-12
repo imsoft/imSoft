@@ -150,7 +150,7 @@ export function generateMetadata(config: SEOConfig, lang: string = 'es'): Metada
 }
 
 export function generateStructuredData(config: {
-  type: 'Organization' | 'WebSite' | 'Service' | 'Article' | 'BreadcrumbList' | 'FAQPage' | 'LocalBusiness';
+  type: 'Organization' | 'WebSite' | 'Service' | 'Article' | 'BreadcrumbList' | 'FAQPage' | 'LocalBusiness' | 'ReviewList';
   data: any;
 }): object {
   const { type, data } = config;
@@ -308,6 +308,34 @@ export function generateStructuredData(config: {
         } : undefined,
         openingHours: data.openingHours || 'Mo-Fr 09:00-18:00',
         sameAs: data.socialLinks || [],
+      };
+
+    case 'ReviewList':
+      return {
+        '@context': 'https://schema.org',
+        '@type': 'Organization',
+        name: SITE_NAME,
+        url: baseUrl,
+        aggregateRating: {
+          '@type': 'AggregateRating',
+          ratingValue: '5',
+          bestRating: '5',
+          worstRating: '1',
+          reviewCount: data.reviews?.length || 1,
+        },
+        review: (data.reviews || []).map((r: any) => ({
+          '@type': 'Review',
+          reviewRating: {
+            '@type': 'Rating',
+            ratingValue: '5',
+            bestRating: '5',
+          },
+          author: {
+            '@type': 'Organization',
+            name: r.company || '',
+          },
+          reviewBody: r.content || '',
+        })),
       };
 
     default:

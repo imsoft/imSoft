@@ -6,6 +6,7 @@ import Image from "next/image";
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { generateMetadata as generateSEOMetadata, generateStructuredData } from '@/lib/seo';
 import { StructuredData } from '@/components/seo/structured-data';
+import { BreadcrumbNav } from '@/components/seo/breadcrumb-nav';
 import type { Metadata } from 'next';
 
 export async function generateMetadata({
@@ -118,6 +119,8 @@ export default async function BlogPostPage({ params }: {
     notFound();
   }
 
+  const isEs = lang === 'es'
+
   // Obtener el contenido según el idioma
   const title = lang === 'en'
     ? (post.title_en || post.title || '')
@@ -183,6 +186,14 @@ export default async function BlogPostPage({ params }: {
         <main className="pt-16">
         <article className="py-8 md:py-12 bg-background">
           <div className="mx-auto max-w-4xl px-6">
+            <BreadcrumbNav
+              className="mb-8"
+              items={[
+                { name: isEs ? 'Inicio' : 'Home', href: `/${lang}` },
+                { name: 'Blog', href: `/${lang}/blog` },
+                { name: title },
+              ]}
+            />
             {/* Header */}
             <header className="mb-8">
               <h1 className="text-4xl md:text-5xl font-bold mb-4">
