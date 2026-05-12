@@ -55,13 +55,13 @@ export function PricingSection({ dict, lang }: PricingSectionProps) {
   ]
 
   return (
-    <section className="py-16 md:py-24 bg-muted/40">
+    <section className="py-16 md:py-24 bg-primary">
       <div className="mx-auto max-w-7xl px-6">
         <div className="text-center mb-14">
-          <h2 className="text-3xl md:text-5xl font-bold mb-4">
+          <h2 className="text-3xl md:text-5xl font-bold mb-4 text-primary-foreground">
             {isEs ? 'Referencia de precios' : 'Pricing reference'}
           </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+          <p className="text-primary-foreground/75 text-lg max-w-2xl mx-auto">
             {isEs
               ? 'Precios orientativos según el tipo de proyecto. Cada propuesta tiene precio fijo — sin cobros sorpresa al final.'
               : 'Indicative prices by project type. Every proposal has a fixed price — no surprise charges at the end.'}
@@ -74,13 +74,13 @@ export function PricingSection({ dict, lang }: PricingSectionProps) {
               key={tier.slug}
               className={`relative rounded-2xl border p-8 flex flex-col gap-6 ${
                 tier.highlight
-                  ? 'border-primary bg-primary text-primary-foreground shadow-xl shadow-primary/20'
-                  : 'border-border bg-card'
+                  ? 'border-transparent bg-background shadow-2xl shadow-black/20'
+                  : 'border-primary-foreground/20 bg-primary-foreground/10'
               }`}
             >
               {tier.highlight && (
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                  <span className="bg-background text-primary text-xs font-bold px-4 py-1.5 rounded-full border border-primary/30 shadow">
+                  <span className="bg-primary text-primary-foreground text-xs font-bold px-4 py-1.5 rounded-full shadow-lg">
                     {isEs ? '⭐ Más popular' : '⭐ Most popular'}
                   </span>
                 </div>
@@ -88,23 +88,23 @@ export function PricingSection({ dict, lang }: PricingSectionProps) {
 
               <div>
                 <div className="text-3xl mb-3">{tier.icon}</div>
-                <h3 className={`text-xl font-bold mb-1 ${tier.highlight ? 'text-primary-foreground' : 'text-foreground'}`}>
+                <h3 className={`text-xl font-bold mb-1 ${tier.highlight ? 'text-foreground' : 'text-primary-foreground'}`}>
                   {tier.name}
                 </h3>
-                <p className={`text-sm leading-relaxed ${tier.highlight ? 'text-primary-foreground/75' : 'text-muted-foreground'}`}>
+                <p className={`text-sm leading-relaxed ${tier.highlight ? 'text-muted-foreground' : 'text-primary-foreground/75'}`}>
                   {tier.description}
                 </p>
               </div>
 
-              <div className={`text-3xl font-black ${tier.highlight ? 'text-primary-foreground' : 'text-primary'}`}>
+              <div className={`text-3xl font-black ${tier.highlight ? 'text-primary' : 'text-primary-foreground'}`}>
                 {tier.price}
               </div>
 
               <ul className="space-y-2.5">
                 {tier.features.map((feature, i) => (
                   <li key={i} className="flex items-start gap-2.5">
-                    <Check className={`h-4 w-4 mt-0.5 shrink-0 ${tier.highlight ? 'text-primary-foreground' : 'text-primary'}`} />
-                    <span className={`text-sm ${tier.highlight ? 'text-primary-foreground/90' : 'text-muted-foreground'}`}>
+                    <Check className={`h-4 w-4 mt-0.5 shrink-0 ${tier.highlight ? 'text-primary' : 'text-primary-foreground'}`} />
+                    <span className={`text-sm ${tier.highlight ? 'text-muted-foreground' : 'text-primary-foreground/85'}`}>
                       {feature}
                     </span>
                   </li>
@@ -115,8 +115,8 @@ export function PricingSection({ dict, lang }: PricingSectionProps) {
                 href={`/${lang}/services/${tier.slug}`}
                 className={`mt-auto inline-flex items-center justify-center rounded-xl px-6 py-3 text-sm font-semibold transition-colors ${
                   tier.highlight
-                    ? 'bg-background text-foreground hover:bg-muted'
-                    : 'bg-primary text-primary-foreground hover:bg-primary/90'
+                    ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                    : 'bg-background text-foreground hover:bg-muted'
                 }`}
               >
                 {isEs ? 'Saber más' : 'Learn more'}
@@ -125,7 +125,7 @@ export function PricingSection({ dict, lang }: PricingSectionProps) {
           ))}
         </div>
 
-        <p className="text-center text-sm text-muted-foreground mt-10">
+        <p className="text-center text-sm text-primary-foreground/60 mt-10">
           {isEs
             ? '* Los precios son referencias orientativas. Cada proyecto recibe una propuesta con precio fijo en 48 horas.'
             : '* Prices are indicative references. Every project receives a fixed-price proposal within 48 hours.'}
