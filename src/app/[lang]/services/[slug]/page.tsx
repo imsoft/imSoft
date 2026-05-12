@@ -174,7 +174,7 @@ export default async function ServicePage({ params }: {
 
           {/* ── Cómo trabajamos ── */}
           {steps.length > 0 && (
-            <section className="py-16 md:py-24 bg-muted/40">
+            <section className="py-16 md:py-24 bg-background">
               <div className="mx-auto max-w-7xl px-6">
                 <h2 className="text-3xl md:text-4xl font-bold text-center mb-14">
                   {dict.serviceDetail?.howItWorks?.title ?? '¿Cómo trabajamos?'}
