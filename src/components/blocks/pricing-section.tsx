@@ -80,7 +80,7 @@ export function PricingSection({ dict, lang }: PricingSectionProps) {
             >
               {tier.highlight && (
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                  <span className="bg-primary text-primary-foreground text-xs font-bold px-4 py-1.5 rounded-full shadow-lg">
+                  <span className="bg-primary text-primary-foreground text-xs font-bold px-4 py-1.5 rounded-full shadow-lg border border-white/80">
                     {isEs ? '⭐ Más popular' : '⭐ Most popular'}
                   </span>
                 </div>
