@@ -174,19 +174,19 @@ export default async function ServicePage({ params }: {
 
           {/* ── Cómo trabajamos ── */}
           {steps.length > 0 && (
-            <section className="py-16 md:py-24 bg-background">
+            <section className="py-16 md:py-24 bg-primary">
               <div className="mx-auto max-w-7xl px-6">
-                <h2 className="text-3xl md:text-4xl font-bold text-center mb-14">
+                <h2 className="text-3xl md:text-4xl font-bold text-center mb-14 text-primary-foreground">
                   {dict.serviceDetail?.howItWorks?.title ?? '¿Cómo trabajamos?'}
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
                   {steps.map((step, i) => (
                     <div key={i}>
-                      <div className="text-7xl font-black text-primary/60 leading-none mb-4 select-none">
+                      <div className="text-7xl font-black text-primary-foreground/30 leading-none mb-4 select-none">
                         {step.number}
                       </div>
-                      <h3 className="font-bold text-lg mb-2">{step.title}</h3>
-                      <p className="text-muted-foreground text-sm leading-relaxed">{step.description}</p>
+                      <h3 className="font-bold text-lg mb-2 text-primary-foreground">{step.title}</h3>
+                      <p className="text-primary-foreground/75 text-sm leading-relaxed">{step.description}</p>
                     </div>
                   ))}
                 </div>
