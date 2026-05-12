@@ -67,6 +67,13 @@ const portfolioSchema = z.object({
   title_en: z.string().min(1, 'Title in English is required'),
   description_es: z.string().min(10, 'La descripción en español debe tener al menos 10 caracteres'),
   description_en: z.string().min(10, 'Description in English must be at least 10 characters'),
+  challenge_es: z.string().optional(),
+  challenge_en: z.string().optional(),
+  results_es: z.string().optional(),
+  results_en: z.string().optional(),
+  client_quote_es: z.string().optional(),
+  client_quote_en: z.string().optional(),
+  year: z.coerce.number().int().min(2000).max(2100).optional().or(z.literal('' as any)),
   slug: z.string().min(1, 'El slug es requerido'),
   image_url: z.string().optional(),
   project_url: z.string().url('Must be a valid URL').optional().or(z.literal('')),
@@ -95,6 +102,13 @@ export function PortfolioForm({ dict, lang, portfolio }: PortfolioFormProps) {
       title_en: portfolio?.title_en || portfolio?.title || '',
       description_es: portfolio?.description_es || portfolio?.description || '',
       description_en: portfolio?.description_en || portfolio?.description || '',
+      challenge_es: portfolio?.challenge_es || '',
+      challenge_en: portfolio?.challenge_en || '',
+      results_es: (portfolio?.results_es || []).join('\n'),
+      results_en: (portfolio?.results_en || []).join('\n'),
+      client_quote_es: portfolio?.client_quote_es || '',
+      client_quote_en: portfolio?.client_quote_en || '',
+      year: portfolio?.year || '',
       slug: portfolio?.slug || '',
       image_url: portfolio?.image_url || '',
       project_url: portfolio?.project_url || '',
@@ -273,7 +287,18 @@ export function PortfolioForm({ dict, lang, portfolio }: PortfolioFormProps) {
         ...values,
         image_url: values.image_url || null,
         project_url: values.project_url || null,
-        client: companyName, // Mantener para compatibilidad
+        client: companyName,
+        challenge_es: values.challenge_es || null,
+        challenge_en: values.challenge_en || null,
+        results_es: values.results_es
+          ? values.results_es.split('\n').map(s => s.trim()).filter(Boolean)
+          : null,
+        results_en: values.results_en
+          ? values.results_en.split('\n').map(s => s.trim()).filter(Boolean)
+          : null,
+        client_quote_es: values.client_quote_es || null,
+        client_quote_en: values.client_quote_en || null,
+        year: values.year || null,
       }
 
       if (isEditing) {
@@ -605,6 +630,117 @@ export function PortfolioForm({ dict, lang, portfolio }: PortfolioFormProps) {
             </FormItem>
           )}
         />
+
+        <FormField
+          control={form.control}
+          name="year"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{lang === 'en' ? 'Year completed (optional)' : 'Año de entrega (opcional)'}</FormLabel>
+              <FormControl>
+                <Input {...field} type="number" placeholder="2024" className="!border-2 !border-border w-32" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* ── Caso de estudio ── */}
+        <div className="border-t pt-6 space-y-6">
+          <h3 className="font-semibold text-lg">
+            {lang === 'en' ? 'Case Study (optional)' : 'Caso de estudio (opcional)'}
+          </h3>
+
+          <Tabs defaultValue="es">
+            <TabsList>
+              <TabsTrigger value="es">Español</TabsTrigger>
+              <TabsTrigger value="en">English</TabsTrigger>
+            </TabsList>
+            <TabsContent value="es" className="space-y-4 mt-4">
+              <FormField
+                control={form.control}
+                name="challenge_es"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>El reto / problema del cliente</FormLabel>
+                    <FormControl>
+                      <Textarea {...field} rows={4} placeholder="Describe el problema o necesidad que tenía el cliente antes del proyecto..." className="!border-2 !border-border" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="results_es"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Resultados / impacto (un resultado por línea)</FormLabel>
+                    <FormControl>
+                      <Textarea {...field} rows={5} placeholder={"Aumentó las ventas en línea un 40% en 3 meses\nReducción del 60% en tiempo de gestión manual\nMás de 500 usuarios activos en el primer mes"} className="!border-2 !border-border" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="client_quote_es"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Testimonio del cliente (opcional)</FormLabel>
+                    <FormControl>
+                      <Textarea {...field} rows={3} placeholder="&quot;imSoft entendió exactamente lo que necesitábamos...&quot; — Nombre, Cargo" className="!border-2 !border-border" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </TabsContent>
+            <TabsContent value="en" className="space-y-4 mt-4">
+              <FormField
+                control={form.control}
+                name="challenge_en"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>The challenge / client problem</FormLabel>
+                    <FormControl>
+                      <Textarea {...field} rows={4} placeholder="Describe the problem or need the client had before the project..." className="!border-2 !border-border" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="results_en"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Results / impact (one result per line)</FormLabel>
+                    <FormControl>
+                      <Textarea {...field} rows={5} placeholder={"Increased online sales by 40% in 3 months\n60% reduction in manual management time\nOver 500 active users in the first month"} className="!border-2 !border-border" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="client_quote_en"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Client testimonial (optional)</FormLabel>
+                    <FormControl>
+                      <Textarea {...field} rows={3} placeholder="&quot;imSoft understood exactly what we needed...&quot; — Name, Title" className="!border-2 !border-border" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </TabsContent>
+          </Tabs>
+        </div>
+
         <div className="flex gap-4 justify-end">
           <Button
             type="button"

@@ -19,9 +19,9 @@ const FALLBACKS: ServiceFallback[] = [
     title_es: 'Aplicaciones Web',
     title_en: 'Web Applications',
     description_es:
-      'Desarrollamos aplicaciones web modernas, escalables y de alto rendimiento que transforman tu negocio. Utilizamos las últimas tecnologías como React, Next.js y Node.js para crear experiencias web excepcionales que tus usuarios amarán.',
+      'Desarrollamos aplicaciones web modernas, escalables y de alto rendimiento que transforman tu negocio. Creamos experiencias digitales excepcionales que tus usuarios amarán, con entregas incrementales y código 100% tuyo.',
     description_en:
-      'We develop modern, scalable, and high-performance web applications that transform your business. We use the latest technologies like React, Next.js, and Node.js to create exceptional web experiences that your users will love.',
+      'We develop modern, scalable, and high-performance web applications that transform your business. We create exceptional digital experiences your users will love, with incremental deliveries and code that is 100% yours.',
     image_url:
       'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop',
     benefits_es: [

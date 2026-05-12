@@ -73,13 +73,13 @@ export default async function AboutPage({
     ? [
         { icon: '🎯', title: 'Foco en resultados', description: 'No medimos el éxito en líneas de código entregadas, sino en si tu negocio creció gracias a lo que construimos.' },
         { icon: '🔍', title: 'Transparencia total', description: 'Precio fijo desde el inicio, avances semanales visibles y acceso completo al código. Sin sorpresas ni letra chica.' },
-        { icon: '⚡', title: 'Tecnología actual', description: 'Usamos el stack moderno que escala: Next.js, TypeScript, Supabase. Nada de frameworks obsoletos que te encadenen.' },
+        { icon: '⚡', title: 'Tecnología actual', description: 'Usamos herramientas modernas y probadas que escalan con tu negocio. Nada de tecnología obsoleta que te encadene o que haya que reescribir en dos años.' },
         { icon: '🤝', title: 'Socios, no proveedores', description: 'Nos importa que el proyecto funcione después del lanzamiento. Por eso acompañamos, capacitamos y seguimos disponibles.' },
       ]
     : [
         { icon: '🎯', title: 'Results-focused', description: "We don't measure success in lines of code delivered, but in whether your business grew because of what we built." },
         { icon: '🔍', title: 'Full transparency', description: 'Fixed price from the start, visible weekly progress, and complete code access. No surprises, no fine print.' },
-        { icon: '⚡', title: 'Current technology', description: 'We use the modern stack that scales: Next.js, TypeScript, Supabase. No obsolete frameworks that lock you in.' },
+        { icon: '⚡', title: 'Current technology', description: 'We use modern, proven tools that scale with your business. No obsolete technology that locks you in or needs to be rewritten in two years.' },
         { icon: '🤝', title: 'Partners, not vendors', description: "We care that the project works after launch. That's why we accompany, train, and stay available." },
       ];
 

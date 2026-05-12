@@ -35,8 +35,8 @@ export function PricingSection({ dict, lang }: PricingSectionProps) {
         ? 'Para lanzar tu producto al mercado rápido y validar con usuarios reales.'
         : 'To launch your product to market fast and validate with real users.',
       features: isEs
-        ? ['Producto funcional en 6–8 semanas', 'Auth, pagos y admin incluidos', 'Stack escalable (no reescritura)', 'Soporte primer mes incluido']
-        : ['Functional product in 6–8 weeks', 'Auth, payments & admin included', 'Scalable stack (no rewrite)', 'First month support included'],
+        ? ['Producto funcional en 6–8 semanas', 'Auth, pagos y admin incluidos', 'Arquitectura que escala sin reescribir', 'Soporte primer mes incluido']
+        : ['Functional product in 6–8 weeks', 'Auth, payments & admin included', 'Architecture that scales without rewriting', 'First month support included'],
       highlight: true,
     },
     {
