@@ -81,11 +81,11 @@ export function PricingSection({ dict, lang }: PricingSectionProps) {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-start">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {tiers.map((tier) => (
             <div
               key={tier.slug}
-              className={`relative rounded-2xl border p-8 flex flex-col gap-6 ${
+              className={`relative rounded-2xl border p-8 flex flex-col gap-6 h-full ${
                 tier.highlight
                   ? 'border-transparent bg-background shadow-2xl shadow-black/20'
                   : 'border-white/80 bg-primary-foreground/10'
