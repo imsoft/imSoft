@@ -14,6 +14,19 @@ export function PricingSection({ dict, lang }: PricingSectionProps) {
 
   const tiers = [
     {
+      icon: '🌱',
+      name: isEs ? 'Emprendedor' : 'Starter',
+      slug: 'web-pages',
+      price: isEs ? 'Desde $5,000 MXN' : 'From $299 USD',
+      description: isEs
+        ? 'Para emprendedores que dan su primer paso digital sin complicaciones.'
+        : 'For entrepreneurs taking their first digital step without the hassle.',
+      features: isEs
+        ? ['Landing page de una página', 'Diseño personalizado con plantilla', 'Formulario de contacto', 'Entrega en 1 semana']
+        : ['Single-page landing page', 'Custom template design', 'Contact form', 'Delivery in 1 week'],
+      highlight: false,
+    },
+    {
       icon: '🖥️',
       name: isEs ? 'Páginas Web' : 'Web Pages',
       slug: 'web-pages',
@@ -68,7 +81,7 @@ export function PricingSection({ dict, lang }: PricingSectionProps) {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-start">
           {tiers.map((tier) => (
             <div
               key={tier.slug}
