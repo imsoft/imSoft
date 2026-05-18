@@ -57,7 +57,8 @@ export function ActivityForm({ activity, contacts, deals, lang, userId }: Activi
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const form = useForm<ActivityFormValues>({
-    resolver: zodResolver(activitySchema),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resolver: zodResolver(activitySchema) as any,
     defaultValues: {
       activity_type: activity?.activity_type || 'call',
       subject: activity?.subject || '',

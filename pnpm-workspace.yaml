@@ -1,5 +1,7 @@
 packages:
   - .
-ignoredBuiltDependencies:
+onlyBuiltDependencies:
+  - core-js
+  - msw
   - sharp
   - unrs-resolver
