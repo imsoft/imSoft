@@ -85,10 +85,10 @@ export function PricingSection({ dict, lang }: PricingSectionProps) {
           {tiers.map((tier) => (
             <div
               key={tier.slug}
-              className={`relative rounded-2xl border p-8 flex flex-col gap-6 h-full ${
+              className={`group relative rounded-2xl border p-8 flex flex-col gap-6 h-full transition-all duration-300 ease-out cursor-default ${
                 tier.highlight
-                  ? 'border-transparent bg-background shadow-2xl shadow-black/20'
-                  : 'border-white/80 bg-primary-foreground/10'
+                  ? 'border-transparent bg-background shadow-2xl shadow-black/20 hover:shadow-3xl hover:-translate-y-2 hover:shadow-primary/25'
+                  : 'border-white/80 bg-primary-foreground/10 hover:bg-primary-foreground/20 hover:border-white hover:-translate-y-2 hover:shadow-2xl hover:shadow-black/25'
               }`}
             >
               {tier.highlight && (
@@ -100,7 +100,9 @@ export function PricingSection({ dict, lang }: PricingSectionProps) {
               )}
 
               <div>
-                <div className="text-3xl mb-3">{tier.icon}</div>
+                <div className="text-3xl mb-3 transition-transform duration-300 group-hover:scale-110 inline-block">
+                  {tier.icon}
+                </div>
                 <h3 className={`text-xl font-bold mb-1 ${tier.highlight ? 'text-foreground' : 'text-primary-foreground'}`}>
                   {tier.name}
                 </h3>
@@ -109,14 +111,14 @@ export function PricingSection({ dict, lang }: PricingSectionProps) {
                 </p>
               </div>
 
-              <div className={`text-3xl font-black ${tier.highlight ? 'text-primary' : 'text-primary-foreground'}`}>
+              <div className={`text-3xl font-black transition-colors duration-300 ${tier.highlight ? 'text-primary' : 'text-primary-foreground'}`}>
                 {tier.price}
               </div>
 
               <ul className="space-y-2.5">
                 {tier.features.map((feature, i) => (
                   <li key={i} className="flex items-start gap-2.5">
-                    <Check className={`h-4 w-4 mt-0.5 shrink-0 ${tier.highlight ? 'text-primary' : 'text-primary-foreground'}`} />
+                    <Check className={`h-4 w-4 mt-0.5 shrink-0 transition-transform duration-300 group-hover:scale-110 ${tier.highlight ? 'text-primary' : 'text-primary-foreground'}`} />
                     <span className={`text-sm ${tier.highlight ? 'text-muted-foreground' : 'text-primary-foreground/85'}`}>
                       {feature}
                     </span>
@@ -126,10 +128,10 @@ export function PricingSection({ dict, lang }: PricingSectionProps) {
 
               <Link
                 href={`/${lang}/services/${tier.slug}`}
-                className={`mt-auto inline-flex items-center justify-center rounded-xl px-6 py-3 text-sm font-semibold transition-colors ${
+                className={`mt-auto inline-flex items-center justify-center rounded-xl px-6 py-3 text-sm font-semibold transition-all duration-300 group-hover:scale-[1.04] ${
                   tier.highlight
-                    ? 'bg-primary text-primary-foreground hover:bg-primary/90'
-                    : 'bg-background text-foreground hover:bg-muted'
+                    ? 'bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/40'
+                    : 'bg-background text-foreground hover:bg-muted hover:shadow-md'
                 }`}
               >
                 {isEs ? 'Saber más' : 'Learn more'}
