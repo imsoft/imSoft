@@ -1,11 +1,57 @@
 import { NextResponse } from 'next/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io'
 
-export const dynamic = 'force-static'
+export const dynamic = 'force-dynamic'
 export const revalidate = 86400 // 24 horas
 
-export function GET() {
+export async function GET() {
+  let blogSection = `- [Blog](${SITE_URL}/es/blog): Artículos prácticos sobre desarrollo de software, transformación digital y tecnología para empresarios.\n`
+
+  try {
+    const supabase = createAdminClient()
+    const { data: posts } = await supabase
+      .from('blog')
+      .select('slug, title_es, title_en, excerpt_es, excerpt_en, category, created_at')
+      .eq('published', true)
+      .order('created_at', { ascending: false })
+      .limit(50)
+
+    if (posts && posts.length > 0) {
+      const esEntries = posts
+        .map((p) => {
+          const title = p.title_es || p.title_en || ''
+          const excerpt = p.excerpt_es || p.excerpt_en || ''
+          const desc = excerpt ? `: ${excerpt}` : ''
+          return `- [${title}](${SITE_URL}/es/blog/${p.slug})${desc}`
+        })
+        .join('\n')
+
+      const enEntries = posts
+        .map((p) => {
+          const title = p.title_en || p.title_es || ''
+          const excerpt = p.excerpt_en || p.excerpt_es || ''
+          const desc = excerpt ? `: ${excerpt}` : ''
+          return `- [${title}](${SITE_URL}/en/blog/${p.slug})${desc}`
+        })
+        .join('\n')
+
+      blogSection = `- [Blog](${SITE_URL}/es/blog): Artículos prácticos sobre desarrollo de software, transformación digital y tecnología para empresarios.
+
+### Blog articles (ES)
+
+${esEntries}
+
+### Blog articles (EN)
+
+${enEntries}
+`
+    }
+  } catch {
+    // Si falla Supabase, se usa el fallback estático
+  }
+
   const content = `# imSoft
 
 > imSoft es una empresa de desarrollo de software con sede en Guadalajara, México. Diseñamos y construimos soluciones digitales a medida para empresas: desde páginas web y aplicaciones móviles hasta plataformas SaaS y sistemas empresariales complejos. Trabajamos con clientes en México, Estados Unidos, Canadá y Alemania. Precio fijo en cada proyecto — sin cobros sorpresa.
@@ -25,7 +71,7 @@ imSoft (also written as imsoft) is a software development company based in Guada
 
 - [Nosotros / About](${SITE_URL}/es/about): Who we are, our values, and how we work.
 - [Portafolio / Portfolio](${SITE_URL}/es/portfolio): Case studies and real projects we have built for clients — including e-commerce, dental clinics, logistics systems, inventory management, and SaaS platforms.
-- [Blog](${SITE_URL}/es/blog): Practical articles on software development, digital transformation, and technology for business owners.
+${blogSection}
 - [Contacto / Contact](${SITE_URL}/es/contact): Get in touch. First call is free and with no commitment.
 
 ## Pricing
