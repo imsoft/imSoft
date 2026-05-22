@@ -18,6 +18,9 @@ const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const BLOG_AUTHOR_ID = process.env.BLOG_AUTHOR_ID;
+const RESEND_API_KEY = process.env.RESEND_API_KEY;
+const SITE_URL = "https://imsoft.io";
+const NOTIFY_EMAIL = "contacto@imsoft.io";
 
 if (!ANTHROPIC_API_KEY || !GEMINI_API_KEY || !SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY || !BLOG_AUTHOR_ID) {
   console.error("Faltan variables de entorno requeridas.");
@@ -223,6 +226,147 @@ async function publishPost(post) {
   return response.json();
 }
 
+function buildSuccessEmail({ title_es, title_en, slug, category, imageUrl }) {
+  const postUrl = `${SITE_URL}/es/blog/${slug}`;
+  const date = new Date().toLocaleDateString("es-MX", { year: "numeric", month: "long", day: "numeric" });
+
+  return `<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/></head>
+<body style="margin:0;padding:0;background-color:#f1f5f9;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f1f5f9;padding:32px 16px;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
+
+        <!-- Header -->
+        <tr><td style="background-color:#0f172a;border-radius:12px 12px 0 0;padding:32px 40px;text-align:center;">
+          <img src="${SITE_URL}/logos/logo-imsoft-blue.png" alt="imSoft" width="120" style="display:block;margin:0 auto 20px;height:auto;"/>
+          <div style="display:inline-block;background-color:#22c55e;border-radius:100px;padding:4px 16px;margin-bottom:12px;">
+            <span style="color:#fff;font-size:12px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;">✓ Publicación Exitosa</span>
+          </div>
+          <h1 style="color:#fff;margin:0;font-size:22px;font-weight:700;line-height:1.3;">
+            Nuevo artículo publicado en <span style="color:#a5b4fc;">imsoft.io</span>
+          </h1>
+        </td></tr>
+
+        <!-- Body -->
+        <tr><td style="background-color:#ffffff;padding:36px 40px;">
+          <h2 style="margin:0 0 16px;font-size:13px;font-weight:700;color:#6366f1;text-transform:uppercase;letter-spacing:0.08em;">Detalles del artículo</h2>
+          <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e2e8f0;border-radius:8px;overflow:hidden;margin-bottom:28px;">
+            <tr style="background-color:#f8fafc;">
+              <td style="padding:12px 16px;font-size:13px;font-weight:600;color:#64748b;width:120px;border-bottom:1px solid #e2e8f0;">Título ES</td>
+              <td style="padding:12px 16px;font-size:14px;color:#0f172a;font-weight:500;border-bottom:1px solid #e2e8f0;">${title_es}</td>
+            </tr>
+            <tr>
+              <td style="padding:12px 16px;font-size:13px;font-weight:600;color:#64748b;border-bottom:1px solid #e2e8f0;">Título EN</td>
+              <td style="padding:12px 16px;font-size:14px;color:#0f172a;border-bottom:1px solid #e2e8f0;">${title_en}</td>
+            </tr>
+            <tr style="background-color:#f8fafc;">
+              <td style="padding:12px 16px;font-size:13px;font-weight:600;color:#64748b;border-bottom:1px solid #e2e8f0;">Categoría</td>
+              <td style="padding:12px 16px;font-size:14px;color:#0f172a;border-bottom:1px solid #e2e8f0;">${category}</td>
+            </tr>
+            <tr>
+              <td style="padding:12px 16px;font-size:13px;font-weight:600;color:#64748b;border-bottom:1px solid #e2e8f0;">Fecha</td>
+              <td style="padding:12px 16px;font-size:14px;color:#0f172a;border-bottom:1px solid #e2e8f0;">${date}</td>
+            </tr>
+            <tr style="background-color:#f8fafc;">
+              <td style="padding:12px 16px;font-size:13px;font-weight:600;color:#64748b;">Imagen</td>
+              <td style="padding:12px 16px;font-size:14px;color:#0f172a;">${imageUrl ? "✓ Generada con Imagen 3" : "Sin imagen (créditos agotados)"}</td>
+            </tr>
+          </table>
+          <div style="text-align:center;margin-bottom:8px;">
+            <a href="${postUrl}" style="display:inline-block;background-color:#6366f1;color:#ffffff;padding:13px 32px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:600;margin-right:12px;">Ver artículo →</a>
+            <a href="${SITE_URL}/es/dashboard/admin/blog" style="display:inline-block;background-color:#0f172a;color:#ffffff;padding:13px 32px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:600;">Dashboard</a>
+          </div>
+        </td></tr>
+
+        <!-- Footer -->
+        <tr><td style="background-color:#0f172a;border-radius:0 0 12px 12px;padding:24px 40px;text-align:center;">
+          <p style="margin:0 0 6px;font-size:12px;color:#475569;">Generado automáticamente por el workflow de GitHub Actions</p>
+          <p style="margin:0;font-size:12px;color:#334155;">© ${new Date().getFullYear()} imSoft · Todos los derechos reservados</p>
+        </td></tr>
+
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+}
+
+function buildErrorEmail(errorMessage) {
+  const date = new Date().toLocaleDateString("es-MX", { year: "numeric", month: "long", day: "numeric", hour: "2-digit", minute: "2-digit" });
+
+  return `<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/></head>
+<body style="margin:0;padding:0;background-color:#f1f5f9;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f1f5f9;padding:32px 16px;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
+
+        <!-- Header -->
+        <tr><td style="background-color:#0f172a;border-radius:12px 12px 0 0;padding:32px 40px;text-align:center;">
+          <img src="${SITE_URL}/logos/logo-imsoft-blue.png" alt="imSoft" width="120" style="display:block;margin:0 auto 20px;height:auto;"/>
+          <div style="display:inline-block;background-color:#ef4444;border-radius:100px;padding:4px 16px;margin-bottom:12px;">
+            <span style="color:#fff;font-size:12px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;">✗ Error en publicación</span>
+          </div>
+          <h1 style="color:#fff;margin:0;font-size:22px;font-weight:700;line-height:1.3;">
+            El artículo automático <span style="color:#fca5a5;">no se publicó</span>
+          </h1>
+        </td></tr>
+
+        <!-- Body -->
+        <tr><td style="background-color:#ffffff;padding:36px 40px;">
+          <h2 style="margin:0 0 16px;font-size:13px;font-weight:700;color:#ef4444;text-transform:uppercase;letter-spacing:0.08em;">Detalle del error</h2>
+          <div style="background-color:#fef2f2;border:1px solid #fecaca;border-left:4px solid #ef4444;border-radius:0 8px 8px 0;padding:16px 20px;font-size:13px;font-family:monospace;line-height:1.6;color:#7f1d1d;white-space:pre-wrap;margin-bottom:28px;">${errorMessage}</div>
+          <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e2e8f0;border-radius:8px;overflow:hidden;margin-bottom:28px;">
+            <tr style="background-color:#f8fafc;">
+              <td style="padding:12px 16px;font-size:13px;font-weight:600;color:#64748b;width:120px;">Fecha</td>
+              <td style="padding:12px 16px;font-size:14px;color:#0f172a;">${date}</td>
+            </tr>
+          </table>
+          <div style="text-align:center;">
+            <a href="https://github.com/imsoft/imSoft/actions" style="display:inline-block;background-color:#6366f1;color:#ffffff;padding:13px 32px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:600;">Ver logs en GitHub Actions →</a>
+          </div>
+        </td></tr>
+
+        <!-- Footer -->
+        <tr><td style="background-color:#0f172a;border-radius:0 0 12px 12px;padding:24px 40px;text-align:center;">
+          <p style="margin:0 0 6px;font-size:12px;color:#475569;">Notificación automática del workflow de GitHub Actions</p>
+          <p style="margin:0;font-size:12px;color:#334155;">© ${new Date().getFullYear()} imSoft · Todos los derechos reservados</p>
+        </td></tr>
+
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+}
+
+async function sendEmail(subject, html) {
+  if (!RESEND_API_KEY) {
+    console.warn("RESEND_API_KEY no configurado — omitiendo notificación por email.");
+    return;
+  }
+  const response = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${RESEND_API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from: `imSoft Blog <${NOTIFY_EMAIL}>`,
+      to: NOTIFY_EMAIL,
+      subject,
+      html,
+    }),
+  });
+  if (!response.ok) {
+    const err = await response.text();
+    console.warn(`No se pudo enviar el email de notificación: ${err}`);
+  }
+}
+
 async function main() {
   const category = pickCategory();
   console.log(`Generando artículo para categoría: ${category.label_es}`);
@@ -265,9 +409,24 @@ async function main() {
 
   const result = await publishPost(post);
   console.log(`Publicado exitosamente. ID: ${result[0]?.id}, Slug: ${slug}`);
+
+  await sendEmail(
+    `✓ Nuevo artículo publicado: ${generated.title_es}`,
+    buildSuccessEmail({
+      title_es: generated.title_es,
+      title_en: generated.title_en,
+      slug,
+      category: category.label_es,
+      imageUrl,
+    })
+  );
 }
 
-main().catch((err) => {
+main().catch(async (err) => {
   console.error("Error:", err.message);
+  await sendEmail(
+    `✗ Error al publicar artículo automático — ${new Date().toLocaleDateString("es-MX")}`,
+    buildErrorEmail(err.message)
+  );
   process.exit(1);
 });
