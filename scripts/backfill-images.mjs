@@ -1,18 +1,20 @@
 #!/usr/bin/env node
 /**
- * Genera imágenes con Pollinations AI para los posts del blog que tienen image_url = null.
+ * Genera imágenes con Gemini 2.0 Flash para los posts del blog que tienen image_url = null.
  * Ejecutar: node scripts/backfill-images.mjs
  *
  * Variables de entorno requeridas:
+ *   GEMINI_API_KEY            — API key de Google AI Studio
  *   NEXT_PUBLIC_SUPABASE_URL  — URL del proyecto Supabase
  *   SUPABASE_SERVICE_ROLE_KEY — Service role key
  */
 
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
-  console.error("Faltan variables de entorno: NEXT_PUBLIC_SUPABASE_URL y SUPABASE_SERVICE_ROLE_KEY");
+if (!GEMINI_API_KEY || !SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+  console.error("Faltan variables de entorno: GEMINI_API_KEY, NEXT_PUBLIC_SUPABASE_URL y SUPABASE_SERVICE_ROLE_KEY");
   process.exit(1);
 }
 
@@ -31,23 +33,36 @@ async function fetchPostsWithoutImage() {
 }
 
 async function generateImage(title_en, category) {
-  const promptText = `Flat illustration style blog header image for a Mexican software agency. Article topic: ${title_en}, category: ${category}. Style: clean 2D flat illustration, friendly diverse Latin professionals, geometric shapes. Color palette: blue #4A7FD4 dominant, white and light gray accents. Wide 16:9 composition. No text, no logos, no watermarks. Professional, modern, optimistic mood.`;
+  const prompt = `Flat illustration style blog header image for a Mexican software agency called imSoft. Article topic: "${title_en}" (${category} category). Style: clean 2D flat illustration, friendly characters (diverse Latin professionals), geometric shapes. Color palette: imSoft brand blue (#4A7FD4) as dominant color, with white, light gray and soft blue accents. Wide 16:9 composition with clear focal point. No text, no logos, no watermarks. Professional, modern, optimistic mood.`;
 
-  const seed = Math.floor(Math.random() * 999999);
-  const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(promptText)}?width=1200&height=675&nologo=true&seed=${seed}&model=flux`;
+  console.log(`  Generando imagen con Gemini 2.0 Flash...`);
+  const response = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent?key=${GEMINI_API_KEY}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: { responseModalities: ["IMAGE"] },
+      }),
+    }
+  );
 
-  console.log(`  Generando imagen (puede tardar 15-30 segundos)...`);
-  const response = await fetch(url);
   if (!response.ok) {
-    throw new Error(`Pollinations API error ${response.status}`);
+    const error = await response.text();
+    throw new Error(`Gemini image generation error ${response.status}: ${error}`);
   }
 
-  const arrayBuffer = await response.arrayBuffer();
-  return Buffer.from(arrayBuffer);
+  const data = await response.json();
+  const part = data.candidates?.[0]?.content?.parts?.find((p) => p.inlineData);
+  if (!part) throw new Error("Gemini no devolvió imagen en la respuesta.");
+
+  return { buffer: Buffer.from(part.inlineData.data, "base64"), mimeType: part.inlineData.mimeType || "image/png" };
 }
 
-async function uploadImageToSupabase(imageBuffer, slug) {
-  const filename = `${slug}-${Date.now()}.jpg`;
+async function uploadImageToSupabase(imageBuffer, slug, mimeType = "image/png") {
+  const ext = mimeType.includes("jpeg") ? "jpg" : "png";
+  const filename = `${slug}-${Date.now()}.${ext}`;
 
   const response = await fetch(
     `${SUPABASE_URL}/storage/v1/object/blog-images/${filename}`,
@@ -56,7 +71,7 @@ async function uploadImageToSupabase(imageBuffer, slug) {
       headers: {
         apikey: SUPABASE_SERVICE_ROLE_KEY,
         Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-        "Content-Type": "image/jpeg",
+        "Content-Type": mimeType,
         "Cache-Control": "3600",
       },
       body: imageBuffer,
@@ -108,9 +123,9 @@ async function main() {
     console.log(`Procesando: "${title}" (${post.slug})`);
 
     try {
-      const imageBuffer = await generateImage(title, post.category || "technology");
+      const { buffer, mimeType } = await generateImage(title, post.category || "technology");
       console.log(`  Subiendo a Supabase Storage...`);
-      const imageUrl = await uploadImageToSupabase(imageBuffer, post.slug);
+      const imageUrl = await uploadImageToSupabase(buffer, post.slug, mimeType);
       await updatePostImage(post.id, imageUrl);
       console.log(`  ✓ Imagen actualizada: ${imageUrl}\n`);
     } catch (err) {
