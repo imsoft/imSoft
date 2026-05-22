@@ -176,10 +176,10 @@ async function generateImage(title_en, category_en) {
 }
 
 async function uploadImageToSupabase(imageBuffer, slug) {
-  const filename = `blog/${slug}-${Date.now()}.png`;
+  const filename = `${slug}-${Date.now()}.png`;
 
   const response = await fetch(
-    `${SUPABASE_URL}/storage/v1/object/images/${filename}`,
+    `${SUPABASE_URL}/storage/v1/object/blog-images/${filename}`,
     {
       method: "POST",
       headers: {
@@ -197,7 +197,7 @@ async function uploadImageToSupabase(imageBuffer, slug) {
     throw new Error(`Supabase Storage upload error ${response.status}: ${error}`);
   }
 
-  return `${SUPABASE_URL}/storage/v1/object/public/images/${filename}`;
+  return `${SUPABASE_URL}/storage/v1/object/public/blog-images/${filename}`;
 }
 
 async function slugExists(slug) {

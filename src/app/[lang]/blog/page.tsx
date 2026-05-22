@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { FooterSection } from "@/components/blocks/footer-section";
 import { HeroHeader } from "@/components/blocks/hero-section";
 import { getDictionary, hasLocale } from '../dictionaries';
