@@ -7,6 +7,7 @@ import { notFound } from 'next/navigation';
 import Image from "next/image";
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { generateMetadata as generateSEOMetadata, generateStructuredData } from '@/lib/seo';
+import { sanitizeBlogHtml } from '@/lib/sanitize-html';
 import { StructuredData } from '@/components/seo/structured-data';
 import { BreadcrumbNav } from '@/components/seo/breadcrumb-nav';
 import type { Metadata } from 'next';
@@ -144,9 +145,11 @@ export default async function BlogPostPage({ params }: {
     ? (post.title_en || post.title || '')
     : (post.title_es || post.title || '');
 
-  const content = lang === 'en'
-    ? (post.content_en || post.content || '')
-    : (post.content_es || post.content || '');
+  const content = sanitizeBlogHtml(
+    lang === 'en'
+      ? (post.content_en || post.content || '')
+      : (post.content_es || post.content || '')
+  );
 
   const date = new Date(post.created_at || '').toLocaleDateString(
     lang === 'en' ? 'en-US' : 'es-MX',
