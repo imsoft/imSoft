@@ -2,19 +2,17 @@
 /**
  * Genera y publica un artículo de blog automáticamente en Supabase.
  * - Texto: Claude Haiku (Anthropic)
- * - Imagen: Imagen 3 (Google Gemini)
- * - Almacenamiento: Supabase Storage (bucket "images", ruta blog/)
+ * - Imagen: Pollinations AI / Flux (gratis, sin API key)
+ * - Almacenamiento: Supabase Storage (bucket "blog-images")
  *
  * Variables de entorno requeridas:
  *   ANTHROPIC_API_KEY         — API key de Anthropic
- *   GEMINI_API_KEY            — API key de Google AI Studio (Gemini / Imagen 3)
- *   SUPABASE_URL              — URL del proyecto Supabase
+ *   NEXT_PUBLIC_SUPABASE_URL  — URL del proyecto Supabase
  *   SUPABASE_SERVICE_ROLE_KEY — Service role key (bypasses RLS)
  *   BLOG_AUTHOR_ID            — UUID del usuario autor en Supabase
  */
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const BLOG_AUTHOR_ID = process.env.BLOG_AUTHOR_ID;
@@ -22,7 +20,7 @@ const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const SITE_URL = "https://imsoft.io";
 const NOTIFY_EMAIL = "contacto@imsoft.io";
 
-if (!ANTHROPIC_API_KEY || !GEMINI_API_KEY || !SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY || !BLOG_AUTHOR_ID) {
+if (!ANTHROPIC_API_KEY || !SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY || !BLOG_AUTHOR_ID) {
   console.error("Faltan variables de entorno requeridas.");
   process.exit(1);
 }
@@ -149,34 +147,22 @@ El artículo DEBE terminar con este bloque HTML exacto (no lo modifiques):
 }
 
 async function generateImage(title_en, category_en) {
-  const prompt = `Flat illustration style blog header image for a Mexican software agency called imSoft. Article topic: "${title_en}" (${category_en} category). Style: clean 2D flat illustration, friendly characters (diverse Latin professionals), geometric shapes. Color palette: imSoft brand blue (#4A7FD4) as dominant color, with white, light gray and soft blue accents. Wide 16:9 composition with clear focal point. No text, no logos, no watermarks. Professional, modern, optimistic mood. Suitable for a B2B software agency blog targeting entrepreneurs and SMB owners.`;
+  const promptText = `Flat illustration style blog header image for a Mexican software agency. Article topic: ${title_en}, category: ${category_en}. Style: clean 2D flat illustration, friendly diverse Latin professionals, geometric shapes. Color palette: blue #4A7FD4 dominant, white and light gray accents. Wide 16:9 composition. No text, no logos, no watermarks. Professional, modern, optimistic mood.`;
 
-  const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-001:predict?key=${GEMINI_API_KEY}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        instances: [{ prompt }],
-        parameters: { sampleCount: 1, aspectRatio: "16:9" },
-      }),
-    }
-  );
+  const seed = Math.floor(Math.random() * 999999);
+  const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(promptText)}?width=1200&height=675&nologo=true&seed=${seed}&model=flux`;
 
+  const response = await fetch(url);
   if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`Imagen 3 API error ${response.status}: ${error}`);
+    throw new Error(`Pollinations API error ${response.status}`);
   }
 
-  const data = await response.json();
-  const base64 = data.predictions?.[0]?.bytesBase64Encoded;
-  if (!base64) throw new Error("Imagen 3 no devolvió imagen.");
-
-  return Buffer.from(base64, "base64");
+  const arrayBuffer = await response.arrayBuffer();
+  return Buffer.from(arrayBuffer);
 }
 
 async function uploadImageToSupabase(imageBuffer, slug) {
-  const filename = `${slug}-${Date.now()}.png`;
+  const filename = `${slug}-${Date.now()}.jpg`;
 
   const response = await fetch(
     `${SUPABASE_URL}/storage/v1/object/blog-images/${filename}`,
@@ -185,7 +171,7 @@ async function uploadImageToSupabase(imageBuffer, slug) {
       headers: {
         apikey: SUPABASE_SERVICE_ROLE_KEY,
         Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-        "Content-Type": "image/png",
+        "Content-Type": "image/jpeg",
         "Cache-Control": "3600",
       },
       body: imageBuffer,
@@ -279,7 +265,7 @@ function buildSuccessEmail({ title_es, title_en, slug, category, imageUrl }) {
             </tr>
             <tr style="background-color:#f8fafc;">
               <td style="padding:12px 16px;font-size:13px;font-weight:600;color:#64748b;">Imagen</td>
-              <td style="padding:12px 16px;font-size:14px;color:#0f172a;">${imageUrl ? "✓ Generada con Imagen 3" : "Sin imagen (créditos agotados)"}</td>
+              <td style="padding:12px 16px;font-size:14px;color:#0f172a;">${imageUrl ? "✓ Generada con Pollinations AI" : "Sin imagen"}</td>
             </tr>
           </table>
           <div style="text-align:center;margin-bottom:8px;">
