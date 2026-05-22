@@ -1,0 +1,31 @@
+name: Auto Blog Publisher
+
+on:
+  schedule:
+    # Corre diariamente a las 14:00 UTC (8:00 AM hora México / 9:00 AM CDT)
+    - cron: "0 14 * * *"
+  workflow_dispatch: # Permite ejecutarlo manualmente desde GitHub
+
+jobs:
+  publish-blog-post:
+    name: Generate & Publish Blog Post
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Generate and publish blog post
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          BLOG_AUTHOR_ID: ${{ secrets.BLOG_AUTHOR_ID }}
+        run: node scripts/generate-blog.mjs
