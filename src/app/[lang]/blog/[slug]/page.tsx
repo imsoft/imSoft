@@ -167,6 +167,19 @@ export default async function BlogPostPage({ params }: {
   // Limpiar HTML del contenido para obtener texto plano
   const plainContent = content.replace(/<[^>]*>/g, '').substring(0, 200);
 
+  // Tiempo de lectura estimado
+  const wordCount = content.replace(/<[^>]*>/g, '').split(/\s+/).filter(Boolean).length;
+  const readingMinutes = Math.max(1, Math.ceil(wordCount / 200));
+  const readingLabel = isEs ? `${readingMinutes} min de lectura` : `${readingMinutes} min read`;
+
+  // Nombre del autor
+  const authorName = post.author_name || 'Brandon Garcia';
+
+  // Categoría con label legible
+  const categoryLabel = post.category
+    ? post.category.charAt(0).toUpperCase() + post.category.slice(1)
+    : null;
+
   // Structured data para Article
   const articleStructuredData = generateStructuredData({
     type: 'Article',
@@ -214,17 +227,31 @@ export default async function BlogPostPage({ params }: {
             />
             {/* Header */}
             <header className="mb-8">
-              <h1 className="text-4xl md:text-5xl font-bold mb-4">
+              {/* Category badge */}
+              {categoryLabel && (
+                <span className="inline-block bg-primary/10 text-primary text-xs font-semibold px-3 py-1 rounded-full mb-4 uppercase tracking-wide">
+                  {categoryLabel}
+                </span>
+              )}
+
+              <h1 className="text-4xl md:text-5xl font-bold leading-tight mb-6">
                 {title}
               </h1>
-              <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                <time dateTime={post.created_at}>{date}</time>
-                {post.category && (
-                  <>
-                    <span>•</span>
-                    <span className="capitalize">{post.category}</span>
-                  </>
-                )}
+
+              {/* Author + meta row */}
+              <div className="flex items-center gap-3 flex-wrap">
+                {/* Author avatar (initials) */}
+                <div className="w-9 h-9 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-sm font-bold shrink-0">
+                  {authorName.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase()}
+                </div>
+                <div className="flex flex-col text-sm leading-tight">
+                  <span className="font-semibold text-foreground">{authorName}</span>
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <time dateTime={post.created_at}>{date}</time>
+                    <span>·</span>
+                    <span>{readingLabel}</span>
+                  </div>
+                </div>
               </div>
             </header>
 

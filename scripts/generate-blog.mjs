@@ -149,7 +149,7 @@ El artículo DEBE terminar con este bloque HTML exacto (no lo modifiques):
 }
 
 async function generateImage(title_en, category_en) {
-  const prompt = `Flat illustration style blog header image for a Mexican software agency called imSoft. Article topic: "${title_en}" (${category_en} category). Style: clean 2D flat illustration, friendly characters (diverse Latin professionals), geometric shapes. Color palette: imSoft brand blue (#4A7FD4) as dominant color, with white, light gray and soft blue accents. Wide 16:9 composition with clear focal point. No text, no logos, no watermarks. Professional, modern, optimistic mood.`;
+  const prompt = `2D flat vector illustration for a software agency blog post header. Topic: "${title_en}". Scene: 2-3 Latin American professionals (men and women, diverse skin tones) in modern business casual attire, actively working or collaborating on a task related to the article topic. Characters should have friendly, confident expressions. Color palette: dominant blue #4A7FD4 for clothing and key elements, background white or very light gray #F8FAFC, dark navy #1e3a5f for shadows and depth, soft blue #E8F0FC for secondary fills. Art style: clean Undraw.co style flat illustration, smooth shapes, no gradients, no textures. Composition: wide 16:9, well-balanced, characters on one side with symbolic visual metaphor on the other. Absolutely NO: website screenshots, laptop screens with UI interfaces, text overlays, logos, watermarks, photo-realistic rendering.`;
 
   const response = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-fast-generate-001:predict?key=${GEMINI_API_KEY}`,
@@ -413,6 +413,7 @@ async function main() {
     image_url: imageUrl,
     category: category.value,
     author_id: BLOG_AUTHOR_ID,
+    author_name: 'Brandon Garcia',
     published: true,
   };
 
