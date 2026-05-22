@@ -225,7 +225,7 @@ export default async function BlogPostPage({ params }: {
 
             {/* Content */}
             <div
-              className="prose prose-lg dark:prose-invert max-w-none"
+              className="blog-content"
               dangerouslySetInnerHTML={{ __html: content }}
             />
           </div>
