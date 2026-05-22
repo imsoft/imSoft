@@ -149,8 +149,8 @@ El artículo DEBE terminar con este bloque HTML exacto (no lo modifiques):
   return toolUse.input;
 }
 
-async function generateImage(title_en, category_en) {
-  const prompt = `2D flat vector illustration for a tech blog post header. Topic: "${title_en}". Main character: a single friendly cute robot mascot, rounded body, big expressive eyes, small antennas, built from smooth geometric shapes. The robot is doing an action that represents the article topic (e.g. building, analyzing, optimizing, connecting). Color palette: robot body in blue #4A7FD4 and white, accents in dark navy #1e3a5f, background very light gray #F8FAFC or white, soft blue #E8F0FC for glow or fills. Art style: clean Undraw.co / Storyset flat 2D illustration, bold outlines, no gradients, no textures, minimal and modern. Composition: 16:9 wide, robot slightly off-center, surrounded by simple geometric icons or abstract shapes that relate to the topic. Absolutely NO: human characters, website UI screenshots, text, logos, watermarks, photo-realistic rendering.`;
+async function generateImage(title_en) {
+  const prompt = `2D flat vector illustration, pure white background (#FFFFFF). Topic: "${title_en}". Main character: one friendly cute robot mascot with rounded body, big expressive circular eyes, small antennas on top, smooth geometric limbs, colored in blue #4A7FD4 and white with navy #1e3a5f accents. The robot must be physically interacting with objects that represent the article topic — for example: if the topic is web optimization, the robot is tuning gears or a speedometer; if about e-commerce, the robot holds a shopping cart; if about digital transformation, the robot pushes a rocket; if about mistakes/errors, the robot holds a checklist with X marks. Floating around the robot: 3-5 simple flat icons directly related to "${title_en}" (no UI mockups, just symbolic icons like gears, charts, rockets, locks, stars). Color palette: blue #4A7FD4 dominant on robot, icon fills in soft blue #DBEAFE, background strictly white #FFFFFF, shadows/outlines in #1e3a5f. Art style: Undraw.co clean flat 2D, bold smooth outlines, zero gradients, zero textures. 16:9 wide composition, robot centered or slightly left. Absolutely NO: humans, website screenshots, UI mockups, text labels, logos, watermarks, photo-realism.`;
 
   const response = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-fast-generate-001:predict?key=${GEMINI_API_KEY}`,
@@ -395,7 +395,7 @@ async function main() {
   let imageUrl = null;
   try {
     console.log("Generando imagen con Gemini 2.5 Flash Image...");
-    const { buffer, mimeType } = await generateImage(generated.title_en, category.label_en);
+    const { buffer, mimeType } = await generateImage(generated.title_en);
     console.log("Subiendo imagen a Supabase Storage...");
     imageUrl = await uploadImageToSupabase(buffer, slug, mimeType);
     console.log(`Imagen: ${imageUrl}`);
