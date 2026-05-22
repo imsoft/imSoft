@@ -104,7 +104,7 @@ El artículo DEBE terminar con este bloque HTML exacto (no lo modifiques):
     },
     body: JSON.stringify({
       model: "claude-haiku-4-5-20251001",
-      max_tokens: 4096,
+      max_tokens: 8192,
       tools: [
         {
           name: "publish_blog_post",
@@ -128,12 +128,20 @@ El artículo DEBE terminar con este bloque HTML exacto (no lo modifiques):
     }),
   });
 
+  const rawText = await response.text();
+
   if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`Claude API error ${response.status}: ${error}`);
+    throw new Error(`Claude API error ${response.status}: ${rawText}`);
   }
 
-  const data = await response.json();
+  let data;
+  try {
+    data = JSON.parse(rawText);
+  } catch (e) {
+    console.error("Respuesta de Claude (primeros 500 chars):", rawText.substring(0, 500));
+    throw new Error(`Respuesta de Claude no es JSON válido: ${e.message}`);
+  }
+
   const toolUse = data.content.find((b) => b.type === "tool_use");
   if (!toolUse) throw new Error("Claude no devolvió una llamada de herramienta.");
 
