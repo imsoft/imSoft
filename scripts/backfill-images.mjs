@@ -35,29 +35,29 @@ async function fetchPostsWithoutImage() {
 async function generateImage(title_en, category) {
   const prompt = `Flat illustration style blog header image for a Mexican software agency called imSoft. Article topic: "${title_en}" (${category} category). Style: clean 2D flat illustration, friendly characters (diverse Latin professionals), geometric shapes. Color palette: imSoft brand blue (#4A7FD4) as dominant color, with white, light gray and soft blue accents. Wide 16:9 composition with clear focal point. No text, no logos, no watermarks. Professional, modern, optimistic mood.`;
 
-  console.log(`  Generando imagen con Gemini 2.0 Flash...`);
+  console.log(`  Generando imagen con Imagen 4.0 Fast...`);
   const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent?key=${GEMINI_API_KEY}`,
+    `https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-fast-generate-001:predict?key=${GEMINI_API_KEY}`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { responseModalities: ["IMAGE"] },
+        instances: [{ prompt }],
+        parameters: { sampleCount: 1, aspectRatio: "16:9" },
       }),
     }
   );
 
   if (!response.ok) {
     const error = await response.text();
-    throw new Error(`Gemini image generation error ${response.status}: ${error}`);
+    throw new Error(`Imagen 4.0 API error ${response.status}: ${error}`);
   }
 
   const data = await response.json();
-  const part = data.candidates?.[0]?.content?.parts?.find((p) => p.inlineData);
-  if (!part) throw new Error("Gemini no devolvió imagen en la respuesta.");
+  const prediction = data.predictions?.[0];
+  if (!prediction?.bytesBase64Encoded) throw new Error("Imagen 4.0 no devolvió imagen.");
 
-  return { buffer: Buffer.from(part.inlineData.data, "base64"), mimeType: part.inlineData.mimeType || "image/png" };
+  return { buffer: Buffer.from(prediction.bytesBase64Encoded, "base64"), mimeType: prediction.mimeType || "image/png" };
 }
 
 async function uploadImageToSupabase(imageBuffer, slug, mimeType = "image/png") {

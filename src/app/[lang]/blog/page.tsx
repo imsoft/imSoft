@@ -144,6 +144,8 @@ export default async function BlogPage({ params }: {
                           alt={post.title}
                           fill
                           className="object-cover transition-transform group-hover:scale-105"
+                          quality={90}
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                         />
                       </div>
                       <CardContent className="p-6 flex flex-col grow">
