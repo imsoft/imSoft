@@ -90,17 +90,7 @@ El artículo DEBE terminar con este bloque HTML exacto (no lo modifiques):
 - Entre 650-950 palabras de contenido real
 - HTML semántico: <h2>, <h3>, <p>, <ul>, <li>, <strong>, <em> — SIN <h1>, SIN markdown
 - Optimizado para SEO: incluye la keyword principal 3-5 veces de forma natural
-- Hoy es ${today}. Categoría del artículo: "${category.label_es}" (${category.label_en})
-
-Responde ÚNICAMENTE con un objeto JSON válido con esta estructura exacta (sin markdown, sin texto extra):
-{
-  "title_es": "Título con keyword principal en español (máx 70 chars)",
-  "title_en": "Title with main keyword in English (max 70 chars)",
-  "excerpt_es": "Resumen directo que describe el valor del artículo (máx 160 chars)",
-  "excerpt_en": "Direct summary describing the article value (max 160 chars)",
-  "content_es": "<p>Contenido HTML completo en español incluyendo el CTA final...</p>",
-  "content_en": "<p>Full HTML content in English including the final CTA...</p>"
-}`;
+- Hoy es ${today}. Categoría del artículo: "${category.label_es}" (${category.label_en})`;
 
   const response = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
@@ -112,6 +102,25 @@ Responde ÚNICAMENTE con un objeto JSON válido con esta estructura exacta (sin 
     body: JSON.stringify({
       model: "claude-haiku-4-5-20251001",
       max_tokens: 4096,
+      tools: [
+        {
+          name: "publish_blog_post",
+          description: "Publica un artículo de blog bilingüe en el sitio de imSoft.",
+          input_schema: {
+            type: "object",
+            properties: {
+              title_es: { type: "string", description: "Título en español (máx 70 chars)" },
+              title_en: { type: "string", description: "Title in English (max 70 chars)" },
+              excerpt_es: { type: "string", description: "Resumen en español (máx 160 chars)" },
+              excerpt_en: { type: "string", description: "Summary in English (max 160 chars)" },
+              content_es: { type: "string", description: "Contenido HTML completo en español" },
+              content_en: { type: "string", description: "Full HTML content in English" },
+            },
+            required: ["title_es", "title_en", "excerpt_es", "excerpt_en", "content_es", "content_en"],
+          },
+        },
+      ],
+      tool_choice: { type: "tool", name: "publish_blog_post" },
       messages: [{ role: "user", content: prompt }],
     }),
   });
@@ -122,12 +131,10 @@ Responde ÚNICAMENTE con un objeto JSON válido con esta estructura exacta (sin 
   }
 
   const data = await response.json();
-  const rawText = data.content[0].text.trim();
+  const toolUse = data.content.find((b) => b.type === "tool_use");
+  if (!toolUse) throw new Error("Claude no devolvió una llamada de herramienta.");
 
-  const jsonMatch = rawText.match(/\{[\s\S]*\}/);
-  if (!jsonMatch) throw new Error("La respuesta de Claude no contiene JSON válido.");
-
-  return JSON.parse(jsonMatch[0]);
+  return toolUse.input;
 }
 
 async function generateImage(title_en, category_en) {
