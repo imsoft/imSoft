@@ -235,12 +235,16 @@ async function main() {
     slug = `${slug}-${Date.now()}`;
   }
 
-  console.log("Generando imagen con Imagen 3...");
-  const imageBuffer = await generateImage(generated.title_en, category.label_en);
-
-  console.log("Subiendo imagen a Supabase Storage...");
-  const imageUrl = await uploadImageToSupabase(imageBuffer, slug);
-  console.log(`Imagen: ${imageUrl}`);
+  let imageUrl = null;
+  try {
+    console.log("Generando imagen con Imagen 3...");
+    const imageBuffer = await generateImage(generated.title_en, category.label_en);
+    console.log("Subiendo imagen a Supabase Storage...");
+    imageUrl = await uploadImageToSupabase(imageBuffer, slug);
+    console.log(`Imagen: ${imageUrl}`);
+  } catch (imgErr) {
+    console.warn(`Advertencia: no se pudo generar la imagen (${imgErr.message}). El artículo se publicará sin imagen.`);
+  }
 
   const post = {
     title_es: generated.title_es,
