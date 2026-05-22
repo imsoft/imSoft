@@ -2,6 +2,7 @@
  * Cleans up rich-text-editor HTML (Lexical/TipTap) so Tailwind Typography (prose) can style it.
  * Removes embedded Tailwind classes and inline styles that won't be in the CSS bundle,
  * and unwraps decorative <span> wrappers produced by editors.
+ * NOTE: class attributes on <div> elements are preserved (e.g. cta-blog).
  */
 export function sanitizeBlogHtml(html: string): string {
   return html
@@ -10,10 +11,13 @@ export function sanitizeBlogHtml(html: string): string {
     // Flatten <b><strong ...>text</strong></b> → <strong>text</strong>
     .replace(/<b>\s*<strong[^>]*>/gi, '<strong>')
     .replace(/<\/strong>\s*<\/b>/gi, '</strong>')
-    // Strip class attributes (classes in DB strings are not in the Tailwind bundle)
-    .replace(/\s+class="[^"]*"/gi, '')
-    // Strip inline style attributes (let prose handle spacing/alignment)
-    .replace(/\s+style="[^"]*"/gi, '')
-    // Remove value="N" from <li> (editor artefact)
-    .replace(/\s+value="\d+"/gi, '');
+    // For every opening tag except <div>, strip class/style/value attributes.
+    // <div> is excluded so utility classes like cta-blog are preserved.
+    .replace(/<(?!div\b)([a-z][a-z0-9]*)\b([^>]*)>/gi, (_match, tag, attrs) => {
+      const cleaned = attrs
+        .replace(/\s+class="[^"]*"/gi, '')
+        .replace(/\s+style="[^"]*"/gi, '')
+        .replace(/\s+value="\d+"/gi, '');
+      return `<${tag}${cleaned}>`;
+    });
 }
