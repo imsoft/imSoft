@@ -21,6 +21,7 @@ const BLOG_AUTHOR_ID = process.env.BLOG_AUTHOR_ID;
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const SITE_URL = "https://imsoft.io";
 const NOTIFY_EMAIL = "contacto@imsoft.io";
+const NOTIFY_EMAIL_CC = "weareimsoft@gmail.com";
 
 if (!ANTHROPIC_API_KEY || !GEMINI_API_KEY || !SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY || !BLOG_AUTHOR_ID) {
   console.error("Faltan variables de entorno requeridas.");
@@ -354,7 +355,7 @@ function buildErrorEmail(errorMessage) {
 
 async function sendEmail(subject, html) {
   if (!RESEND_API_KEY) {
-    console.warn("RESEND_API_KEY no configurado — omitiendo notificación por email.");
+    console.error("RESEND_API_KEY no configurado — no se puede enviar notificación. Agrega el secret en GitHub Actions.");
     return;
   }
   const response = await fetch("https://api.resend.com/emails", {
@@ -365,14 +366,17 @@ async function sendEmail(subject, html) {
     },
     body: JSON.stringify({
       from: `imSoft Blog <${NOTIFY_EMAIL}>`,
-      to: NOTIFY_EMAIL,
+      to: [NOTIFY_EMAIL, NOTIFY_EMAIL_CC],
       subject,
       html,
     }),
   });
   if (!response.ok) {
     const err = await response.text();
-    console.warn(`No se pudo enviar el email de notificación: ${err}`);
+    console.error(`Error al enviar email (HTTP ${response.status}): ${err}`);
+  } else {
+    const data = await response.json();
+    console.log(`Email enviado correctamente. ID: ${data.id}`);
   }
 }
 
