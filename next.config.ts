@@ -1,8 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
   reactCompiler: true,
+  compress: true,
   async redirects() {
     return [
       { source: '/:lang(es|en)/servicios', destination: '/:lang/services', permanent: true },
@@ -11,11 +11,23 @@ const nextConfig: NextConfig = {
     ];
   },
   images: {
+    formats: ['image/avif', 'image/webp'],
     remotePatterns: [
       {
         protocol: 'https',
         hostname: '**',
       },
+    ],
+  },
+  experimental: {
+    optimizePackageImports: [
+      'lucide-react',
+      'motion',
+      '@radix-ui/react-dialog',
+      '@radix-ui/react-dropdown-menu',
+      '@radix-ui/react-select',
+      '@radix-ui/react-tabs',
+      '@radix-ui/react-tooltip',
     ],
   },
 };

@@ -1,4 +1,4 @@
-export const dynamic = 'force-dynamic';
+export const revalidate = 60;
 
 import { FooterSection } from "@/components/blocks/footer-section";
 import { HeroHeader } from "@/components/blocks/hero-section";

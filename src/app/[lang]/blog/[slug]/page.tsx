@@ -1,3 +1,5 @@
+export const revalidate = 3600;
+
 import { FooterSection } from "@/components/blocks/footer-section";
 import { HeroHeader } from "@/components/blocks/hero-section";
 import { getDictionary, hasLocale } from '../../dictionaries';
@@ -8,6 +10,22 @@ import { generateMetadata as generateSEOMetadata, generateStructuredData } from 
 import { StructuredData } from '@/components/seo/structured-data';
 import { BreadcrumbNav } from '@/components/seo/breadcrumb-nav';
 import type { Metadata } from 'next';
+
+export async function generateStaticParams() {
+  const supabase = createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } }
+  );
+  const { data: posts } = await supabase
+    .from('blog')
+    .select('slug')
+    .eq('published', true);
+  return (posts || []).flatMap((p) => [
+    { lang: 'es', slug: p.slug },
+    { lang: 'en', slug: p.slug },
+  ]);
+}
 
 export async function generateMetadata({
   params,

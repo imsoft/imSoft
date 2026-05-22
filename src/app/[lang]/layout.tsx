@@ -85,9 +85,11 @@ export default async function RootLayout({
         {/* Preconnect a recursos críticos para mejorar FCP */}
         <link rel="preconnect" href="https://wuttmqoohdsgbsdbanoj.supabase.co" />
         <link rel="preconnect" href="https://ik.imagekit.io" />
-        <link rel="preconnect" href="https://images.unsplash.com" />
         <link rel="dns-prefetch" href="https://lh3.googleusercontent.com" />
         <link rel="dns-prefetch" href="https://avatars.githubusercontent.com" />
+        {process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID && (
+          <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+        )}
         {/* LLM discoverability */}
         <link rel="alternate" type="text/plain" href={`${SITE_URL}/llms.txt`} title="LLM Context" />
         <Script
