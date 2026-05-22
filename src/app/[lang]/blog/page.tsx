@@ -87,7 +87,7 @@ export default async function BlogPage({ params }: {
       lang === 'en' ? 'en-US' : 'es-MX',
       { year: 'numeric', month: 'long', day: 'numeric' }
     ),
-    image: post.image_url || '/placeholder-blog.jpg',
+    image: post.image_url || '/logos/logo-imsoft-blue.png',
     slug: post.slug || post.id,
   }));
 
