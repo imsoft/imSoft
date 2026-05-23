@@ -108,7 +108,7 @@ export function HeroSection({ dict, lang, companies = [], portfolioProjects = []
                                         <Link
                                             href={announcementLink}
                                             className="hover:bg-background dark:hover:border-t-border bg-muted group mx-auto flex max-w-full w-fit items-center gap-2 sm:gap-4 rounded-full border p-1.5 sm:p-1 pl-3 sm:pl-4 pr-2 sm:pr-1 shadow-md shadow-black/5 transition-all duration-300 dark:border-t-white/5 dark:shadow-zinc-950">
-                                            <span className="text-foreground text-xs sm:text-sm transition-opacity duration-500 max-w-[180px] sm:max-w-none truncate sm:truncate-none">{announcementText}</span>
+                                            <span className="text-foreground text-xs sm:text-sm transition-opacity duration-500 line-clamp-1 sm:line-clamp-none">{announcementText}</span>
                                             <span className="dark:border-background hidden sm:block h-4 w-0.5 border-l bg-white dark:bg-zinc-700 flex-shrink-0"></span>
                                             <span className="text-foreground text-xs sm:text-sm font-medium whitespace-nowrap flex-shrink-0">{dict.hero.announcementLink}</span>
 
@@ -239,6 +239,7 @@ export const HeroHeader = ({ dict, lang }: HeroHeaderProps) => {
                             </Link>
 
                             <button
+                                type="button"
                                 onClick={() => setMenuState(!menuState)}
                                 aria-label={menuState == true ? 'Close Menu' : 'Open Menu'}
                                 className="relative z-20 -m-2.5 -mr-4 block cursor-pointer p-2.5 lg:hidden">
@@ -401,6 +402,7 @@ const PortfolioCarousel = ({ portfolioProjects }: { portfolioProjects: Array<{ i
                     {images.map((_, index) => (
                         <button
                             key={index}
+                            type="button"
                             onClick={() => setCurrentIndex(index)}
                             className={cn(
                                 "h-2 rounded-full transition-all duration-300",

@@ -85,6 +85,8 @@ export function PortfolioSection({ dict, lang, projects = [] }: PortfolioSection
                           alt={project.title}
                           fill
                           className="object-cover rounded-lg"
+                          quality={85}
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                         />
                       </div>
                       <h3 className="text-lg sm:text-xl md:text-2xl font-bold mb-2 text-card-foreground line-clamp-2">

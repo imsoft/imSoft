@@ -85,7 +85,7 @@ export function PricingSection({ dict, lang }: PricingSectionProps) {
           {tiers.map((tier) => (
             <div
               key={tier.slug}
-              className={`group relative rounded-2xl border p-8 flex flex-col gap-6 h-full transition-all duration-300 ease-out cursor-default ${
+              className={`group relative rounded-2xl border p-8 flex flex-col gap-6 h-full transition-all duration-300 ease-out cursor-pointer ${
                 tier.highlight
                   ? 'border-transparent bg-background shadow-2xl shadow-black/20 hover:shadow-3xl hover:-translate-y-2 hover:shadow-primary/25'
                   : 'border-white/80 bg-primary-foreground/10 hover:bg-primary-foreground/20 hover:border-white hover:-translate-y-2 hover:shadow-2xl hover:shadow-black/25'

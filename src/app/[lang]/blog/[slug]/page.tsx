@@ -259,8 +259,8 @@ export default async function BlogPostPage({ params }: {
             </header>
 
             {/* Featured image */}
-            {post.image_url && (
-              <div className="relative w-full h-[400px] mb-8 rounded-lg overflow-hidden">
+            <div className="relative w-full h-[400px] mb-8 rounded-lg overflow-hidden">
+              {post.image_url ? (
                 <Image
                   src={post.image_url}
                   alt={title}
@@ -270,8 +270,12 @@ export default async function BlogPostPage({ params }: {
                   quality={90}
                   sizes="(max-width: 896px) 100vw, 896px"
                 />
-              </div>
-            )}
+              ) : (
+                <div className="w-full h-full bg-linear-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+                  <span className="text-6xl opacity-30">📄</span>
+                </div>
+              )}
+            </div>
 
             {/* Content */}
             <div
