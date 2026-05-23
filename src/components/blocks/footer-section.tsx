@@ -260,6 +260,7 @@ export function FooterSection({ dict, lang, contactData }: FooterSectionProps) {
               {dict.footer.copyright.replace('{year}', new Date().getFullYear().toString())}
             </p>
             <button
+              type="button"
               onClick={openPreferences}
               className="text-sm underline underline-offset-4 hover:text-foreground transition-colors text-left sm:text-center"
             >
