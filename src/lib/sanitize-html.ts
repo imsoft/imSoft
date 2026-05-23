@@ -19,5 +19,9 @@ export function sanitizeBlogHtml(html: string): string {
         .replace(/\s+style="[^"]*"/gi, '')
         .replace(/\s+value="\d+"/gi, '');
       return `<${tag}${cleaned}>`;
-    });
+    })
+    // Merge <li><ul>...</ul></li> that follows a </li> into the previous <li>.
+    // Rich-text editors sometimes produce <ol><li>Heading</li><li><ul>sub-items</ul></li></ol>
+    // instead of the correct <ol><li>Heading<ul>sub-items</ul></li></ol>.
+    .replace(/<\/li>(\s*)<li>(\s*)<ul>/gi, '<ul>');
 }
