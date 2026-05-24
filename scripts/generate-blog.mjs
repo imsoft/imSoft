@@ -417,7 +417,6 @@ async function main() {
     image_url: imageUrl,
     category: category.value,
     author_id: BLOG_AUTHOR_ID,
-    author_name: 'Brandon Garcia',
     published: true,
   };
 
