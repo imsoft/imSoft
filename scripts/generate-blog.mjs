@@ -242,58 +242,90 @@ function buildSuccessEmail({ title_es, title_en, slug, category, imageUrl }) {
 
   return `<!DOCTYPE html>
 <html lang="es">
-<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/></head>
-<body style="margin:0;padding:0;background-color:#f1f5f9;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f1f5f9;padding:32px 16px;">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet"/>
+</head>
+<body style="margin:0;padding:0;background-color:#f0f4f8;font-family:'Open Sans','Segoe UI',Roboto,Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f0f4f8;padding:40px 16px;">
     <tr><td align="center">
-      <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
+      <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.10);">
 
-        <!-- Header -->
-        <tr><td style="background-color:#0f172a;border-radius:12px 12px 0 0;padding:32px 40px;text-align:center;">
-          <img src="${SITE_URL}/logos/logo-imsoft-blue.png" alt="imSoft" width="120" style="display:block;margin:0 auto 20px;height:auto;"/>
-          <div style="display:inline-block;background-color:#22c55e;border-radius:100px;padding:4px 16px;margin-bottom:12px;">
-            <span style="color:#fff;font-size:12px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;">✓ Publicación Exitosa</span>
-          </div>
-          <h1 style="color:#fff;margin:0;font-size:22px;font-weight:700;line-height:1.3;">
-            Nuevo artículo publicado en <span style="color:#a5b4fc;">imsoft.io</span>
+        <!-- Header con gradiente de marca -->
+        <tr><td style="background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 60%,#1a4a7a 100%);padding:40px 40px 32px;text-align:center;">
+          <img src="${SITE_URL}/logos/logo-imsoft-white.png" alt="imSoft" width="110" style="display:block;margin:0 auto 24px;height:auto;"/>
+          <!-- Badge éxito -->
+          <table cellpadding="0" cellspacing="0" style="margin:0 auto 16px;">
+            <tr><td style="background-color:#16a34a;border-radius:100px;padding:5px 18px;">
+              <span style="color:#ffffff;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;">✓ &nbsp;Publicación Exitosa</span>
+            </td></tr>
+          </table>
+          <h1 style="color:#ffffff;margin:0;font-size:22px;font-weight:700;line-height:1.4;letter-spacing:-0.01em;">
+            Nuevo artículo publicado en<br/><span style="color:#4A7FD4;">imsoft.io</span>
           </h1>
         </td></tr>
 
+        <!-- Divider accent -->
+        <tr><td style="background:linear-gradient(90deg,#4A7FD4,#1e9df0);height:3px;padding:0;font-size:0;line-height:0;">&nbsp;</td></tr>
+
         <!-- Body -->
         <tr><td style="background-color:#ffffff;padding:36px 40px;">
-          <h2 style="margin:0 0 16px;font-size:13px;font-weight:700;color:#6366f1;text-transform:uppercase;letter-spacing:0.08em;">Detalles del artículo</h2>
-          <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e2e8f0;border-radius:8px;overflow:hidden;margin-bottom:28px;">
+          <p style="margin:0 0 20px;font-size:13px;font-weight:700;color:#4A7FD4;text-transform:uppercase;letter-spacing:0.10em;">
+            Detalles del artículo
+          </p>
+
+          <!-- Tabla de datos -->
+          <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;margin-bottom:32px;">
             <tr style="background-color:#f8fafc;">
-              <td style="padding:12px 16px;font-size:13px;font-weight:600;color:#64748b;width:120px;border-bottom:1px solid #e2e8f0;">Título ES</td>
-              <td style="padding:12px 16px;font-size:14px;color:#0f172a;font-weight:500;border-bottom:1px solid #e2e8f0;">${title_es}</td>
+              <td style="padding:13px 18px;font-size:12px;font-weight:600;color:#64748b;width:110px;border-bottom:1px solid #e2e8f0;white-space:nowrap;">Título ES</td>
+              <td style="padding:13px 18px;font-size:14px;color:#0f172a;font-weight:600;border-bottom:1px solid #e2e8f0;">${title_es}</td>
             </tr>
             <tr>
-              <td style="padding:12px 16px;font-size:13px;font-weight:600;color:#64748b;border-bottom:1px solid #e2e8f0;">Título EN</td>
-              <td style="padding:12px 16px;font-size:14px;color:#0f172a;border-bottom:1px solid #e2e8f0;">${title_en}</td>
+              <td style="padding:13px 18px;font-size:12px;font-weight:600;color:#64748b;border-bottom:1px solid #e2e8f0;white-space:nowrap;">Título EN</td>
+              <td style="padding:13px 18px;font-size:14px;color:#475569;border-bottom:1px solid #e2e8f0;">${title_en}</td>
             </tr>
             <tr style="background-color:#f8fafc;">
-              <td style="padding:12px 16px;font-size:13px;font-weight:600;color:#64748b;border-bottom:1px solid #e2e8f0;">Categoría</td>
-              <td style="padding:12px 16px;font-size:14px;color:#0f172a;border-bottom:1px solid #e2e8f0;">${category}</td>
+              <td style="padding:13px 18px;font-size:12px;font-weight:600;color:#64748b;border-bottom:1px solid #e2e8f0;white-space:nowrap;">Categoría</td>
+              <td style="padding:13px 18px;font-size:14px;color:#0f172a;border-bottom:1px solid #e2e8f0;">
+                <span style="background-color:#dbeafe;color:#1e40af;font-size:12px;font-weight:600;padding:3px 10px;border-radius:100px;">${category}</span>
+              </td>
             </tr>
             <tr>
-              <td style="padding:12px 16px;font-size:13px;font-weight:600;color:#64748b;border-bottom:1px solid #e2e8f0;">Fecha</td>
-              <td style="padding:12px 16px;font-size:14px;color:#0f172a;border-bottom:1px solid #e2e8f0;">${date}</td>
+              <td style="padding:13px 18px;font-size:12px;font-weight:600;color:#64748b;border-bottom:1px solid #e2e8f0;white-space:nowrap;">Fecha</td>
+              <td style="padding:13px 18px;font-size:14px;color:#0f172a;border-bottom:1px solid #e2e8f0;">${date}</td>
             </tr>
             <tr style="background-color:#f8fafc;">
-              <td style="padding:12px 16px;font-size:13px;font-weight:600;color:#64748b;">Imagen</td>
-              <td style="padding:12px 16px;font-size:14px;color:#0f172a;">${imageUrl ? "✓ Generada con Imagen 4.0 Fast (Google)" : "Sin imagen (revisar GEMINI_API_KEY)"}</td>
+              <td style="padding:13px 18px;font-size:12px;font-weight:600;color:#64748b;white-space:nowrap;">Imagen</td>
+              <td style="padding:13px 18px;font-size:14px;color:#0f172a;">
+                ${imageUrl
+                  ? `<span style="color:#16a34a;font-weight:600;">✓ Generada con Imagen 4.0 (Google)</span>`
+                  : `<span style="color:#dc2626;">⚠ Sin imagen — revisar GEMINI_API_KEY</span>`}
+              </td>
             </tr>
           </table>
-          <div style="text-align:center;margin-bottom:8px;">
-            <a href="${postUrl}" style="display:inline-block;background-color:#6366f1;color:#ffffff;padding:13px 32px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:600;margin-right:12px;">Ver artículo →</a>
-            <a href="${SITE_URL}/es/dashboard/admin/blog" style="display:inline-block;background-color:#0f172a;color:#ffffff;padding:13px 32px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:600;">Dashboard</a>
-          </div>
+
+          <!-- CTAs -->
+          <table cellpadding="0" cellspacing="0" style="margin:0 auto;">
+            <tr>
+              <td style="padding-right:12px;">
+                <a href="${postUrl}" style="display:inline-block;background:linear-gradient(135deg,#4A7FD4,#1e9df0);color:#ffffff;padding:13px 28px;border-radius:10px;text-decoration:none;font-size:14px;font-weight:700;letter-spacing:0.01em;">
+                  Ver artículo →
+                </a>
+              </td>
+              <td>
+                <a href="${SITE_URL}/es/dashboard/admin/blog" style="display:inline-block;background-color:#0f172a;color:#94a3b8;padding:13px 28px;border-radius:10px;text-decoration:none;font-size:14px;font-weight:600;letter-spacing:0.01em;">
+                  Dashboard
+                </a>
+              </td>
+            </tr>
+          </table>
         </td></tr>
 
         <!-- Footer -->
-        <tr><td style="background-color:#0f172a;border-radius:0 0 12px 12px;padding:24px 40px;text-align:center;">
-          <p style="margin:0 0 6px;font-size:12px;color:#475569;">Generado automáticamente por el workflow de GitHub Actions</p>
-          <p style="margin:0;font-size:12px;color:#334155;">© ${new Date().getFullYear()} imSoft · Todos los derechos reservados</p>
+        <tr><td style="background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 100%);padding:24px 40px;text-align:center;">
+          <p style="margin:0 0 4px;font-size:12px;color:#64748b;">Generado automáticamente por el workflow de GitHub Actions</p>
+          <p style="margin:0;font-size:12px;color:#475569;">© ${new Date().getFullYear()} imSoft · Todos los derechos reservados</p>
         </td></tr>
 
       </table>
@@ -306,44 +338,97 @@ function buildSuccessEmail({ title_es, title_en, slug, category, imageUrl }) {
 function buildErrorEmail(errorMessage) {
   const date = new Date().toLocaleDateString("es-MX", { year: "numeric", month: "long", day: "numeric", hour: "2-digit", minute: "2-digit" });
 
+  // Escape HTML entities in error message to prevent rendering issues
+  const safeError = errorMessage
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+
   return `<!DOCTYPE html>
 <html lang="es">
-<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/></head>
-<body style="margin:0;padding:0;background-color:#f1f5f9;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f1f5f9;padding:32px 16px;">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet"/>
+</head>
+<body style="margin:0;padding:0;background-color:#f0f4f8;font-family:'Open Sans','Segoe UI',Roboto,Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f0f4f8;padding:40px 16px;">
     <tr><td align="center">
-      <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
+      <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.10);">
 
-        <!-- Header -->
-        <tr><td style="background-color:#0f172a;border-radius:12px 12px 0 0;padding:32px 40px;text-align:center;">
-          <img src="${SITE_URL}/logos/logo-imsoft-blue.png" alt="imSoft" width="120" style="display:block;margin:0 auto 20px;height:auto;"/>
-          <div style="display:inline-block;background-color:#ef4444;border-radius:100px;padding:4px 16px;margin-bottom:12px;">
-            <span style="color:#fff;font-size:12px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;">✗ Error en publicación</span>
-          </div>
-          <h1 style="color:#fff;margin:0;font-size:22px;font-weight:700;line-height:1.3;">
-            El artículo automático <span style="color:#fca5a5;">no se publicó</span>
+        <!-- Header con gradiente de marca -->
+        <tr><td style="background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 60%,#1a4a7a 100%);padding:40px 40px 32px;text-align:center;">
+          <img src="${SITE_URL}/logos/logo-imsoft-white.png" alt="imSoft" width="110" style="display:block;margin:0 auto 24px;height:auto;"/>
+          <!-- Badge error -->
+          <table cellpadding="0" cellspacing="0" style="margin:0 auto 16px;">
+            <tr><td style="background-color:#dc2626;border-radius:100px;padding:5px 18px;">
+              <span style="color:#ffffff;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;">✗ &nbsp;Error en Publicación</span>
+            </td></tr>
+          </table>
+          <h1 style="color:#ffffff;margin:0;font-size:22px;font-weight:700;line-height:1.4;letter-spacing:-0.01em;">
+            El artículo automático<br/><span style="color:#fca5a5;">no se publicó</span>
           </h1>
         </td></tr>
 
+        <!-- Divider accent rojo -->
+        <tr><td style="background:linear-gradient(90deg,#dc2626,#f87171);height:3px;padding:0;font-size:0;line-height:0;">&nbsp;</td></tr>
+
         <!-- Body -->
         <tr><td style="background-color:#ffffff;padding:36px 40px;">
-          <h2 style="margin:0 0 16px;font-size:13px;font-weight:700;color:#ef4444;text-transform:uppercase;letter-spacing:0.08em;">Detalle del error</h2>
-          <div style="background-color:#fef2f2;border:1px solid #fecaca;border-left:4px solid #ef4444;border-radius:0 8px 8px 0;padding:16px 20px;font-size:13px;font-family:monospace;line-height:1.6;color:#7f1d1d;white-space:pre-wrap;margin-bottom:28px;">${errorMessage}</div>
-          <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e2e8f0;border-radius:8px;overflow:hidden;margin-bottom:28px;">
+          <p style="margin:0 0 14px;font-size:13px;font-weight:700;color:#dc2626;text-transform:uppercase;letter-spacing:0.10em;">
+            Detalle del error
+          </p>
+
+          <!-- Bloque de error estilo terminal -->
+          <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
+            <tr><td style="background-color:#0f172a;border-radius:10px;padding:0;">
+              <!-- Barra de terminal -->
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr><td style="padding:10px 16px;border-bottom:1px solid #1e293b;">
+                  <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#ef4444;margin-right:6px;"></span>
+                  <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#f59e0b;margin-right:6px;"></span>
+                  <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#22c55e;margin-right:6px;"></span>
+                  <span style="font-size:11px;color:#475569;font-family:monospace;margin-left:6px;">error.log</span>
+                </td></tr>
+                <tr><td style="padding:16px 20px;font-size:12px;font-family:'Courier New',Courier,monospace;line-height:1.7;color:#fca5a5;white-space:pre-wrap;word-break:break-all;">${safeError}</td></tr>
+              </table>
+            </td></tr>
+          </table>
+
+          <!-- Tabla fecha -->
+          <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;margin-bottom:32px;">
             <tr style="background-color:#f8fafc;">
-              <td style="padding:12px 16px;font-size:13px;font-weight:600;color:#64748b;width:120px;">Fecha</td>
-              <td style="padding:12px 16px;font-size:14px;color:#0f172a;">${date}</td>
+              <td style="padding:13px 18px;font-size:12px;font-weight:600;color:#64748b;width:110px;white-space:nowrap;">Fecha</td>
+              <td style="padding:13px 18px;font-size:14px;color:#0f172a;font-weight:500;">${date}</td>
             </tr>
           </table>
-          <div style="text-align:center;">
-            <a href="https://github.com/imsoft/imSoft/actions" style="display:inline-block;background-color:#6366f1;color:#ffffff;padding:13px 32px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:600;">Ver logs en GitHub Actions →</a>
-          </div>
+
+          <!-- Pasos sugeridos -->
+          <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#fefce8;border:1px solid #fde68a;border-radius:12px;margin-bottom:32px;">
+            <tr><td style="padding:16px 20px;">
+              <p style="margin:0 0 8px;font-size:12px;font-weight:700;color:#92400e;text-transform:uppercase;letter-spacing:0.08em;">¿Qué hacer?</p>
+              <ul style="margin:0;padding-left:18px;font-size:13px;color:#78350f;line-height:1.8;">
+                <li>Revisa los logs completos en GitHub Actions</li>
+                <li>Verifica que los secrets de Supabase y Anthropic estén configurados</li>
+                <li>Comprueba que el esquema de la tabla <code style="background:#fde68a;padding:1px 4px;border-radius:4px;">blog</code> coincida con los campos del script</li>
+              </ul>
+            </td></tr>
+          </table>
+
+          <!-- CTA -->
+          <table cellpadding="0" cellspacing="0" style="margin:0 auto;">
+            <tr><td>
+              <a href="https://github.com/imsoft/imSoft/actions" style="display:inline-block;background:linear-gradient(135deg,#4A7FD4,#1e9df0);color:#ffffff;padding:13px 32px;border-radius:10px;text-decoration:none;font-size:14px;font-weight:700;letter-spacing:0.01em;">
+                Ver logs en GitHub Actions →
+              </a>
+            </td></tr>
+          </table>
         </td></tr>
 
         <!-- Footer -->
-        <tr><td style="background-color:#0f172a;border-radius:0 0 12px 12px;padding:24px 40px;text-align:center;">
-          <p style="margin:0 0 6px;font-size:12px;color:#475569;">Notificación automática del workflow de GitHub Actions</p>
-          <p style="margin:0;font-size:12px;color:#334155;">© ${new Date().getFullYear()} imSoft · Todos los derechos reservados</p>
+        <tr><td style="background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 100%);padding:24px 40px;text-align:center;">
+          <p style="margin:0 0 4px;font-size:12px;color:#64748b;">Notificación automática del workflow de GitHub Actions</p>
+          <p style="margin:0;font-size:12px;color:#475569;">© ${new Date().getFullYear()} imSoft · Todos los derechos reservados</p>
         </td></tr>
 
       </table>
@@ -417,7 +502,6 @@ async function main() {
     image_url: imageUrl,
     category: category.value,
     author_id: BLOG_AUTHOR_ID,
-    author_name: 'Brandon Garcia',
     published: true,
   };
 
