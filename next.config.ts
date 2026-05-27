@@ -13,10 +13,22 @@ const nextConfig: NextConfig = {
   images: {
     formats: ['image/avif', 'image/webp'],
     remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: '**',
-      },
+      // Supabase Storage (cualquier proyecto)
+      { protocol: 'https', hostname: '*.supabase.co' },
+      { protocol: 'https', hostname: '*.supabase.in' },
+      // Imágenes de stock / CDNs habituales
+      { protocol: 'https', hostname: 'images.unsplash.com' },
+      { protocol: 'https', hostname: '*.unsplash.com' },
+      { protocol: 'https', hostname: 'ik.imagekit.io' },
+      // Avatares de terceros
+      { protocol: 'https', hostname: 'lh3.googleusercontent.com' },
+      { protocol: 'https', hostname: 'avatars.githubusercontent.com' },
+      // CDN de imágenes adicionales
+      { protocol: 'https', hostname: 'res.cloudinary.com' },
+      // Placeholders usados en la UI
+      { protocol: 'https', hostname: 'tailark.com' },
+      { protocol: 'https', hostname: 'via.placeholder.com' },
+      { protocol: 'https', hostname: 'placehold.co' },
     ],
   },
   experimental: {

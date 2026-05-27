@@ -70,14 +70,6 @@
     "zod": "^4.4.3",
     "zustand": "^5.0.13"
   },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "core-js",
-      "msw",
-      "sharp",
-      "unrs-resolver"
-    ]
-  },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.0",
     "@tailwindcss/typography": "^0.5.19",

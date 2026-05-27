@@ -9,12 +9,12 @@ export function PortfolioSection({ dict, lang, projects = [] }: PortfolioSection
   const [isDesktop, setIsDesktop] = useState(false)
 
   useEffect(() => {
-    const checkDesktop = () => {
-      setIsDesktop(window.innerWidth >= 1024)
-    }
-    checkDesktop()
-    window.addEventListener('resize', checkDesktop)
-    return () => window.removeEventListener('resize', checkDesktop)
+    // Usar matchMedia en lugar de resize listener: más eficiente, sin polling
+    const mql = window.matchMedia('(min-width: 1024px)')
+    const onChange = () => setIsDesktop(mql.matches)
+    mql.addEventListener('change', onChange)
+    setIsDesktop(mql.matches)          // valor inicial real
+    return () => mql.removeEventListener('change', onChange)
   }, [])
   // Usar proyectos de la prop o proyectos de ejemplo si está vacío
   const displayProjects = projects.length > 0 ? projects : [
@@ -92,7 +92,7 @@ export function PortfolioSection({ dict, lang, projects = [] }: PortfolioSection
                       <h3 className="text-lg sm:text-xl md:text-2xl font-bold mb-2 text-card-foreground line-clamp-2">
                         {project.title}
                       </h3>
-                      <p className="text-sm sm:text-base text-muted-foreground flex-grow line-clamp-3">
+                      <p className="text-sm sm:text-base text-muted-foreground grow line-clamp-3">
                         {project.description}
                       </p>
                     </div>

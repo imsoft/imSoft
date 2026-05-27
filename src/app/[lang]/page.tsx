@@ -36,6 +36,9 @@ export async function generateMetadata({
   }, lang);
 }
 
+// Revalidar la página cada 5 minutos para mantener datos frescos sin golpear Supabase en cada request
+export const revalidate = 300;
+
 export default async function Home({ params }: {
   params: Promise<{ lang: string }>;
 }) {
@@ -43,32 +46,57 @@ export default async function Home({ params }: {
 
   if (!hasLocale(lang)) notFound();
 
-  const dict = await getDictionary(lang);
-  const supabase = await createClient();
-  
-  // Obtener datos de contacto
-  const { data: contactData } = await supabase
-    .from('contact')
-    .select('*')
-    .limit(1)
-    .maybeSingle();
+  const [dict, supabase] = await Promise.all([
+    getDictionary(lang),
+    createClient(),
+  ]);
 
-  // Obtener testimonios con información de empresas
-  const { data: testimonials = [] } = await supabase
-    .from('testimonials')
-    .select(`
-      id,
-      company,
-      company_id,
-      content_es,
-      content_en,
-      content,
-      companies (
-        name,
-        logo_url
-      )
-    `)
-    .order('created_at', { ascending: false });
+  // Todas las queries en paralelo para eliminar el waterfall de red
+  const [
+    { data: contactData },
+    { data: testimonials },
+    { data: portfolioData },
+    { data: companies },
+    { data: services },
+    blogResult,
+  ] = await Promise.all([
+    supabase.from('contact').select('*').limit(1).maybeSingle(),
+    supabase
+      .from('testimonials')
+      .select(`id, company, company_id, content_es, content_en, content, companies ( name, logo_url )`)
+      .order('created_at', { ascending: false }),
+    supabase.from('portfolio').select('*').order('created_at', { ascending: false }),
+    supabase
+      .from('companies')
+      .select('id, name, logo_url')
+      .not('logo_url', 'is', null)
+      .order('created_at', { ascending: false })
+      .limit(8),
+    supabase.from('services').select('*').order('created_at', { ascending: true }),
+    // Blog: intentar con admin client para bypass RLS
+    (async () => {
+      try {
+        const adminSupabase = createAdminClient();
+        return adminSupabase
+          .from('blog')
+          .select('id, title_es, title_en, title, slug')
+          .eq('published', true)
+          .order('created_at', { ascending: false });
+      } catch {
+        return supabase
+          .from('blog')
+          .select('id, title_es, title_en, title, slug')
+          .eq('published', true)
+          .order('created_at', { ascending: false });
+      }
+    })(),
+  ]);
+
+  if (blogResult.error) {
+    console.error('Error fetching blog posts:', blogResult.error);
+  }
+
+  const blogPosts = blogResult.data;
 
   // Formatear testimonios para incluir logo de empresa
   const formattedTestimonials = (testimonials || []).map((testimonial: any) => ({
@@ -81,12 +109,6 @@ export default async function Home({ params }: {
     content: testimonial.content,
   }));
 
-  // Obtener proyectos de portafolio
-  const { data: portfolioData } = await supabase
-    .from('portfolio')
-    .select('*')
-    .order('created_at', { ascending: false });
-
   // Mapear los proyectos según el idioma
   const projects = (portfolioData || []).map((project) => ({
     id: project.id,
@@ -98,52 +120,6 @@ export default async function Home({ params }: {
       : (project.description_es || project.description || ''),
     image: project.image_url || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop',
   }));
-
-  // Obtener logos de empresas/clientes
-  const { data: companies } = await supabase
-    .from('companies')
-    .select('id, name, logo_url')
-    .not('logo_url', 'is', null)
-    .order('created_at', { ascending: false })
-    .limit(8);
-
-  // Obtener servicios de la base de datos
-  const { data: services = [] } = await supabase
-    .from('services')
-    .select('*')
-    .order('created_at', { ascending: true });
-
-  // Obtener posts del blog para mostrar títulos aleatorios
-  // Usar cliente de administrador para evitar problemas de RLS
-  let blogPosts = null;
-  let blogError = null;
-  
-  try {
-    const adminSupabase = createAdminClient();
-    const result = await adminSupabase
-      .from('blog')
-      .select('id, title_es, title_en, title, slug')
-      .eq('published', true)
-      .order('created_at', { ascending: false });
-    
-    blogPosts = result.data;
-    blogError = result.error;
-  } catch (error) {
-    console.error('Error creating admin client:', error);
-    // Fallback: intentar con el cliente normal
-    const result = await supabase
-      .from('blog')
-      .select('id, title_es, title_en, title, slug')
-      .eq('published', true)
-      .order('created_at', { ascending: false });
-    
-    blogPosts = result.data;
-    blogError = result.error;
-  }
-
-  if (blogError) {
-    console.error('Error fetching blog posts:', blogError);
-  }
 
   // Mapear los títulos según el idioma
   const blogTitles = (blogPosts || []).map((post) => {

@@ -356,15 +356,17 @@ const PortfolioCarousel = ({ portfolioProjects }: { portfolioProjects: Array<{ i
                     className="bg-background aspect-[16/9] relative hidden rounded-2xl dark:block"
                     src="https://tailark.com//_next/image?url=%2Fmail2.png&w=3840&q=75"
                     alt="app screen"
-                    width={3840}
-                    height={2160}
+                    width={1280}
+                    height={720}
+                    sizes="(max-width: 768px) 100vw, (max-width: 1280px) 90vw, 1280px"
                 />
                 <Image
                     className="z-2 border-border/25 aspect-[16/9] relative rounded-2xl border dark:hidden"
                     src="https://tailark.com/_next/image?url=%2Fmail2-light.png&w=3840&q=75"
                     alt="app screen"
-                    width={3840}
-                    height={2160}
+                    width={1280}
+                    height={720}
+                    sizes="(max-width: 768px) 100vw, (max-width: 1280px) 90vw, 1280px"
                 />
             </>
         )
@@ -387,11 +389,11 @@ const PortfolioCarousel = ({ portfolioProjects }: { portfolioProjects: Array<{ i
                             className="w-full h-full object-cover rounded-2xl"
                             src={image}
                             alt={displayProjects[index]?.title || `Portfolio image ${index + 1}`}
-                            width={3840}
-                            height={2160}
+                            width={1280}
+                            height={720}
                             priority={index === 0}
                             loading={index === 0 ? 'eager' : 'lazy'}
-                            unoptimized={image.startsWith('http')}
+                            sizes="(max-width: 768px) 100vw, (max-width: 1280px) 90vw, 1280px"
                         />
                     </div>
                 )

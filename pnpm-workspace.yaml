@@ -1,10 +1,10 @@
 packages:
   - .
-allowBuilds:
-  msw: set this to true or false
-  unrs-resolver: set this to true or false
 onlyBuiltDependencies:
   - core-js
   - msw
   - sharp
+  - unrs-resolver
+approvedBuilds:
+  - msw
   - unrs-resolver

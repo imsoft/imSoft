@@ -1,5 +1,3 @@
-'use client'
-
 import Link from 'next/link'
 import { Check } from 'lucide-react'
 import type { Dictionary } from '@/app/[lang]/dictionaries'

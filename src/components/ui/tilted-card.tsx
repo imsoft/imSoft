@@ -78,7 +78,7 @@ export default function TiltedCard({
   return (
     <figure
       ref={ref}
-      className="relative w-full h-full [perspective:800px] flex flex-col items-center justify-center"
+      className="relative w-full h-full perspective-midrange flex flex-col items-center justify-center"
       style={{
         height: containerHeight,
         width: containerWidth
@@ -94,7 +94,7 @@ export default function TiltedCard({
       )}
 
       <motion.div
-        className="relative [transform-style:preserve-3d]"
+        className="relative transform-3d"
         style={{
           width: imageWidth,
           height: imageHeight,
@@ -103,18 +103,22 @@ export default function TiltedCard({
           scale
         }}
       >
+        {/* motion.img se mantiene aquí intencionalmente: el contexto 3D preserve-3d
+            es incompatible con el wrapper extra que inyecta next/image, lo cual
+            hace que la imagen desaparezca. loading="lazy" aporta la carga diferida. */}
         <motion.img
-          src={imageSrc}
+          src={typeof imageSrc === 'string' ? imageSrc : undefined}
           alt={altText}
-          className="absolute top-0 left-0 object-cover rounded-[15px] will-change-transform [transform:translateZ(0)]"
+          loading="lazy"
+          className="absolute top-0 left-0 object-cover rounded-[15px] will-change-transform transform-[translateZ(0)]"
           style={{
             width: imageWidth,
-            height: imageHeight
+            height: imageHeight,
           }}
         />
 
         {displayOverlayContent && overlayContent && (
-          <motion.div className="absolute top-0 left-0 z-[2] will-change-transform [transform:translateZ(30px)]">
+          <motion.div className="absolute top-0 left-0 z-2 will-change-transform transform-[translateZ(30px)]">
             {overlayContent}
           </motion.div>
         )}
@@ -122,7 +126,7 @@ export default function TiltedCard({
 
       {showTooltip && (
         <motion.figcaption
-          className="pointer-events-none absolute left-0 top-0 rounded-[4px] bg-white px-[10px] py-[4px] text-[10px] text-[#2d2d2d] opacity-0 z-[3] hidden sm:block"
+          className="pointer-events-none absolute left-0 top-0 rounded-[4px] bg-white px-[10px] py-[4px] text-[10px] text-[#2d2d2d] opacity-0 z-3 hidden sm:block"
           style={{
             x,
             y,

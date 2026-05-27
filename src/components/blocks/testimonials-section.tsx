@@ -42,6 +42,8 @@ export function TestimonialsSection({ dict, lang, testimonials = [] }: Testimoni
                           alt={companyName}
                           fill
                           className="object-contain p-1"
+                          sizes="48px"
+                          loading="lazy"
                         />
                       ) : (
                         <div className="flex items-center justify-center h-full w-full bg-muted">
