@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Check } from 'lucide-react'
+import { Check, ArrowRight } from 'lucide-react'
 import type { Dictionary } from '@/app/[lang]/dictionaries'
 
 interface PricingSectionProps {
@@ -138,11 +138,22 @@ export function PricingSection({ dict, lang }: PricingSectionProps) {
           ))}
         </div>
 
-        <p className="text-center text-sm text-primary-foreground/60 mt-10">
-          {isEs
-            ? '* Los precios son referencias orientativas. Cada proyecto recibe una propuesta con precio fijo en 48 horas.'
-            : '* Prices are indicative references. Every project receives a fixed-price proposal within 48 hours.'}
-        </p>
+        <div className="mt-12 flex flex-col items-center gap-4">
+          <Link
+            href={`/${lang}/contact`}
+            className="group inline-flex items-center justify-center gap-2 rounded-xl bg-background px-7 py-3.5 text-base font-semibold text-foreground transition-all duration-300 hover:bg-muted hover:shadow-xl hover:shadow-black/20 hover:-translate-y-0.5"
+          >
+            <span className="text-nowrap">
+              {isEs ? 'Cotiza tu proyecto gratis' : 'Get a free quote'}
+            </span>
+            <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+          </Link>
+          <p className="text-center text-sm text-primary-foreground/60 max-w-2xl">
+            {isEs
+              ? '* Los precios son referencias orientativas. Cada proyecto recibe una propuesta con precio fijo en 48 horas.'
+              : '* Prices are indicative references. Every project receives a fixed-price proposal within 48 hours.'}
+          </p>
+        </div>
       </div>
     </section>
   )

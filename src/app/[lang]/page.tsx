@@ -3,6 +3,8 @@ import { ServicesSection } from "@/components/blocks/services-section";
 import { PricingSection } from "@/components/blocks/pricing-section";
 import { PortfolioSection } from "@/components/blocks/portfolio-section";
 import { TestimonialsSection } from "@/components/blocks/testimonials-section";
+import { FaqSection } from "@/components/blocks/faq-section";
+import { FinalCtaSection } from "@/components/blocks/final-cta-section";
 import { FooterSection } from "@/components/blocks/footer-section";
 import { getDictionary, hasLocale } from './dictionaries';
 import { notFound } from 'next/navigation';
@@ -214,6 +216,8 @@ export default async function Home({ params }: {
         <PricingSection dict={dict} lang={lang} />
         <PortfolioSection dict={dict} lang={lang} projects={projects} />
         <TestimonialsSection dict={dict} lang={lang} testimonials={formattedTestimonials} />
+        <FaqSection dict={dict} lang={lang} />
+        <FinalCtaSection dict={dict} lang={lang} />
         <FooterSection dict={dict} lang={lang} contactData={contactData || undefined} />
       </div>
     </>
