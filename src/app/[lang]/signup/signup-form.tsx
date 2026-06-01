@@ -14,13 +14,15 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { PasswordInput } from "@/components/ui/password-input"
-import { useState } from "react"
+import { useRef, useState } from "react"
 import type { Dictionary, Locale } from '../dictionaries'
 import type { SignupFormProps } from '@/types/auth'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { GoogleButton } from '@/components/ui/google-button'
+import { Captcha } from '@/components/ui/captcha'
+import type { TurnstileInstance } from '@marsidev/react-turnstile'
 
 const createFormSchema = (dict: Dictionary) => z.object({
   firstName: z.string().min(2, {
@@ -60,6 +62,8 @@ export default function SignupForm({ dict, lang }: SignupFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
+  const [captchaToken, setCaptchaToken] = useState<string>()
+  const captchaRef = useRef<TurnstileInstance>(undefined)
   const router = useRouter()
 
   const formSchema = createFormSchema(dict)
@@ -81,12 +85,19 @@ export default function SignupForm({ dict, lang }: SignupFormProps) {
     setError(null)
     setSuccess(false)
 
+    if (!captchaToken) {
+      setError(dict.auth.signup.errors.captchaRequired)
+      setIsSubmitting(false)
+      return
+    }
+
     try {
       const supabase = createClient()
       const { error: signUpError } = await supabase.auth.signUp({
         email: values.email,
         password: values.password,
         options: {
+          captchaToken,
           emailRedirectTo: `${window.location.origin}/${lang}`,
           data: {
             first_name: values.firstName,
@@ -98,6 +109,9 @@ export default function SignupForm({ dict, lang }: SignupFormProps) {
       })
 
       if (signUpError) {
+        // El token se consume en cada intento: regenerar uno nuevo.
+        captchaRef.current?.reset()
+        setCaptchaToken(undefined)
         if (signUpError.message.includes('already registered')) {
           setError(dict.auth.signup.errors.emailExists)
         } else {
@@ -115,6 +129,8 @@ export default function SignupForm({ dict, lang }: SignupFormProps) {
         router.push(`/${lang}/login`)
       }, 2000)
     } catch (err) {
+      captchaRef.current?.reset()
+      setCaptchaToken(undefined)
       setError(dict.auth.signup.errors.emailExists)
       setIsSubmitting(false)
     }
@@ -260,6 +276,12 @@ export default function SignupForm({ dict, lang }: SignupFormProps) {
               {dict.auth.signup.success}
             </div>
           )}
+
+          <Captcha
+            ref={captchaRef}
+            onVerify={setCaptchaToken}
+            onExpireOrError={() => setCaptchaToken(undefined)}
+          />
 
           <div>
             <Button

@@ -34,7 +34,8 @@
         "invalidCredentials": "Credenciales inválidas",
         "emailRequired": "El correo electrónico es requerido",
         "passwordRequired": "La contraseña es requerida",
-        "invalidEmail": "Debe ser un correo electrónico válido"
+        "invalidEmail": "Debe ser un correo electrónico válido",
+        "captchaRequired": "Por favor, completa la verificación de seguridad"
       }
     },
     "signup": {
@@ -60,7 +61,8 @@
         "passwordMin": "La contraseña debe tener al menos 6 caracteres",
         "passwordsMatch": "Las contraseñas deben coincidir",
         "invalidEmail": "Debe ser un correo electrónico válido",
-        "emailExists": "Este correo electrónico ya está registrado"
+        "emailExists": "Este correo electrónico ya está registrado",
+        "captchaRequired": "Por favor, completa la verificación de seguridad"
       },
       "success": "Cuenta creada exitosamente. Por favor, verifica tu correo electrónico."
     },
@@ -75,7 +77,8 @@
       "errors": {
         "emailRequired": "El correo electrónico es requerido",
         "invalidEmail": "Debe ser un correo electrónico válido",
-        "generic": "Error al enviar el enlace. Por favor, intenta de nuevo."
+        "generic": "Error al enviar el enlace. Por favor, intenta de nuevo.",
+        "captchaRequired": "Por favor, completa la verificación de seguridad"
       }
     },
     "resetPassword": {

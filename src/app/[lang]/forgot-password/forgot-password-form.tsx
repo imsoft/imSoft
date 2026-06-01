@@ -13,10 +13,12 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { useState } from "react"
+import { useRef, useState } from "react"
 import type { Dictionary, Locale } from '../dictionaries'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
+import { Captcha } from '@/components/ui/captcha'
+import type { TurnstileInstance } from '@marsidev/react-turnstile'
 
 interface ForgotPasswordFormProps {
   dict: Dictionary
@@ -35,6 +37,8 @@ export default function ForgotPasswordForm({ dict, lang }: ForgotPasswordFormPro
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
+  const [captchaToken, setCaptchaToken] = useState<string>()
+  const captchaRef = useRef<TurnstileInstance>(undefined)
 
   const formSchema = createFormSchema(dict)
   
@@ -50,6 +54,12 @@ export default function ForgotPasswordForm({ dict, lang }: ForgotPasswordFormPro
     setError(null)
     setSuccess(false)
 
+    if (!captchaToken) {
+      setError(dict.auth.forgotPassword.errors.captchaRequired)
+      setIsSubmitting(false)
+      return
+    }
+
     try {
       const supabase = createClient()
       const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
@@ -57,9 +67,12 @@ export default function ForgotPasswordForm({ dict, lang }: ForgotPasswordFormPro
 
       const { error: resetError } = await supabase.auth.resetPasswordForEmail(values.email, {
         redirectTo,
+        captchaToken,
       })
 
       if (resetError) {
+        captchaRef.current?.reset()
+        setCaptchaToken(undefined)
         setError(dict.auth.forgotPassword.errors.generic)
         setIsSubmitting(false)
         return
@@ -70,6 +83,8 @@ export default function ForgotPasswordForm({ dict, lang }: ForgotPasswordFormPro
       setIsSubmitting(false)
       form.reset()
     } catch (err) {
+      captchaRef.current?.reset()
+      setCaptchaToken(undefined)
       setError(dict.auth.forgotPassword.errors.generic)
       setIsSubmitting(false)
     }
@@ -126,6 +141,12 @@ export default function ForgotPasswordForm({ dict, lang }: ForgotPasswordFormPro
             {error}
           </div>
         )}
+
+        <Captcha
+          ref={captchaRef}
+          onVerify={setCaptchaToken}
+          onExpireOrError={() => setCaptchaToken(undefined)}
+        />
 
         <div>
           <Button

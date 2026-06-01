@@ -14,13 +14,15 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { PasswordInput } from "@/components/ui/password-input"
-import { useState } from "react"
+import { useRef, useState } from "react"
 import type { Dictionary, Locale } from '../dictionaries'
 import type { LoginFormProps } from '@/types/auth'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { GoogleButton } from '@/components/ui/google-button'
+import { Captcha } from '@/components/ui/captcha'
+import type { TurnstileInstance } from '@marsidev/react-turnstile'
 
 const createFormSchema = (dict: Dictionary) => z.object({
   email: z.string().email({
@@ -36,6 +38,8 @@ const createFormSchema = (dict: Dictionary) => z.object({
 export default function LoginForm({ dict, lang }: LoginFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [captchaToken, setCaptchaToken] = useState<string>()
+  const captchaRef = useRef<TurnstileInstance>(undefined)
   const router = useRouter()
 
   const formSchema = createFormSchema(dict)
@@ -52,14 +56,24 @@ export default function LoginForm({ dict, lang }: LoginFormProps) {
     setIsSubmitting(true)
     setError(null)
 
+    if (!captchaToken) {
+      setError(dict.auth.login.errors.captchaRequired)
+      setIsSubmitting(false)
+      return
+    }
+
     try {
       const supabase = createClient()
       const { error: signInError } = await supabase.auth.signInWithPassword({
         email: values.email,
         password: values.password,
+        options: { captchaToken },
       })
 
       if (signInError) {
+        // El token se consume en cada intento: regenerar uno nuevo.
+        captchaRef.current?.reset()
+        setCaptchaToken(undefined)
         setError(dict.auth.login.errors.invalidCredentials)
         setIsSubmitting(false)
         return
@@ -87,6 +101,8 @@ export default function LoginForm({ dict, lang }: LoginFormProps) {
         window.location.href = `/${lang}`
       }
     } catch (err) {
+      captchaRef.current?.reset()
+      setCaptchaToken(undefined)
       setError(dict.auth.login.errors.invalidCredentials)
       setIsSubmitting(false)
     }
@@ -152,6 +168,12 @@ export default function LoginForm({ dict, lang }: LoginFormProps) {
               {error}
             </div>
           )}
+
+          <Captcha
+            ref={captchaRef}
+            onVerify={setCaptchaToken}
+            onExpireOrError={() => setCaptchaToken(undefined)}
+          />
 
           <div>
             <Button
