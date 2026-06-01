@@ -14,10 +14,12 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { useState } from "react"
+import { useRef, useState } from "react"
 import type { Dictionary } from '../dictionaries'
 import type { ContactFormProps } from '@/types/components'
 import Magnet from "@/components/ui/magnet"
+import { Captcha } from "@/components/ui/captcha"
+import type { TurnstileInstance } from '@marsidev/react-turnstile'
 
 const formValidation = (dict: Dictionary) => {
   const v = (dict.contact?.form as { validation?: Record<string, string> })?.validation;
@@ -43,6 +45,8 @@ const createFormSchema = (dict: Dictionary) => {
 export default function ContactForm({ dict }: ContactFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle')
+  const [captchaToken, setCaptchaToken] = useState<string>()
+  const captchaRef = useRef<TurnstileInstance>(undefined)
 
   const formSchema = createFormSchema(dict)
   
@@ -61,13 +65,19 @@ export default function ContactForm({ dict }: ContactFormProps) {
     setIsSubmitting(true)
     setSubmitStatus('idle')
 
+    if (!captchaToken) {
+      setSubmitStatus('error')
+      setIsSubmitting(false)
+      return
+    }
+
     try {
       const response = await fetch('/api/contact', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(values),
+        body: JSON.stringify({ ...values, captchaToken }),
       })
 
       const data = await response.json()
@@ -78,12 +88,17 @@ export default function ContactForm({ dict }: ContactFormProps) {
 
       setSubmitStatus('success')
       form.reset()
+      captchaRef.current?.reset()
+      setCaptchaToken(undefined)
 
       setTimeout(() => {
         setSubmitStatus('idle')
       }, 5000)
     } catch (error) {
       console.error('Error:', error)
+      // El token se consume en cada intento: regenerar uno nuevo.
+      captchaRef.current?.reset()
+      setCaptchaToken(undefined)
       setSubmitStatus('error')
 
       setTimeout(() => {
@@ -208,6 +223,12 @@ export default function ContactForm({ dict }: ContactFormProps) {
             {(dict.contact?.form as Record<string, string> | undefined)?.error ?? 'Error sending message. Please try again.'}
           </div>
         )}
+
+        <Captcha
+          ref={captchaRef}
+          onVerify={setCaptchaToken}
+          onExpireOrError={() => setCaptchaToken(undefined)}
+        />
 
         <div className="mt-8 flex justify-end">
           <Magnet padding={50} disabled={false} magnetStrength={10}>

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
 import { createClient } from '@supabase/supabase-js';
+import { verifyTurnstileToken } from '@/lib/turnstile';
 
 function buildContactEmailHtml({
   firstName,
@@ -122,12 +123,24 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { firstName, lastName, email, phoneNumber, message } = body;
+    const { firstName, lastName, email, phoneNumber, message, captchaToken } = body;
 
     // Validar datos requeridos
     if (!firstName || !lastName || !email || !message) {
       return NextResponse.json(
         { error: 'Faltan campos requeridos' },
+        { status: 400 }
+      );
+    }
+
+    // Verificar el captcha anti-bot antes de procesar nada.
+    const remoteIp = request.headers.get('cf-connecting-ip')
+      || request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+      || undefined;
+    const captchaOk = await verifyTurnstileToken(captchaToken, remoteIp);
+    if (!captchaOk) {
+      return NextResponse.json(
+        { error: 'Verificación de seguridad fallida. Recarga la página e inténtalo de nuevo.' },
         { status: 400 }
       );
     }
