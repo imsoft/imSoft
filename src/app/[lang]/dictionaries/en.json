@@ -731,8 +731,8 @@
       "s3_5Text": "Protect our services, detect and prevent fraud, abuse, illegal activities, and ensure the security of our systems and users.",
       "s3_6Label": "Legal compliance:",
       "s3_6Text": "Comply with legal obligations, respond to government requests, enforce our terms and conditions, and protect our legal rights.",
-      "s3_7Label": "Marketing (with your consent):",
-      "s3_7Text": "Send you marketing communications, promotions, special offers, and newsletters, only if you have given your explicit consent.",
+      "s3_7Label": "Marketing and updates (with opt-out):",
+      "s3_7Text": "If you have an account on our platform, we may send you communications about news, new articles from our blog, promotions, and newsletters. These communications are based on our legitimate interest in keeping our users informed. You may unsubscribe at any time using the cancellation link included in every email or by contacting us directly, without affecting the services you have contracted.",
       "s4Title": "4. Legal Basis for Processing",
       "s4Intro": "We process your personal information based on the following legal bases:",
       "s4_1": "Contract performance: when necessary to fulfill a contract you have with us or to take steps before entering into a contract.",
@@ -799,7 +799,7 @@
       "s14P": "If you believe that the processing of your personal data violates applicable data protection law, you have the right to file a complaint with the data protection supervisory authority in your country of residence. However, we recommend that you first contact us to try to resolve any concerns you may have.",
       "s15Title": "15. Contact",
       "s15P": "If you have questions, comments, concerns, or requests related to this Privacy Notice or our privacy practices, you can contact us through our contact page. We are committed to responding to your inquiries in a timely manner and working with you to resolve any concerns you may have about the processing of your personal data.",
-      "lastUpdated": "Last updated: January 2026. By using our services, you acknowledge that you have read, understood, and agree to the practices described in this Privacy Notice."
+      "lastUpdated": "Last updated: May 2026. By using our services, you acknowledge that you have read, understood, and agree to the practices described in this Privacy Notice."
     },
     "cookiePolicy": {
       "title": "Cookie Policy",
