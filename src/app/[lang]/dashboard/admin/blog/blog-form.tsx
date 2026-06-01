@@ -297,6 +297,8 @@ export function BlogForm({ dict, lang, post }: BlogFormProps) {
         image_url: values.image_url || null,
       }
 
+      let postId: string | null = null
+
       if (isEditing) {
         const { error } = await supabase
           .from('blog')
@@ -304,12 +306,33 @@ export function BlogForm({ dict, lang, post }: BlogFormProps) {
           .eq('id', post.id)
 
         if (error) throw error
+        postId = post.id
       } else {
-        const { error } = await supabase
+        const { data: inserted, error } = await supabase
           .from('blog')
           .insert([data])
+          .select('id')
+          .single()
 
         if (error) throw error
+        postId = inserted?.id ?? null
+      }
+
+      // Si el artículo está publicado, notificar a los usuarios por correo.
+      // La route es idempotente (no reenvía si ya se notificó antes), así que
+      // es seguro llamarla tanto al crear como al publicar desde una edición.
+      if (postId && data.published) {
+        try {
+          await fetch('/api/blog/notify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ postId, lang }),
+          })
+        } catch (notifyError) {
+          // No bloqueamos el guardado si falla el aviso: la route ya avisa al
+          // admin por correo del error.
+          console.error('Error triggering blog notification:', notifyError)
+        }
       }
 
       router.push(`/${lang}/dashboard/admin/blog`)
