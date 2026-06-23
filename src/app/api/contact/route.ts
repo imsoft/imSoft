@@ -20,7 +20,7 @@ function buildContactEmailHtml({
 }): string {
   const BRAND = '#6366f1';
   const BRAND_DARK = '#4f46e5';
-  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io';
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io';
 
   return `<!DOCTYPE html>
 <html lang="es">

@@ -328,13 +328,16 @@ export const HeroHeader = ({ dict, lang }: HeroHeaderProps) => {
 
 const PortfolioCarousel = ({ portfolioProjects }: { portfolioProjects: Array<{ id: string; title: string; description: string; image: string }> }) => {
     const [currentIndex, setCurrentIndex] = useState(0)
+    // Solo cargamos las imágenes ya mostradas: evita descargar TODO el carrusel
+    // en el primer render, que era la causa del LCP alto en móvil.
+    const [loaded, setLoaded] = useState<Set<number>>(() => new Set([0]))
 
     // Si no hay proyectos, usar imágenes por defecto
     const displayProjects = portfolioProjects.length > 0
         ? portfolioProjects
         : [
-            { id: '1', title: 'Default Image', description: '', image: 'https://tailark.com//_next/image?url=%2Fmail2.png&w=3840&q=75' },
-            { id: '2', title: 'Default Image Light', description: '', image: 'https://tailark.com/_next/image?url=%2Fmail2-light.png&w=3840&q=75' },
+            { id: '1', title: 'Default Image', description: '', image: 'https://tailark.com/_next/image?url=%2Fmail2.png&w=1280&q=75' },
+            { id: '2', title: 'Default Image Light', description: '', image: 'https://tailark.com/_next/image?url=%2Fmail2-light.png&w=1280&q=75' },
         ]
     
     const images = displayProjects.map(p => p.image)
@@ -343,7 +346,11 @@ const PortfolioCarousel = ({ portfolioProjects }: { portfolioProjects: Array<{ i
         if (images.length <= 1) return
 
         const interval = setInterval(() => {
-            setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length)
+            setCurrentIndex((prevIndex) => {
+                const next = (prevIndex + 1) % images.length
+                setLoaded((prev) => new Set(prev).add(next))
+                return next
+            })
         }, 2000) // Cambiar cada 2 segundos
 
         return () => clearInterval(interval)
@@ -385,16 +392,17 @@ const PortfolioCarousel = ({ portfolioProjects }: { portfolioProjects: Array<{ i
                             isActive ? "opacity-100 z-10" : "opacity-0 z-0"
                         )}
                     >
-                        <Image
-                            className="w-full h-full object-cover rounded-2xl"
-                            src={image}
-                            alt={displayProjects[index]?.title || `Portfolio image ${index + 1}`}
-                            width={1280}
-                            height={720}
-                            priority={index === 0}
-                            loading={index === 0 ? 'eager' : 'lazy'}
-                            sizes="(max-width: 768px) 100vw, (max-width: 1280px) 90vw, 1280px"
-                        />
+                        {loaded.has(index) && (
+                            <Image
+                                className="w-full h-full object-cover rounded-2xl"
+                                src={image}
+                                alt={displayProjects[index]?.title || `Portfolio image ${index + 1}`}
+                                width={1280}
+                                height={720}
+                                priority={index === 0}
+                                sizes="(max-width: 768px) 100vw, (max-width: 1280px) 90vw, 1280px"
+                            />
+                        )}
                     </div>
                 )
             })}
@@ -405,7 +413,10 @@ const PortfolioCarousel = ({ portfolioProjects }: { portfolioProjects: Array<{ i
                         <button
                             key={index}
                             type="button"
-                            onClick={() => setCurrentIndex(index)}
+                            onClick={() => {
+                                setLoaded((prev) => new Set(prev).add(index))
+                                setCurrentIndex(index)
+                            }}
                             className={cn(
                                 "h-2 rounded-full transition-all duration-300",
                                 index === currentIndex

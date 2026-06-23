@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io';
 const SITE_NAME = 'imSoft';
 
 /** Países donde ofrecéis servicio (schema.org / coherencia con SEO internacional). */

@@ -33,7 +33,7 @@ export async function generateMetadata({
 
   const title = lang === 'en' ? (service.title_en || service.title || '') : (service.title_es || service.title || '');
   const description = lang === 'en' ? (service.description_en || service.description || '') : (service.description_es || service.description || '');
-  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io';
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io';
 
   return generateSEOMetadata({
     title,
@@ -80,7 +80,7 @@ export default async function ServicePage({ params }: {
   const description = lang === 'en' ? (service.description_en || service.description || '') : (service.description_es || service.description || '');
   const benefits = lang === 'en' ? (service.benefits_en || service.benefits_es || []) : (service.benefits_es || service.benefits_en || []);
 
-  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io';
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io';
   const serviceUrl = `${SITE_URL}/${lang}/services/${slug}`;
   const serviceImage = service.image_url || `${SITE_URL}/logos/logo-imsoft-blue.png`;
 

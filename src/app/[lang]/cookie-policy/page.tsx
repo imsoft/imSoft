@@ -13,7 +13,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { lang } = await params;
 
-  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io';
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io';
   const url = `${SITE_URL}/${lang}/cookie-policy`;
 
   if (!hasLocale(lang)) return { title: 'Cookie Policy', description: '' };

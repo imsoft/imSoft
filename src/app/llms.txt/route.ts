@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io'
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 86400 // 24 horas

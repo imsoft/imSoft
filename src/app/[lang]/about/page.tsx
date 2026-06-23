@@ -15,7 +15,7 @@ export async function generateMetadata({
   params: Promise<{ lang: string }>;
 }): Promise<Metadata> {
   const { lang } = await params;
-  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io';
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io';
   return generateSEOMetadata({
     title: lang === 'es' ? 'Nosotros — imSoft' : 'About Us — imSoft',
     description: lang === 'es'
@@ -51,7 +51,7 @@ export default async function AboutPage({
     .maybeSingle();
 
   const isEs = lang === 'es';
-  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io';
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io';
 
   const whatsappUrl = `https://wa.me/523325365558?text=${encodeURIComponent(
     isEs

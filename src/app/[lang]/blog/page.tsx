@@ -19,7 +19,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { lang } = await params;
   const dict = await getDictionary(lang as 'es' | 'en');
-  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io';
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io';
   const url = `${SITE_URL}/${lang}/blog`;
 
   return generateSEOMetadata({
@@ -93,7 +93,7 @@ export default async function BlogPage({ params }: {
     slug: post.slug || post.id,
   }));
 
-  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io';
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io';
   
   // Breadcrumb structured data
   const breadcrumbStructuredData = generateStructuredData({

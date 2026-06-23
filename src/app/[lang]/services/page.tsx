@@ -7,7 +7,7 @@ import { createClient } from '@/lib/supabase/server';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
 import type { Metadata } from 'next';
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io';
 
 export async function generateMetadata({
   params,

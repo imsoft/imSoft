@@ -12,6 +12,7 @@ import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { generateMetadata as generateSEOMetadata, generateStructuredData } from '@/lib/seo';
 import { StructuredData } from '@/components/seo/structured-data';
+import { faqs } from '@/config/faq-data';
 import type { Metadata } from 'next';
 
 export async function generateMetadata({
@@ -20,7 +21,7 @@ export async function generateMetadata({
   params: Promise<{ lang: string }>;
 }): Promise<Metadata> {
   const { lang } = await params;
-  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io';
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io';
 
   return generateSEOMetadata({
     title: lang === 'es'
@@ -135,7 +136,7 @@ export default async function Home({ params }: {
     };
   });
 
-  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io';
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io';
   
   // Structured data para WebSite
   const websiteStructuredData = generateStructuredData({
@@ -204,11 +205,23 @@ export default async function Home({ params }: {
     },
   });
 
+  // Structured data FAQPage — habilita rich snippets de preguntas frecuentes en Google
+  const faqStructuredData = generateStructuredData({
+    type: 'FAQPage',
+    data: {
+      questions: faqs[lang === 'en' ? 'en' : 'es'].map((f) => ({
+        question: f.q,
+        answer: f.a,
+      })),
+    },
+  });
+
   return (
     <>
       <StructuredData data={websiteStructuredData} id="website-structured-data" />
       <StructuredData data={organizationStructuredData} id="organization-structured-data" />
       <StructuredData data={localBusinessStructuredData} id="local-business-structured-data" />
+      <StructuredData data={faqStructuredData} id="faq-structured-data" />
       {reviewsStructuredData && <StructuredData data={reviewsStructuredData} id="reviews-structured-data" />}
       <div className="overflow-x-hidden w-full">
         <HeroSection dict={dict} lang={lang} companies={companies || []} portfolioProjects={projects} blogTitles={blogTitles} />

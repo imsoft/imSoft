@@ -4,7 +4,7 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import type { City, Industry } from '@/types/landing-pages';
 import { hreflangLanguageAlternates } from '@/lib/seo';
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Intentar usar cliente de administrador primero para evitar problemas de RLS

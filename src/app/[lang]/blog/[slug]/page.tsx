@@ -66,7 +66,7 @@ export async function generateMetadata({
     ? (post.excerpt_en || post.excerpt || '')
     : (post.excerpt_es || post.excerpt || '');
 
-  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io';
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io';
   const url = `${SITE_URL}/${lang}/blog/${slug}`;
   const image = post.image_url || `${SITE_URL}/logos/logo-imsoft-blue.png`;
   const publishedTime = post.created_at || new Date().toISOString();
@@ -156,7 +156,7 @@ export default async function BlogPostPage({ params }: {
     { year: 'numeric', month: 'long', day: 'numeric' }
   );
 
-  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io';
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io';
   const articleUrl = `${SITE_URL}/${lang}/blog/${slug}`;
   const articleImage = post.image_url || `${SITE_URL}/logos/logo-imsoft-blue.png`;
   const publishedTime = post.created_at || new Date().toISOString();

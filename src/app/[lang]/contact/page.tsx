@@ -18,7 +18,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { lang } = await params;
 
-  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io';
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io';
   const url = `${SITE_URL}/${lang}/contact`;
 
   if (!hasLocale(lang)) return generateSEOMetadata({}, lang);
@@ -55,7 +55,7 @@ export default async function ContactPage({ params }: {
     .limit(1)
     .maybeSingle();
 
-  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io';
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io';
   
   // Structured data para ContactPage
   const contactStructuredData = contactData ? {

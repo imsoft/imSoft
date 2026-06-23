@@ -301,7 +301,7 @@ Responde SOLO con un JSON válido con esta estructura:
                         </td>
                         <!-- Botón Formulario de Contacto -->
                         <td>
-                          <a href="https://imsoft.io/contact"
+                          <a href="https://www.imsoft.io/contact"
                              style="display: inline-block; background: #6B7280; color: white; text-align: center; padding: 10px 18px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 13px; white-space: nowrap;">
                             📝 Formulario
                           </a>
@@ -351,7 +351,7 @@ Responde SOLO con un JSON válido con esta estructura:
                         </a>
                       </div>
                       <div>
-                        <a href="https://imsoft.io" style="color:#2563eb; text-decoration:none;">
+                        <a href="https://www.imsoft.io" style="color:#2563eb; text-decoration:none;">
                           imsoft.io
                         </a>
                       </div>

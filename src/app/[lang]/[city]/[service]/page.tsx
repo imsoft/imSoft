@@ -9,6 +9,8 @@ import { landingPagesData } from '@/config/landing-pages-data';
 import type { City, Industry } from '@/types/landing-pages';
 import { getDictionary } from '@/app/[lang]/dictionaries';
 import { createClient } from '@/lib/supabase/server';
+import { generateStructuredData } from '@/lib/seo';
+import { StructuredData } from '@/components/seo/structured-data';
 
 interface PageProps {
   params: Promise<{
@@ -72,11 +74,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       description: pageData.seoDescription,
       type: 'website',
       locale: lang === 'es' ? 'es_MX' : 'en_US',
-      url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io'}/${lang}/${city}/${service}`,
+      url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io'}/${lang}/${city}/${service}`,
       siteName: 'imSoft',
       images: [
         {
-          url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io'}/og-image.jpg`,
+          url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io'}/og-image.jpg`,
           width: 1200,
           height: 630,
           alt: pageData.h1,
@@ -87,14 +89,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       card: 'summary_large_image',
       title: pageData.seoTitle,
       description: pageData.seoDescription,
-      images: [`${process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io'}/og-image.jpg`],
+      images: [`${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io'}/og-image.jpg`],
     },
     alternates: {
-      canonical: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io'}/${lang}/${city}/${service}`,
+      canonical: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io'}/${lang}/${city}/${service}`,
       languages: {
-        'es': `${process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io'}/es/${city}/${service}`,
-        'en': `${process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io'}/en/${city}/${service}`,
-        'x-default': `${process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io'}/es/${city}/${service}`,
+        'es': `${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io'}/es/${city}/${service}`,
+        'en': `${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io'}/en/${city}/${service}`,
+        'x-default': `${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io'}/es/${city}/${service}`,
       },
     },
     robots: {
@@ -148,12 +150,12 @@ export default async function LandingPage({ params }: PageProps) {
     '@type': 'WebPage',
     name: pageData.seoTitle,
     description: pageData.seoDescription,
-    url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io'}/${lang}/${city}/${service}`,
+    url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io'}/${lang}/${city}/${service}`,
     provider: {
       '@type': 'Organization',
       name: 'imSoft',
-      url: process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io',
-      logo: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io'}/logo.png`,
+      url: process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io',
+      logo: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io'}/logo.png`,
       contactPoint: {
         '@type': 'ContactPoint',
         contactType: 'Sales',
@@ -170,6 +172,19 @@ export default async function LandingPage({ params }: PageProps) {
     },
   };
 
+  // BreadcrumbList — migas de pan en el SERP (Inicio › Servicios › esta landing)
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io';
+  const breadcrumbStructuredData = generateStructuredData({
+    type: 'BreadcrumbList',
+    data: {
+      items: [
+        { name: lang === 'es' ? 'Inicio' : 'Home', url: `${baseUrl}/${lang}` },
+        { name: lang === 'es' ? 'Servicios' : 'Services', url: `${baseUrl}/${lang}/services` },
+        { name: pageData.h1, url: `${baseUrl}/${lang}/${city}/${service}` },
+      ],
+    },
+  });
+
   return (
     <>
       {/* Structured Data */}
@@ -179,6 +194,7 @@ export default async function LandingPage({ params }: PageProps) {
           __html: JSON.stringify(structuredData),
         }}
       />
+      <StructuredData data={breadcrumbStructuredData} id="breadcrumb-structured-data" />
 
       <div className="overflow-x-hidden w-full">
         {/* Hero Section */}

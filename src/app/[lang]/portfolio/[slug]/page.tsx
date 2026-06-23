@@ -30,7 +30,7 @@ export async function generateMetadata({
 
   const title = lang === 'en' ? (data.title_en || data.title_es || '') : (data.title_es || data.title_en || '');
   const description = lang === 'en' ? (data.description_en || data.description_es || '') : (data.description_es || data.description_en || '');
-  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io';
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io';
 
   return generateSEOMetadata({
     title,
@@ -92,7 +92,7 @@ export default async function PortfolioDetailPage({
     ? (project.client_quote_es || null)
     : (project.client_quote_en || null);
 
-  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://imsoft.io';
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io';
 
   const whatsappUrl = `https://wa.me/523325365558?text=${encodeURIComponent(
     isEs

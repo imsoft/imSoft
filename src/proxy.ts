@@ -5,7 +5,9 @@ import Negotiator from 'negotiator'
 import { createServerClient } from '@supabase/ssr'
 
 const locales = ['en', 'es']
-const defaultLocale = 'en'
+// Negocio mexicano con mercado principal en español: el idioma por defecto debe
+// ser 'es' para usuarios/bots sin preferencia clara (coincide con x-default=es).
+const defaultLocale = 'es'
 
 function getLocale(request: NextRequest): string {
   const headers = {
