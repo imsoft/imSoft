@@ -49,6 +49,12 @@ supabase/.temp/
 # claude code
 .claude/
 
+# prospección / cold outreach (datos privados — no commitear)
+scripts/prospects/prospects.csv
+scripts/prospects/sent-log.csv
+scripts/prospects/preview.html
+scripts/prospects/*.local.csv
+
 # editors
 .idea/
 *.swp
