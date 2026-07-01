@@ -8,6 +8,8 @@ import { StructuredData } from '@/components/seo/structured-data';
 import { Check } from 'lucide-react';
 import Magnet from '@/components/ui/magnet';
 import type { Metadata } from 'next';
+import { ScrollReveal } from "@/components/animations/scroll-reveal";
+import { Counter } from "@/components/animations/counter";
 
 export async function generateMetadata({
   params,
@@ -110,7 +112,7 @@ export default async function AboutPage({
 
           {/* ── Hero ── */}
           <section className="py-20 md:py-28 bg-background">
-            <div className="mx-auto max-w-4xl px-6 text-center">
+            <ScrollReveal className="mx-auto max-w-4xl px-6 text-center" direction="up">
               <div className="inline-flex items-center gap-2 bg-primary/10 text-primary rounded-full px-4 py-2 text-sm font-semibold mb-6">
                 <span>🏢</span>
                 <span>{isEs ? 'Guadalajara, México' : 'Guadalajara, Mexico'}</span>
@@ -123,14 +125,14 @@ export default async function AboutPage({
                   ? 'Somos un equipo de desarrolladores y diseñadores en Guadalajara que cree que la tecnología bien hecha cambia negocios reales. Cada proyecto que salimos a construir lo tratamos como si fuera el nuestro.'
                   : "We're a team of developers and designers in Guadalajara who believe that well-crafted technology changes real businesses. Every project we take on, we treat as if it were our own."}
               </p>
-            </div>
+            </ScrollReveal>
           </section>
 
           {/* ── Historia ── */}
           <section className="py-16 md:py-24 bg-primary text-primary-foreground">
             <div className="mx-auto max-w-5xl px-6">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-                <div>
+                <ScrollReveal direction="left">
                   <h2 className="text-3xl md:text-4xl font-bold mb-6 text-primary-foreground">
                     {isEs ? '¿Por qué existe imSoft?' : 'Why does imSoft exist?'}
                   </h2>
@@ -151,8 +153,8 @@ export default async function AboutPage({
                         : 'Today we work with companies of all sizes — from founders launching their first MVP to corporations needing to digitize complex operations.'}
                     </p>
                   </div>
-                </div>
-                <div className="grid grid-cols-2 gap-6">
+                </ScrollReveal>
+                <ScrollReveal direction="right" delay={0.2} className="grid grid-cols-2 gap-6">
                   {[
                     { number: '50+', label: isEs ? 'Proyectos entregados' : 'Projects delivered' },
                     {
@@ -177,11 +179,13 @@ export default async function AboutPage({
                       key={i}
                       className="bg-primary-foreground/10 rounded-2xl p-6 text-center border border-white/20 transition-all duration-300 hover:bg-primary-foreground/20 hover:border-white/40 hover:-translate-y-1 hover:shadow-lg"
                     >
-                      <div className="text-4xl font-black text-primary-foreground mb-2">{stat.number}</div>
+                      <div className="text-4xl font-black text-primary-foreground mb-2">
+                        <Counter value={stat.number} />
+                      </div>
                       <div className="text-sm text-primary-foreground/85">{stat.label}</div>
                     </div>
                   ))}
-                </div>
+                </ScrollReveal>
               </div>
             </div>
           </section>
@@ -189,7 +193,7 @@ export default async function AboutPage({
           {/* ── Valores ── */}
           <section className="py-16 md:py-24 bg-background">
             <div className="mx-auto max-w-7xl px-6">
-              <div className="text-center mb-14">
+              <ScrollReveal className="text-center mb-14" direction="up">
                 <h2 className="text-3xl md:text-4xl font-bold mb-3">
                   {isEs ? 'Lo que nos guía' : 'What guides us'}
                 </h2>
@@ -198,14 +202,16 @@ export default async function AboutPage({
                     ? 'Cuatro principios que definen cómo trabajamos en cada proyecto.'
                     : 'Four principles that define how we work on every project.'}
                 </p>
-              </div>
+              </ScrollReveal>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                 {values.map((value, i) => (
-                  <div key={i} className="bg-muted/40 rounded-2xl p-6 border border-border">
-                    <div className="text-4xl mb-4">{value.icon}</div>
-                    <h3 className="font-bold text-lg mb-2">{value.title}</h3>
-                    <p className="text-muted-foreground text-sm leading-relaxed">{value.description}</p>
-                  </div>
+                  <ScrollReveal key={i} direction="up" delay={i * 0.1}>
+                    <div className="bg-muted/40 rounded-2xl p-6 border border-border h-full">
+                      <div className="text-4xl mb-4">{value.icon}</div>
+                      <h3 className="font-bold text-lg mb-2">{value.title}</h3>
+                      <p className="text-muted-foreground text-sm leading-relaxed">{value.description}</p>
+                    </div>
+                  </ScrollReveal>
                 ))}
               </div>
             </div>
@@ -214,7 +220,7 @@ export default async function AboutPage({
           {/* ── Por qué elegirnos ── */}
           <section className="py-16 md:py-24 bg-background">
             <div className="mx-auto max-w-4xl px-6">
-              <div className="text-center mb-12">
+              <ScrollReveal className="text-center mb-12" direction="up">
                 <h2 className="text-3xl md:text-4xl font-bold mb-3">
                   {isEs ? '¿Por qué trabajar con imSoft?' : 'Why work with imSoft?'}
                 </h2>
@@ -223,21 +229,23 @@ export default async function AboutPage({
                     ? 'Las cosas concretas que nos diferencian de otras agencias.'
                     : 'The concrete things that set us apart from other agencies.'}
                 </p>
-              </div>
+              </ScrollReveal>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {differentiators.map((item, i) => (
-                  <div key={i} className="flex items-start gap-3 bg-muted/40 rounded-xl p-4 border border-border">
-                    <Check className="h-5 w-5 text-primary mt-0.5 shrink-0" />
-                    <span className="text-sm text-muted-foreground leading-relaxed">{item}</span>
-                  </div>
+                  <ScrollReveal key={i} direction="up" delay={i * 0.05}>
+                    <div className="flex items-start gap-3 bg-muted/40 rounded-xl p-4 border border-border h-full">
+                      <Check className="h-5 w-5 text-primary mt-0.5 shrink-0" />
+                      <span className="text-sm text-muted-foreground leading-relaxed">{item}</span>
+                    </div>
+                  </ScrollReveal>
                 ))}
               </div>
             </div>
           </section>
 
           {/* ── CTA Banner ── */}
-          <section className="bg-primary py-20 px-6">
-            <div className="mx-auto max-w-2xl text-center">
+          <section className="bg-primary py-20 px-6 overflow-hidden">
+            <ScrollReveal className="mx-auto max-w-2xl text-center" direction="up">
               <h2 className="text-3xl md:text-4xl font-bold text-primary-foreground mb-4">
                 {isEs ? '¿Listo para trabajar juntos?' : 'Ready to work together?'}
               </h2>
@@ -259,7 +267,7 @@ export default async function AboutPage({
                   {isEs ? 'Agendar llamada gratuita' : 'Schedule a free call'}
                 </a>
               </Magnet>
-            </div>
+            </ScrollReveal>
           </section>
 
         </main>

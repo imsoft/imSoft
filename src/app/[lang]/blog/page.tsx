@@ -18,6 +18,7 @@ import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { generateMetadata as generateSEOMetadata, generateStructuredData } from '@/lib/seo';
 import { StructuredData } from '@/components/seo/structured-data';
 import type { Metadata } from 'next';
+import { ScrollReveal } from "@/components/animations/scroll-reveal";
 
 export async function generateMetadata({
   params,
@@ -121,14 +122,14 @@ export default async function BlogPage({ params }: {
         <main className="pt-24">
         <section className="py-16 md:py-24 bg-background">
           <div className="mx-auto max-w-7xl px-6">
-            <div className="text-center mb-12">
+            <ScrollReveal className="text-center mb-12" direction="up">
               <h1 className="text-4xl md:text-5xl font-bold mb-4">
                 {dict.blog?.title ?? 'Blog'}
               </h1>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                 {dict.blog?.subtitle ?? ''}
               </p>
-            </div>
+            </ScrollReveal>
             
             {blogPosts.length === 0 ? (
               <Empty className="py-16">
@@ -143,41 +144,42 @@ export default async function BlogPage({ params }: {
               </Empty>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {blogPosts.map((post) => (
-                  <Link
-                    key={post.id}
-                    href={`/${lang}/blog/${post.slug}`}
-                    className="group"
-                  >
-                    <Card className="overflow-hidden h-full transition-all hover:shadow-xl bg-white dark:bg-gray-900">
-                      <div className="relative w-full h-48">
-                        <Image
-                          src={post.image}
-                          alt={post.title}
-                          fill
-                          className="object-cover transition-transform group-hover:scale-105"
-                          quality={90}
-                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        />
-                      </div>
-                      <CardContent className="p-6 flex flex-col grow">
-                        <h3 className="text-2xl font-bold mb-2 text-card-foreground">
-                          {post.title}
-                        </h3>
-                        <p className="text-muted-foreground mb-4 grow">
-                          {post.excerpt}
-                        </p>
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm text-muted-foreground">
-                            {post.date}
-                          </span>
-                          <span className="text-sm font-medium text-primary">
-                            {dict.blog?.readMore ?? 'Read more'} →
-                          </span>
+                {blogPosts.map((post, i) => (
+                  <ScrollReveal key={post.id} direction="up" delay={i * 0.1}>
+                    <Link
+                      href={`/${lang}/blog/${post.slug}`}
+                      className="group"
+                    >
+                      <Card className="overflow-hidden h-full transition-all hover:shadow-xl bg-white dark:bg-gray-900">
+                        <div className="relative w-full h-48">
+                          <Image
+                            src={post.image}
+                            alt={post.title}
+                            fill
+                            className="object-cover transition-transform group-hover:scale-105"
+                            quality={90}
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          />
                         </div>
-                      </CardContent>
-                    </Card>
-                  </Link>
+                        <CardContent className="p-6 flex flex-col grow">
+                          <h3 className="text-2xl font-bold mb-2 text-card-foreground">
+                            {post.title}
+                          </h3>
+                          <p className="text-muted-foreground mb-4 grow">
+                            {post.excerpt}
+                          </p>
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-muted-foreground">
+                              {post.date}
+                            </span>
+                            <span className="text-sm font-medium text-primary">
+                              {dict.blog?.readMore ?? 'Read more'} →
+                            </span>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </Link>
+                  </ScrollReveal>
                 ))}
               </div>
             )}

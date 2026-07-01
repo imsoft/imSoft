@@ -2,6 +2,7 @@ import TiltedCard from "@/components/ui/tilted-card"
 import type { ServicesSectionProps } from '@/types/components'
 import type { Service } from '@/types/database'
 import Link from 'next/link'
+import { ScrollReveal } from "@/components/animations/scroll-reveal"
 
 interface ServicesSectionClientProps extends ServicesSectionProps {
   services: Service[]
@@ -23,55 +24,56 @@ export function ServicesSection({ dict, lang, services }: ServicesSectionClientP
   return (
     <section id="services" className="py-16 md:py-24 bg-background">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <div className="text-center mb-12">
+        <ScrollReveal className="text-center mb-12" direction="up">
           <h2 className="text-4xl md:text-5xl font-bold mb-4">
             {dict.services.title}
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             {dict.services.subtitle}
           </p>
-        </div>
+        </ScrollReveal>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {displayServices.map((service) => (
-            <Link
-              key={service.id}
-              href={`/${lang}/services/${service.slug}`}
-              className="flex flex-col items-center group cursor-pointer"
-            >
-              <TiltedCard
-                imageSrc={service.imageSrc}
-                altText={service.altText}
-                captionText={service.title}
-                containerHeight="300px"
-                containerWidth="100%"
-                imageHeight="300px"
-                imageWidth="100%"
-                rotateAmplitude={12}
-                scaleOnHover={1.1}
-                showMobileWarning={false}
-                showTooltip={false}
-                displayOverlayContent={true}
-                overlayContent={
-                  <div
-                    className="px-4 py-2 inline-block m-6"
-                    style={{
-                      backgroundColor: 'oklch(from var(--primary) l c h / 0.8)',
-                      borderRadius: 'var(--radius-md)',
-                      fontFamily: 'var(--font-sans)'
-                    }}
-                  >
-                    <p
-                      className="font-bold text-sm whitespace-nowrap"
+          {displayServices.map((service, i) => (
+            <ScrollReveal key={service.id} direction="up" delay={i * 0.1}>
+              <Link
+                href={`/${lang}/services/${service.slug}`}
+                className="flex flex-col items-center group cursor-pointer"
+              >
+                <TiltedCard
+                  imageSrc={service.imageSrc}
+                  altText={service.altText}
+                  captionText={service.title}
+                  containerHeight="300px"
+                  containerWidth="100%"
+                  imageHeight="300px"
+                  imageWidth="100%"
+                  rotateAmplitude={12}
+                  scaleOnHover={1.1}
+                  showMobileWarning={false}
+                  showTooltip={false}
+                  displayOverlayContent={true}
+                  overlayContent={
+                    <div
+                      className="px-4 py-2 inline-block m-6"
                       style={{
-                        color: 'var(--secondary-foreground)'
+                        backgroundColor: 'oklch(from var(--primary) l c h / 0.8)',
+                        borderRadius: 'var(--radius-md)',
+                        fontFamily: 'var(--font-sans)'
                       }}
                     >
-                      {service.title}
-                    </p>
-                  </div>
-                }
-              />
-            </Link>
+                      <p
+                        className="font-bold text-sm whitespace-nowrap"
+                        style={{
+                          color: 'var(--secondary-foreground)'
+                        }}
+                      >
+                        {service.title}
+                      </p>
+                    </div>
+                  }
+                />
+              </Link>
+            </ScrollReveal>
           ))}
         </div>
       </div>

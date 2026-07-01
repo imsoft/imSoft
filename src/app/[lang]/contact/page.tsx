@@ -10,6 +10,7 @@ import { formatPhoneNumber } from '@/lib/utils/format-phone';
 import { generateMetadata as generateSEOMetadata, generateStructuredData } from '@/lib/seo';
 import { StructuredData } from '@/components/seo/structured-data';
 import type { Metadata } from 'next';
+import { ScrollReveal } from "@/components/animations/scroll-reveal";
 
 export async function generateMetadata({
   params,
@@ -93,10 +94,10 @@ export default async function ContactPage({ params }: {
       <div>
         <HeroHeader dict={dict} lang={lang} />
         <main className="pt-24">
-        <div className="relative isolate bg-background">
+        <div className="relative isolate bg-background overflow-hidden">
           <div className="mx-auto grid max-w-7xl grid-cols-1 lg:grid-cols-2">
             {/* Columna izquierda - Información de contacto */}
-            <div className="relative px-6 pt-24 pb-20 sm:pt-32 lg:static lg:px-8 lg:py-48">
+            <ScrollReveal direction="left" className="relative px-6 pt-24 pb-20 sm:pt-32 lg:static lg:px-8 lg:py-48">
               <div className="mx-auto max-w-xl lg:mx-0 lg:max-w-lg">
                 <h2 className="text-4xl font-semibold tracking-tight text-pretty text-foreground sm:text-5xl">
                   {dict.contact?.getInTouch ?? 'Get in touch'}
@@ -150,14 +151,14 @@ export default async function ContactPage({ params }: {
                   )}
                 </dl>
               </div>
-            </div>
+            </ScrollReveal>
             
             {/* Columna derecha - Formulario */}
-            <div className="px-6 pt-20 pb-24 sm:pb-32 lg:px-8 lg:py-48">
+            <ScrollReveal direction="right" delay={0.2} className="px-6 pt-20 pb-24 sm:pb-32 lg:px-8 lg:py-48">
               <div className="mx-auto max-w-xl lg:mr-0 lg:max-w-lg">
                 <ContactForm dict={dict} />
               </div>
-            </div>
+            </ScrollReveal>
           </div>
         </div>
       </main>

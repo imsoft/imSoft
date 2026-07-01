@@ -5,6 +5,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 import type { PortfolioSectionProps } from '@/types/components'
+import { ScrollReveal } from "@/components/animations/scroll-reveal"
 
 export function PortfolioGrid({ dict, lang, projects = [] }: PortfolioSectionProps) {
   // Usar proyectos de la prop o proyectos de ejemplo si está vacío
@@ -35,18 +36,18 @@ export function PortfolioGrid({ dict, lang, projects = [] }: PortfolioSectionPro
   return (
     <section className="py-16 md:py-24 bg-background overflow-x-hidden">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <div className="text-center mb-12">
+        <ScrollReveal className="text-center mb-12" direction="up">
           <h2 className="text-4xl md:text-5xl font-bold mb-4">
             {dict.portfolio.title}
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             {dict.portfolio.subtitle}
           </p>
-        </div>
+        </ScrollReveal>
 
         {/* Grid de proyectos */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {displayProjects.map((project) => {
+          {displayProjects.map((project, i) => {
             const cardContent = (
               <div className="flex flex-col h-full">
                 <div className="relative w-full h-64 mb-4 rounded-lg overflow-hidden">
@@ -69,15 +70,16 @@ export function PortfolioGrid({ dict, lang, projects = [] }: PortfolioSectionPro
             const detailSlug = (project as any).slug || project.id
 
             return (
-              <SpotlightCard
-                key={project.id}
-                className="custom-spotlight-card h-full bg-card cursor-pointer"
-                spotlightColor="rgba(0, 229, 255, 0.2)"
-              >
-                <Link href={`/${lang}/portfolio/${detailSlug}`} className="block h-full">
-                  {cardContent}
-                </Link>
-              </SpotlightCard>
+              <ScrollReveal key={project.id} direction="up" delay={i * 0.1}>
+                <SpotlightCard
+                  className="custom-spotlight-card h-full bg-card cursor-pointer"
+                  spotlightColor="rgba(0, 229, 255, 0.2)"
+                >
+                  <Link href={`/${lang}/portfolio/${detailSlug}`} className="block h-full">
+                    {cardContent}
+                  </Link>
+                </SpotlightCard>
+              </ScrollReveal>
             )
           })}
         </div>
