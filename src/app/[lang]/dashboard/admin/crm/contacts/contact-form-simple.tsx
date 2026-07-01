@@ -167,11 +167,17 @@ export function ContactFormSimple({ contact, lang, userId }: ContactFormProps) {
       const instagramLink = filteredSocialLinks.find(l => l.platform === 'instagram')
       const instagramVal = instagramLink ? instagramLink.url : null
 
+      const allCurrentEmails = [values.email, ...additionalEmails].map((e) => e.trim().toLowerCase())
+      const updatedInvalidEmails = (contact?.invalid_emails || []).filter((e) =>
+        allCurrentEmails.includes(e.toLowerCase())
+      )
+
       const contactData = {
         first_name: values.first_name || null,
         last_name: values.last_name || null,
         email: values.email,
         additional_emails: additionalEmails.length > 0 ? additionalEmails : null,
+        invalid_emails: updatedInvalidEmails,
         phone: values.phone || null,
         additional_phones: additionalPhones.length > 0 ? additionalPhones : null,
         company: values.company || null,

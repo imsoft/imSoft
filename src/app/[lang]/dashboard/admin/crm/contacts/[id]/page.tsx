@@ -8,6 +8,7 @@ import { ArrowLeft, Edit, Mail, Phone, MapPin, Briefcase, ExternalLink, Globe, L
 import Link from 'next/link'
 import { formatPhoneNumber } from '@/lib/utils/format-phone'
 import { SocialLink } from '@/types/database'
+import { ContactEmailsList } from '@/components/crm/contact-emails-list'
 
 // Local SVG brand icons to avoid compilation issues due to lucide-react versions
 const Instagram = (props: React.HTMLAttributes<SVGElement>) => (
@@ -170,17 +171,7 @@ export default async function ContactDetailPage({ params }: {
             </p>
           </div>
 
-          <div>
-            <p className="text-sm text-muted-foreground mb-1">
-              {lang === 'en' ? 'Email' : 'Correo'}
-            </p>
-            <div className="flex items-center gap-2">
-              <Mail className="size-4 text-muted-foreground" />
-              <a href={`mailto:${contact.email}`} className="hover:underline">
-                {contact.email}
-              </a>
-            </div>
-          </div>
+
 
           {(contact.phone || (Array.isArray(contact.additional_phones) && contact.additional_phones.length > 0)) && (
             <div>
@@ -257,6 +248,9 @@ export default async function ContactDetailPage({ params }: {
           )}
         </div>
       </Card>
+
+      {/* Email Addresses */}
+      <ContactEmailsList contact={contact} lang={lang} />
 
       {/* Address */}
       {(contact.address_street || contact.address_city || contact.address_state || contact.address_country || contact.address_postal_code) && (

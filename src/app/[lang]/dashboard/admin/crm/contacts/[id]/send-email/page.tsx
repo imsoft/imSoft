@@ -46,6 +46,8 @@ export default async function SendEmailPage({ params }: {
       contactName={contactName}
       contactFirstName={contact.first_name || ''}
       contactEmail={contact.email}
+      additionalEmails={contact.additional_emails || []}
+      invalidEmails={contact.invalid_emails || []}
       contactCompany={contact.company || ''}
       contactStatus={contact.status}
       lang={lang}

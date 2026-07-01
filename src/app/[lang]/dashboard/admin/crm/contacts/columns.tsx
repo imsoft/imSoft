@@ -1,7 +1,7 @@
 'use client'
 
 import { ColumnDef } from '@tanstack/react-table'
-import { ArrowUpDown, MoreHorizontal, Eye, Edit, Trash2, Mail, Copy, Check, Globe, Phone, Link as LinkIcon } from 'lucide-react'
+import { ArrowUpDown, MoreHorizontal, Eye, Edit, Trash2, Mail, Copy, Check, Globe, Phone, Link as LinkIcon, AlertTriangle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -59,8 +59,19 @@ const Tiktok = (props: React.HTMLAttributes<SVGElement>) => (
   </svg>
 )
 
-function EmailCell({ email, lang }: { email: string; lang: string }) {
+function EmailCell({
+  email,
+  invalidEmails,
+  lang,
+}: {
+  email: string
+  invalidEmails?: string[]
+  lang: string
+}) {
   const [copied, setCopied] = useState(false)
+  const isInvalid = Array.isArray(invalidEmails) && invalidEmails.some(
+    (e) => e.toLowerCase() === email.toLowerCase()
+  )
 
   const handleCopy = async () => {
     try {
@@ -76,8 +87,24 @@ function EmailCell({ email, lang }: { email: string; lang: string }) {
 
   return (
     <div className="flex min-w-0 max-w-[min(20rem,50vw)] items-center gap-2">
-      <Mail className="size-4 shrink-0 text-muted-foreground" />
-      <span className="min-w-0 truncate text-sm" title={email}>
+      {isInvalid ? (
+        <span title={lang === 'en' ? 'Email no longer exists / Bounced' : 'El correo no existe / Rebotado'}>
+          <AlertTriangle className="size-4 shrink-0 text-red-500 animate-pulse" />
+        </span>
+      ) : (
+        <Mail className="size-4 shrink-0 text-muted-foreground" />
+      )}
+      <span
+        className={`min-w-0 truncate text-sm ${
+          isInvalid ? 'text-red-500 line-through opacity-70' : 'text-foreground'
+        }`}
+        title={
+          email +
+          (isInvalid
+            ? ` (${lang === 'en' ? 'No longer exists / Bounced' : 'No existe / Rebotado'})`
+            : '')
+        }
+      >
         {email}
       </span>
       <Button
@@ -328,7 +355,13 @@ export function createColumns({ lang, onDelete, isDeleting }: ColumnsProps): Col
         )
       },
       cell: ({ row }) => {
-        return <EmailCell email={row.original.email} lang={lang} />
+        return (
+          <EmailCell
+            email={row.original.email}
+            invalidEmails={row.original.invalid_emails}
+            lang={lang}
+          />
+        )
       },
       filterFn: (row, _id, value) => {
         if (!value) return true

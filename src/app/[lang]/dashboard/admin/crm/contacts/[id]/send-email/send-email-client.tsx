@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -9,7 +9,14 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Skeleton } from '@/components/ui/skeleton'
-import { ArrowLeft, Mail, Sparkles, Loader2, FileText } from 'lucide-react'
+import { ArrowLeft, Mail, Sparkles, Loader2, FileText, AlertTriangle } from 'lucide-react'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import Link from 'next/link'
 import { toast } from 'sonner'
 import { buildProspectEmail } from '@/lib/email/prospect-template'
@@ -20,6 +27,8 @@ interface SendEmailPageClientProps {
   contactName: string
   contactFirstName: string
   contactEmail: string
+  additionalEmails: string[]
+  invalidEmails: string[]
   contactCompany: string
   contactStatus: ContactStatus
   lang: string
@@ -30,15 +39,30 @@ export function SendEmailPageClient({
   contactName,
   contactFirstName,
   contactEmail,
+  additionalEmails,
+  invalidEmails,
   contactCompany,
   contactStatus,
   lang,
 }: SendEmailPageClientProps) {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const toParam = searchParams.get('to')
+  
+  const allEmails = [contactEmail, ...additionalEmails]
+  
+  const [selectedEmail, setSelectedEmail] = useState(
+    toParam && allEmails.includes(toParam) ? toParam : contactEmail
+  )
+  const [bypassInvalid, setBypassInvalid] = useState(false)
   const [emailSubject, setEmailSubject] = useState('')
   const [emailBody, setEmailBody] = useState('')
   const [isSending, setIsSending] = useState(false)
   const [isGeneratingAI, setIsGeneratingAI] = useState(false)
+
+  const isSelectedEmailInvalid = invalidEmails.some(
+    (e) => e.toLowerCase() === selectedEmail.toLowerCase()
+  )
 
   const generateAIEmail = async () => {
     setIsGeneratingAI(true)
@@ -91,6 +115,7 @@ export function SendEmailPageClient({
         body: JSON.stringify({
           subject: emailSubject,
           body: emailBody,
+          to: selectedEmail,
         }),
       })
 
@@ -166,6 +191,67 @@ export function SendEmailPageClient({
       <Card className="p-6">
         <div className="space-y-4">
           <div>
+            <Label htmlFor="recipient">{lang === 'en' ? 'Recipient' : 'Destinatario'}</Label>
+            {allEmails.length > 1 ? (
+              <Select value={selectedEmail} onValueChange={setSelectedEmail}>
+                <SelectTrigger id="recipient" className="mt-1 border-2">
+                  <SelectValue placeholder={lang === 'en' ? 'Select email...' : 'Seleccionar correo...'} />
+                </SelectTrigger>
+                <SelectContent>
+                  {allEmails.map((email) => {
+                    const isEmailInvalid = invalidEmails.some(
+                      (e) => e.toLowerCase() === email.toLowerCase()
+                    )
+                    return (
+                      <SelectItem key={email} value={email}>
+                        {email} {isEmailInvalid ? ` (${lang === 'en' ? 'Invalid/Non-existent' : 'Inválido/Inexistente'})` : ''}
+                      </SelectItem>
+                    )
+                  })}
+                </SelectContent>
+              </Select>
+            ) : (
+              <div className="mt-1 p-2.5 border-2 rounded-md bg-muted text-muted-foreground text-sm font-medium">
+                {selectedEmail}
+              </div>
+            )}
+
+            {isSelectedEmailInvalid && (
+              <div className="mt-2">
+                <div className="p-3 rounded-lg border border-red-200 bg-red-50 text-red-800 dark:border-red-900/30 dark:bg-red-950/20 dark:text-red-300 flex items-start gap-2 text-sm font-medium">
+                  <AlertTriangle className="size-4 shrink-0 text-red-600 dark:text-red-400 mt-0.5" />
+                  <div>
+                    <p className="font-semibold">
+                      {lang === 'en'
+                        ? 'Warning: This email address is marked as non-existent or bounced.'
+                        : 'Advertencia: Este correo electrónico está marcado como inexistente o rebotado.'}
+                    </p>
+                    <p className="text-xs opacity-80 mt-0.5">
+                      {lang === 'en'
+                        ? 'Sending an email to this address will likely result in a bounce or fail.'
+                        : 'El envío de un correo a esta dirección probablemente rebotará o fallará.'}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 mt-2">
+                  <input
+                    type="checkbox"
+                    id="bypass-invalid"
+                    checked={bypassInvalid}
+                    onChange={(e) => setBypassInvalid(e.target.checked)}
+                    className="rounded border-gray-300 text-primary focus:ring-primary h-4 w-4"
+                  />
+                  <Label htmlFor="bypass-invalid" className="text-xs text-muted-foreground select-none cursor-pointer">
+                    {lang === 'en'
+                      ? 'I want to try sending to this address anyway'
+                      : 'Quiero intentar enviar a esta dirección de todos modos'}
+                  </Label>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div>
             <Label htmlFor="subject">{lang === 'en' ? 'Subject' : 'Asunto'} *</Label>
             {isGeneratingAI ? (
               <Skeleton className="mt-1 h-10 w-full" />
@@ -223,7 +309,12 @@ export function SendEmailPageClient({
             </Button>
             <Button
               onClick={handleSendEmail}
-              disabled={isSending || !emailSubject.trim() || !emailBody.trim()}
+              disabled={
+                isSending || 
+                !emailSubject.trim() || 
+                !emailBody.trim() || 
+                (isSelectedEmailInvalid && !bypassInvalid)
+              }
             >
               {isSending ? (
                 <>

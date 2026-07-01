@@ -31,7 +31,7 @@ export async function POST(
 
     // Obtener el cuerpo de la petición
     const body = await request.json()
-    const { subject, body: emailBody } = body
+    const { subject, body: emailBody, to } = body
 
     if (!subject || !emailBody) {
       return NextResponse.json(
@@ -54,7 +54,25 @@ export async function POST(
       )
     }
 
-    if (!contact.email) {
+    // Determinar el correo de destino
+    let targetEmail = contact.email
+    if (to) {
+      const normalizedTo = to.trim().toLowerCase()
+      const allowedEmails = [
+        contact.email,
+        ...(contact.additional_emails || []),
+      ].map((e) => e.trim().toLowerCase())
+
+      if (!allowedEmails.includes(normalizedTo)) {
+        return NextResponse.json(
+          { error: 'The specified email is not associated with this contact' },
+          { status: 400 }
+        )
+      }
+      targetEmail = to.trim()
+    }
+
+    if (!targetEmail) {
       return NextResponse.json(
         { error: 'Contact email is required' },
         { status: 400 }
@@ -77,7 +95,7 @@ export async function POST(
     // Enviar email
     const { data, error } = await resend.emails.send({
       from: `${fromName} <${fromEmail}>`,
-      to: contact.email,
+      to: targetEmail,
       subject: subject,
       html: emailBody,
     })
