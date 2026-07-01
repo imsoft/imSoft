@@ -115,9 +115,9 @@ export async function POST(
 ${servicesList}
 
 IMPORTANTE PARA ETAPA DE PROSPECCIÓN:
-- Debes incluir UNA idea o mejora específica para CADA servicio de imSoft listado arriba
-- Cada idea debe ser relevante para la empresa "${contact.company || contactName}"
-- Las ideas deben ser concretas, accionables y mostrar valor potencial
+- Debes proponer UNA idea o mejora tecnológica concreta para la empresa del cliente ("${contact.company || contactName}") por cada uno de los servicios de imSoft listados arriba.
+- CRÍTICO: La propuesta es para potenciar a la empresa del cliente ("${contact.company || contactName}"), NO para mejorar a imSoft. Evita frases confusas como "ideas para potenciar imSoft". Lo correcto es presentar las ideas bajo el título "Cómo podemos potenciar a ${contact.company || contactName} en imSoft:" o "Propuestas de valor para ${contact.company || contactName}:".
+- Las ideas deben ser relevantes, concretas, accionables y mostrar valor potencial inmediato para el cliente.
 - Presenta las ideas de forma organizada (puedes usar una lista con viñetas)
 - Después de presentar todas las ideas, incluye una LLAMADA A LA ACCIÓN clara que invite a:
   * Una reunión virtual (videollamada)
@@ -167,6 +167,7 @@ INSTRUCCIONES:
      * "Si estabas esperando una señal para llevar el software/web de [Empresa] al siguiente nivel, probablemente sea esta..."
      * "Seré directo: sé que tu bandeja de entrada está llena de correos de ventas aburridos, así que voy al grano..."
    - Evita a toda costa saludos aburridos y genéricos como "Espero que se encuentre muy bien" o "Me pongo en contacto con usted para...". Rompe el patrón desde la primera palabra.
+10. ENFOQUE DEL CLIENTE (CRÍTICO): Todo el correo debe estar redactado desde la perspectiva de ayudar a la empresa del cliente ("${contact.company || contactName}"). Nunca digas ni sugieras "ideas para mejorar imSoft" o "mejorar nuestros servicios", ya que el cliente es el receptor. Las ideas son propuestas que imSoft ofrece para potenciar y acelerar el negocio de "${contact.company || contactName}".
 
 PROHIBICIONES ABSOLUTAS:
 - NUNCA menciones dinero, precios, costos, valores monetarios, presupuestos, inversión, pagos, facturación, o cualquier referencia económica
