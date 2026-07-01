@@ -152,21 +152,21 @@ export function buildProspectEmail({ nombre, empresa }: ProspectEmailParams = {}
 
                     <p class="body-text">${greeting}</p>
                     <p class="body-text">
-                        Sé que los correos de ventas/en frío cansan, pero te prometo que esto vale tus próximos 60 segundos.
+                        Sé que los correos en frío cansan, pero te prometo que esto te tomará menos de 60 segundos.
                     </p>
                     <p class="body-text">
-                        Estuve revisando el producto digital de su empresa y noté algunas oportunidades clave para acelerar la velocidad de carga y optimizar la experiencia en sus flujos críticos.
+                        Estuve revisando la presencia digital de tu empresa y noté algunas oportunidades clave para acelerar la velocidad de carga y optimizar la experiencia en tus flujos críticos.
                     </p>
                     <p class="body-text">
                         En <strong>imSoft</strong> nos dedicamos al diseño y desarrollo de software a medida, creando aplicaciones web robustas y soluciones de datos que escalan sin fricciones.
                     </p>
 
                     <div class="btn-container">
-                        <a href="https://wa.me/523325365558?text=Hola%20Brandon%2C%20me%20interes%C3%B3%20el%20correo%20de%20imSoft%20y%20me%20gustar%C3%ADa%20agendar%20una%20breve%20llamada%20para%20conocer%20m%C3%A1s%20sobre%20sus%20soluciones%20de%20software%20a%20medida." class="btn-cta" target="_blank">Agendar una Breve Llamada</a>
+                        <a href="https://wa.me/523325365558?text=Hola%20Brandon%2C%20me%20interes%C3%B3%20el%20correo%20de%20imSoft%20y%20me%20gustar%C3%ADa%20platicar%20para%20conocer%20m%C3%A1s%20sobre%20tus%20soluciones%20de%20software%20a%20medida." class="btn-cta" target="_blank">Escríbeme por WhatsApp</a>
                     </div>
 
                     <p class="body-text">
-                        ¿Tendría 10 minutos esta semana para platicar sobre cómo podemos potenciar su arquitectura técnica actual?
+                        ¿Tendrás 10 minutos esta semana para platicar sobre cómo podemos potenciar tu arquitectura tecnológica actual?
                     </p>
 
                     <div class="cta-box">
