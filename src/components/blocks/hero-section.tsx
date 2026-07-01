@@ -155,9 +155,13 @@ export function HeroSection({ dict, lang, companies = [], portfolioProjects = []
                                             asChild
                                             size="lg"
                                             className="rounded-xl px-5 text-base">
-                                            <Link href={`/${lang}/contact`}>
+                                            <a href={`https://wa.me/523325365558?text=${encodeURIComponent(
+                                                lang === 'es'
+                                                    ? 'Hola imSoft, me interesa agendar la llamada gratuita de diagnóstico para iniciar mi proyecto digital.'
+                                                    : "Hi imSoft, I'm interested in scheduling the free diagnostic call to start my digital project."
+                                            )}`} target="_blank" rel="noopener noreferrer">
                                                 <span className="text-nowrap">{dict.hero.startBuilding}</span>
-                                            </Link>
+                                            </a>
                                         </Button>
                                     </Magnet>
                                     <Magnet padding={50} disabled={false} magnetStrength={10}>

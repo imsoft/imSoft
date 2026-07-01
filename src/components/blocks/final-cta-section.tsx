@@ -37,15 +37,21 @@ export function FinalCtaSection({ lang }: FinalCtaSectionProps) {
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Link
-            href={`/${lang}/contact`}
+          <a
+            href={`https://wa.me/523325365558?text=${encodeURIComponent(
+              isEs
+                ? 'Hola imSoft, estoy listo para transformar mi idea en software. ¿Podemos agendar la llamada gratis?'
+                : "Hi imSoft, I'm ready to turn my idea into software. Can we schedule the free call?"
+            )}`}
+            target="_blank"
+            rel="noopener noreferrer"
             className="group inline-flex items-center justify-center gap-2 rounded-xl bg-background px-7 py-3.5 text-base font-semibold text-foreground transition-all duration-300 hover:bg-muted hover:shadow-xl hover:shadow-black/20 hover:-translate-y-0.5"
           >
             <span className="text-nowrap">
               {isEs ? 'Agenda una llamada gratis' : 'Book a free call'}
             </span>
             <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-          </Link>
+          </a>
           <Link
             href={`/${lang}/portfolio`}
             className="inline-flex items-center justify-center rounded-xl border border-primary-foreground/30 px-7 py-3.5 text-base font-semibold text-primary-foreground transition-all duration-300 hover:bg-primary-foreground/10 hover:border-primary-foreground/60"
