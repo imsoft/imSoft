@@ -152,13 +152,21 @@ INSTRUCCIONES:
 3. El tono debe ser apropiado para la etapa "${statusLabel}"
 4. Si hay historial de emails, el nuevo email debe mostrar progreso y no repetir información
 5. Incluye información específica del contacto para personalización
-6. El email debe ser conciso pero completo${contact.status === 'qualification' ? ' (máximo 500 palabras en el cuerpo para incluir todas las ideas)' : ' (máximo 300 palabras en el cuerpo)'}
+6. El email debe ser sumamente CORTO, directo y conciso (máximo 120-150 palabras en total en el cuerpo). Ve directo al grano respetando el tiempo del lector.
 7. Incluye una llamada a la acción clara y relevante para la etapa${contact.status === 'qualification' ? ' (debe incluir opciones para reunión virtual, presencial o llamada telefónica)' : ''}
 8. Al final del email, incluye una firma profesional con:
    - Nombre: Brandon Uriel García Ramos
    - Empresa: imSoft
    - Email: contacto@imsoft.io
    - Teléfono: 33 2536 5558
+9. REGLA DE ORO PARA EL INICIO (CRÍTICO): El email DEBE comenzar con una frase atrapante, honesta y disruptiva (un "pattern interrupt" que rompa la típica formalidad aburrida de ventas y enganche al lector a seguir leyendo).
+   - Debe usar un tono empático, directo y fresco.
+   - Ejemplos de enfoques para la primera línea (puedes inspirarte o usar variantes de estos):
+     * "Sé que los correos de ventas en frío cansan, pero te prometo que esto vale tus próximos 60 segundos..."
+     * "Esta no es la típica propuesta genérica de ventas que borras en 2 segundos..."
+     * "Si estabas esperando una señal para llevar el software/web de [Empresa] al siguiente nivel, probablemente sea esta..."
+     * "Seré directo: sé que tu bandeja de entrada está llena de correos de ventas aburridos, así que voy al grano..."
+   - Evita a toda costa saludos aburridos y genéricos como "Espero que se encuentre muy bien" o "Me pongo en contacto con usted para...". Rompe el patrón desde la primera palabra.
 
 PROHIBICIONES ABSOLUTAS:
 - NUNCA menciones dinero, precios, costos, valores monetarios, presupuestos, inversión, pagos, facturación, o cualquier referencia económica

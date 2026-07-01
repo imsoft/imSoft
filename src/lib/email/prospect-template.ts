@@ -152,7 +152,10 @@ export function buildProspectEmail({ nombre, empresa }: ProspectEmailParams = {}
 
                     <p class="body-text">${greeting}</p>
                     <p class="body-text">
-                        Estuve revisando el producto digital de su empresa y noté una excelente oportunidad para optimizar la velocidad de carga y la experiencia de usuario en sus flujos críticos.
+                        Sé que los correos de ventas/en frío cansan, pero te prometo que esto vale tus próximos 60 segundos.
+                    </p>
+                    <p class="body-text">
+                        Estuve revisando el producto digital de su empresa y noté algunas oportunidades clave para acelerar la velocidad de carga y optimizar la experiencia en sus flujos críticos.
                     </p>
                     <p class="body-text">
                         En <strong>imSoft</strong> nos dedicamos al diseño y desarrollo de software a medida, creando aplicaciones web robustas y soluciones de datos que escalan sin fricciones.

@@ -39,16 +39,6 @@ export function SendEmailPageClient({
   const [emailBody, setEmailBody] = useState('')
   const [isSending, setIsSending] = useState(false)
   const [isGeneratingAI, setIsGeneratingAI] = useState(false)
-  const [hasInitialGenerated, setHasInitialGenerated] = useState(false)
-
-  // Generar email con AI al cargar automáticamente
-  useEffect(() => {
-    if (!hasInitialGenerated && !emailSubject && !emailBody) {
-      setHasInitialGenerated(true)
-      generateAIEmail()
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
 
   const generateAIEmail = async () => {
     setIsGeneratingAI(true)
