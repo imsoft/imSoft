@@ -64,9 +64,15 @@ export function ContactFormSimple({ contact, lang, userId }: ContactFormProps) {
   )
 
   // Social links state
-  const [socialLinks, setSocialLinks] = useState<SocialLink[]>(
-    contact?.social_links ?? []
-  )
+  const [socialLinks, setSocialLinks] = useState<SocialLink[]>(() => {
+    if (contact?.social_links && contact.social_links.length > 0) {
+      return contact.social_links
+    }
+    if (contact?.instagram_url) {
+      return [{ platform: 'instagram', url: contact.instagram_url }]
+    }
+    return [{ platform: 'instagram', url: '' }]
+  })
 
   // Additional phones state
   const [additionalPhones, setAdditionalPhones] = useState<string[]>(
@@ -157,7 +163,8 @@ export function ContactFormSimple({ contact, lang, userId }: ContactFormProps) {
     const supabase = createClient()
 
     try {
-      const instagramLink = socialLinks.find(l => l.platform === 'instagram')
+      const filteredSocialLinks = socialLinks.filter(l => l.url && l.url.trim() !== '')
+      const instagramLink = filteredSocialLinks.find(l => l.platform === 'instagram')
       const instagramVal = instagramLink ? instagramLink.url : null
 
       const contactData = {
@@ -169,7 +176,7 @@ export function ContactFormSimple({ contact, lang, userId }: ContactFormProps) {
         additional_phones: additionalPhones.length > 0 ? additionalPhones : null,
         company: values.company || null,
         instagram_url: instagramVal,
-        social_links: socialLinks.length > 0 ? socialLinks : null,
+        social_links: filteredSocialLinks.length > 0 ? filteredSocialLinks : null,
         notes: values.company_description || null,
         status: values.status,
         updated_at: new Date().toISOString(),
