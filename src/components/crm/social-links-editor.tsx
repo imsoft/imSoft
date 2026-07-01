@@ -238,10 +238,10 @@ export function SocialLinksEditor({ value = [], onChange, lang }: SocialLinksEdi
         </h3>
         <Button
           type="button"
-          variant="outline"
+          variant="ghost"
           size="sm"
           onClick={addLink}
-          className="h-8 gap-1.5 text-xs"
+          className="h-7 gap-1 text-xs text-muted-foreground hover:text-foreground"
         >
           <Plus className="h-3.5 w-3.5" />
           {isEs ? 'Agregar enlace' : 'Add link'}
