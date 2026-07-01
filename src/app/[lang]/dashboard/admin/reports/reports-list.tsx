@@ -64,7 +64,7 @@ export function ReportsList({ reports, dict, lang }: ReportsListProps) {
         return (
           <div
             key={report.id}
-            className="flex items-center justify-between p-3 rounded-lg border bg-white dark:bg-card"
+            className="flex items-center justify-between p-3 rounded-lg border bg-card"
           >
             <div>
               <div className="font-medium">

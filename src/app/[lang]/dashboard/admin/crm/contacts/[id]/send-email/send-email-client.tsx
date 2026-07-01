@@ -173,7 +173,7 @@ export function SendEmailPageClient({
       </div>
 
       {/* Email Form */}
-      <Card className="p-6 bg-white">
+      <Card className="p-6">
         <div className="space-y-4">
           <div>
             <Label htmlFor="subject">{lang === 'en' ? 'Subject' : 'Asunto'} *</Label>

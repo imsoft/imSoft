@@ -71,7 +71,7 @@ export default async function ClientDashboardPage({ params }: {
 
       {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <div className="bg-white rounded-lg p-6 border border-gray-200 dark:border-gray-700">
+        <div className="bg-card rounded-lg p-6 border border-border">
           <div className="flex flex-row items-center justify-between space-y-0 pb-2">
             <h3 className="text-sm font-medium">
               {dict.dashboard.client.nav.myProjects}
@@ -90,7 +90,7 @@ export default async function ClientDashboardPage({ params }: {
 
       {/* Recent Projects */}
       {projects && projects.length > 0 && (
-        <div className="bg-white rounded-lg p-6 border border-gray-200 dark:border-gray-700">
+        <div className="bg-card rounded-lg p-6 border border-border">
           <div className="mb-6">
             <div className="flex items-center justify-between">
               <div>

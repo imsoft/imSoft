@@ -162,7 +162,7 @@ export function ContactFormSimple({ contact, lang, userId }: ContactFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <Card className="p-6 bg-white">
+        <Card className="p-6">
           <h2 className="text-lg font-semibold mb-4">
             {lang === 'en' ? 'Contact Information' : 'Información de Contacto'}
           </h2>

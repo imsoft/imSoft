@@ -167,7 +167,7 @@ export default async function AdminDashboardPage({ params }: {
         {/* Proyectos */}
         <Link
           href={`/${lang}/dashboard/admin/projects`}
-          className="rounded-lg border bg-white p-6 hover:bg-gray-50 transition-colors"
+          className="rounded-lg border bg-card p-6 hover:bg-muted/50 transition-colors"
         >
           <div className="flex items-center justify-between">
             <p className="text-sm text-muted-foreground">{t('Projects', 'Proyectos')}</p>
@@ -180,7 +180,7 @@ export default async function AdminDashboardPage({ params }: {
         </Link>
 
         {/* Ingresos cobrados */}
-        <div className="rounded-lg border bg-white p-6">
+        <div className="rounded-lg border bg-card p-6">
           <div className="flex items-center justify-between">
             <p className="text-sm text-muted-foreground">{t('Collected', 'Cobrado')}</p>
             <DollarSign className="h-4 w-4 text-emerald-600" />
@@ -201,7 +201,7 @@ export default async function AdminDashboardPage({ params }: {
         </div>
 
         {/* Por cobrar */}
-        <div className="rounded-lg border bg-white p-6">
+        <div className="rounded-lg border bg-card p-6">
           <div className="flex items-center justify-between">
             <p className="text-sm text-muted-foreground">{t('Outstanding', 'Por cobrar')}</p>
             <Clock className="h-4 w-4 text-amber-600" />
@@ -224,7 +224,7 @@ export default async function AdminDashboardPage({ params }: {
         {/* Mensajes sin leer */}
         <Link
           href={`/${lang}/dashboard/admin/contact-messages`}
-          className="rounded-lg border bg-white p-6 hover:bg-gray-50 transition-colors"
+          className="rounded-lg border bg-card p-6 hover:bg-muted/50 transition-colors"
         >
           <div className="flex items-center justify-between">
             <p className="text-sm text-muted-foreground">{t('Unread messages', 'Mensajes sin leer')}</p>
@@ -248,7 +248,7 @@ export default async function AdminDashboardPage({ params }: {
           <Link
             key={href + label}
             href={`/${lang}/dashboard/admin/${href}`}
-            className="rounded-lg border bg-white p-4 hover:bg-gray-50 transition-colors flex items-center gap-3"
+            className="rounded-lg border bg-card p-4 hover:bg-muted/50 transition-colors flex items-center gap-3"
           >
             <div className="rounded-md bg-primary/10 p-2">
               <Icon className="h-4 w-4 text-primary" />
@@ -263,7 +263,7 @@ export default async function AdminDashboardPage({ params }: {
 
       {/* Desglose de proyectos por estado */}
       {stats.projects > 0 && (
-        <Card className="bg-white">
+        <Card>
           <CardHeader>
             <CardTitle>{t('Projects by status', 'Proyectos por estado')}</CardTitle>
             <CardDescription>
@@ -280,7 +280,7 @@ export default async function AdminDashboardPage({ params }: {
                   <div key={status} className="rounded-lg border p-4">
                     <div className="text-2xl font-bold">{count}</div>
                     <Badge variant={badge.variant} className="mt-1">{badge.label}</Badge>
-                    <div className="mt-2 h-1.5 w-full rounded-full bg-gray-100 overflow-hidden">
+                    <div className="mt-2 h-1.5 w-full rounded-full bg-muted overflow-hidden">
                       <div className="h-full bg-primary" style={{ width: `${pct}%` }} />
                     </div>
                     <p className="text-xs text-muted-foreground mt-1">{pct}%</p>
@@ -295,7 +295,7 @@ export default async function AdminDashboardPage({ params }: {
       {/* Proyectos y mensajes recientes */}
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Proyectos Recientes */}
-        <Card className="bg-white">
+        <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
@@ -330,7 +330,7 @@ export default async function AdminDashboardPage({ params }: {
                     <Link
                       key={project.id}
                       href={`/${lang}/dashboard/admin/projects/${project.id}/edit`}
-                      className="block rounded-lg border bg-white p-3 hover:bg-gray-50 transition-colors"
+                      className="block rounded-lg border bg-card p-3 hover:bg-muted/50 transition-colors"
                     >
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1 min-w-0">
@@ -353,7 +353,7 @@ export default async function AdminDashboardPage({ params }: {
         </Card>
 
         {/* Mensajes Recientes */}
-        <Card className="bg-white">
+        <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
@@ -387,7 +387,7 @@ export default async function AdminDashboardPage({ params }: {
                     <Link
                       key={msg.id}
                       href={`/${lang}/dashboard/admin/contact-messages`}
-                      className="block rounded-lg border bg-white p-3 hover:bg-gray-50 transition-colors"
+                      className="block rounded-lg border bg-card p-3 hover:bg-muted/50 transition-colors"
                     >
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1 min-w-0">

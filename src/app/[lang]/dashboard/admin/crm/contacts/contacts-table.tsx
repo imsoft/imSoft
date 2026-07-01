@@ -66,7 +66,7 @@ export function ContactsTable({ contacts, dict, lang }: ContactsTableProps) {
 
   if (contacts.length === 0) {
     return (
-      <Card className="bg-white">
+      <Card>
         <Empty>
           <EmptyHeader>
             <EmptyMedia variant="icon">
@@ -90,7 +90,7 @@ export function ContactsTable({ contacts, dict, lang }: ContactsTableProps) {
 
   return (
     <>
-      <Card className="p-6 bg-white">
+      <Card className="p-6">
         <DataTable columns={columns} data={contacts} lang={lang} />
       </Card>
 

@@ -48,7 +48,7 @@ export function ContactMessagesTable({ messages, lang }: ContactMessagesTablePro
 
   const statusColors = {
     unread: 'bg-blue-500/10 text-blue-600 border-blue-500/20',
-    read: 'bg-white text-gray-600 border-gray-500/20',
+    read: 'bg-muted/50 text-muted-foreground border-border',
     replied: 'bg-green-500/10 text-green-600 border-green-500/20',
     archived: 'bg-orange-500/10 text-orange-600 border-orange-500/20',
   }
@@ -136,7 +136,7 @@ export function ContactMessagesTable({ messages, lang }: ContactMessagesTablePro
       <div className="rounded-md border">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="border-b bg-white">
+            <thead className="border-b bg-muted/50">
               <tr>
                 <th className="px-6 py-3 text-left font-medium">
                   {lang === 'en' ? 'Name' : 'Nombre'}
@@ -160,7 +160,7 @@ export function ContactMessagesTable({ messages, lang }: ContactMessagesTablePro
             </thead>
             <tbody className="divide-y">
               {messages.map((message) => (
-                <tr key={message.id} className="hover:bg-gray-50">
+                <tr key={message.id} className="hover:bg-muted/50">
                   <td className="px-6 py-4">
                     <div className="font-medium">
                       {message.first_name} {message.last_name}
@@ -349,7 +349,7 @@ export function ContactMessagesTable({ messages, lang }: ContactMessagesTablePro
                 <label className="text-sm font-medium text-muted-foreground">
                   {lang === 'en' ? 'Message' : 'Mensaje'}
                 </label>
-                <div className="mt-2 p-4 bg-white rounded-md">
+                <div className="mt-2 p-4 bg-muted/50 rounded-md">
                   <p className="text-sm whitespace-pre-wrap">{selectedMessage.message}</p>
                 </div>
               </div>

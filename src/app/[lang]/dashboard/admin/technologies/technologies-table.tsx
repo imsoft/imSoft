@@ -122,7 +122,7 @@ export function TechnologiesTable({ technologies, dict, lang }: TechnologiesTabl
         }
         
         return (
-          <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded border bg-white">
+          <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded border bg-muted">
             <Image
               src={technology.logo_url}
               alt={name}
@@ -412,7 +412,7 @@ export function TechnologiesTable({ technologies, dict, lang }: TechnologiesTabl
   return (
     <div className="space-y-4">
       {/* Filtros adicionales */}
-      <div className="flex flex-wrap items-center gap-4 p-4 bg-white dark:bg-card rounded-lg">
+      <div className="flex flex-wrap items-center gap-4 p-4 bg-card rounded-lg">
         {/* Filtro por categoría */}
         <div className="flex items-center gap-2 flex-1 min-w-[200px]">
           <label className="text-sm text-muted-foreground whitespace-nowrap">
