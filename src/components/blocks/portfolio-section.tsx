@@ -4,6 +4,7 @@ import CardSwap, { Card } from "@/components/ui/card-swap"
 import Image from "next/image"
 import type { PortfolioSectionProps } from '@/types/components'
 import { useState, useEffect } from 'react'
+import { ScrollReveal } from "@/components/animations/scroll-reveal"
 
 export function PortfolioSection({ dict, lang, projects = [] }: PortfolioSectionProps) {
   const [isDesktop, setIsDesktop] = useState(false)
@@ -42,29 +43,29 @@ export function PortfolioSection({ dict, lang, projects = [] }: PortfolioSection
     <section className="py-16 md:py-24 bg-background overflow-x-hidden">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         {/* Título arriba solo en móvil */}
-        <div className="text-center mb-8 lg:hidden">
+        <ScrollReveal className="text-center mb-8 lg:hidden" direction="up">
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
             {dict.portfolio.title}
           </h2>
           <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
             {dict.portfolio.subtitle}
           </p>
-        </div>
+        </ScrollReveal>
 
         {/* Grid de 2 columnas en desktop, solo cards en móvil */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
           {/* Texto a la izquierda - solo en desktop */}
-          <div className="hidden lg:block">
+          <ScrollReveal className="hidden lg:block" direction="left">
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
               {dict.portfolio.title}
             </h2>
             <p className="text-lg text-muted-foreground">
               {dict.portfolio.subtitle}
             </p>
-          </div>
+          </ScrollReveal>
 
           {/* Cards apiladas */}
-          <div className="relative w-full overflow-visible mx-auto lg:mx-0 px-4 lg:px-0 lg:pr-32 pb-8 lg:pb-16" style={{ height: isDesktop ? '650px' : '450px', minHeight: isDesktop ? '650px' : '450px' }}>
+          <ScrollReveal direction="right" delay={0.2} className="relative w-full overflow-visible mx-auto lg:mx-0 px-4 lg:px-0 lg:pr-32 pb-8 lg:pb-16" style={{ height: isDesktop ? '650px' : '450px', minHeight: isDesktop ? '650px' : '450px' }}>
             <CardSwap
               cardDistance={isDesktop ? 60 : 40}
               verticalDistance={isDesktop ? 70 : 50}
@@ -99,7 +100,7 @@ export function PortfolioSection({ dict, lang, projects = [] }: PortfolioSection
                   </Card>
                 ))}
             </CardSwap>
-          </div>
+          </ScrollReveal>
         </div>
       </div>
     </section>

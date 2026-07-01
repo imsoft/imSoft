@@ -2,6 +2,7 @@ import SpotlightCard from "@/components/ui/spotlight-card"
 import type { Locale } from '@/app/[lang]/dictionaries'
 import Image from 'next/image'
 import { Building2 } from 'lucide-react'
+import { ScrollReveal } from "@/components/animations/scroll-reveal"
 
 import type { TestimonialsSectionProps } from '@/types/components'
 
@@ -9,7 +10,7 @@ export function TestimonialsSection({ dict, lang, testimonials = [] }: Testimoni
 
   return (
     <section className="py-16 md:py-24 bg-primary">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+      <ScrollReveal className="mx-auto max-w-7xl px-4 sm:px-6" direction="up">
         <div className="text-center mb-12">
           <h2 className="text-4xl md:text-5xl font-bold mb-4 text-primary-foreground">
             {dict.testimonials.title}
@@ -65,7 +66,7 @@ export function TestimonialsSection({ dict, lang, testimonials = [] }: Testimoni
             )
           })}
         </div>
-      </div>
+      </ScrollReveal>
     </section>
   )
 }

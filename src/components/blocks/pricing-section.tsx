@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { Check, ArrowRight } from 'lucide-react'
 import type { Dictionary } from '@/app/[lang]/dictionaries'
+import { ScrollReveal } from "@/components/animations/scroll-reveal"
 
 interface PricingSectionProps {
   dict: Dictionary
@@ -66,9 +67,9 @@ export function PricingSection({ dict, lang }: PricingSectionProps) {
   ]
 
   return (
-    <section className="py-16 md:py-24 bg-primary">
+    <section className="py-16 md:py-24 bg-primary text-primary-foreground">
       <div className="mx-auto max-w-7xl px-6">
-        <div className="text-center mb-14">
+        <ScrollReveal className="text-center mb-14" direction="up">
           <h2 className="text-3xl md:text-5xl font-bold mb-4 text-primary-foreground">
             {isEs ? 'Referencia de precios' : 'Pricing reference'}
           </h2>
@@ -77,68 +78,69 @@ export function PricingSection({ dict, lang }: PricingSectionProps) {
               ? 'Precios orientativos según el tipo de proyecto. Cada propuesta tiene precio fijo — sin cobros sorpresa al final.'
               : 'Indicative prices by project type. Every proposal has a fixed price — no surprise charges at the end.'}
           </p>
-        </div>
+        </ScrollReveal>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {tiers.map((tier) => (
-            <div
-              key={tier.slug}
-              className={`group relative rounded-2xl border p-8 flex flex-col gap-6 h-full transition-all duration-300 ease-out cursor-pointer ${
-                tier.highlight
-                  ? 'border-transparent bg-background shadow-2xl shadow-black/20 hover:shadow-3xl hover:-translate-y-2 hover:shadow-primary/25'
-                  : 'border-white/80 bg-primary-foreground/10 hover:bg-primary-foreground/20 hover:border-white hover:-translate-y-2 hover:shadow-2xl hover:shadow-black/25'
-              }`}
-            >
-              {tier.highlight && (
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                  <span className="bg-primary text-primary-foreground text-xs font-bold px-4 py-1.5 rounded-full shadow-lg border border-white/80">
-                    {isEs ? '⭐ Más popular' : '⭐ Most popular'}
-                  </span>
-                </div>
-              )}
-
-              <div>
-                <div className="text-3xl mb-3 transition-transform duration-300 group-hover:scale-110 inline-block">
-                  {tier.icon}
-                </div>
-                <h3 className={`text-xl font-bold mb-1 ${tier.highlight ? 'text-foreground' : 'text-primary-foreground'}`}>
-                  {tier.name}
-                </h3>
-                <p className={`text-sm leading-relaxed ${tier.highlight ? 'text-muted-foreground' : 'text-primary-foreground/75'}`}>
-                  {tier.description}
-                </p>
-              </div>
-
-              <div className={`text-3xl font-black transition-colors duration-300 ${tier.highlight ? 'text-primary' : 'text-primary-foreground'}`}>
-                {tier.price}
-              </div>
-
-              <ul className="space-y-2.5">
-                {tier.features.map((feature, i) => (
-                  <li key={i} className="flex items-start gap-2.5">
-                    <Check className={`h-4 w-4 mt-0.5 shrink-0 transition-transform duration-300 group-hover:scale-110 ${tier.highlight ? 'text-primary' : 'text-primary-foreground'}`} />
-                    <span className={`text-sm ${tier.highlight ? 'text-muted-foreground' : 'text-primary-foreground/85'}`}>
-                      {feature}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-
-              <Link
-                href={`/${lang}/services/${tier.slug}`}
-                className={`mt-auto inline-flex items-center justify-center rounded-xl px-6 py-3 text-sm font-semibold transition-all duration-300 group-hover:scale-[1.04] ${
+          {tiers.map((tier, i) => (
+            <ScrollReveal key={tier.slug} direction="up" delay={i * 0.08}>
+              <div
+                className={`group relative rounded-2xl border p-8 flex flex-col gap-6 h-full transition-all duration-300 ease-out cursor-pointer ${
                   tier.highlight
-                    ? 'bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/40'
-                    : 'bg-background text-foreground hover:bg-muted hover:shadow-md'
+                    ? 'border-transparent bg-background shadow-2xl shadow-black/20 hover:shadow-3xl hover:-translate-y-2 hover:shadow-primary/25'
+                    : 'border-white/80 bg-primary-foreground/10 hover:bg-primary-foreground/20 hover:border-white hover:-translate-y-2 hover:shadow-2xl hover:shadow-black/25'
                 }`}
               >
-                {isEs ? 'Saber más' : 'Learn more'}
-              </Link>
-            </div>
+                {tier.highlight && (
+                  <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+                    <span className="bg-primary text-primary-foreground text-xs font-bold px-4 py-1.5 rounded-full shadow-lg border border-white/80">
+                      {isEs ? '⭐ Más popular' : '⭐ Most popular'}
+                    </span>
+                  </div>
+                )}
+
+                <div>
+                  <div className="text-3xl mb-3 transition-transform duration-300 group-hover:scale-110 inline-block">
+                    {tier.icon}
+                  </div>
+                  <h3 className={`text-xl font-bold mb-1 ${tier.highlight ? 'text-foreground' : 'text-primary-foreground'}`}>
+                    {tier.name}
+                  </h3>
+                  <p className={`text-sm leading-relaxed ${tier.highlight ? 'text-muted-foreground' : 'text-primary-foreground/75'}`}>
+                    {tier.description}
+                  </p>
+                </div>
+
+                <div className={`text-3xl font-black transition-colors duration-300 ${tier.highlight ? 'text-primary' : 'text-primary-foreground'}`}>
+                  {tier.price}
+                </div>
+
+                <ul className="space-y-2.5">
+                  {tier.features.map((feature, idx) => (
+                    <li key={idx} className="flex items-start gap-2.5">
+                      <Check className={`h-4 w-4 mt-0.5 shrink-0 transition-transform duration-300 group-hover:scale-110 ${tier.highlight ? 'text-primary' : 'text-primary-foreground'}`} />
+                      <span className={`text-sm ${tier.highlight ? 'text-muted-foreground' : 'text-primary-foreground/85'}`}>
+                        {feature}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+
+                <Link
+                  href={`/${lang}/services/${tier.slug}`}
+                  className={`mt-auto inline-flex items-center justify-center rounded-xl px-6 py-3 text-sm font-semibold transition-all duration-300 group-hover:scale-[1.04] ${
+                    tier.highlight
+                      ? 'bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/40'
+                      : 'bg-background text-foreground hover:bg-muted hover:shadow-md'
+                  }`}
+                >
+                  {isEs ? 'Saber más' : 'Learn more'}
+                </Link>
+              </div>
+            </ScrollReveal>
           ))}
         </div>
 
-        <div className="mt-12 flex flex-col items-center gap-4">
+        <ScrollReveal className="mt-12 flex flex-col items-center gap-4" direction="up" delay={0.2}>
           <a
             href={`https://wa.me/523325365558?text=${encodeURIComponent(
               isEs
@@ -159,7 +161,7 @@ export function PricingSection({ dict, lang }: PricingSectionProps) {
               ? '* Los precios son referencias orientativas. Cada proyecto recibe una propuesta con precio fijo en 48 horas.'
               : '* Prices are indicative references. Every project receives a fixed-price proposal within 48 hours.'}
           </p>
-        </div>
+        </ScrollReveal>
       </div>
     </section>
   )

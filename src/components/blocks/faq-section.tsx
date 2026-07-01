@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { ChevronDown } from 'lucide-react'
 import type { Dictionary } from '@/app/[lang]/dictionaries'
 import { faqs as faqData } from '@/config/faq-data'
+import { ScrollReveal } from "@/components/animations/scroll-reveal"
 
 interface FaqSectionProps {
   dict: Dictionary
@@ -18,7 +19,7 @@ export function FaqSection({ lang }: FaqSectionProps) {
 
   return (
     <section className="py-16 md:py-24 bg-background">
-      <div className="mx-auto max-w-3xl px-6">
+      <ScrollReveal className="mx-auto max-w-3xl px-6" direction="up">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-5xl font-bold mb-4 text-foreground">
             {isEs ? 'Preguntas frecuentes' : 'Frequently asked questions'}
@@ -70,7 +71,7 @@ export function FaqSection({ lang }: FaqSectionProps) {
             )
           })}
         </div>
-      </div>
+      </ScrollReveal>
     </section>
   )
 }

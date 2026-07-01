@@ -1,4 +1,5 @@
 import { Phone, FileText, Code2, Rocket } from 'lucide-react'
+import { ScrollReveal } from "@/components/animations/scroll-reveal"
 
 interface ProcessSectionProps {
   lang: string
@@ -67,7 +68,7 @@ export function ProcessSection({ lang }: ProcessSectionProps) {
     <section className="py-16 md:py-24 bg-background">
       <div className="mx-auto max-w-7xl px-6">
         {/* Header */}
-        <div className="text-center mb-14">
+        <ScrollReveal className="text-center mb-14" direction="up">
           <span className="inline-block text-primary text-sm font-semibold tracking-widest uppercase mb-3">
             {isEs ? 'Proceso' : 'Process'}
           </span>
@@ -79,7 +80,7 @@ export function ProcessSection({ lang }: ProcessSectionProps) {
               ? 'Un proceso claro y sin sorpresas. Sabes exactamente qué pasa en cada etapa.'
               : 'A clear process with no surprises. You always know what happens at each stage.'}
           </p>
-        </div>
+        </ScrollReveal>
 
         {/* Steps */}
         <div className="relative">
@@ -94,9 +95,11 @@ export function ProcessSection({ lang }: ProcessSectionProps) {
             {currentSteps.map((step, index) => {
               const Icon = step.icon
               return (
-                <div
+                <ScrollReveal
                   key={step.number}
-                  className="group relative flex flex-col items-center text-center"
+                  direction="up"
+                  delay={index * 0.08}
+                  className="group relative flex flex-col items-center text-center h-full"
                 >
                   {/* Number badge + icon */}
                   <div className="relative z-10 mb-5">
@@ -110,7 +113,7 @@ export function ProcessSection({ lang }: ProcessSectionProps) {
 
                   <h3 className="text-lg font-bold mb-2">{step.title}</h3>
                   <p className="text-sm text-muted-foreground leading-relaxed">{step.description}</p>
-                </div>
+                </ScrollReveal>
               )
             })}
           </div>

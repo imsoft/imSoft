@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { Clock, Tag, Code2, ArrowRight } from 'lucide-react'
 import type { Dictionary } from '@/app/[lang]/dictionaries'
+import { ScrollReveal } from "@/components/animations/scroll-reveal"
 
 interface FinalCtaSectionProps {
   dict: Dictionary
@@ -23,8 +24,8 @@ export function FinalCtaSection({ lang }: FinalCtaSectionProps) {
       ]
 
   return (
-    <section className="py-16 md:py-24 bg-primary">
-      <div className="mx-auto max-w-4xl px-6 text-center">
+    <section className="py-16 md:py-24 bg-primary text-primary-foreground">
+      <ScrollReveal className="mx-auto max-w-4xl px-6 text-center" direction="up">
         <h2 className="text-3xl md:text-5xl font-bold mb-4 text-primary-foreground text-balance">
           {isEs
             ? '¿Listo para transformar tu idea en software?'
@@ -70,7 +71,7 @@ export function FinalCtaSection({ lang }: FinalCtaSectionProps) {
             </div>
           ))}
         </div>
-      </div>
+      </ScrollReveal>
     </section>
   )
 }
