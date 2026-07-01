@@ -92,6 +92,22 @@ export default async function RootLayout({
         )}
         {/* LLM discoverability */}
         <link rel="alternate" type="text/plain" href={`${SITE_URL}/llms.txt`} title="LLM Context" />
+        <Script id="register-sw" strategy="afterInteractive">
+          {`
+            if ('serviceWorker' in navigator) {
+              window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js').then(
+                  function(registration) {
+                    console.log('Service Worker registrado con éxito: ', registration.scope);
+                  },
+                  function(err) {
+                    console.log('Fallo al registrar Service Worker: ', err);
+                  }
+                );
+              });
+            }
+          `}
+        </Script>
         <Script
           id="organization-structured-data"
           type="application/ld+json"

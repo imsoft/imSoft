@@ -37,7 +37,19 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
-import { RichTextEditor } from '@/components/ui/rich-text-editor'
+import dynamic from 'next/dynamic'
+
+const RichTextEditor = dynamic(
+  () => import('@/components/ui/rich-text-editor').then((mod) => mod.RichTextEditor),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-[400px] w-full rounded-md border-2 border-dashed border-muted/50 bg-muted/10 flex flex-col items-center justify-center gap-2 text-muted-foreground animate-pulse">
+        <span className="text-sm font-medium">Cargando editor de texto...</span>
+      </div>
+    ),
+  }
+)
 import { TranslateButton } from '@/components/ui/translate-button'
 
 // Función para generar slug desde un texto

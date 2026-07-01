@@ -55,6 +55,23 @@ export async function POST(request: NextRequest) {
 
     const supabase = await createClient()
 
+    // Control de Idempotencia: Verificar si el evento ya fue procesado
+    const { error: idempotencyError } = await supabase
+      .from('processed_stripe_events')
+      .insert({ id: event.id })
+
+    if (idempotencyError) {
+      // 23505 = duplicate key (ya fue procesado)
+      if (idempotencyError.code === '23505') {
+        console.log(`[Stripe Webhook] Evento duplicado omitido: ${event.id}`)
+        return NextResponse.json({ received: true, duplicate: true })
+      }
+      // Si el error no es 42P01 (tabla no existe), registrar en consola
+      if (idempotencyError.code !== '42P01') {
+        console.error('[Stripe Webhook] Error registrando idempotencia:', idempotencyError)
+      }
+    }
+
     // Manejar diferentes tipos de eventos
     switch (event.type) {
       case 'checkout.session.completed': {
