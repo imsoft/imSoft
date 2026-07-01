@@ -212,7 +212,7 @@ export default async function AboutPage({
           </section>
 
           {/* ── Por qué elegirnos ── */}
-          <section className="py-16 md:py-24 bg-muted/50">
+          <section className="py-16 md:py-24 bg-background">
             <div className="mx-auto max-w-4xl px-6">
               <div className="text-center mb-12">
                 <h2 className="text-3xl md:text-4xl font-bold mb-3">
@@ -226,7 +226,7 @@ export default async function AboutPage({
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {differentiators.map((item, i) => (
-                  <div key={i} className="flex items-start gap-3 bg-background rounded-xl p-4 border border-border">
+                  <div key={i} className="flex items-start gap-3 bg-muted/40 rounded-xl p-4 border border-border">
                     <Check className="h-5 w-5 text-primary mt-0.5 shrink-0" />
                     <span className="text-sm text-muted-foreground leading-relaxed">{item}</span>
                   </div>
