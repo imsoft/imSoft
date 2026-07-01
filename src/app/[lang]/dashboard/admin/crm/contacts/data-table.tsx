@@ -57,6 +57,19 @@ export function DataTable<TData, TValue>({
   const [rowSelection, setRowSelection] = React.useState({})
   const [pageSize, setPageSize] = React.useState(10)
 
+  // Etiquetas legibles y localizadas para el menú de "Columnas".
+  const columnLabels: Record<string, { en: string; es: string }> = {
+    name: { en: 'Name', es: 'Nombre' },
+    email: { en: 'Email', es: 'Correo' },
+    company: { en: 'Company', es: 'Empresa' },
+    notes: { en: 'Notes', es: 'Notas' },
+    instagram_url: { en: 'Instagram', es: 'Instagram' },
+    status: { en: 'Status', es: 'Estado' },
+    actions: { en: 'Actions', es: 'Acciones' },
+  }
+  const getColumnLabel = (id: string) =>
+    columnLabels[id]?.[lang === 'en' ? 'en' : 'es'] ?? id
+
   const table = useReactTable({
     data,
     columns,
@@ -191,13 +204,12 @@ export function DataTable<TData, TValue>({
                     return (
                       <DropdownMenuCheckboxItem
                         key={column.id}
-                        className="capitalize"
                         checked={column.getIsVisible()}
                         onCheckedChange={(value) =>
                           column.toggleVisibility(!!value)
                         }
                       >
-                        {column.id}
+                        {getColumnLabel(column.id)}
                       </DropdownMenuCheckboxItem>
                     )
                   })}
