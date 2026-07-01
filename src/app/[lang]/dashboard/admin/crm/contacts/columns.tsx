@@ -323,6 +323,14 @@ export function createColumns({ lang, onDelete, isDeleting }: ColumnsProps): Col
                   {lang === 'en' ? 'View' : 'Ver'}
                 </Link>
               </DropdownMenuItem>
+              {contact.email && contact.status !== 'no_contact' && (
+                <DropdownMenuItem asChild>
+                  <Link href={`/${lang}/dashboard/admin/crm/contacts/${contact.id}/send-email`}>
+                    <Mail className="mr-2 h-4 w-4" />
+                    {lang === 'en' ? 'Send Email' : 'Enviar Correo'}
+                  </Link>
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem asChild>
                 <Link href={`/${lang}/dashboard/admin/crm/contacts/${contact.id}/edit`}>
                   <Edit className="mr-2 h-4 w-4" />
