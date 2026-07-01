@@ -398,7 +398,7 @@ export default async function ContactDetailPage({ params }: {
           <h2 className="text-lg font-semibold mb-4">
             {lang === 'en' ? 'Notes' : 'Notas'}
           </h2>
-          <p className="whitespace-pre-wrap text-muted-foreground">{contact.notes}</p>
+          <p className="whitespace-pre-wrap text-foreground">{contact.notes}</p>
         </Card>
       )}
 
