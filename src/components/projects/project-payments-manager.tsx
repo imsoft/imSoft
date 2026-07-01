@@ -13,6 +13,16 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
+import {
   Form,
   FormControl,
   FormField,
@@ -84,6 +94,7 @@ export function ProjectPaymentsManager({ projectId, projectCurrency = 'MXN', pro
   const [copied, setCopied] = useState(false)
   const [enableInstallments, setEnableInstallments] = useState(false)
   const [installmentOptions, setInstallmentOptions] = useState<number[]>([])
+  const [paymentToDelete, setPaymentToDelete] = useState<string | null>(null)
 
   const form = useForm<PaymentFormValues>({
     resolver: zodResolver(paymentSchema),
@@ -221,9 +232,7 @@ export function ProjectPaymentsManager({ projectId, projectCurrency = 'MXN', pro
   }
 
   async function handleDelete(paymentId: string) {
-    if (!confirm(lang === 'en' ? 'Are you sure you want to delete this payment?' : '¿Estás seguro de que quieres eliminar este pago?')) {
-      return
-    }
+    setPaymentToDelete(null)
 
     try {
       const supabase = createClient()
@@ -667,7 +676,7 @@ export function ProjectPaymentsManager({ projectId, projectCurrency = 'MXN', pro
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => handleDelete(payment.id)}
+                    onClick={() => setPaymentToDelete(payment.id)}
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
@@ -678,6 +687,35 @@ export function ProjectPaymentsManager({ projectId, projectCurrency = 'MXN', pro
         </div>
       )}
       </div>
+
+      <AlertDialog
+        open={!!paymentToDelete}
+        onOpenChange={(open) => !open && setPaymentToDelete(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {lang === 'en' ? 'Delete payment?' : '¿Eliminar pago?'}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {lang === 'en'
+                ? 'This action cannot be undone. The payment will be permanently deleted.'
+                : 'Esta acción no se puede deshacer. El pago se eliminará de forma permanente.'}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>
+              {lang === 'en' ? 'Cancel' : 'Cancelar'}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => paymentToDelete && handleDelete(paymentToDelete)}
+              className="bg-destructive text-white hover:bg-destructive/90"
+            >
+              {lang === 'en' ? 'Delete' : 'Eliminar'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

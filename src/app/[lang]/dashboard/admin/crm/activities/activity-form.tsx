@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import * as z from 'zod'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import {
@@ -114,7 +115,7 @@ export function ActivityForm({ activity, contacts, deals, lang, userId }: Activi
       router.refresh()
     } catch (error) {
       console.error('Error saving activity:', error)
-      alert(lang === 'en' ? 'Error saving activity' : 'Error al guardar actividad')
+      toast.error(lang === 'en' ? 'Error saving activity' : 'Error al guardar actividad')
     } finally {
       setIsSubmitting(false)
     }

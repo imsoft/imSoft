@@ -5,8 +5,19 @@ import { Card } from '@/components/ui/card'
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 import { DataTable } from './data-table'
 import { createColumns } from './columns'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 
 interface ContactsTableProps {
   contacts: Contact[]
@@ -16,14 +27,12 @@ interface ContactsTableProps {
 
 export function ContactsTable({ contacts, dict, lang }: ContactsTableProps) {
   const [isDeleting, setIsDeleting] = useState<string | null>(null)
+  const [contactToDelete, setContactToDelete] = useState<string | null>(null)
   const router = useRouter()
 
   const handleDelete = async (id: string) => {
-    if (!confirm(lang === 'en' ? 'Are you sure you want to delete this contact?' : '¿Estás seguro de que quieres eliminar este contacto?')) {
-      return
-    }
-
     setIsDeleting(id)
+    setContactToDelete(null)
     const supabase = createClient()
 
     const { error } = await supabase
@@ -33,15 +42,16 @@ export function ContactsTable({ contacts, dict, lang }: ContactsTableProps) {
 
     if (error) {
       console.error('Error deleting contact:', error)
-      alert(lang === 'en' ? 'Error deleting contact' : 'Error al eliminar contacto')
+      toast.error(lang === 'en' ? 'Error deleting contact' : 'Error al eliminar contacto')
     } else {
+      toast.success(lang === 'en' ? 'Contact deleted' : 'Contacto eliminado')
       router.refresh()
     }
 
     setIsDeleting(null)
   }
 
-  const columns = createColumns({ lang, onDelete: handleDelete, isDeleting })
+  const columns = createColumns({ lang, onDelete: setContactToDelete, isDeleting })
 
   if (contacts.length === 0) {
     return (
@@ -56,8 +66,39 @@ export function ContactsTable({ contacts, dict, lang }: ContactsTableProps) {
   }
 
   return (
-    <Card className="p-6 bg-white">
-      <DataTable columns={columns} data={contacts} lang={lang} />
-    </Card>
+    <>
+      <Card className="p-6 bg-white">
+        <DataTable columns={columns} data={contacts} lang={lang} />
+      </Card>
+
+      <AlertDialog
+        open={!!contactToDelete}
+        onOpenChange={(open) => !open && setContactToDelete(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {lang === 'en' ? 'Delete contact?' : '¿Eliminar contacto?'}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {lang === 'en'
+                ? 'This action cannot be undone. The contact will be permanently deleted.'
+                : 'Esta acción no se puede deshacer. El contacto se eliminará de forma permanente.'}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>
+              {lang === 'en' ? 'Cancel' : 'Cancelar'}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => contactToDelete && handleDelete(contactToDelete)}
+              className="bg-destructive text-white hover:bg-destructive/90"
+            >
+              {lang === 'en' ? 'Delete' : 'Eliminar'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   )
 }

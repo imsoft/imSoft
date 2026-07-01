@@ -9,6 +9,17 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 
 interface ActivitiesTableProps {
   activities: Activity[]
@@ -18,14 +29,12 @@ interface ActivitiesTableProps {
 
 export function ActivitiesTable({ activities, dict, lang }: ActivitiesTableProps) {
   const [isDeleting, setIsDeleting] = useState<string | null>(null)
+  const [activityToDelete, setActivityToDelete] = useState<string | null>(null)
   const router = useRouter()
 
   const handleDelete = async (id: string) => {
-    if (!confirm(lang === 'en' ? 'Are you sure you want to delete this activity?' : '¿Estás seguro de que quieres eliminar esta actividad?')) {
-      return
-    }
-
     setIsDeleting(id)
+    setActivityToDelete(null)
     const supabase = createClient()
 
     const { error } = await supabase
@@ -35,8 +44,9 @@ export function ActivitiesTable({ activities, dict, lang }: ActivitiesTableProps
 
     if (error) {
       console.error('Error deleting activity:', error)
-      alert(lang === 'en' ? 'Error deleting activity' : 'Error al eliminar actividad')
+      toast.error(lang === 'en' ? 'Error deleting activity' : 'Error al eliminar actividad')
     } else {
+      toast.success(lang === 'en' ? 'Activity deleted' : 'Actividad eliminada')
       router.refresh()
     }
 
@@ -212,7 +222,7 @@ export function ActivitiesTable({ activities, dict, lang }: ActivitiesTableProps
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => handleDelete(activity.id)}
+                      onClick={() => setActivityToDelete(activity.id)}
                       disabled={isDeleting === activity.id}
                       className="text-destructive hover:text-destructive"
                     >
@@ -225,6 +235,35 @@ export function ActivitiesTable({ activities, dict, lang }: ActivitiesTableProps
           </tbody>
         </table>
       </div>
+
+      <AlertDialog
+        open={!!activityToDelete}
+        onOpenChange={(open) => !open && setActivityToDelete(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {lang === 'en' ? 'Delete activity?' : '¿Eliminar actividad?'}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {lang === 'en'
+                ? 'This action cannot be undone. The activity will be permanently deleted.'
+                : 'Esta acción no se puede deshacer. La actividad se eliminará de forma permanente.'}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>
+              {lang === 'en' ? 'Cancel' : 'Cancelar'}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => activityToDelete && handleDelete(activityToDelete)}
+              className="bg-destructive text-white hover:bg-destructive/90"
+            >
+              {lang === 'en' ? 'Delete' : 'Eliminar'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   )
 }

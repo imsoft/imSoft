@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import * as z from 'zod'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import {
@@ -108,7 +109,7 @@ export function ContactFormSimple({ contact, lang, userId }: ContactFormProps) {
       router.refresh()
     } catch (error) {
       console.error('Error saving contact:', error)
-      alert(lang === 'en' ? 'Error saving contact' : 'Error al guardar contacto')
+      toast.error(lang === 'en' ? 'Error saving contact' : 'Error al guardar contacto')
     } finally {
       setIsSubmitting(false)
     }

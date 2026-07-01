@@ -9,6 +9,7 @@ import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { formatPhoneNumber } from '@/lib/utils/format-phone'
+import { toast } from 'sonner'
 import {
   Dialog,
   DialogContent,
@@ -16,6 +17,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 
 interface ContactMessagesTableProps {
   messages: ContactMessage[]
@@ -25,6 +36,7 @@ interface ContactMessagesTableProps {
 export function ContactMessagesTable({ messages, lang }: ContactMessagesTableProps) {
   const [isDeleting, setIsDeleting] = useState<string | null>(null)
   const [selectedMessage, setSelectedMessage] = useState<ContactMessage | null>(null)
+  const [messageToDelete, setMessageToDelete] = useState<ContactMessage | null>(null)
   const router = useRouter()
 
   const statusColors = {
@@ -45,11 +57,8 @@ export function ContactMessagesTable({ messages, lang }: ContactMessagesTablePro
   }
 
   const handleDelete = async (id: string) => {
-    if (!confirm(lang === 'en' ? 'Are you sure you want to delete this message?' : '¿Estás seguro de que quieres eliminar este mensaje?')) {
-      return
-    }
-
     setIsDeleting(id)
+    setMessageToDelete(null)
     const supabase = createClient()
 
     const { error } = await supabase
@@ -59,8 +68,9 @@ export function ContactMessagesTable({ messages, lang }: ContactMessagesTablePro
 
     if (error) {
       console.error('Error deleting message:', error)
-      alert(lang === 'en' ? 'Error deleting message' : 'Error al eliminar el mensaje')
+      toast.error(lang === 'en' ? 'Error deleting message' : 'Error al eliminar el mensaje')
     } else {
+      toast.success(lang === 'en' ? 'Message deleted' : 'Mensaje eliminado')
       router.refresh()
     }
 
@@ -77,7 +87,7 @@ export function ContactMessagesTable({ messages, lang }: ContactMessagesTablePro
 
     if (error) {
       console.error('Error updating status:', error)
-      alert(lang === 'en' ? 'Error updating status' : 'Error al actualizar el estado')
+      toast.error(lang === 'en' ? 'Error updating status' : 'Error al actualizar el estado')
     } else {
       router.refresh()
     }
@@ -237,7 +247,7 @@ export function ContactMessagesTable({ messages, lang }: ContactMessagesTablePro
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => handleDelete(message.id)}
+                        onClick={() => setMessageToDelete(message)}
                         disabled={isDeleting === message.id}
                       >
                         <Trash2 className="size-4 text-destructive" />
@@ -374,6 +384,36 @@ export function ContactMessagesTable({ messages, lang }: ContactMessagesTablePro
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Confirmación de borrado */}
+      <AlertDialog
+        open={!!messageToDelete}
+        onOpenChange={(open) => !open && setMessageToDelete(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {lang === 'en' ? 'Delete message?' : '¿Eliminar mensaje?'}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {lang === 'en'
+                ? 'This action cannot be undone. The message will be permanently deleted.'
+                : 'Esta acción no se puede deshacer. El mensaje se eliminará de forma permanente.'}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>
+              {lang === 'en' ? 'Cancel' : 'Cancelar'}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => messageToDelete && handleDelete(messageToDelete.id)}
+              className="bg-destructive text-white hover:bg-destructive/90"
+            >
+              {lang === 'en' ? 'Delete' : 'Eliminar'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   )
 }

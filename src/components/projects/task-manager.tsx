@@ -20,6 +20,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import { Label } from '@/components/ui/label'
 
 interface TaskManagerProps {
@@ -34,6 +44,7 @@ export function TaskManager({ projectId, lang }: TaskManagerProps) {
   const [newTaskTitle, setNewTaskTitle] = useState('')
   const [newTaskDescription, setNewTaskDescription] = useState('')
   const [dialogOpen, setDialogOpen] = useState(false)
+  const [taskToDelete, setTaskToDelete] = useState<string | null>(null)
 
   useEffect(() => {
     fetchTasks()
@@ -121,9 +132,7 @@ export function TaskManager({ projectId, lang }: TaskManagerProps) {
   }
 
   async function handleDeleteTask(taskId: string) {
-    if (!confirm(lang === 'en' ? 'Are you sure you want to delete this task?' : '¿Estás seguro de que quieres eliminar esta tarea?')) {
-      return
-    }
+    setTaskToDelete(null)
 
     try {
       const response = await fetch(`/api/projects/${projectId}/tasks/${taskId}`, {
@@ -314,7 +323,7 @@ export function TaskManager({ projectId, lang }: TaskManagerProps) {
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => handleDeleteTask(task.id)}
+                  onClick={() => setTaskToDelete(task.id)}
                   className="text-destructive hover:text-destructive"
                 >
                   <Trash2 className="h-4 w-4" />
@@ -324,6 +333,35 @@ export function TaskManager({ projectId, lang }: TaskManagerProps) {
           </div>
         )}
       </CardContent>
+
+      <AlertDialog
+        open={!!taskToDelete}
+        onOpenChange={(open) => !open && setTaskToDelete(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {lang === 'en' ? 'Delete task?' : '¿Eliminar tarea?'}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {lang === 'en'
+                ? 'This action cannot be undone. The task will be permanently deleted.'
+                : 'Esta acción no se puede deshacer. La tarea se eliminará de forma permanente.'}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>
+              {lang === 'en' ? 'Cancel' : 'Cancelar'}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => taskToDelete && handleDeleteTask(taskToDelete)}
+              className="bg-destructive text-white hover:bg-destructive/90"
+            >
+              {lang === 'en' ? 'Delete' : 'Eliminar'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   )
 }

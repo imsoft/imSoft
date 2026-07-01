@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Loader2, Languages, Check, AlertCircle } from 'lucide-react'
+import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 
 interface TranslateButtonProps {
@@ -96,7 +97,7 @@ export function TranslateButton({
       onTranslate(decodedText)
     } catch (error) {
       console.error('Translation error:', error)
-      alert(error instanceof Error ? error.message : 'Error al traducir el texto')
+      toast.error(error instanceof Error ? error.message : 'Error al traducir el texto')
     } finally {
       setIsTranslating(false)
     }
