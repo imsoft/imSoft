@@ -64,7 +64,7 @@ export function ProcessSection({ lang }: ProcessSectionProps) {
   const currentSteps = isEs ? steps.es : steps.en
 
   return (
-    <section className="py-16 md:py-24 bg-muted/30">
+    <section className="py-16 md:py-24 bg-background">
       <div className="mx-auto max-w-7xl px-6">
         {/* Header */}
         <div className="text-center mb-14">
