@@ -189,6 +189,7 @@ export interface Contact {
   email: string
   additional_emails?: string[]
   phone?: string
+  additional_phones?: string[]
   company?: string
   job_title?: string
   contact_type: ContactType

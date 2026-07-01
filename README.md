@@ -149,7 +149,7 @@ El proyecto usa Supabase (PostgreSQL). Los scripts SQL están en `scripts/`.
 | `testimonials` | Testimonios |
 | `contact` | Información de contacto |
 | `contact_messages` | Mensajes del formulario de contacto |
-| `contacts` | Contactos CRM (soporta campo `social_links` JSONB) |
+| `contacts` | Contactos CRM (soporta campo `social_links` JSONB y `additional_phones` TEXT[]) |
 | `deals` | Deals CRM |
 | `activities` | Actividades CRM |
 | `technologies` | Tecnologías |

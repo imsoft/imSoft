@@ -68,6 +68,14 @@ export function ContactFormSimple({ contact, lang, userId }: ContactFormProps) {
     contact?.social_links ?? []
   )
 
+  // Additional phones state
+  const [additionalPhones, setAdditionalPhones] = useState<string[]>(
+    contact?.additional_phones ?? []
+  )
+  const [additionalPhoneErrors, setAdditionalPhoneErrors] = useState<(string | null)[]>(
+    contact?.additional_phones?.map(() => null) ?? []
+  )
+
   const form = useForm<ContactFormValues>({
     resolver: zodResolver(contactSchema),
     defaultValues: {
@@ -113,8 +121,37 @@ export function ContactFormSimple({ contact, lang, userId }: ContactFormProps) {
     return errors.every((e) => e === null)
   }
 
+  const addPhone = () => {
+    setAdditionalPhones((prev) => [...prev, ''])
+    setAdditionalPhoneErrors((prev) => [...prev, null])
+  }
+
+  const removePhone = (index: number) => {
+    setAdditionalPhones((prev) => prev.filter((_, i) => i !== index))
+    setAdditionalPhoneErrors((prev) => prev.filter((_, i) => i !== index))
+  }
+
+  const updatePhone = (index: number, value: string) => {
+    setAdditionalPhones((prev) => prev.map((p, i) => (i === index ? value : p)))
+    const isValid = value.trim().length >= 5
+    setAdditionalPhoneErrors((prev) =>
+      prev.map((err, i) =>
+        i === index ? (isValid ? null : (lang === 'en' ? 'Invalid phone' : 'Teléfono inválido')) : err
+      )
+    )
+  }
+
+  const validateAdditionalPhones = (): boolean => {
+    const errors = additionalPhones.map((phone) => {
+      if (!phone.trim()) return lang === 'en' ? 'Phone is required' : 'El teléfono es requerido'
+      return phone.trim().length >= 5 ? null : (lang === 'en' ? 'Invalid phone' : 'Teléfono inválido')
+    })
+    setAdditionalPhoneErrors(errors)
+    return errors.every((e) => e === null)
+  }
+
   const onSubmit = async (values: ContactFormValues) => {
-    if (!validateAdditionalEmails()) return
+    if (!validateAdditionalEmails() || !validateAdditionalPhones()) return
 
     setIsSubmitting(true)
     const supabase = createClient()
@@ -129,6 +166,7 @@ export function ContactFormSimple({ contact, lang, userId }: ContactFormProps) {
         email: values.email,
         additional_emails: additionalEmails.length > 0 ? additionalEmails : null,
         phone: values.phone || null,
+        additional_phones: additionalPhones.length > 0 ? additionalPhones : null,
         company: values.company || null,
         instagram_url: instagramVal,
         social_links: socialLinks.length > 0 ? socialLinks : null,
@@ -266,14 +304,28 @@ export function ContactFormSimple({ contact, lang, userId }: ContactFormProps) {
             ))}
           </div>
 
-          {/* Phone */}
-          <div className="grid gap-4 md:grid-cols-2 mt-4">
+          {/* Phone section */}
+          <div className="mt-4 space-y-3">
             <FormField
               control={form.control}
               name="phone"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{lang === 'en' ? 'Phone' : 'Teléfono'}</FormLabel>
+                  <div className="flex items-center justify-between">
+                    <FormLabel>
+                      {lang === 'en' ? 'Phone' : 'Teléfono'}
+                    </FormLabel>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 gap-1 text-xs text-muted-foreground hover:text-foreground"
+                      onClick={addPhone}
+                    >
+                      <Plus className="h-3.5 w-3.5" />
+                      {lang === 'en' ? 'Add phone' : 'Agregar teléfono'}
+                    </Button>
+                  </div>
                   <FormControl>
                     <Input {...field} className="!border-2 !border-border" />
                   </FormControl>
@@ -281,6 +333,33 @@ export function ContactFormSimple({ contact, lang, userId }: ContactFormProps) {
                 </FormItem>
               )}
             />
+
+            {/* Additional phones */}
+            {additionalPhones.map((phone, index) => (
+              <div key={index} className="flex gap-2 items-start">
+                <div className="flex-1 space-y-1">
+                  <Input
+                    value={phone}
+                    onChange={(e) => updatePhone(index, e.target.value)}
+                    placeholder={lang === 'en' ? 'Additional phone' : 'Teléfono adicional'}
+                    className="!border-2 !border-border"
+                  />
+                  {additionalPhoneErrors[index] && (
+                    <p className="text-xs text-destructive">{additionalPhoneErrors[index]}</p>
+                  )}
+                </div>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="mt-0.5 h-9 w-9 shrink-0 text-muted-foreground hover:text-destructive"
+                  onClick={() => removePhone(index)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                  <span className="sr-only">{lang === 'en' ? 'Remove phone' : 'Eliminar teléfono'}</span>
+                </Button>
+              </div>
+            ))}
           </div>
 
           {/* Social Links */}

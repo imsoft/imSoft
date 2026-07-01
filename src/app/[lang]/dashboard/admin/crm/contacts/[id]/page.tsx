@@ -182,16 +182,28 @@ export default async function ContactDetailPage({ params }: {
             </div>
           </div>
 
-          {contact.phone && (
+          {(contact.phone || (Array.isArray(contact.additional_phones) && contact.additional_phones.length > 0)) && (
             <div>
               <p className="text-sm text-muted-foreground mb-1">
-                {lang === 'en' ? 'Phone' : 'Teléfono'}
+                {lang === 'en' ? 'Phones' : 'Teléfonos'}
               </p>
-              <div className="flex items-center gap-2">
-                <Phone className="size-4 text-muted-foreground" />
-                <a href={`tel:${contact.phone}`} className="hover:underline">
-                  {formatPhoneNumber(contact.phone)}
-                </a>
+              <div className="space-y-1.5">
+                {contact.phone && (
+                  <div className="flex items-center gap-2">
+                    <Phone className="size-4 text-muted-foreground" />
+                    <a href={`tel:${contact.phone}`} className="hover:underline font-medium text-foreground">
+                      {formatPhoneNumber(contact.phone)}
+                    </a>
+                  </div>
+                )}
+                {Array.isArray(contact.additional_phones) && contact.additional_phones.map((phone: string, idx: number) => (
+                  <div key={idx} className="flex items-center gap-2">
+                    <Phone className="size-4 text-muted-foreground opacity-60" />
+                    <a href={`tel:${phone}`} className="hover:underline font-medium text-foreground">
+                      {formatPhoneNumber(phone)}
+                    </a>
+                  </div>
+                ))}
               </div>
             </div>
           )}
