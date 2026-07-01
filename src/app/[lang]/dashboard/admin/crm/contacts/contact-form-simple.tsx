@@ -26,8 +26,9 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { createClient } from '@/lib/supabase/client'
-import { Contact } from '@/types/database'
+import { Contact, SocialLink } from '@/types/database'
 import { Plus, Trash2 } from 'lucide-react'
+import { SocialLinksEditor } from '@/components/crm/social-links-editor'
 
 const emailSchema = z.string().email('Correo inválido')
 
@@ -60,6 +61,11 @@ export function ContactFormSimple({ contact, lang, userId }: ContactFormProps) {
   )
   const [additionalEmailErrors, setAdditionalEmailErrors] = useState<(string | null)[]>(
     contact?.additional_emails?.map(() => null) ?? []
+  )
+
+  // Social links state
+  const [socialLinks, setSocialLinks] = useState<SocialLink[]>(
+    contact?.social_links ?? []
   )
 
   const form = useForm<ContactFormValues>({
@@ -114,6 +120,9 @@ export function ContactFormSimple({ contact, lang, userId }: ContactFormProps) {
     const supabase = createClient()
 
     try {
+      const instagramLink = socialLinks.find(l => l.platform === 'instagram')
+      const instagramVal = instagramLink ? instagramLink.url : null
+
       const contactData = {
         first_name: values.first_name || null,
         last_name: values.last_name || null,
@@ -121,7 +130,8 @@ export function ContactFormSimple({ contact, lang, userId }: ContactFormProps) {
         additional_emails: additionalEmails.length > 0 ? additionalEmails : null,
         phone: values.phone || null,
         company: values.company || null,
-        instagram_url: values.instagram_url || null,
+        instagram_url: instagramVal,
+        social_links: socialLinks.length > 0 ? socialLinks : null,
         notes: values.company_description || null,
         status: values.status,
         updated_at: new Date().toISOString(),
@@ -256,7 +266,7 @@ export function ContactFormSimple({ contact, lang, userId }: ContactFormProps) {
             ))}
           </div>
 
-          {/* Phone & Instagram */}
+          {/* Phone */}
           <div className="grid gap-4 md:grid-cols-2 mt-4">
             <FormField
               control={form.control}
@@ -271,30 +281,14 @@ export function ContactFormSimple({ contact, lang, userId }: ContactFormProps) {
                 </FormItem>
               )}
             />
+          </div>
 
-            <FormField
-              control={form.control}
-              name="instagram_url"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Instagram</FormLabel>
-                  <FormControl>
-                    <div className="flex">
-                      <span className="inline-flex items-center px-3 rounded-l-md border-2 border-r-0 border-border bg-muted text-muted-foreground text-sm font-medium select-none">
-                        @
-                      </span>
-                      <Input
-                        {...field}
-                        value={(field.value || '').replace(/^@/, '')}
-                        onChange={(e) => field.onChange(e.target.value.replace(/^@+/, ''))}
-                        placeholder="usuario"
-                        className="!border-2 !border-border rounded-l-none"
-                      />
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+          {/* Social Links */}
+          <div className="mt-6 border-t pt-6">
+            <SocialLinksEditor
+              value={socialLinks}
+              onChange={setSocialLinks}
+              lang={lang}
             />
           </div>
 

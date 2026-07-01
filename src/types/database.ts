@@ -203,11 +203,17 @@ export interface Contact {
   linkedin_url?: string
   instagram_url?: string
   website_url?: string
+  social_links?: SocialLink[]
   notes?: string
   assigned_to?: string
   created_by?: string
   created_at?: string
   updated_at?: string
+}
+
+export interface SocialLink {
+  platform: 'instagram' | 'tiktok' | 'facebook' | 'linkedin' | 'twitter' | 'youtube' | 'whatsapp' | 'website'
+  url: string
 }
 
 export interface Deal {
