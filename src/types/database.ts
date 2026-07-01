@@ -187,6 +187,7 @@ export interface Contact {
   first_name: string
   last_name: string
   email: string
+  additional_emails?: string[]
   phone?: string
   company?: string
   job_title?: string

@@ -27,11 +27,14 @@ import {
 } from '@/components/ui/select'
 import { createClient } from '@/lib/supabase/client'
 import { Contact } from '@/types/database'
+import { Plus, Trash2 } from 'lucide-react'
+
+const emailSchema = z.string().email('Correo inválido')
 
 const contactSchema = z.object({
   first_name: z.string().optional(),
   last_name: z.string().optional(),
-  email: z.string().email('Invalid email address'),
+  email: z.string().email('Correo inválido'),
   phone: z.string().optional(),
   company: z.string().optional(),
   instagram_url: z.string().optional(),
@@ -51,6 +54,14 @@ export function ContactFormSimple({ contact, lang, userId }: ContactFormProps) {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
 
+  // Additional emails state (beyond the primary email)
+  const [additionalEmails, setAdditionalEmails] = useState<string[]>(
+    contact?.additional_emails ?? []
+  )
+  const [additionalEmailErrors, setAdditionalEmailErrors] = useState<(string | null)[]>(
+    contact?.additional_emails?.map(() => null) ?? []
+  )
+
   const form = useForm<ContactFormValues>({
     resolver: zodResolver(contactSchema),
     defaultValues: {
@@ -65,16 +76,49 @@ export function ContactFormSimple({ contact, lang, userId }: ContactFormProps) {
     },
   })
 
+  const addEmail = () => {
+    setAdditionalEmails((prev) => [...prev, ''])
+    setAdditionalEmailErrors((prev) => [...prev, null])
+  }
+
+  const removeEmail = (index: number) => {
+    setAdditionalEmails((prev) => prev.filter((_, i) => i !== index))
+    setAdditionalEmailErrors((prev) => prev.filter((_, i) => i !== index))
+  }
+
+  const updateEmail = (index: number, value: string) => {
+    setAdditionalEmails((prev) => prev.map((e, i) => (i === index ? value : e)))
+    // Validate on change
+    const result = emailSchema.safeParse(value)
+    setAdditionalEmailErrors((prev) =>
+      prev.map((err, i) =>
+        i === index ? (result.success ? null : (lang === 'en' ? 'Invalid email' : 'Correo inválido')) : err
+      )
+    )
+  }
+
+  const validateAdditionalEmails = (): boolean => {
+    const errors = additionalEmails.map((email) => {
+      if (!email.trim()) return lang === 'en' ? 'Email is required' : 'El correo es requerido'
+      const result = emailSchema.safeParse(email)
+      return result.success ? null : (lang === 'en' ? 'Invalid email' : 'Correo inválido')
+    })
+    setAdditionalEmailErrors(errors)
+    return errors.every((e) => e === null)
+  }
+
   const onSubmit = async (values: ContactFormValues) => {
+    if (!validateAdditionalEmails()) return
+
     setIsSubmitting(true)
     const supabase = createClient()
 
     try {
-      // Preparar datos para guardar (company_description se guarda en notes)
       const contactData = {
         first_name: values.first_name || null,
         last_name: values.last_name || null,
         email: values.email,
+        additional_emails: additionalEmails.length > 0 ? additionalEmails : null,
         phone: values.phone || null,
         company: values.company || null,
         instagram_url: values.instagram_url || null,
@@ -151,17 +195,30 @@ export function ContactFormSimple({ contact, lang, userId }: ContactFormProps) {
                 </FormItem>
               )}
             />
-
           </div>
 
-          {/* Fila de contacto: Correo, Teléfono, Instagram */}
-          <div className="grid gap-4 md:grid-cols-3 mt-4">
+          {/* Email section */}
+          <div className="mt-4 space-y-3">
             <FormField
               control={form.control}
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{lang === 'en' ? 'Email' : 'Correo'} *</FormLabel>
+                  <div className="flex items-center justify-between">
+                    <FormLabel>
+                      {lang === 'en' ? 'Email' : 'Correo'} *
+                    </FormLabel>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 gap-1 text-xs text-muted-foreground hover:text-foreground"
+                      onClick={addEmail}
+                    >
+                      <Plus className="h-3.5 w-3.5" />
+                      {lang === 'en' ? 'Add email' : 'Agregar correo'}
+                    </Button>
+                  </div>
                   <FormControl>
                     <Input type="email" {...field} className="!border-2 !border-border" />
                   </FormControl>
@@ -170,6 +227,37 @@ export function ContactFormSimple({ contact, lang, userId }: ContactFormProps) {
               )}
             />
 
+            {/* Additional emails */}
+            {additionalEmails.map((email, index) => (
+              <div key={index} className="flex gap-2 items-start">
+                <div className="flex-1 space-y-1">
+                  <Input
+                    type="email"
+                    value={email}
+                    onChange={(e) => updateEmail(index, e.target.value)}
+                    placeholder={lang === 'en' ? 'Additional email' : 'Correo adicional'}
+                    className="!border-2 !border-border"
+                  />
+                  {additionalEmailErrors[index] && (
+                    <p className="text-xs text-destructive">{additionalEmailErrors[index]}</p>
+                  )}
+                </div>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="mt-0.5 h-9 w-9 shrink-0 text-muted-foreground hover:text-destructive"
+                  onClick={() => removeEmail(index)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                  <span className="sr-only">{lang === 'en' ? 'Remove email' : 'Eliminar correo'}</span>
+                </Button>
+              </div>
+            ))}
+          </div>
+
+          {/* Phone & Instagram */}
+          <div className="grid gap-4 md:grid-cols-2 mt-4">
             <FormField
               control={form.control}
               name="phone"
