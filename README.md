@@ -7,10 +7,11 @@ Aplicación web moderna desarrollada con Next.js para ofrecer servicios de desar
 - **Multiidioma** — Soporte completo para español (es-MX) e inglés (en) con hreflang y rutas prefijadas
 - **Dashboard Administrativo** — Gestión de proyectos, clientes, servicios, blog, portafolio, testimonios y más
 - **Dashboard de Cliente** — Portal para que los clientes vean y gestionen sus proyectos
-- **Sistema CRM** — Gestión de contactos, deals, actividades y pipeline de ventas
+- **Sistema CRM** — Gestión de contactos, deals, actividades, pipeline de ventas y editor dinámico de redes sociales con auto-detección
 - **Blog** — Sistema de blog con editor rico (Lexical) y soporte bilingüe
 - **Portafolio** — Showcase de proyectos completados
-- **Pagos con Stripe** — Integración para crear y gestionar enlaces de pago e installments
+- **Pagos con Stripe** — Integración para crear y gestionar enlaces de pago e installments (con apiVersion `2026-06-24.dahlia`)
+- **Landing Page Optimizada** — Secciones de conversión ("Cómo trabajamos"), testimonios dinámicos y vista previa del Blog
 - **SEO al 100%** — Metadata dinámica, sitemap, robots.txt, structured data (JSON-LD), OG images dinámicas y hreflang
 - **PWA Ready** — Manifest, iconos y soporte offline configurados
 
@@ -148,7 +149,7 @@ El proyecto usa Supabase (PostgreSQL). Los scripts SQL están en `scripts/`.
 | `testimonials` | Testimonios |
 | `contact` | Información de contacto |
 | `contact_messages` | Mensajes del formulario de contacto |
-| `contacts` | Contactos CRM |
+| `contacts` | Contactos CRM (soporta campo `social_links` JSONB) |
 | `deals` | Deals CRM |
 | `activities` | Actividades CRM |
 | `technologies` | Tecnologías |
