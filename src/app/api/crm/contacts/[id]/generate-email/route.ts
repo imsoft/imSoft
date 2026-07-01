@@ -253,7 +253,7 @@ Responde SOLO con un JSON válido con esta estructura:
         </head>
         <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
           <div style="background: ${primaryColor}; padding: 30px; border-radius: 10px 10px 0 0; text-align: center;">
-            <h1 style="color: white; margin: 0; font-size: 24px;">imSoft</h1>
+            <img src="https://imsoft.io/logos/logo-imsoft-white.png" alt="imSoft" style="height: 55px; width: auto; display: inline-block; border: 0; outline: none; margin: 0;" />
             <p style="color: white; margin: 10px 0 0 0; font-size: 18px;">Soluciones digitales a la medida</p>
           </div>
 
