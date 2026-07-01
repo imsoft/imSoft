@@ -6,7 +6,14 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Plus, Trash2, GripVertical } from 'lucide-react'
+import { Plus, Trash2, GripVertical, ClipboardList } from 'lucide-react'
+import {
+  Empty,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+  EmptyDescription,
+} from '@/components/ui/empty'
 import { Skeleton } from '@/components/ui/skeleton'
 import { toast } from 'sonner'
 import type { ProjectTask } from '@/types/database'
@@ -278,12 +285,19 @@ export function TaskManager({ projectId, lang }: TaskManagerProps) {
 
         {/* Tasks list */}
         {tasks.length === 0 ? (
-          <p className="text-sm text-muted-foreground text-center py-8">
-            {lang === 'en'
-              ? 'No tasks yet. Add your first task to track progress.'
-              : 'No hay tareas aún. Agrega tu primera tarea para hacer seguimiento del progreso.'
-            }
-          </p>
+          <Empty>
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <ClipboardList className="size-12" />
+              </EmptyMedia>
+              <EmptyTitle>{lang === 'en' ? 'No tasks' : 'No hay tareas'}</EmptyTitle>
+              <EmptyDescription>
+                {lang === 'en'
+                  ? 'No tasks yet. Add your first task to track progress.'
+                  : 'No hay tareas aún. Agrega tu primera tarea para hacer seguimiento del progreso.'}
+              </EmptyDescription>
+            </EmptyHeader>
+          </Empty>
         ) : (
           <div className="space-y-3">
             {tasks.map((task) => (

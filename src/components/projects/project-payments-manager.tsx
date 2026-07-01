@@ -23,6 +23,13 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import {
+  Empty,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+  EmptyDescription,
+} from '@/components/ui/empty'
+import {
   Form,
   FormControl,
   FormField,
@@ -613,10 +620,19 @@ export function ProjectPaymentsManager({ projectId, projectCurrency = 'MXN', pro
           {lang === 'en' ? 'Loading payments...' : 'Cargando pagos...'}
         </p>
       ) : payments.length === 0 ? (
-        <div className="text-center py-8 text-muted-foreground">
-          <DollarSign className="h-12 w-12 mx-auto mb-2 opacity-50" />
-          <p>{lang === 'en' ? 'No payments recorded yet' : 'Aún no hay pagos registrados'}</p>
-        </div>
+        <Empty>
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <DollarSign className="size-12" />
+            </EmptyMedia>
+            <EmptyTitle>{lang === 'en' ? 'No payments' : 'No hay pagos'}</EmptyTitle>
+            <EmptyDescription>
+              {lang === 'en'
+                ? 'No payments recorded for this project yet.'
+                : 'Aún no hay pagos registrados para este proyecto.'}
+            </EmptyDescription>
+          </EmptyHeader>
+        </Empty>
       ) : (
         <div className="space-y-2">
           {payments.map((payment) => {

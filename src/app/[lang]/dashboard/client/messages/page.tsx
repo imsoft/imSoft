@@ -2,6 +2,13 @@ import { getDictionary, hasLocale } from '../../../dictionaries'
 import { notFound, redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { Card } from '@/components/ui/card'
+import {
+  Empty,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+  EmptyDescription,
+} from '@/components/ui/empty'
 import { Badge } from '@/components/ui/badge'
 import { Inbox, Mail } from 'lucide-react'
 import type { ContactMessage } from '@/types/database'
@@ -60,14 +67,16 @@ export default async function ClientMessagesPage({ params }: {
       </div>
 
       {(!messages || messages.length === 0) ? (
-        <Card className="p-14 text-center">
-          <Inbox className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-          <h3 className="text-lg font-semibold mb-1">
-            {dict.dashboard.empty.messages?.title}
-          </h3>
-          <p className="text-sm text-muted-foreground max-w-xs mx-auto">
-            {dict.dashboard.empty.messages?.description}
-          </p>
+        <Card>
+          <Empty>
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <Inbox className="size-12" />
+              </EmptyMedia>
+              <EmptyTitle>{dict.dashboard.empty.messages?.title}</EmptyTitle>
+              <EmptyDescription>{dict.dashboard.empty.messages?.description}</EmptyDescription>
+            </EmptyHeader>
+          </Empty>
         </Card>
       ) : (
         <div className="space-y-3">

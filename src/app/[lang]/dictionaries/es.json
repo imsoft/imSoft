@@ -262,6 +262,34 @@
       "feedbacks": {
         "title": "No hay feedbacks",
         "description": "Aún no hay feedbacks registrados."
+      },
+      "contacts": {
+        "title": "No hay contactos",
+        "description": "Aún no hay contactos en tu CRM. Crea tu primer contacto para comenzar."
+      },
+      "activities": {
+        "title": "No hay actividades",
+        "description": "Aún no has registrado actividades. Registra tu primera llamada, correo o reunión."
+      },
+      "contactMessages": {
+        "title": "No hay mensajes",
+        "description": "Los mensajes de tu formulario de contacto aparecerán aquí."
+      },
+      "tasks": {
+        "title": "No hay tareas",
+        "description": "Aún no hay tareas. Agrega tu primera tarea para dar seguimiento al progreso."
+      },
+      "tasksFiltered": {
+        "title": "Sin coincidencias",
+        "description": "No hay tareas que coincidan con los filtros seleccionados."
+      },
+      "payments": {
+        "title": "No hay pagos",
+        "description": "Aún no hay pagos registrados para este proyecto."
+      },
+      "projectLinks": {
+        "title": "No hay enlaces",
+        "description": "Aún no hay enlaces disponibles para este proyecto."
       }
     },
     "table": {

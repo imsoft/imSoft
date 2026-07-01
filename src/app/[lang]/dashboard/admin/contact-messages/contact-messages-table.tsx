@@ -27,6 +27,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
+import {
+  Empty,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+  EmptyDescription,
+} from '@/components/ui/empty'
 
 interface ContactMessagesTableProps {
   messages: ContactMessage[]
@@ -104,16 +111,22 @@ export function ContactMessagesTable({ messages, lang }: ContactMessagesTablePro
 
   if (messages.length === 0) {
     return (
-      <Card className="p-12 text-center">
-        <Mail className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-        <h3 className="text-lg font-semibold mb-2">
-          {lang === 'en' ? 'No messages yet' : 'No hay mensajes aún'}
-        </h3>
-        <p className="text-sm text-muted-foreground">
-          {lang === 'en'
-            ? 'Messages from your contact form will appear here'
-            : 'Los mensajes de tu formulario de contacto aparecerán aquí'}
-        </p>
+      <Card>
+        <Empty>
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <Mail className="size-12" />
+            </EmptyMedia>
+            <EmptyTitle>
+              {lang === 'en' ? 'No messages yet' : 'No hay mensajes aún'}
+            </EmptyTitle>
+            <EmptyDescription>
+              {lang === 'en'
+                ? 'Messages from your contact form will appear here'
+                : 'Los mensajes de tu formulario de contacto aparecerán aquí'}
+            </EmptyDescription>
+          </EmptyHeader>
+        </Empty>
       </Card>
     )
   }

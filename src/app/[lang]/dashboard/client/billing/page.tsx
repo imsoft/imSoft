@@ -2,6 +2,13 @@ import { getDictionary, hasLocale } from '../../../dictionaries'
 import { notFound, redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Empty,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+  EmptyDescription,
+} from '@/components/ui/empty'
 import { Badge } from '@/components/ui/badge'
 import { Receipt, TrendingUp, Clock, CheckCircle2 } from 'lucide-react'
 import type { ProjectPayment } from '@/types/database'
@@ -157,14 +164,16 @@ export default async function ClientBillingPage({ params }: {
 
       {/* Payments list */}
       {payments.length === 0 ? (
-        <Card className="p-14 text-center">
-          <Receipt className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-          <h3 className="text-lg font-semibold mb-1">
-            {dict.dashboard.empty.billing?.title}
-          </h3>
-          <p className="text-sm text-muted-foreground max-w-xs mx-auto">
-            {dict.dashboard.empty.billing?.description}
-          </p>
+        <Card>
+          <Empty>
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <Receipt className="size-12" />
+              </EmptyMedia>
+              <EmptyTitle>{dict.dashboard.empty.billing?.title}</EmptyTitle>
+              <EmptyDescription>{dict.dashboard.empty.billing?.description}</EmptyDescription>
+            </EmptyHeader>
+          </Empty>
         </Card>
       ) : (
         <Card>

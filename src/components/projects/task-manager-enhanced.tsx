@@ -7,7 +7,14 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Plus, Trash2, GripVertical, AlertCircle, Flag } from 'lucide-react'
+import { Plus, Trash2, GripVertical, AlertCircle, Flag, ClipboardList, Filter } from 'lucide-react'
+import {
+  Empty,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+  EmptyDescription,
+} from '@/components/ui/empty'
 import { toast } from 'sonner'
 import type { ProjectTask, TaskPriority } from '@/types/database'
 import type { Locale } from '@/app/[lang]/dictionaries'
@@ -627,19 +634,33 @@ export function TaskManagerEnhanced({ projectId, lang }: TaskManagerProps) {
 
         {/* Tasks list */}
         {tasks.length === 0 ? (
-          <p className="text-sm text-muted-foreground text-center py-8">
-            {lang === 'en'
-              ? 'No tasks yet. Add your first task to track progress.'
-              : 'No hay tareas aún. Agrega tu primera tarea para hacer seguimiento del progreso.'
-            }
-          </p>
+          <Empty>
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <ClipboardList className="size-12" />
+              </EmptyMedia>
+              <EmptyTitle>{lang === 'en' ? 'No tasks' : 'No hay tareas'}</EmptyTitle>
+              <EmptyDescription>
+                {lang === 'en'
+                  ? 'No tasks yet. Add your first task to track progress.'
+                  : 'No hay tareas aún. Agrega tu primera tarea para hacer seguimiento del progreso.'}
+              </EmptyDescription>
+            </EmptyHeader>
+          </Empty>
         ) : filteredTasks.length === 0 ? (
-          <p className="text-sm text-muted-foreground text-center py-8">
-            {lang === 'en'
-              ? 'No tasks match the selected filters.'
-              : 'No hay tareas que coincidan con los filtros seleccionados.'
-            }
-          </p>
+          <Empty>
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <Filter className="size-12" />
+              </EmptyMedia>
+              <EmptyTitle>{lang === 'en' ? 'No matches' : 'Sin coincidencias'}</EmptyTitle>
+              <EmptyDescription>
+                {lang === 'en'
+                  ? 'No tasks match the selected filters.'
+                  : 'No hay tareas que coincidan con los filtros seleccionados.'}
+              </EmptyDescription>
+            </EmptyHeader>
+          </Empty>
         ) : (
           <DndContext
             sensors={sensors}

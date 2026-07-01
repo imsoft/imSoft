@@ -262,6 +262,34 @@
       "feedbacks": {
         "title": "No feedbacks",
         "description": "There are no feedbacks registered yet."
+      },
+      "contacts": {
+        "title": "No contacts",
+        "description": "There are no contacts in your CRM yet. Create your first contact to get started."
+      },
+      "activities": {
+        "title": "No activities",
+        "description": "You haven't logged any activities yet. Log your first call, email or meeting."
+      },
+      "contactMessages": {
+        "title": "No messages",
+        "description": "Messages from your contact form will appear here."
+      },
+      "tasks": {
+        "title": "No tasks",
+        "description": "No tasks yet. Add your first task to track progress."
+      },
+      "tasksFiltered": {
+        "title": "No matches",
+        "description": "No tasks match the selected filters."
+      },
+      "payments": {
+        "title": "No payments",
+        "description": "No payments recorded for this project yet."
+      },
+      "projectLinks": {
+        "title": "No links",
+        "description": "No links available for this project yet."
       }
     },
     "table": {

@@ -4,7 +4,15 @@ import { Activity } from '@/types/database'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Eye, Edit, Trash2, Phone, Mail, Calendar, FileText, CheckSquare } from 'lucide-react'
+import { Eye, Edit, Trash2, Phone, Mail, Calendar, FileText, CheckSquare, Plus } from 'lucide-react'
+import {
+  Empty,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+  EmptyDescription,
+  EmptyAction,
+} from '@/components/ui/empty'
 import Link from 'next/link'
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
@@ -109,12 +117,24 @@ export function ActivitiesTable({ activities, dict, lang }: ActivitiesTableProps
 
   if (activities.length === 0) {
     return (
-      <Card className="p-12">
-        <div className="text-center">
-          <p className="text-muted-foreground">
-            {lang === 'en' ? 'No activities yet. Log your first activity!' : '¡No hay actividades todavía. Registra tu primera actividad!'}
-          </p>
-        </div>
+      <Card>
+        <Empty>
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <CheckSquare className="size-12" />
+            </EmptyMedia>
+            <EmptyTitle>{dict.dashboard.empty.activities.title}</EmptyTitle>
+            <EmptyDescription>{dict.dashboard.empty.activities.description}</EmptyDescription>
+          </EmptyHeader>
+          <EmptyAction>
+            <Button asChild>
+              <Link href={`/${lang}/dashboard/admin/crm/activities/new`}>
+                <Plus className="mr-1.5 size-4" />
+                {lang === 'en' ? 'Log Activity' : 'Registrar Actividad'}
+              </Link>
+            </Button>
+          </EmptyAction>
+        </Empty>
       </Card>
     )
   }

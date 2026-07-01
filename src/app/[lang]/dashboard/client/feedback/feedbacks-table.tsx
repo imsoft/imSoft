@@ -12,6 +12,13 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
 import { MoreHorizontal, Trash2, MessageSquare } from "lucide-react"
+import {
+  Empty,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+  EmptyDescription,
+} from "@/components/ui/empty"
 import { DataTable } from "@/components/ui/data-table"
 import { useState } from "react"
 import { createClient } from "@/lib/supabase/client"
@@ -144,12 +151,15 @@ export function FeedbacksTable({ feedbacks, dict, lang }: FeedbacksTableProps) {
 
   if (feedbacks.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-12 text-center">
-        <MessageSquare className="h-12 w-12 text-muted-foreground mb-4" />
-        <p className="text-sm text-muted-foreground">
-          {dict.dashboard.empty.feedbacks.description}
-        </p>
-      </div>
+      <Empty>
+        <EmptyHeader>
+          <EmptyMedia variant="icon">
+            <MessageSquare className="size-12" />
+          </EmptyMedia>
+          <EmptyTitle>{dict.dashboard.empty.feedbacks.title}</EmptyTitle>
+          <EmptyDescription>{dict.dashboard.empty.feedbacks.description}</EmptyDescription>
+        </EmptyHeader>
+      </Empty>
     )
   }
 

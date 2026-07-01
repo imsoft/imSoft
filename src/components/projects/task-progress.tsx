@@ -2,7 +2,14 @@
 
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { CheckCircle2, Circle } from 'lucide-react'
+import { CheckCircle2, Circle, ClipboardList } from 'lucide-react'
+import {
+  Empty,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+  EmptyDescription,
+} from '@/components/ui/empty'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { toast } from 'sonner'
@@ -119,12 +126,19 @@ export function TaskProgress({ projectId, lang }: TaskProgressProps) {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-muted-foreground text-center py-8">
-            {lang === 'en'
-              ? 'No tasks have been defined for this project yet.'
-              : 'Aún no se han definido tareas para este proyecto.'
-            }
-          </p>
+          <Empty>
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <ClipboardList className="size-12" />
+              </EmptyMedia>
+              <EmptyTitle>{lang === 'en' ? 'No tasks' : 'No hay tareas'}</EmptyTitle>
+              <EmptyDescription>
+                {lang === 'en'
+                  ? 'No tasks have been defined for this project yet.'
+                  : 'Aún no se han definido tareas para este proyecto.'}
+              </EmptyDescription>
+            </EmptyHeader>
+          </Empty>
         </CardContent>
       </Card>
     )

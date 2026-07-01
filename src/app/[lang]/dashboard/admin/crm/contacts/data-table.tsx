@@ -13,7 +13,14 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-import { ChevronDown } from 'lucide-react'
+import { ChevronDown, SearchX } from 'lucide-react'
+import {
+  Empty,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+  EmptyDescription,
+} from '@/components/ui/empty'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -257,11 +264,20 @@ export function DataTable<TData, TValue>({
               ))
             ) : (
               <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  {lang === 'en' ? 'No results.' : 'Sin resultados.'}
+                <TableCell colSpan={columns.length} className="p-0">
+                  <Empty className="py-8">
+                    <EmptyHeader>
+                      <EmptyMedia variant="icon">
+                        <SearchX className="size-10" />
+                      </EmptyMedia>
+                      <EmptyTitle>{lang === 'en' ? 'No results' : 'Sin resultados'}</EmptyTitle>
+                      <EmptyDescription>
+                        {lang === 'en'
+                          ? 'No contacts match your search or filters.'
+                          : 'Ningún contacto coincide con tu búsqueda o filtros.'}
+                      </EmptyDescription>
+                    </EmptyHeader>
+                  </Empty>
                 </TableCell>
               </TableRow>
             )}

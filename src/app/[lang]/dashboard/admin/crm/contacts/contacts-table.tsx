@@ -6,8 +6,19 @@ import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
+import Link from 'next/link'
+import { Button } from '@/components/ui/button'
+import { Users, Plus } from 'lucide-react'
 import { DataTable } from './data-table'
 import { createColumns } from './columns'
+import {
+  Empty,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+  EmptyDescription,
+  EmptyAction,
+} from '@/components/ui/empty'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -55,12 +66,24 @@ export function ContactsTable({ contacts, dict, lang }: ContactsTableProps) {
 
   if (contacts.length === 0) {
     return (
-      <Card className="p-12 bg-white">
-        <div className="text-center">
-          <p className="text-muted-foreground">
-            {lang === 'en' ? 'No contacts yet. Create your first contact!' : '¡No hay contactos todavía. Crea tu primer contacto!'}
-          </p>
-        </div>
+      <Card className="bg-white">
+        <Empty>
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <Users className="size-12" />
+            </EmptyMedia>
+            <EmptyTitle>{dict.dashboard.empty.contacts.title}</EmptyTitle>
+            <EmptyDescription>{dict.dashboard.empty.contacts.description}</EmptyDescription>
+          </EmptyHeader>
+          <EmptyAction>
+            <Button asChild>
+              <Link href={`/${lang}/dashboard/admin/crm/contacts/new`}>
+                <Plus className="mr-1.5 size-4" />
+                {lang === 'en' ? 'Create Contact' : 'Crear Contacto'}
+              </Link>
+            </Button>
+          </EmptyAction>
+        </Empty>
       </Card>
     )
   }

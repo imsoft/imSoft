@@ -5,7 +5,13 @@ import { redirect } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { ExternalLink, ArrowLeft, Globe, GitBranch } from "lucide-react"
+import { ExternalLink, ArrowLeft, Globe, GitBranch, Link2 } from "lucide-react"
+import {
+  Empty,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyDescription,
+} from "@/components/ui/empty"
 import Image from "next/image"
 import Link from "next/link"
 import type { Project } from "@/types/database"
@@ -166,9 +172,16 @@ export default async function ClientProjectDetailPage({ params }: {
               </a>
             )}
             {!project.project_url && !project.github_repo_url && (
-              <p className="text-sm text-muted-foreground">
-                {lang === 'en' ? 'No links available' : 'No hay enlaces disponibles'}
-              </p>
+              <Empty className="py-6">
+                <EmptyHeader>
+                  <EmptyMedia variant="icon">
+                    <Link2 className="size-8" />
+                  </EmptyMedia>
+                  <EmptyDescription>
+                    {lang === 'en' ? 'No links available' : 'No hay enlaces disponibles'}
+                  </EmptyDescription>
+                </EmptyHeader>
+              </Empty>
             )}
           </CardContent>
         </Card>

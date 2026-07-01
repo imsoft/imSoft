@@ -6,6 +6,12 @@ import Link from 'next/link'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import {
+  Empty,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from '@/components/ui/empty'
+import {
   ArrowRight,
   FolderKanban,
   DollarSign,
@@ -307,9 +313,14 @@ export default async function AdminDashboardPage({ params }: {
           </CardHeader>
           <CardContent>
             {recentProjects.length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-4">
-                {t('No projects yet', 'Aún no hay proyectos')}
-              </p>
+              <Empty>
+                <EmptyHeader>
+                  <EmptyMedia variant="icon">
+                    <FolderKanban className="size-12" />
+                  </EmptyMedia>
+                  <EmptyTitle>{t('No projects yet', 'Aún no hay proyectos')}</EmptyTitle>
+                </EmptyHeader>
+              </Empty>
             ) : (
               <div className="space-y-3">
                 {recentProjects.map((project: any) => {
@@ -360,9 +371,14 @@ export default async function AdminDashboardPage({ params }: {
           </CardHeader>
           <CardContent>
             {recentMessages.length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-4">
-                {t('No messages yet', 'Aún no hay mensajes')}
-              </p>
+              <Empty>
+                <EmptyHeader>
+                  <EmptyMedia variant="icon">
+                    <MessageSquare className="size-12" />
+                  </EmptyMedia>
+                  <EmptyTitle>{t('No messages yet', 'Aún no hay mensajes')}</EmptyTitle>
+                </EmptyHeader>
+              </Empty>
             ) : (
               <div className="space-y-3">
                 {recentMessages.map((msg: any) => {

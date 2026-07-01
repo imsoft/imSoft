@@ -5,6 +5,13 @@ import { HeroHeader } from "@/components/blocks/hero-section";
 import { getDictionary, hasLocale } from '../dictionaries';
 import { notFound } from 'next/navigation';
 import { Card, CardContent } from "@/components/ui/card";
+import {
+  Empty,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
+import { Newspaper } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
@@ -124,11 +131,16 @@ export default async function BlogPage({ params }: {
             </div>
             
             {blogPosts.length === 0 ? (
-              <div className="text-center py-16">
-                <p className="text-muted-foreground text-lg">
-                  {dict.blog?.noPosts ?? 'No posts available yet.'}
-                </p>
-              </div>
+              <Empty className="py-16">
+                <EmptyHeader>
+                  <EmptyMedia variant="icon">
+                    <Newspaper className="size-12" />
+                  </EmptyMedia>
+                  <EmptyTitle>
+                    {dict.blog?.noPosts ?? 'No posts available yet.'}
+                  </EmptyTitle>
+                </EmptyHeader>
+              </Empty>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {blogPosts.map((post) => (
