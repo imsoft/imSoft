@@ -127,14 +127,14 @@ export default async function AboutPage({
           </section>
 
           {/* ── Historia ── */}
-          <section className="py-16 md:py-24 bg-muted/50">
+          <section className="py-16 md:py-24 bg-primary text-primary-foreground">
             <div className="mx-auto max-w-5xl px-6">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                 <div>
-                  <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                  <h2 className="text-3xl md:text-4xl font-bold mb-6 text-primary-foreground">
                     {isEs ? '¿Por qué existe imSoft?' : 'Why does imSoft exist?'}
                   </h2>
-                  <div className="space-y-4 text-muted-foreground leading-relaxed">
+                  <div className="space-y-4 text-primary-foreground/85 leading-relaxed">
                     <p>
                       {isEs
                         ? 'imSoft nació de una frustración común: negocios que necesitan software a medida pero encuentran agencias que entregan proyectos genéricos, fuera de tiempo y con costos que se disparan al final.'
@@ -155,13 +155,30 @@ export default async function AboutPage({
                 <div className="grid grid-cols-2 gap-6">
                   {[
                     { number: '50+', label: isEs ? 'Proyectos entregados' : 'Projects delivered' },
-                    { number: '6+', label: isEs ? 'Años de experiencia' : 'Years of experience' },
+                    {
+                      number: (() => {
+                        const startYear = 2019;
+                        const startMonth = 4; // May (0-indexed)
+                        const currentDate = new Date();
+                        const currentYear = currentDate.getFullYear();
+                        const currentMonth = currentDate.getMonth();
+                        let years = currentYear - startYear;
+                        if (currentMonth < startMonth) {
+                          years--;
+                        }
+                        return `${years}+`;
+                      })(),
+                      label: isEs ? 'Años de experiencia' : 'Years of experience',
+                    },
                     { number: '13', label: isEs ? 'Servicios especializados' : 'Specialized services' },
                     { number: '100%', label: isEs ? 'Código tuyo siempre' : 'Always your code' },
                   ].map((stat, i) => (
-                    <div key={i} className="bg-background rounded-2xl p-6 text-center border border-border">
-                      <div className="text-4xl font-black text-primary mb-2">{stat.number}</div>
-                      <div className="text-sm text-muted-foreground">{stat.label}</div>
+                    <div
+                      key={i}
+                      className="bg-primary-foreground/10 rounded-2xl p-6 text-center border border-white/20 transition-all duration-300 hover:bg-primary-foreground/20 hover:border-white/40 hover:-translate-y-1 hover:shadow-lg"
+                    >
+                      <div className="text-4xl font-black text-primary-foreground mb-2">{stat.number}</div>
+                      <div className="text-sm text-primary-foreground/85">{stat.label}</div>
                     </div>
                   ))}
                 </div>
