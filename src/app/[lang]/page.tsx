@@ -16,6 +16,7 @@ import { generateMetadata as generateSEOMetadata, generateStructuredData } from 
 import { StructuredData } from '@/components/seo/structured-data';
 import { faqs } from '@/config/faq-data';
 import type { Metadata } from 'next';
+import { ScrollReveal } from "@/components/animations/scroll-reveal";
 
 export async function generateMetadata({
   params,
@@ -243,13 +244,27 @@ export default async function Home({ params }: {
       <div className="overflow-x-hidden w-full">
         <HeroSection dict={dict} lang={lang} companies={companies || []} portfolioProjects={projects} blogTitles={blogTitles} />
         <ServicesSection dict={dict} lang={lang} services={services || []} />
-        <ProcessSection lang={lang} />
-        <PricingSection dict={dict} lang={lang} />
-        <PortfolioSection dict={dict} lang={lang} projects={projects} />
-        <TestimonialsSection dict={dict} lang={lang} testimonials={formattedTestimonials} />
-        <BlogPreviewSection lang={lang} posts={blogPreviews} />
-        <FaqSection dict={dict} lang={lang} />
-        <FinalCtaSection dict={dict} lang={lang} />
+        <ScrollReveal>
+          <ProcessSection lang={lang} />
+        </ScrollReveal>
+        <ScrollReveal>
+          <PricingSection dict={dict} lang={lang} />
+        </ScrollReveal>
+        <ScrollReveal>
+          <PortfolioSection dict={dict} lang={lang} projects={projects} />
+        </ScrollReveal>
+        <ScrollReveal>
+          <TestimonialsSection dict={dict} lang={lang} testimonials={formattedTestimonials} />
+        </ScrollReveal>
+        <ScrollReveal>
+          <BlogPreviewSection lang={lang} posts={blogPreviews} />
+        </ScrollReveal>
+        <ScrollReveal>
+          <FaqSection dict={dict} lang={lang} />
+        </ScrollReveal>
+        <ScrollReveal>
+          <FinalCtaSection dict={dict} lang={lang} />
+        </ScrollReveal>
         <FooterSection dict={dict} lang={lang} contactData={contactData || undefined} />
       </div>
     </>

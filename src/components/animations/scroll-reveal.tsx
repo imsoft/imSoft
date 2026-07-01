@@ -16,13 +16,13 @@ export function ScrollReveal({
   className,
   delay = 0,
   direction = 'up',
-  duration = 0.6,
+  duration = 0.4,
 }: ScrollRevealProps) {
   const directions = {
-    up: { y: 30 },
-    down: { y: -30 },
-    left: { x: 30 },
-    right: { x: -30 },
+    up: { y: 25 },
+    down: { y: -25 },
+    left: { x: 25 },
+    right: { x: -25 },
     none: {},
   };
 
@@ -38,11 +38,11 @@ export function ScrollReveal({
         x: 0,
         y: 0,
       }}
-      viewport={{ once: true, margin: '-8% 0px -8% 0px' }}
+      viewport={{ once: true, margin: '0px 0px -40px 0px' }}
       transition={{
         duration,
         delay,
-        ease: [0.21, 0.47, 0.32, 0.98], // smooth cubic-bezier ease out
+        ease: [0.16, 1, 0.3, 1], // snappy cubic-bezier ease out
       }}
     >
       {children}
