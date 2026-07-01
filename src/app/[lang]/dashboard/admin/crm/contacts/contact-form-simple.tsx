@@ -279,7 +279,18 @@ export function ContactFormSimple({ contact, lang, userId }: ContactFormProps) {
                 <FormItem>
                   <FormLabel>Instagram</FormLabel>
                   <FormControl>
-                    <Input {...field} className="!border-2 !border-border" />
+                    <div className="flex">
+                      <span className="inline-flex items-center px-3 rounded-l-md border-2 border-r-0 border-border bg-muted text-muted-foreground text-sm font-medium select-none">
+                        @
+                      </span>
+                      <Input
+                        {...field}
+                        value={(field.value || '').replace(/^@/, '')}
+                        onChange={(e) => field.onChange(e.target.value.replace(/^@+/, ''))}
+                        placeholder="usuario"
+                        className="!border-2 !border-border rounded-l-none"
+                      />
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>

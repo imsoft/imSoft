@@ -1,8 +1,10 @@
 import { HeroSection } from "@/components/blocks/hero-section";
 import { ServicesSection } from "@/components/blocks/services-section";
+import { ProcessSection } from "@/components/blocks/process-section";
 import { PricingSection } from "@/components/blocks/pricing-section";
 import { PortfolioSection } from "@/components/blocks/portfolio-section";
 import { TestimonialsSection } from "@/components/blocks/testimonials-section";
+import { BlogPreviewSection } from "@/components/blocks/blog-preview-section";
 import { FaqSection } from "@/components/blocks/faq-section";
 import { FinalCtaSection } from "@/components/blocks/final-cta-section";
 import { FooterSection } from "@/components/blocks/footer-section";
@@ -82,13 +84,13 @@ export default async function Home({ params }: {
         const adminSupabase = createAdminClient();
         return adminSupabase
           .from('blog')
-          .select('id, title_es, title_en, title, slug')
+          .select('id, title_es, title_en, title, slug, excerpt_es, excerpt_en, excerpt, image_url, category, created_at')
           .eq('published', true)
           .order('created_at', { ascending: false });
       } catch {
         return supabase
           .from('blog')
-          .select('id, title_es, title_en, title, slug')
+          .select('id, title_es, title_en, title, slug, excerpt_es, excerpt_en, excerpt, image_url, category, created_at')
           .eq('published', true)
           .order('created_at', { ascending: false });
       }
@@ -124,7 +126,7 @@ export default async function Home({ params }: {
     image: project.image_url || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop',
   }));
 
-  // Mapear los títulos según el idioma
+  // Mapear los títulos según el idioma (para el hero)
   const blogTitles = (blogPosts || []).map((post) => {
     const title = lang === 'en'
       ? (post.title_en || post.title || '')
@@ -135,6 +137,21 @@ export default async function Home({ params }: {
       slug: post.slug || post.id,
     };
   });
+
+  // Mapear posts para el blog preview con datos enriquecidos
+  const blogPreviews = (blogPosts || []).slice(0, 3).map((post) => ({
+    id: post.id,
+    title: lang === 'en'
+      ? (post.title_en || post.title || '')
+      : (post.title_es || post.title || ''),
+    slug: post.slug || post.id,
+    excerpt: lang === 'en'
+      ? (post.excerpt_en || post.excerpt || undefined)
+      : (post.excerpt_es || post.excerpt || undefined),
+    image_url: post.image_url || undefined,
+    category: post.category || undefined,
+    created_at: post.created_at || undefined,
+  }));
 
   const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io';
   
@@ -226,9 +243,11 @@ export default async function Home({ params }: {
       <div className="overflow-x-hidden w-full">
         <HeroSection dict={dict} lang={lang} companies={companies || []} portfolioProjects={projects} blogTitles={blogTitles} />
         <ServicesSection dict={dict} lang={lang} services={services || []} />
+        <ProcessSection lang={lang} />
         <PricingSection dict={dict} lang={lang} />
         <PortfolioSection dict={dict} lang={lang} projects={projects} />
         <TestimonialsSection dict={dict} lang={lang} testimonials={formattedTestimonials} />
+        <BlogPreviewSection lang={lang} posts={blogPreviews} />
         <FaqSection dict={dict} lang={lang} />
         <FinalCtaSection dict={dict} lang={lang} />
         <FooterSection dict={dict} lang={lang} contactData={contactData || undefined} />
