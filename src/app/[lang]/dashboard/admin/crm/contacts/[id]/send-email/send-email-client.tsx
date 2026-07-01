@@ -9,14 +9,16 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Skeleton } from '@/components/ui/skeleton'
-import { ArrowLeft, Mail, Sparkles, Loader2 } from 'lucide-react'
+import { ArrowLeft, Mail, Sparkles, Loader2, FileText } from 'lucide-react'
 import Link from 'next/link'
 import { toast } from 'sonner'
+import { buildProspectEmail } from '@/lib/email/prospect-template'
 import type { ContactStatus } from '@/types/database'
 
 interface SendEmailPageClientProps {
   contactId: string
   contactName: string
+  contactFirstName: string
   contactEmail: string
   contactCompany: string
   contactStatus: ContactStatus
@@ -26,6 +28,7 @@ interface SendEmailPageClientProps {
 export function SendEmailPageClient({
   contactId,
   contactName,
+  contactFirstName,
   contactEmail,
   contactCompany,
   contactStatus,
@@ -70,6 +73,16 @@ export function SendEmailPageClient({
     } finally {
       setIsGeneratingAI(false)
     }
+  }
+
+  const applyProspectTemplate = () => {
+    const { subject, html } = buildProspectEmail({
+      nombre: contactFirstName,
+      empresa: contactCompany,
+    })
+    setEmailSubject(subject)
+    setEmailBody(html)
+    toast.success(lang === 'en' ? 'Prospecting template applied' : 'Plantilla de prospección aplicada')
   }
 
   const handleSendEmail = async () => {
@@ -130,23 +143,33 @@ export function SendEmailPageClient({
             </p>
           </div>
         </div>
-        <Button
-          onClick={generateAIEmail}
-          disabled={isGeneratingAI}
-          variant="outline"
-        >
-          {isGeneratingAI ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              {lang === 'en' ? 'Generating...' : 'Generando...'}
-            </>
-          ) : (
-            <>
-              <Sparkles className="mr-2 h-4 w-4" />
-              {lang === 'en' ? 'Generate with AI' : 'Generar con IA'}
-            </>
-          )}
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            onClick={applyProspectTemplate}
+            disabled={isGeneratingAI}
+            variant="outline"
+          >
+            <FileText className="mr-2 h-4 w-4" />
+            {lang === 'en' ? 'Use template' : 'Usar plantilla'}
+          </Button>
+          <Button
+            onClick={generateAIEmail}
+            disabled={isGeneratingAI}
+            variant="outline"
+          >
+            {isGeneratingAI ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                {lang === 'en' ? 'Generating...' : 'Generando...'}
+              </>
+            ) : (
+              <>
+                <Sparkles className="mr-2 h-4 w-4" />
+                {lang === 'en' ? 'Generate with AI' : 'Generar con IA'}
+              </>
+            )}
+          </Button>
+        </div>
       </div>
 
       {/* Email Form */}
