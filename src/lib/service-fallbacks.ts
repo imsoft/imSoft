@@ -11,6 +11,7 @@ export type ServiceFallback = {
   image_url: string;
   benefits_es: string[];
   benefits_en: string[];
+  category: string;
 };
 
 const FALLBACKS: ServiceFallback[] = [
@@ -40,6 +41,7 @@ const FALLBACKS: ServiceFallback[] = [
       'Scalable and maintainable architecture',
       'Continuous support and maintenance',
     ],
+    category: 'technology',
   },
   {
     slug: 'aplicaciones-moviles',
@@ -67,6 +69,7 @@ const FALLBACKS: ServiceFallback[] = [
       'Offline sync and local storage',
       'Publication on App Store and Google Play',
     ],
+    category: 'technology',
   },
   {
     slug: 'consultoria-tecnologica',
@@ -94,6 +97,176 @@ const FALLBACKS: ServiceFallback[] = [
       'Team training and education',
       'Software architecture consulting',
     ],
+    category: 'technology',
+  },
+  // ── Marketing Services ──
+  {
+    slug: 'gestion-de-redes-sociales',
+    title_es: 'Gestión de Redes Sociales',
+    title_en: 'Social Media Management',
+    description_es:
+      'Nos encargamos de planificar, crear y administrar contenido estratégico que fortalezca la presencia digital de tu marca, aumenta el engagement y conecte con la audiencia adecuada. Nuestro objetivo no es solo publicar contenido, sino desarrollar una estrategia que genere resultados medibles.',
+    description_en:
+      'We plan, create, and manage strategic content that strengthens your brand\'s digital presence, increases engagement, and connects with the right audience. Our goal is not just to post content, but to develop a strategy that generates measurable results.',
+    image_url:
+      'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=800&h=600&fit=crop',
+    benefits_es: [
+      'Estrategia de contenido personalizada para cada red social',
+      'Calendario editorial mensual con aprobación previa',
+      'Diseño gráfico profesional para cada publicación',
+      'Community management y respuesta a comentarios',
+      'Copywriting estratégico orientado a conversión',
+      'Reportes mensuales de crecimiento y engagement',
+    ],
+    benefits_en: [
+      'Custom content strategy for each social network',
+      'Monthly editorial calendar with prior approval',
+      'Professional graphic design for each post',
+      'Community management and comment response',
+      'Strategic copywriting focused on conversion',
+      'Monthly growth and engagement reports',
+    ],
+    category: 'marketing',
+  },
+  {
+    slug: 'produccion-audiovisual',
+    title_es: 'Producción Audiovisual',
+    title_en: 'Audiovisual Production',
+    description_es:
+      'Transformamos ideas en contenido visual que conecta con tu audiencia y genera resultados. Desde sesiones de foto y video hasta producción de reels, stories y contenido para campañas publicitarias.',
+    description_en:
+      'We transform ideas into visual content that connects with your audience and generates results. From photo and video sessions to reel production, stories, and content for advertising campaigns.',
+    image_url:
+      'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=800&h=600&fit=crop',
+    benefits_es: [
+      'Producción de video profesional (reels, stories, ads)',
+      'Sesiones fotográficas de producto y lifestyle',
+      'Edición y postproducción con identidad de marca',
+      'Guiones y storyboards estratégicos',
+      'Contenido optimizado por plataforma (IG, TikTok, YouTube)',
+      'Banco de contenido mensual listo para publicar',
+    ],
+    benefits_en: [
+      'Professional video production (reels, stories, ads)',
+      'Product and lifestyle photo sessions',
+      'Editing and post-production with brand identity',
+      'Strategic scripts and storyboards',
+      'Platform-optimized content (IG, TikTok, YouTube)',
+      'Monthly content bank ready to publish',
+    ],
+    category: 'marketing',
+  },
+  {
+    slug: 'reportes-y-analitica-de-redes-sociales',
+    title_es: 'Reportes y Analítica de Redes Sociales',
+    title_en: 'Social Media Reports & Analytics',
+    description_es:
+      'Dashboards de desempeño mensual: alcance, engagement y conversión — visibilidad total. Analizamos los datos de tus redes sociales para identificar qué funciona, qué ajustar y cómo optimizar tu estrategia digital.',
+    description_en:
+      'Monthly performance dashboards: reach, engagement, and conversion — total visibility. We analyze your social media data to identify what works, what to adjust, and how to optimize your digital strategy.',
+    image_url:
+      'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop',
+    benefits_es: [
+      'Dashboards interactivos de desempeño mensual',
+      'Métricas clave: alcance, engagement, conversión y ROI',
+      'Análisis comparativo con competencia (benchmarking)',
+      'Identificación de contenido de mejor rendimiento',
+      'Recomendaciones accionables basadas en datos',
+      'Informes ejecutivos mensuales listos para presentar',
+    ],
+    benefits_en: [
+      'Interactive monthly performance dashboards',
+      'Key metrics: reach, engagement, conversion, and ROI',
+      'Competitive analysis (benchmarking)',
+      'Top-performing content identification',
+      'Actionable data-driven recommendations',
+      'Monthly executive reports ready to present',
+    ],
+    category: 'marketing',
+  },
+  {
+    slug: 'paid-media',
+    title_es: 'Paid Media',
+    title_en: 'Paid Media',
+    description_es:
+      'Creamos, administramos y optimizamos campañas de publicidad digital enfocadas en alcanzar tus objetivos de negocio, ya sea aumentar ventas, generar prospectos, incrementar el reconocimiento de marca o atraer tráfico a tu sitio web.',
+    description_en:
+      'We create, manage, and optimize digital advertising campaigns focused on achieving your business objectives, whether it\'s increasing sales, generating leads, building brand awareness, or driving traffic to your website.',
+    image_url:
+      'https://images.unsplash.com/photo-1432888622747-4eb9a8efeb07?w=800&h=600&fit=crop',
+    benefits_es: [
+      'Campañas en Meta Ads (Facebook e Instagram)',
+      'Google Ads: Search, Display y YouTube',
+      'TikTok Ads y LinkedIn Ads',
+      'Segmentación avanzada por audiencia e intereses',
+      'A/B testing y optimización continua de creativos',
+      'Reportes de ROI y costo por adquisición transparentes',
+    ],
+    benefits_en: [
+      'Meta Ads campaigns (Facebook and Instagram)',
+      'Google Ads: Search, Display, and YouTube',
+      'TikTok Ads and LinkedIn Ads',
+      'Advanced targeting by audience and interests',
+      'A/B testing and continuous creative optimization',
+      'Transparent ROI and cost-per-acquisition reports',
+    ],
+    category: 'marketing',
+  },
+  {
+    slug: 'consultoria-de-marketing',
+    title_es: 'Consultoría de Marketing',
+    title_en: 'Marketing Consulting',
+    description_es:
+      'Analizamos la presencia digital de tu marca para identificar oportunidades de mejora y diseñar un plan de acción alineado con tus objetivos comerciales.',
+    description_en:
+      'We analyze your brand\'s digital presence to identify improvement opportunities and design an action plan aligned with your business objectives.',
+    image_url:
+      'https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=600&fit=crop',
+    benefits_es: [
+      'Auditoría completa de presencia digital actual',
+      'Análisis de competencia y posicionamiento de marca',
+      'Definición de buyer personas y customer journey',
+      'Plan de marketing digital con KPIs medibles',
+      'Estrategia de contenido y calendario editorial',
+      'Acompañamiento mensual para ajustar según resultados',
+    ],
+    benefits_en: [
+      'Complete audit of current digital presence',
+      'Competitive analysis and brand positioning',
+      'Buyer persona and customer journey definition',
+      'Digital marketing plan with measurable KPIs',
+      'Content strategy and editorial calendar',
+      'Monthly follow-up to adjust based on results',
+    ],
+    category: 'marketing',
+  },
+  {
+    slug: 'influencer-marketing',
+    title_es: 'Influencer Marketing',
+    title_en: 'Influencer Marketing',
+    description_es:
+      'Diseñamos y gestionamos campañas de influencer marketing enfocadas en generar confianza, alcance y conversiones. Nos encargamos de todo el proceso, desde la selección de perfiles hasta el seguimiento de resultados.',
+    description_en:
+      'We design and manage influencer marketing campaigns focused on building trust, reach, and conversions. We handle the entire process, from profile selection to results tracking.',
+    image_url:
+      'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800&h=600&fit=crop',
+    benefits_es: [
+      'Selección estratégica de influencers por nicho y audiencia',
+      'Negociación y gestión de contratos y entregas',
+      'Briefing creativo alineado con tu identidad de marca',
+      'Coordinación de contenido y calendario de publicaciones',
+      'Seguimiento de métricas: alcance, engagement y conversiones',
+      'Reportes de campaña con ROI y aprendizajes clave',
+    ],
+    benefits_en: [
+      'Strategic influencer selection by niche and audience',
+      'Negotiation and management of contracts and deliverables',
+      'Creative briefing aligned with your brand identity',
+      'Content coordination and publishing calendar',
+      'Metrics tracking: reach, engagement, and conversions',
+      'Campaign reports with ROI and key learnings',
+    ],
+    category: 'marketing',
   },
 ];
 

@@ -17,16 +17,16 @@ export async function generateMetadata({
   const { lang } = await params;
   return generateSEOMetadata({
     title: lang === 'es'
-      ? 'Servicios de Desarrollo de Software y Consultoría Tecnológica'
-      : 'Software Development & Technology Consulting Services',
+      ? 'Servicios de Desarrollo de Software, Marketing Digital y Consultoría'
+      : 'Software Development, Digital Marketing & Consulting Services',
     description: lang === 'es'
-      ? 'Descubre nuestros servicios: desarrollo web, aplicaciones móviles, consultoría tecnológica y transformación digital. Soluciones a medida para tu empresa.'
-      : 'Explore our services: web development, mobile apps, technology consulting and digital transformation. Custom solutions for your business.',
+      ? 'Descubre nuestros servicios: desarrollo web, aplicaciones móviles, consultoría tecnológica, gestión de redes sociales, producción audiovisual, paid media e influencer marketing.'
+      : 'Explore our services: web development, mobile apps, technology consulting, social media management, audiovisual production, paid media and influencer marketing.',
     url: `${SITE_URL}/${lang}/services`,
     type: 'website',
     tags: lang === 'es'
-      ? ['desarrollo de software', 'consultoría tecnológica', 'transformación digital', 'desarrollo web', 'aplicaciones móviles']
-      : ['software development', 'technology consulting', 'digital transformation', 'web development', 'mobile apps'],
+      ? ['desarrollo de software', 'consultoría tecnológica', 'transformación digital', 'marketing digital', 'redes sociales', 'paid media']
+      : ['software development', 'technology consulting', 'digital transformation', 'digital marketing', 'social media', 'paid media'],
     alternateUrls: {
       es: `${SITE_URL}/es/services`,
       en: `${SITE_URL}/en/services`,

@@ -35,15 +35,22 @@ export async function generateMetadata({
   const description = lang === 'en' ? (service.description_en || service.description || '') : (service.description_es || service.description || '');
   const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io';
 
+  const isMarketing = serviceRow?.category === 'marketing';
+  const tags = isMarketing
+    ? (lang === 'es'
+      ? ['marketing digital', 'redes sociales', 'publicidad digital', 'estrategia de marketing']
+      : ['digital marketing', 'social media', 'digital advertising', 'marketing strategy'])
+    : (lang === 'es'
+      ? ['servicio', 'tecnología', 'desarrollo de software', 'consultoría']
+      : ['service', 'technology', 'software development', 'consulting']);
+
   return generateSEOMetadata({
     title,
     description,
     url: `${SITE_URL}/${lang}/services/${slug}`,
     image: service.image_url || `${SITE_URL}/logos/logo-imsoft-blue.png`,
     type: 'website',
-    tags: lang === 'es'
-      ? ['servicio', 'tecnología', 'desarrollo de software', 'consultoría']
-      : ['service', 'technology', 'software development', 'consulting'],
+    tags,
     alternateUrls: {
       es: `${SITE_URL}/es/services/${slug}`,
       en: `${SITE_URL}/en/services/${slug}`,

@@ -11,6 +11,7 @@ export interface Service {
   icon?: string
   benefits_es?: string[]
   benefits_en?: string[]
+  category?: string
   created_at?: string
   updated_at?: string
 }
