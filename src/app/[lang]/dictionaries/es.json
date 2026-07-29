@@ -493,7 +493,28 @@
     "title": "Blog",
     "subtitle": "Últimas noticias, artículos y actualizaciones sobre tecnología y desarrollo",
     "readMore": "Leer más",
-    "noPosts": "No hay publicaciones disponibles aún."
+    "noPosts": "No hay publicaciones disponibles aún.",
+    "searchPlaceholder": "Buscar artículos...",
+    "clearSearch": "Limpiar búsqueda",
+    "allCategories": "Todas",
+    "noResults": "No encontramos artículos con esos filtros.",
+    "clearFilters": "Quitar filtros",
+    "resultsCount": "{count} artículos",
+    "resultsCountOne": "1 artículo",
+    "pageOf": "Página {page} de {total}",
+    "pageLabel": "Página {page}",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "categories": {
+      "technology": "Tecnología",
+      "design": "Diseño",
+      "business": "Negocios",
+      "marketing": "Marketing",
+      "development": "Desarrollo",
+      "tutorials": "Tutoriales",
+      "news": "Noticias",
+      "tips": "Tips y Trucos"
+    }
   },
   "contact": {
     "title": "Contacto",

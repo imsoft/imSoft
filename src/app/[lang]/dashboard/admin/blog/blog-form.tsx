@@ -38,6 +38,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover'
 import dynamic from 'next/dynamic'
+import { BLOG_CATEGORIES } from '@/lib/blog-categories'
 
 const RichTextEditor = dynamic(
   () => import('@/components/ui/rich-text-editor').then((mod) => mod.RichTextEditor),
@@ -62,17 +63,8 @@ function generateSlug(text: string): string {
     .replace(/^-+|-+$/g, '') // Eliminar guiones al inicio y final
 }
 
-// Lista de categorías para el combobox
-const categories = [
-  { value: 'technology', label_es: 'Tecnología', label_en: 'Technology' },
-  { value: 'design', label_es: 'Diseño', label_en: 'Design' },
-  { value: 'business', label_es: 'Negocios', label_en: 'Business' },
-  { value: 'marketing', label_es: 'Marketing', label_en: 'Marketing' },
-  { value: 'development', label_es: 'Desarrollo', label_en: 'Development' },
-  { value: 'tutorials', label_es: 'Tutoriales', label_en: 'Tutorials' },
-  { value: 'news', label_es: 'Noticias', label_en: 'News' },
-  { value: 'tips', label_es: 'Tips y Trucos', label_en: 'Tips & Tricks' },
-]
+// Lista de categorías para el combobox (compartida con los filtros públicos del blog)
+const categories = BLOG_CATEGORIES
 
 const blogSchema = z.object({
   title_es: z.string().min(1, 'El título en español es requerido'),

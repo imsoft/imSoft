@@ -7,8 +7,17 @@ export default function BlogLoading() {
             <div className="h-12 w-48 bg-muted rounded-lg mx-auto mb-4 animate-pulse" />
             <div className="h-5 w-96 bg-muted rounded mx-auto animate-pulse" />
           </div>
+          <div className="mb-10 flex flex-col gap-6">
+            <div className="mx-auto h-11 w-full max-w-xl bg-muted rounded-md animate-pulse" />
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="h-8 w-24 bg-muted rounded-full animate-pulse" />
+              ))}
+            </div>
+            <div className="h-4 w-28 bg-muted rounded mx-auto animate-pulse" />
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {Array.from({ length: 6 }).map((_, i) => (
+            {Array.from({ length: 9 }).map((_, i) => (
               <div key={i} className="rounded-xl overflow-hidden border bg-white dark:bg-gray-900 animate-pulse">
                 <div className="w-full h-48 bg-muted" />
                 <div className="p-6 flex flex-col gap-3">
