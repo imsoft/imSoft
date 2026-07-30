@@ -15,7 +15,7 @@ interface CTASectionProps {
 
 export function CTASection({ title, description, buttonText, lang }: CTASectionProps) {
   return (
-    <section className="relative py-20 px-4 overflow-hidden bg-gradient-to-br from-primary via-blue-600 to-purple-700">
+    <section className="relative py-20 px-4 overflow-hidden bg-linear-to-br from-primary via-blue-600 to-purple-700">
       {/* Background effect */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute -left-1/4 top-0 h-[600px] w-[600px] rounded-full bg-white/10 blur-3xl" />

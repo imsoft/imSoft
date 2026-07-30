@@ -195,7 +195,7 @@ export function HeroSection({ dict, lang, companies = [], portfolioProjects = []
                             <div className="relative mt-8 overflow-hidden px-2 sm:mt-12 md:mt-20">
                                 <div
                                     aria-hidden
-                                    className="bg-gradient-to-b to-background absolute inset-0 z-10 from-transparent from-35%"
+                                    className="bg-linear-to-b to-background absolute inset-0 z-10 from-transparent from-35%"
                                 />
                                 <div className="inset-shadow-2xs ring-background dark:inset-shadow-white/20 bg-background relative mx-auto max-w-7xl overflow-hidden rounded-2xl border p-2 shadow-lg shadow-zinc-950/15 ring-1">
                                     <PortfolioCarousel portfolioProjects={portfolioProjects} />

@@ -72,7 +72,7 @@ export function BlogPreviewSection({ lang, posts }: BlogPreviewSectionProps) {
                       loading={index === 0 ? 'eager' : 'lazy'}
                     />
                   ) : (
-                    <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+                    <div className="absolute inset-0 bg-linear-to-br from-primary/20 to-primary/5 flex items-center justify-center">
                       <span className="text-4xl">📝</span>
                     </div>
                   )}

@@ -364,7 +364,7 @@ export function ContactsKanbanBoard({ contacts: initialContacts, lang }: Contact
                         return (
                           <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
                             <div className="mb-4 relative">
-                              <div className="relative bg-gradient-to-br from-primary/10 to-primary/5 p-6 rounded-full border-2 border-dashed border-primary/30">
+                              <div className="relative bg-linear-to-br from-primary/10 to-primary/5 p-6 rounded-full border-2 border-dashed border-primary/30">
                                 {emptyContent.icon}
                               </div>
                             </div>
