@@ -554,7 +554,7 @@ export function ProjectForm({ dict, lang, project }: ProjectFormProps) {
                     />
                   </div>
                   <FormControl>
-                    <Input {...field} className="!border-2 !border-border" />
+                    <Input {...field} className="border-2! border-border!" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -574,7 +574,7 @@ export function ProjectForm({ dict, lang, project }: ProjectFormProps) {
                     />
                   </div>
                   <FormControl>
-                    <Textarea {...field} rows={4} className="!border-2 !border-border" />
+                    <Textarea {...field} rows={4} className="border-2! border-border!" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -590,7 +590,7 @@ export function ProjectForm({ dict, lang, project }: ProjectFormProps) {
                   <FormItem>
                     <FormLabel>Title</FormLabel>
                     <FormControl>
-                      <Input {...field} className="!border-2 !border-border" />
+                      <Input {...field} className="border-2! border-border!" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -606,7 +606,7 @@ export function ProjectForm({ dict, lang, project }: ProjectFormProps) {
                       <Input
                         {...field}
                         readOnly={!isEditing}
-                        className={`!border-2 !border-border ${!isEditing ? "bg-white cursor-not-allowed" : ""}`}
+                        className={`border-2! border-border! ${!isEditing ? "bg-white cursor-not-allowed" : ""}`}
                       />
                     </FormControl>
                     <FormMessage />
@@ -621,7 +621,7 @@ export function ProjectForm({ dict, lang, project }: ProjectFormProps) {
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Textarea {...field} rows={4} className="!border-2 !border-border" />
+                    <Textarea {...field} rows={4} className="border-2! border-border!" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -705,7 +705,7 @@ export function ProjectForm({ dict, lang, project }: ProjectFormProps) {
                         role="combobox"
                         aria-expanded={companyOpen}
                         disabled={isLoadingCompanies}
-                        className="w-full justify-between !border-2 !border-border"
+                        className="w-full justify-between border-2! border-border!"
                       >
                         {isLoadingCompanies ? (
                           lang === 'en' ? 'Loading...' : 'Cargando...'
@@ -718,7 +718,7 @@ export function ProjectForm({ dict, lang, project }: ProjectFormProps) {
                       </Button>
                     </FormControl>
                   </PopoverTrigger>
-                  <PopoverContent className="w-[var(--radix-popper-anchor-width)] p-0">
+                  <PopoverContent className="w-(--radix-popper-anchor-width) p-0">
                     <Command>
                       <CommandInput
                         placeholder={lang === 'en' ? 'Search company...' : 'Buscar empresa...'}
@@ -769,7 +769,7 @@ export function ProjectForm({ dict, lang, project }: ProjectFormProps) {
                         variant="outline"
                         role="combobox"
                         aria-expanded={projectTypeOpen}
-                        className="w-full justify-between !border-2 !border-border"
+                        className="w-full justify-between border-2! border-border!"
                       >
                         {field.value
                           ? projectTypes.find((type) => type.value === field.value)?.[lang === 'es' ? 'label_es' : 'label_en']
@@ -778,7 +778,7 @@ export function ProjectForm({ dict, lang, project }: ProjectFormProps) {
                       </Button>
                     </FormControl>
                   </PopoverTrigger>
-                  <PopoverContent className="w-[var(--radix-popper-anchor-width)] p-0">
+                  <PopoverContent className="w-(--radix-popper-anchor-width) p-0">
                     <Command>
                       <CommandInput
                         placeholder={lang === 'en' ? 'Search project type...' : 'Buscar tipo de proyecto...'}
@@ -832,7 +832,7 @@ export function ProjectForm({ dict, lang, project }: ProjectFormProps) {
                         variant="outline"
                         role="combobox"
                         aria-expanded={statusOpen}
-                        className="w-full justify-between !border-2 !border-border"
+                        className="w-full justify-between border-2! border-border!"
                       >
                         {field.value
                           ? statuses.find((status) => status.value === field.value)?.[lang === 'es' ? 'label_es' : 'label_en']
@@ -841,7 +841,7 @@ export function ProjectForm({ dict, lang, project }: ProjectFormProps) {
                       </Button>
                     </FormControl>
                   </PopoverTrigger>
-                  <PopoverContent className="w-[var(--radix-popper-anchor-width)] p-0">
+                  <PopoverContent className="w-(--radix-popper-anchor-width) p-0">
                     <Command>
                       <CommandInput
                         placeholder={lang === 'en' ? 'Search status...' : 'Buscar estado...'}
@@ -886,7 +886,7 @@ export function ProjectForm({ dict, lang, project }: ProjectFormProps) {
               <FormItem>
                 <FormLabel>{lang === 'en' ? 'Project URL (optional)' : 'URL del Proyecto (opcional)'}</FormLabel>
                 <FormControl>
-                  <Input {...field} type="url" className="!border-2 !border-border" />
+                  <Input {...field} type="url" className="border-2! border-border!" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -906,7 +906,7 @@ export function ProjectForm({ dict, lang, project }: ProjectFormProps) {
                   : 'Enlace a recursos externos como Google Drive con imágenes y archivos del proyecto'}
               </FormDescription>
               <FormControl>
-                <Input {...field} type="url" className="!border-2 !border-border" />
+                <Input {...field} type="url" className="border-2! border-border!" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -921,7 +921,7 @@ export function ProjectForm({ dict, lang, project }: ProjectFormProps) {
               <FormItem>
                 <FormLabel>{lang === 'en' ? 'Start Date (optional)' : 'Fecha de Inicio (opcional)'}</FormLabel>
                 <FormControl>
-                  <Input {...field} type="date" className="!border-2 !border-border" />
+                  <Input {...field} type="date" className="border-2! border-border!" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -934,7 +934,7 @@ export function ProjectForm({ dict, lang, project }: ProjectFormProps) {
               <FormItem>
                 <FormLabel>{lang === 'en' ? 'End Date (optional)' : 'Fecha de Entrega (opcional)'}</FormLabel>
                 <FormControl>
-                  <Input {...field} type="date" className="!border-2 !border-border" />
+                  <Input {...field} type="date" className="border-2! border-border!" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -969,7 +969,7 @@ export function ProjectForm({ dict, lang, project }: ProjectFormProps) {
                       type="number" 
                       step="0.01"
                       min="0"
-                      className="!border-2 !border-border"
+                      className="border-2! border-border!"
                       onChange={(e) => {
                         const value = e.target.value
                         field.onChange(value === '' ? '' : value)
@@ -1141,7 +1141,7 @@ export function ProjectForm({ dict, lang, project }: ProjectFormProps) {
                     <Input
                       {...field}
                       type="url"
-                      className="!border-2 !border-border"
+                      className="border-2! border-border!"
                     />
                   </FormControl>
                   <FormMessage />

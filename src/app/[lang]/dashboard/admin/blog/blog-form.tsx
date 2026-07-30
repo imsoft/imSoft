@@ -371,7 +371,7 @@ export function BlogForm({ dict, lang, post }: BlogFormProps) {
                     />
                   </div>
                   <FormControl>
-                    <Input {...field} className="!border-2 !border-border" />
+                    <Input {...field} className="border-2! border-border!" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -391,7 +391,7 @@ export function BlogForm({ dict, lang, post }: BlogFormProps) {
                     />
                   </div>
                   <FormControl>
-                    <Textarea {...field} rows={2} className="!border-2 !border-border" />
+                    <Textarea {...field} rows={2} className="border-2! border-border!" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -430,7 +430,7 @@ export function BlogForm({ dict, lang, post }: BlogFormProps) {
                   <FormItem>
                     <FormLabel>Title</FormLabel>
                     <FormControl>
-                      <Input {...field} className="!border-2 !border-border" />
+                      <Input {...field} className="border-2! border-border!" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -446,7 +446,7 @@ export function BlogForm({ dict, lang, post }: BlogFormProps) {
                       <Input 
                         {...field} 
                         readOnly={!isEditing}
-                        className={`!border-2 !border-border ${!isEditing ? "bg-white cursor-not-allowed" : ""}`}
+                        className={`border-2! border-border! ${!isEditing ? "bg-white cursor-not-allowed" : ""}`}
                       />
                     </FormControl>
                     <FormMessage />
@@ -461,7 +461,7 @@ export function BlogForm({ dict, lang, post }: BlogFormProps) {
                 <FormItem>
                   <FormLabel>Excerpt (optional)</FormLabel>
                   <FormControl>
-                    <Textarea {...field} rows={2} className="!border-2 !border-border" />
+                    <Textarea {...field} rows={2} className="border-2! border-border!" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -567,7 +567,7 @@ export function BlogForm({ dict, lang, post }: BlogFormProps) {
                       variant="outline"
                       role="combobox"
                       aria-expanded={categoryOpen}
-                      className="w-full justify-between !border-2 !border-border"
+                      className="w-full justify-between border-2! border-border!"
                     >
                       {field.value
                         ? categories.find((category) => category.value === field.value)?.[lang === 'es' ? 'label_es' : 'label_en']
@@ -576,7 +576,7 @@ export function BlogForm({ dict, lang, post }: BlogFormProps) {
                     </Button>
                   </FormControl>
                 </PopoverTrigger>
-                <PopoverContent className="w-[var(--radix-popper-anchor-width)] p-0">
+                <PopoverContent className="w-(--radix-popper-anchor-width) p-0">
                   <Command>
                     <CommandInput 
                       placeholder={lang === 'en' ? 'Search category...' : 'Buscar categoría...'} 
@@ -627,7 +627,7 @@ export function BlogForm({ dict, lang, post }: BlogFormProps) {
                       variant="outline"
                       role="combobox"
                       aria-expanded={authorOpen}
-                      className="w-full justify-between !border-2 !border-border"
+                      className="w-full justify-between border-2! border-border!"
                       disabled={isLoadingAuthors}
                     >
                       {field.value
@@ -637,7 +637,7 @@ export function BlogForm({ dict, lang, post }: BlogFormProps) {
                     </Button>
                   </FormControl>
                 </PopoverTrigger>
-                <PopoverContent className="w-[var(--radix-popper-anchor-width)] p-0">
+                <PopoverContent className="w-(--radix-popper-anchor-width) p-0">
                   <Command>
                     <CommandInput 
                       placeholder={lang === 'en' ? 'Search author...' : 'Buscar autor...'} 

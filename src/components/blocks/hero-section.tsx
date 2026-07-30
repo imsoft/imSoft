@@ -109,10 +109,10 @@ export function HeroSection({ dict, lang, companies = [], portfolioProjects = []
                                             href={announcementLink}
                                             className="hover:bg-background dark:hover:border-t-border bg-muted group mx-auto flex max-w-full w-fit items-center gap-2 sm:gap-4 rounded-full border p-1.5 sm:p-1 pl-3 sm:pl-4 pr-2 sm:pr-1 shadow-md shadow-black/5 transition-all duration-300 dark:border-t-white/5 dark:shadow-zinc-950">
                                             <span className="text-foreground text-xs sm:text-sm transition-opacity duration-500 line-clamp-1 sm:line-clamp-none">{announcementText}</span>
-                                            <span className="dark:border-background hidden sm:block h-4 w-0.5 border-l bg-white dark:bg-zinc-700 flex-shrink-0"></span>
-                                            <span className="text-foreground text-xs sm:text-sm font-medium whitespace-nowrap flex-shrink-0">{dict.hero.announcementLink}</span>
+                                            <span className="dark:border-background hidden sm:block h-4 w-0.5 border-l bg-white dark:bg-zinc-700 shrink-0"></span>
+                                            <span className="text-foreground text-xs sm:text-sm font-medium whitespace-nowrap shrink-0">{dict.hero.announcementLink}</span>
 
-                                            <div className="bg-background group-hover:bg-muted size-5 sm:size-6 overflow-hidden rounded-full duration-500 flex-shrink-0">
+                                            <div className="bg-background group-hover:bg-muted size-5 sm:size-6 overflow-hidden rounded-full duration-500 shrink-0">
                                                 <div className="flex w-10 sm:w-12 -translate-x-1/2 duration-500 ease-in-out group-hover:translate-x-0">
                                                     <span className="flex size-5 sm:size-6">
                                                         <ArrowRight className="m-auto size-2.5 sm:size-3" />

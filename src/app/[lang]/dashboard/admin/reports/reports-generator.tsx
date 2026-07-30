@@ -99,10 +99,10 @@ export function ReportsGenerator({ dict, lang }: ReportsGeneratorProps) {
           {lang === 'en' ? 'Report Type' : 'Tipo de Reporte'}
         </Label>
         <Select value={reportType} onValueChange={(value) => setReportType(value as ReportType)}>
-          <SelectTrigger id="report-type" className="w-full !border-2 !border-border">
+          <SelectTrigger id="report-type" className="w-full border-2! border-border!">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent className="w-[var(--radix-select-trigger-width)]">
+          <SelectContent className="w-(--radix-select-trigger-width)">
             {Object.entries(reportTypeLabels).map(([value, labels]) => (
               <SelectItem key={value} value={value}>
                 {lang === 'en' ? labels.en : labels.es}
@@ -117,10 +117,10 @@ export function ReportsGenerator({ dict, lang }: ReportsGeneratorProps) {
           {lang === 'en' ? 'Format' : 'Formato'}
         </Label>
         <Select value={reportFormat} onValueChange={(value) => setReportFormat(value as ReportFormat)}>
-          <SelectTrigger id="report-format" className="w-full !border-2 !border-border">
+          <SelectTrigger id="report-format" className="w-full border-2! border-border!">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent className="w-[var(--radix-select-trigger-width)]">
+          <SelectContent className="w-(--radix-select-trigger-width)">
             <SelectItem value="json">JSON</SelectItem>
             <SelectItem value="csv">CSV</SelectItem>
           </SelectContent>

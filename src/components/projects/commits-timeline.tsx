@@ -237,7 +237,7 @@ export function CommitsTimeline({ owner, repo, lang }: CommitsTimelineProps) {
           {commits.map((commit, index) => (
             <div key={commit.sha} className="relative flex gap-4">
               {/* Avatar with timeline dot */}
-              <div className="relative flex-shrink-0">
+              <div className="relative shrink-0">
                 <Avatar className="h-10 w-10 border-2 border-background">
                   {commit.author.avatar ? (
                     <AvatarImage src={commit.author.avatar} alt={commit.author.name} />
@@ -312,7 +312,7 @@ export function CommitsTimeline({ owner, repo, lang }: CommitsTimelineProps) {
                     href={commit.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex-shrink-0 text-muted-foreground hover:text-foreground transition-colors"
+                    className="shrink-0 text-muted-foreground hover:text-foreground transition-colors"
                   >
                     <ExternalLink className="h-4 w-4" />
                   </a>

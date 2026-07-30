@@ -138,7 +138,7 @@ export default function ResetPasswordForm({ dict, lang }: ResetPasswordFormProps
                 <PasswordInput
                   {...field}
                   autoComplete="new-password"
-                  className="!border-border/90 block w-full rounded-md bg-background px-3 py-1.5 text-base text-foreground outline-1 -outline-offset-1 outline-border placeholder:text-muted-foreground focus:outline-2 focus:-outline-offset-2 focus:outline-primary sm:text-sm"
+                  className="border-border/90! block w-full rounded-md bg-background px-3 py-1.5 text-base text-foreground outline-1 -outline-offset-1 outline-border placeholder:text-muted-foreground focus:outline-2 focus:-outline-offset-2 focus:outline-primary sm:text-sm"
                 />
               </FormControl>
               <FormMessage />
@@ -158,7 +158,7 @@ export default function ResetPasswordForm({ dict, lang }: ResetPasswordFormProps
                 <PasswordInput
                   {...field}
                   autoComplete="new-password"
-                  className="!border-border/90 block w-full rounded-md bg-background px-3 py-1.5 text-base text-foreground outline-1 -outline-offset-1 outline-border placeholder:text-muted-foreground focus:outline-2 focus:-outline-offset-2 focus:outline-primary sm:text-sm"
+                  className="border-border/90! block w-full rounded-md bg-background px-3 py-1.5 text-base text-foreground outline-1 -outline-offset-1 outline-border placeholder:text-muted-foreground focus:outline-2 focus:-outline-offset-2 focus:outline-primary sm:text-sm"
                 />
               </FormControl>
               <FormMessage />

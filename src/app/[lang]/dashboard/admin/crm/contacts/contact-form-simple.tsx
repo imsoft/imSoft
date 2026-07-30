@@ -236,7 +236,7 @@ export function ContactFormSimple({ contact, lang, userId }: ContactFormProps) {
                 <FormItem>
                   <FormLabel>{lang === 'en' ? 'First Name' : 'Nombre'}</FormLabel>
                   <FormControl>
-                    <Input {...field} className="!border-2 !border-border" />
+                    <Input {...field} className="border-2! border-border!" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -250,7 +250,7 @@ export function ContactFormSimple({ contact, lang, userId }: ContactFormProps) {
                 <FormItem>
                   <FormLabel>{lang === 'en' ? 'Last Name' : 'Apellido'}</FormLabel>
                   <FormControl>
-                    <Input {...field} className="!border-2 !border-border" />
+                    <Input {...field} className="border-2! border-border!" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -281,7 +281,7 @@ export function ContactFormSimple({ contact, lang, userId }: ContactFormProps) {
                     </Button>
                   </div>
                   <FormControl>
-                    <Input type="email" {...field} className="!border-2 !border-border" />
+                    <Input type="email" {...field} className="border-2! border-border!" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -297,7 +297,7 @@ export function ContactFormSimple({ contact, lang, userId }: ContactFormProps) {
                     value={email}
                     onChange={(e) => updateEmail(index, e.target.value)}
                     placeholder={lang === 'en' ? 'Additional email' : 'Correo adicional'}
-                    className="!border-2 !border-border"
+                    className="border-2! border-border!"
                   />
                   {additionalEmailErrors[index] && (
                     <p className="text-xs text-destructive">{additionalEmailErrors[index]}</p>
@@ -340,7 +340,7 @@ export function ContactFormSimple({ contact, lang, userId }: ContactFormProps) {
                     </Button>
                   </div>
                   <FormControl>
-                    <Input {...field} className="!border-2 !border-border" />
+                    <Input {...field} className="border-2! border-border!" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -355,7 +355,7 @@ export function ContactFormSimple({ contact, lang, userId }: ContactFormProps) {
                     value={phone}
                     onChange={(e) => updatePhone(index, e.target.value)}
                     placeholder={lang === 'en' ? 'Additional phone' : 'Teléfono adicional'}
-                    className="!border-2 !border-border"
+                    className="border-2! border-border!"
                   />
                   {additionalPhoneErrors[index] && (
                     <p className="text-xs text-destructive">{additionalPhoneErrors[index]}</p>
@@ -393,7 +393,7 @@ export function ContactFormSimple({ contact, lang, userId }: ContactFormProps) {
                 <FormItem>
                   <FormLabel>{lang === 'en' ? 'Company' : 'Empresa'}</FormLabel>
                   <FormControl>
-                    <Input {...field} className="!border-2 !border-border" />
+                    <Input {...field} className="border-2! border-border!" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -408,7 +408,7 @@ export function ContactFormSimple({ contact, lang, userId }: ContactFormProps) {
                   <FormLabel>{lang === 'en' ? 'Status' : 'Estado'}</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
-                      <SelectTrigger className="w-full !border-2 !border-border">
+                      <SelectTrigger className="w-full border-2! border-border!">
                         <SelectValue placeholder={lang === 'en' ? 'Select status' : 'Seleccionar estado'} />
                       </SelectTrigger>
                     </FormControl>
@@ -434,7 +434,7 @@ export function ContactFormSimple({ contact, lang, userId }: ContactFormProps) {
                   <FormControl>
                     <Textarea 
                       {...field} 
-                      className="!border-2 !border-border min-h-[100px]" 
+                      className="border-2! border-border! min-h-[100px]" 
                     />
                   </FormControl>
                   <FormMessage />

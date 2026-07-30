@@ -134,7 +134,7 @@ function SortableTask({ task, lang, onToggle, onDelete, onEdit }: SortableTaskPr
           checked={task.completed}
           onCheckedChange={(checked) => onToggle(task.id, checked as boolean)}
           onClick={(e) => e.stopPropagation()}
-          className="!border-2 !border-primary data-[state=checked]:border-primary"
+          className="border-2! border-primary! data-[state=checked]:border-primary"
         />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
@@ -176,7 +176,7 @@ function SortableTask({ task, lang, onToggle, onDelete, onEdit }: SortableTaskPr
           e.stopPropagation()
           onDelete(task.id)
         }}
-        className="text-destructive hover:text-destructive flex-shrink-0"
+        className="text-destructive hover:text-destructive shrink-0"
       >
         <Trash2 className="h-4 w-4" />
       </Button>
@@ -506,7 +506,7 @@ export function TaskManagerEnhanced({ projectId, lang }: TaskManagerProps) {
                     id="title"
                     value={newTaskTitle}
                     onChange={(e) => setNewTaskTitle(e.target.value)}
-                    className="!border-2 !border-border"
+                    className="border-2! border-border!"
                   />
                 </div>
                 <div className="space-y-2">
@@ -518,7 +518,7 @@ export function TaskManagerEnhanced({ projectId, lang }: TaskManagerProps) {
                     value={newTaskDescription}
                     onChange={(e) => setNewTaskDescription(e.target.value)}
                     rows={3}
-                    className="!border-2 !border-border"
+                    className="border-2! border-border!"
                   />
                 </div>
                 <div className="space-y-4">
@@ -527,7 +527,7 @@ export function TaskManagerEnhanced({ projectId, lang }: TaskManagerProps) {
                       {lang === 'en' ? 'Priority' : 'Prioridad'}
                     </Label>
                     <Select value={newTaskPriority} onValueChange={(value) => setNewTaskPriority(value as TaskPriority)}>
-                      <SelectTrigger id="priority" className="w-full !border-2 !border-border">
+                      <SelectTrigger id="priority" className="w-full border-2! border-border!">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -543,7 +543,7 @@ export function TaskManagerEnhanced({ projectId, lang }: TaskManagerProps) {
                       {lang === 'en' ? 'Category (optional)' : 'Categoría (opcional)'}
                     </Label>
                     <Select value={newTaskCategory || undefined} onValueChange={(value) => setNewTaskCategory(value === 'none' ? '' : value)}>
-                      <SelectTrigger id="category" className="w-full !border-2 !border-border">
+                      <SelectTrigger id="category" className="w-full border-2! border-border!">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>

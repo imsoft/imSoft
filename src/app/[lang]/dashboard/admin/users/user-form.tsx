@@ -113,7 +113,7 @@ export function UserForm({ dict, lang, initialData }: UserFormProps) {
               <FormItem>
                 <FormLabel>{lang === 'en' ? 'First Name' : 'Primer Nombre'}</FormLabel>
                 <FormControl>
-                  <Input {...field} className="!border-2 !border-border" />
+                  <Input {...field} className="border-2! border-border!" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -126,7 +126,7 @@ export function UserForm({ dict, lang, initialData }: UserFormProps) {
               <FormItem>
                 <FormLabel>{lang === 'en' ? 'Last Name' : 'Apellido'}</FormLabel>
                 <FormControl>
-                  <Input {...field} className="!border-2 !border-border" />
+                  <Input {...field} className="border-2! border-border!" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -145,7 +145,7 @@ export function UserForm({ dict, lang, initialData }: UserFormProps) {
                   {...field} 
                   type="email" 
                   disabled={isEditing}
-                  className="!border-2 !border-border" 
+                  className="border-2! border-border!" 
                 />
               </FormControl>
               <FormMessage />
@@ -169,7 +169,7 @@ export function UserForm({ dict, lang, initialData }: UserFormProps) {
               <FormControl>
                 <PasswordInput 
                   {...field} 
-                  className="!border-2 !border-border"
+                  className="border-2! border-border!"
                   value={field.value || ''}
                 />
               </FormControl>

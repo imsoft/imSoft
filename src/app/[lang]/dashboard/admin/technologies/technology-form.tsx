@@ -389,7 +389,7 @@ export function TechnologyForm({ dict, lang, technology }: TechnologyFormProps) 
                     />
                   </div>
                   <FormControl>
-                    <Input {...field} className="!border-2 !border-border" />
+                    <Input {...field} className="border-2! border-border!" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -410,7 +410,7 @@ export function TechnologyForm({ dict, lang, technology }: TechnologyFormProps) 
                     />
                   </div>
                   <FormControl>
-                    <Textarea {...field} rows={4} className="!border-2 !border-border" />
+                    <Textarea {...field} rows={4} className="border-2! border-border!" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -426,7 +426,7 @@ export function TechnologyForm({ dict, lang, technology }: TechnologyFormProps) 
                 <FormItem>
                   <FormLabel>{(dict as any).technologies?.name || (lang === 'en' ? 'Name' : 'Nombre')}</FormLabel>
                   <FormControl>
-                    <Input {...field} className="!border-2 !border-border" />
+                    <Input {...field} className="border-2! border-border!" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -440,7 +440,7 @@ export function TechnologyForm({ dict, lang, technology }: TechnologyFormProps) 
                 <FormItem>
                   <FormLabel>{(dict as any).technologies?.description || (lang === 'en' ? 'Description' : 'Descripción')}</FormLabel>
                   <FormControl>
-                    <Textarea {...field} rows={4} className="!border-2 !border-border" />
+                    <Textarea {...field} rows={4} className="border-2! border-border!" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -504,7 +504,7 @@ export function TechnologyForm({ dict, lang, technology }: TechnologyFormProps) 
             <FormItem>
               <FormLabel>{(dict as any).technologies?.websiteUrl || (lang === 'en' ? 'Website URL' : 'URL del Sitio Web')}</FormLabel>
               <FormControl>
-                <Input {...field} type="url" className="!border-2 !border-border" />
+                <Input {...field} type="url" className="border-2! border-border!" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -547,7 +547,7 @@ export function TechnologyForm({ dict, lang, technology }: TechnologyFormProps) 
                         variant="outline"
                         onClick={() => fileInputRef.current?.click()}
                         disabled={isUploading}
-                        className="!border-2 !border-border"
+                        className="border-2! border-border!"
                       >
                         <ImageIcon className="mr-2 h-4 w-4" />
                         {isUploading
@@ -673,7 +673,7 @@ export function TechnologyForm({ dict, lang, technology }: TechnologyFormProps) 
                                   }
                                   field.onChange(newCompanies)
                                 }}
-                                className="!border-2 !border-border"
+                                className="border-2! border-border!"
                               />
                               {company.logo_url ? (
                                 <div className="relative inline-block">
@@ -703,7 +703,7 @@ export function TechnologyForm({ dict, lang, technology }: TechnologyFormProps) 
                                     size="sm"
                                     onClick={() => companyFileInputRefs.current[index]?.click()}
                                     disabled={uploadingCompanyIndex === index}
-                                    className="!border-2 !border-border"
+                                    className="border-2! border-border!"
                                   >
                                     <ImageIcon className="mr-2 h-3 w-3" />
                                     {uploadingCompanyIndex === index
@@ -763,7 +763,7 @@ export function TechnologyForm({ dict, lang, technology }: TechnologyFormProps) 
                       onClick={() => {
                         field.onChange([...(field.value || []), { name: '', logo_url: '' }])
                       }}
-                      className="w-full !border-2 !border-border"
+                      className="w-full border-2! border-border!"
                     >
                       <Plus className="h-4 w-4 mr-2" />
                       {lang === 'en' ? 'Add Company' : 'Agregar Empresa'}

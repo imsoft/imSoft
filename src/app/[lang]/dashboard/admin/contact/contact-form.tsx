@@ -176,7 +176,7 @@ export function ContactForm({ dict, lang, contactData }: AdminContactFormProps) 
             <FormItem>
               <FormLabel>{lang === 'en' ? 'Address' : 'Dirección'}</FormLabel>
               <FormControl>
-                <Input {...field} className="!border-2 !border-border" />
+                <Input {...field} className="border-2! border-border!" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -189,7 +189,7 @@ export function ContactForm({ dict, lang, contactData }: AdminContactFormProps) 
             <FormItem>
               <FormLabel>{lang === 'en' ? 'Phone' : 'Teléfono'}</FormLabel>
               <FormControl>
-                <Input {...field} className="!border-2 !border-border" />
+                <Input {...field} className="border-2! border-border!" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -202,7 +202,7 @@ export function ContactForm({ dict, lang, contactData }: AdminContactFormProps) 
             <FormItem>
               <FormLabel>{lang === 'en' ? 'Email' : 'Correo Electrónico'}</FormLabel>
               <FormControl>
-                <Input {...field} type="email" className="!border-2 !border-border" />
+                <Input {...field} type="email" className="border-2! border-border!" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -215,7 +215,7 @@ export function ContactForm({ dict, lang, contactData }: AdminContactFormProps) 
             <FormItem>
               <FormLabel>{lang === 'en' ? 'Description' : 'Descripción'}</FormLabel>
               <FormControl>
-                <Textarea {...field} rows={4} className="!border-2 !border-border" />
+                <Textarea {...field} rows={4} className="border-2! border-border!" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -261,7 +261,7 @@ export function ContactForm({ dict, lang, contactData }: AdminContactFormProps) 
                       <FormItem>
                         <FormLabel>{social.label}</FormLabel>
                         <FormControl>
-                          <Input {...field} type={social.inputType || 'url'} className="!border-2 !border-border" />
+                          <Input {...field} type={social.inputType || 'url'} className="border-2! border-border!" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

@@ -85,7 +85,7 @@ export function FeedbackForm({ dict, lang, userId }: FeedbackFormProps) {
             <FormItem>
               <FormLabel>{dict.feedback.titleLabel}</FormLabel>
               <FormControl>
-                <Input {...field} className="w-full !border-2 border-border focus-visible:!border-2 focus-visible:border-ring" />
+                <Input {...field} className="w-full border-2! border-border focus-visible:border-2! focus-visible:border-ring" />
               </FormControl>
               <FormMessage />
             </FormItem>

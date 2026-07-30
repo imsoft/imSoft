@@ -143,7 +143,7 @@ export function TestimonialForm({ dict, lang, testimonial }: TestimonialFormProp
                       variant="outline"
                       role="combobox"
                       aria-expanded={companyOpen}
-                      className="w-full justify-between !border-2 !border-border"
+                      className="w-full justify-between border-2! border-border!"
                     >
                       {isLoadingCompanies ? (
                         lang === 'en' ? 'Loading...' : 'Cargando...'
@@ -156,7 +156,7 @@ export function TestimonialForm({ dict, lang, testimonial }: TestimonialFormProp
                     </Button>
                   </FormControl>
                 </PopoverTrigger>
-                <PopoverContent className="w-[var(--radix-popper-anchor-width)] p-0">
+                <PopoverContent className="w-(--radix-popper-anchor-width) p-0">
                   <Command>
                     <CommandInput
                       placeholder={lang === 'en' ? 'Search company...' : 'Buscar empresa...'}
@@ -214,7 +214,7 @@ export function TestimonialForm({ dict, lang, testimonial }: TestimonialFormProp
                     />
                   </div>
                   <FormControl>
-                    <Textarea {...field} rows={6} className="!border-2 !border-border" />
+                    <Textarea {...field} rows={6} className="border-2! border-border!" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -229,7 +229,7 @@ export function TestimonialForm({ dict, lang, testimonial }: TestimonialFormProp
                 <FormItem>
                   <FormLabel>Testimonial</FormLabel>
                   <FormControl>
-                    <Textarea {...field} rows={6} className="!border-2 !border-border" />
+                    <Textarea {...field} rows={6} className="border-2! border-border!" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

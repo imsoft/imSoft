@@ -404,7 +404,7 @@ export function ProjectPaymentsManager({ projectId, projectCurrency = 'MXN', pro
                         .filter(v => !isNaN(v) && v > 0)
                       setInstallmentOptions(values)
                     }}
-                    className="!border-2 !border-border"
+                    className="border-2! border-border!"
                   />
                   <p className="text-xs text-muted-foreground">
                     {lang === 'en' 
@@ -480,7 +480,7 @@ export function ProjectPaymentsManager({ projectId, projectCurrency = 'MXN', pro
                             type="number" 
                             step="0.01"
                             min="0"
-                            className="!border-2 !border-border"
+                            className="border-2! border-border!"
                           />
                         </FormControl>
                         <FormMessage />
@@ -495,7 +495,7 @@ export function ProjectPaymentsManager({ projectId, projectCurrency = 'MXN', pro
                         <FormLabel>{lang === 'en' ? 'Currency' : 'Moneda'}</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
-                            <SelectTrigger className="!border-2 !border-border">
+                            <SelectTrigger className="border-2! border-border!">
                               <SelectValue />
                             </SelectTrigger>
                           </FormControl>
@@ -520,7 +520,7 @@ export function ProjectPaymentsManager({ projectId, projectCurrency = 'MXN', pro
                         <FormLabel>{lang === 'en' ? 'Payment Method' : 'Método de Pago'}</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
-                            <SelectTrigger className="!border-2 !border-border">
+                            <SelectTrigger className="border-2! border-border!">
                               <SelectValue />
                             </SelectTrigger>
                           </FormControl>
@@ -543,7 +543,7 @@ export function ProjectPaymentsManager({ projectId, projectCurrency = 'MXN', pro
                       <FormItem>
                         <FormLabel>{lang === 'en' ? 'Payment Date' : 'Fecha de Pago'}</FormLabel>
                         <FormControl>
-                          <Input {...field} type="date" className="!border-2 !border-border" />
+                          <Input {...field} type="date" className="border-2! border-border!" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -559,7 +559,7 @@ export function ProjectPaymentsManager({ projectId, projectCurrency = 'MXN', pro
                       <FormLabel>{lang === 'en' ? 'Status' : 'Estado'}</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
-                          <SelectTrigger className="!border-2 !border-border">
+                          <SelectTrigger className="border-2! border-border!">
                             <SelectValue />
                           </SelectTrigger>
                         </FormControl>
@@ -583,7 +583,7 @@ export function ProjectPaymentsManager({ projectId, projectCurrency = 'MXN', pro
                     <FormItem>
                       <FormLabel>{lang === 'en' ? 'Notes (optional)' : 'Notas (opcional)'}</FormLabel>
                       <FormControl>
-                        <Textarea {...field} rows={3} className="!border-2 !border-border" />
+                        <Textarea {...field} rows={3} className="border-2! border-border!" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

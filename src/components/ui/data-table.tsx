@@ -82,7 +82,7 @@ export function DataTable<TData, TValue>({
               onChange={(event) =>
                 table.getColumn(searchKey)?.setFilterValue(event.target.value)
               }
-              className="max-w-sm !border !border-gray-300 dark:!border-gray-600 hover:!border-primary/70 focus-visible:!border-primary focus-visible:!ring-2 focus-visible:!ring-primary/20 transition-colors"
+              className="max-w-sm border! border-gray-300! dark:border-gray-600! hover:border-primary/70! focus-visible:border-primary! focus-visible:ring-2! focus-visible:ring-primary/20! transition-colors"
             />
           )}
           <div className="flex items-center gap-2 ml-auto">

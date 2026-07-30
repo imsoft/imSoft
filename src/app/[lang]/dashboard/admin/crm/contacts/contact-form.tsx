@@ -128,7 +128,7 @@ export function ContactForm({ contact, lang, userId }: ContactFormProps) {
                 <FormItem>
                   <FormLabel>{lang === 'en' ? 'First Name' : 'Nombre'} *</FormLabel>
                   <FormControl>
-                    <Input {...field} className="!border-2 !border-border" />
+                    <Input {...field} className="border-2! border-border!" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -141,7 +141,7 @@ export function ContactForm({ contact, lang, userId }: ContactFormProps) {
                 <FormItem>
                   <FormLabel>{lang === 'en' ? 'Last Name' : 'Apellido'} *</FormLabel>
                   <FormControl>
-                    <Input {...field} className="!border-2 !border-border" />
+                    <Input {...field} className="border-2! border-border!" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -154,7 +154,7 @@ export function ContactForm({ contact, lang, userId }: ContactFormProps) {
                 <FormItem>
                   <FormLabel>{lang === 'en' ? 'Email' : 'Correo'} *</FormLabel>
                   <FormControl>
-                    <Input type="email" {...field} className="!border-2 !border-border" />
+                    <Input type="email" {...field} className="border-2! border-border!" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -167,7 +167,7 @@ export function ContactForm({ contact, lang, userId }: ContactFormProps) {
                 <FormItem>
                   <FormLabel>{lang === 'en' ? 'Phone' : 'Teléfono'}</FormLabel>
                   <FormControl>
-                    <Input {...field} className="!border-2 !border-border" />
+                    <Input {...field} className="border-2! border-border!" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -180,7 +180,7 @@ export function ContactForm({ contact, lang, userId }: ContactFormProps) {
                 <FormItem>
                   <FormLabel>{lang === 'en' ? 'Company' : 'Empresa'}</FormLabel>
                   <FormControl>
-                    <Input {...field} className="!border-2 !border-border" />
+                    <Input {...field} className="border-2! border-border!" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -193,7 +193,7 @@ export function ContactForm({ contact, lang, userId }: ContactFormProps) {
                 <FormItem>
                   <FormLabel>{lang === 'en' ? 'Job Title' : 'Puesto'}</FormLabel>
                   <FormControl>
-                    <Input {...field} className="!border-2 !border-border" />
+                    <Input {...field} className="border-2! border-border!" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -210,7 +210,7 @@ export function ContactForm({ contact, lang, userId }: ContactFormProps) {
                   <FormLabel>{lang === 'en' ? 'Contact Type' : 'Tipo de Contacto'} *</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
-                      <SelectTrigger className="w-full !border-2 !border-border">
+                      <SelectTrigger className="w-full border-2! border-border!">
                         <SelectValue />
                       </SelectTrigger>
                     </FormControl>
@@ -233,7 +233,7 @@ export function ContactForm({ contact, lang, userId }: ContactFormProps) {
                   <FormLabel>{lang === 'en' ? 'Status' : 'Estado'} *</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
-                      <SelectTrigger className="w-full !border-2 !border-border">
+                      <SelectTrigger className="w-full border-2! border-border!">
                         <SelectValue />
                       </SelectTrigger>
                     </FormControl>
@@ -256,7 +256,7 @@ export function ContactForm({ contact, lang, userId }: ContactFormProps) {
                 <FormItem>
                   <FormLabel>{lang === 'en' ? 'Source' : 'Fuente'}</FormLabel>
                   <FormControl>
-                    <Input {...field} className="!border-2 !border-border" />
+                    <Input {...field} className="border-2! border-border!" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -272,7 +272,7 @@ export function ContactForm({ contact, lang, userId }: ContactFormProps) {
                 <FormItem>
                   <FormLabel>{lang === 'en' ? 'Street Address' : 'Calle'}</FormLabel>
                   <FormControl>
-                    <Input {...field} className="!border-2 !border-border" />
+                    <Input {...field} className="border-2! border-border!" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -286,7 +286,7 @@ export function ContactForm({ contact, lang, userId }: ContactFormProps) {
                   <FormItem>
                     <FormLabel>{lang === 'en' ? 'State' : 'Estado'}</FormLabel>
                     <FormControl>
-                      <Input {...field} className="!border-2 !border-border" />
+                      <Input {...field} className="border-2! border-border!" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -299,7 +299,7 @@ export function ContactForm({ contact, lang, userId }: ContactFormProps) {
                   <FormItem>
                     <FormLabel>{lang === 'en' ? 'City' : 'Ciudad'}</FormLabel>
                     <FormControl>
-                      <Input {...field} className="!border-2 !border-border" />
+                      <Input {...field} className="border-2! border-border!" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -312,7 +312,7 @@ export function ContactForm({ contact, lang, userId }: ContactFormProps) {
                   <FormItem>
                     <FormLabel>{lang === 'en' ? 'Country' : 'País'}</FormLabel>
                     <FormControl>
-                      <Input {...field} className="!border-2 !border-border" />
+                      <Input {...field} className="border-2! border-border!" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -325,7 +325,7 @@ export function ContactForm({ contact, lang, userId }: ContactFormProps) {
                   <FormItem>
                     <FormLabel>{lang === 'en' ? 'Postal Code' : 'Código Postal'}</FormLabel>
                     <FormControl>
-                      <Input {...field} className="!border-2 !border-border" />
+                      <Input {...field} className="border-2! border-border!" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -342,7 +342,7 @@ export function ContactForm({ contact, lang, userId }: ContactFormProps) {
                 <FormItem>
                   <FormLabel>LinkedIn</FormLabel>
                   <FormControl>
-                    <Input {...field} className="!border-2 !border-border" />
+                    <Input {...field} className="border-2! border-border!" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -355,7 +355,7 @@ export function ContactForm({ contact, lang, userId }: ContactFormProps) {
                 <FormItem>
                   <FormLabel>{lang === 'en' ? 'Website' : 'Sitio Web'}</FormLabel>
                   <FormControl>
-                    <Input {...field} className="!border-2 !border-border" />
+                    <Input {...field} className="border-2! border-border!" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -370,7 +370,7 @@ export function ContactForm({ contact, lang, userId }: ContactFormProps) {
               <FormItem>
                 <FormLabel>{lang === 'en' ? 'Notes' : 'Notas'}</FormLabel>
                 <FormControl>
-                  <Textarea rows={4} {...field} className="!border-2 !border-border" />
+                  <Textarea rows={4} {...field} className="border-2! border-border!" />
                 </FormControl>
                 <FormMessage />
               </FormItem>

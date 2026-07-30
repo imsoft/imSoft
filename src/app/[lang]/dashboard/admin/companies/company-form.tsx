@@ -281,7 +281,7 @@ export function AdminCompanyForm({ dict, lang, initialData }: AdminCompanyFormPr
                 <FormControl>
                   <Input
                     {...field}
-                    className="!border-2 !border-border"
+                    className="border-2! border-border!"
                   />
                 </FormControl>
                 <FormMessage />
@@ -305,7 +305,7 @@ export function AdminCompanyForm({ dict, lang, initialData }: AdminCompanyFormPr
                         role="combobox"
                         aria-expanded={openCombobox}
                         className={cn(
-                          "w-full justify-between !border-2 !border-border",
+                          "w-full justify-between border-2! border-border!",
                           !field.value && "text-muted-foreground"
                         )}
                         disabled={isLoadingUsers}

@@ -186,7 +186,7 @@ export function TaskProgress({ projectId, lang }: TaskProgressProps) {
                     task.completed ? 'bg-accent/50' : 'bg-card'
                   }`}
                 >
-                  <div className="flex-shrink-0 mt-0.5">
+                  <div className="shrink-0 mt-0.5">
                     {task.completed ? (
                       <CheckCircle2 className="h-5 w-5 text-green-600" />
                     ) : (
@@ -202,7 +202,7 @@ export function TaskProgress({ projectId, lang }: TaskProgressProps) {
                       >
                         {task.title}
                       </p>
-                      <div className="flex items-center gap-1 flex-shrink-0">
+                      <div className="flex items-center gap-1 shrink-0">
                         {task.priority && (
                           <Badge
                             variant="outline"

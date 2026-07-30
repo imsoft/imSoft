@@ -181,7 +181,7 @@ export function ProfileForm({ dict, lang, user }: ProfileFormProps) {
                 variant="outline"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isUploading}
-                className="!border-2 !border-border"
+                className="border-2! border-border!"
               >
                 {isUploading ? (
                   lang === 'en' ? 'Uploading...' : 'Subiendo...'
@@ -197,7 +197,7 @@ export function ProfileForm({ dict, lang, user }: ProfileFormProps) {
                   type="button"
                   variant="outline"
                   onClick={handleRemoveAvatar}
-                  className="!border-2 !border-border"
+                  className="border-2! border-border!"
                 >
                   <X className="mr-2 h-4 w-4" />
                   {lang === 'en' ? 'Remove' : 'Eliminar'}

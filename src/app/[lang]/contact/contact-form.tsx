@@ -125,7 +125,7 @@ export default function ContactForm({ dict }: ContactFormProps) {
                   <Input
                     {...field}
                     autoComplete="given-name"
-                    className="!border-border/90"
+                    className="border-border/90!"
                   />
                 </FormControl>
                 <FormMessage />
@@ -144,7 +144,7 @@ export default function ContactForm({ dict }: ContactFormProps) {
                   <Input
                     {...field}
                     autoComplete="family-name"
-                    className="!border-border/90"
+                    className="border-border/90!"
                   />
                 </FormControl>
                 <FormMessage />
@@ -164,7 +164,7 @@ export default function ContactForm({ dict }: ContactFormProps) {
                     {...field}
                     type="email"
                     autoComplete="email"
-                    className="!border-border/90"
+                    className="border-border/90!"
                   />
                 </FormControl>
                 <FormMessage />
@@ -184,7 +184,7 @@ export default function ContactForm({ dict }: ContactFormProps) {
                     {...field}
                     type="tel"
                     autoComplete="tel"
-                    className="!border-border/90"
+                    className="border-border/90!"
                   />
                 </FormControl>
                 <FormMessage />
@@ -203,7 +203,7 @@ export default function ContactForm({ dict }: ContactFormProps) {
                   <Textarea
                     {...field}
                     rows={4}
-                    className="!border-border/90"
+                    className="border-border/90!"
                   />
                 </FormControl>
                 <FormMessage />

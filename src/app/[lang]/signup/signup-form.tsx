@@ -154,7 +154,7 @@ export default function SignupForm({ dict, lang }: SignupFormProps) {
                       {...field}
                       type="text"
                       autoComplete="given-name"
-                      className="!border-border/90 block w-full rounded-md bg-background px-3 py-1.5 text-base text-foreground outline-1 -outline-offset-1 outline-border placeholder:text-muted-foreground focus:outline-2 focus:-outline-offset-2 focus:outline-primary sm:text-sm"
+                      className="border-border/90! block w-full rounded-md bg-background px-3 py-1.5 text-base text-foreground outline-1 -outline-offset-1 outline-border placeholder:text-muted-foreground focus:outline-2 focus:-outline-offset-2 focus:outline-primary sm:text-sm"
                     />
                   </FormControl>
                   <FormMessage />
@@ -174,7 +174,7 @@ export default function SignupForm({ dict, lang }: SignupFormProps) {
                       {...field}
                       type="text"
                       autoComplete="family-name"
-                      className="!border-border/90 block w-full rounded-md bg-background px-3 py-1.5 text-base text-foreground outline-1 -outline-offset-1 outline-border placeholder:text-muted-foreground focus:outline-2 focus:-outline-offset-2 focus:outline-primary sm:text-sm"
+                      className="border-border/90! block w-full rounded-md bg-background px-3 py-1.5 text-base text-foreground outline-1 -outline-offset-1 outline-border placeholder:text-muted-foreground focus:outline-2 focus:-outline-offset-2 focus:outline-primary sm:text-sm"
                     />
                   </FormControl>
                   <FormMessage />
@@ -196,7 +196,7 @@ export default function SignupForm({ dict, lang }: SignupFormProps) {
                     {...field}
                     type="text"
                     autoComplete="organization"
-                    className="!border-border/90 block w-full rounded-md bg-background px-3 py-1.5 text-base text-foreground outline-1 -outline-offset-1 outline-border placeholder:text-muted-foreground focus:outline-2 focus:-outline-offset-2 focus:outline-primary sm:text-sm"
+                    className="border-border/90! block w-full rounded-md bg-background px-3 py-1.5 text-base text-foreground outline-1 -outline-offset-1 outline-border placeholder:text-muted-foreground focus:outline-2 focus:-outline-offset-2 focus:outline-primary sm:text-sm"
                   />
                 </FormControl>
                 <FormMessage />
@@ -217,7 +217,7 @@ export default function SignupForm({ dict, lang }: SignupFormProps) {
                     {...field}
                     type="email"
                     autoComplete="email"
-                    className="!border-border/90 block w-full rounded-md bg-background px-3 py-1.5 text-base text-foreground outline-1 -outline-offset-1 outline-border placeholder:text-muted-foreground focus:outline-2 focus:-outline-offset-2 focus:outline-primary sm:text-sm"
+                    className="border-border/90! block w-full rounded-md bg-background px-3 py-1.5 text-base text-foreground outline-1 -outline-offset-1 outline-border placeholder:text-muted-foreground focus:outline-2 focus:-outline-offset-2 focus:outline-primary sm:text-sm"
                   />
                 </FormControl>
                 <FormMessage />
@@ -237,7 +237,7 @@ export default function SignupForm({ dict, lang }: SignupFormProps) {
                   <PasswordInput
                     {...field}
                     autoComplete="new-password"
-                    className="!border-border/90 block w-full rounded-md bg-background px-3 py-1.5 text-base text-foreground outline-1 -outline-offset-1 outline-border placeholder:text-muted-foreground focus:outline-2 focus:-outline-offset-2 focus:outline-primary sm:text-sm"
+                    className="border-border/90! block w-full rounded-md bg-background px-3 py-1.5 text-base text-foreground outline-1 -outline-offset-1 outline-border placeholder:text-muted-foreground focus:outline-2 focus:-outline-offset-2 focus:outline-primary sm:text-sm"
                   />
                 </FormControl>
                 <FormMessage />
@@ -257,7 +257,7 @@ export default function SignupForm({ dict, lang }: SignupFormProps) {
                   <PasswordInput
                     {...field}
                     autoComplete="new-password"
-                    className="!border-border/90 block w-full rounded-md bg-background px-3 py-1.5 text-base text-foreground outline-1 -outline-offset-1 outline-border placeholder:text-muted-foreground focus:outline-2 focus:-outline-offset-2 focus:outline-primary sm:text-sm"
+                    className="border-border/90! block w-full rounded-md bg-background px-3 py-1.5 text-base text-foreground outline-1 -outline-offset-1 outline-border placeholder:text-muted-foreground focus:outline-2 focus:-outline-offset-2 focus:outline-primary sm:text-sm"
                   />
                 </FormControl>
                 <FormMessage />

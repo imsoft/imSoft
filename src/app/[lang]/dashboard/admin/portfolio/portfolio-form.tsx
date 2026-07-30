@@ -356,7 +356,7 @@ export function PortfolioForm({ dict, lang, portfolio }: PortfolioFormProps) {
                     />
                   </div>
                   <FormControl>
-                    <Input {...field} className="!border-2 !border-border" />
+                    <Input {...field} className="border-2! border-border!" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -376,7 +376,7 @@ export function PortfolioForm({ dict, lang, portfolio }: PortfolioFormProps) {
                     />
                   </div>
                   <FormControl>
-                    <Textarea {...field} rows={4} className="!border-2 !border-border" />
+                    <Textarea {...field} rows={4} className="border-2! border-border!" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -392,7 +392,7 @@ export function PortfolioForm({ dict, lang, portfolio }: PortfolioFormProps) {
                   <FormItem>
                     <FormLabel>Title</FormLabel>
                     <FormControl>
-                      <Input {...field} className="!border-2 !border-border" />
+                      <Input {...field} className="border-2! border-border!" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -408,7 +408,7 @@ export function PortfolioForm({ dict, lang, portfolio }: PortfolioFormProps) {
                       <Input 
                         {...field} 
                         readOnly={!isEditing}
-                        className={`!border-2 !border-border ${!isEditing ? "bg-white cursor-not-allowed" : ""}`}
+                        className={`border-2! border-border! ${!isEditing ? "bg-white cursor-not-allowed" : ""}`}
                       />
                     </FormControl>
                     <FormMessage />
@@ -423,7 +423,7 @@ export function PortfolioForm({ dict, lang, portfolio }: PortfolioFormProps) {
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Textarea {...field} rows={4} className="!border-2 !border-border" />
+                    <Textarea {...field} rows={4} className="border-2! border-border!" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -505,7 +505,7 @@ export function PortfolioForm({ dict, lang, portfolio }: PortfolioFormProps) {
                         role="combobox"
                         aria-expanded={companyOpen}
                         disabled={isLoadingCompanies}
-                        className="w-full justify-between !border-2 !border-border"
+                        className="w-full justify-between border-2! border-border!"
                       >
                         {isLoadingCompanies ? (
                           lang === 'en' ? 'Loading...' : 'Cargando...'
@@ -518,7 +518,7 @@ export function PortfolioForm({ dict, lang, portfolio }: PortfolioFormProps) {
                       </Button>
                     </FormControl>
                   </PopoverTrigger>
-                  <PopoverContent className="w-[var(--radix-popper-anchor-width)] p-0">
+                  <PopoverContent className="w-(--radix-popper-anchor-width) p-0">
                     <Command>
                       <CommandInput 
                         placeholder={lang === 'en' ? 'Search company...' : 'Buscar empresa...'} 
@@ -569,7 +569,7 @@ export function PortfolioForm({ dict, lang, portfolio }: PortfolioFormProps) {
                         variant="outline"
                         role="combobox"
                         aria-expanded={projectTypeOpen}
-                        className="w-full justify-between !border-2 !border-border"
+                        className="w-full justify-between border-2! border-border!"
                       >
                         {field.value
                           ? projectTypes.find((type) => type.value === field.value)?.[lang === 'es' ? 'label_es' : 'label_en']
@@ -578,7 +578,7 @@ export function PortfolioForm({ dict, lang, portfolio }: PortfolioFormProps) {
                       </Button>
                     </FormControl>
                   </PopoverTrigger>
-                  <PopoverContent className="w-[var(--radix-popper-anchor-width)] p-0">
+                  <PopoverContent className="w-(--radix-popper-anchor-width) p-0">
                     <Command>
                       <CommandInput 
                         placeholder={lang === 'en' ? 'Search client...' : 'Buscar cliente...'} 
@@ -624,7 +624,7 @@ export function PortfolioForm({ dict, lang, portfolio }: PortfolioFormProps) {
             <FormItem>
               <FormLabel>{lang === 'en' ? 'Project URL (optional)' : 'URL del Proyecto (opcional)'}</FormLabel>
               <FormControl>
-                <Input {...field} type="url" className="!border-2 !border-border" />
+                <Input {...field} type="url" className="border-2! border-border!" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -638,7 +638,7 @@ export function PortfolioForm({ dict, lang, portfolio }: PortfolioFormProps) {
             <FormItem>
               <FormLabel>{lang === 'en' ? 'Year completed (optional)' : 'Año de entrega (opcional)'}</FormLabel>
               <FormControl>
-                <Input {...field} type="number" placeholder="2024" className="!border-2 !border-border w-32" />
+                <Input {...field} type="number" placeholder="2024" className="border-2! border-border! w-32" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -664,7 +664,7 @@ export function PortfolioForm({ dict, lang, portfolio }: PortfolioFormProps) {
                   <FormItem>
                     <FormLabel>El reto / problema del cliente</FormLabel>
                     <FormControl>
-                      <Textarea {...field} rows={4} placeholder="Describe el problema o necesidad que tenía el cliente antes del proyecto..." className="!border-2 !border-border" />
+                      <Textarea {...field} rows={4} placeholder="Describe el problema o necesidad que tenía el cliente antes del proyecto..." className="border-2! border-border!" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -677,7 +677,7 @@ export function PortfolioForm({ dict, lang, portfolio }: PortfolioFormProps) {
                   <FormItem>
                     <FormLabel>Resultados / impacto (un resultado por línea)</FormLabel>
                     <FormControl>
-                      <Textarea {...field} rows={5} placeholder={"Aumentó las ventas en línea un 40% en 3 meses\nReducción del 60% en tiempo de gestión manual\nMás de 500 usuarios activos en el primer mes"} className="!border-2 !border-border" />
+                      <Textarea {...field} rows={5} placeholder={"Aumentó las ventas en línea un 40% en 3 meses\nReducción del 60% en tiempo de gestión manual\nMás de 500 usuarios activos en el primer mes"} className="border-2! border-border!" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -690,7 +690,7 @@ export function PortfolioForm({ dict, lang, portfolio }: PortfolioFormProps) {
                   <FormItem>
                     <FormLabel>Testimonio del cliente (opcional)</FormLabel>
                     <FormControl>
-                      <Textarea {...field} rows={3} placeholder="&quot;imSoft entendió exactamente lo que necesitábamos...&quot; — Nombre, Cargo" className="!border-2 !border-border" />
+                      <Textarea {...field} rows={3} placeholder="&quot;imSoft entendió exactamente lo que necesitábamos...&quot; — Nombre, Cargo" className="border-2! border-border!" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -705,7 +705,7 @@ export function PortfolioForm({ dict, lang, portfolio }: PortfolioFormProps) {
                   <FormItem>
                     <FormLabel>The challenge / client problem</FormLabel>
                     <FormControl>
-                      <Textarea {...field} rows={4} placeholder="Describe the problem or need the client had before the project..." className="!border-2 !border-border" />
+                      <Textarea {...field} rows={4} placeholder="Describe the problem or need the client had before the project..." className="border-2! border-border!" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -718,7 +718,7 @@ export function PortfolioForm({ dict, lang, portfolio }: PortfolioFormProps) {
                   <FormItem>
                     <FormLabel>Results / impact (one result per line)</FormLabel>
                     <FormControl>
-                      <Textarea {...field} rows={5} placeholder={"Increased online sales by 40% in 3 months\n60% reduction in manual management time\nOver 500 active users in the first month"} className="!border-2 !border-border" />
+                      <Textarea {...field} rows={5} placeholder={"Increased online sales by 40% in 3 months\n60% reduction in manual management time\nOver 500 active users in the first month"} className="border-2! border-border!" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -731,7 +731,7 @@ export function PortfolioForm({ dict, lang, portfolio }: PortfolioFormProps) {
                   <FormItem>
                     <FormLabel>Client testimonial (optional)</FormLabel>
                     <FormControl>
-                      <Textarea {...field} rows={3} placeholder="&quot;imSoft understood exactly what we needed...&quot; — Name, Title" className="!border-2 !border-border" />
+                      <Textarea {...field} rows={3} placeholder="&quot;imSoft understood exactly what we needed...&quot; — Name, Title" className="border-2! border-border!" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

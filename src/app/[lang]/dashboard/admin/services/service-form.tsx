@@ -266,7 +266,7 @@ export function ServiceForm({ dict, lang, service }: ServiceFormProps) {
                     />
                   </div>
                   <FormControl>
-                    <Input {...field} className="!border-2 !border-border" />
+                    <Input {...field} className="border-2! border-border!" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -286,7 +286,7 @@ export function ServiceForm({ dict, lang, service }: ServiceFormProps) {
                     />
                   </div>
                   <FormControl>
-                    <Textarea {...field} rows={4} className="!border-2 !border-border" />
+                    <Textarea {...field} rows={4} className="border-2! border-border!" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -319,7 +319,7 @@ export function ServiceForm({ dict, lang, service }: ServiceFormProps) {
                             newBenefits[index] = e.target.value
                             field.onChange(newBenefits)
                           }}
-                          className="!border-2 !border-border"
+                          className="border-2! border-border!"
                         />
                         <Button
                           type="button"
@@ -361,7 +361,7 @@ export function ServiceForm({ dict, lang, service }: ServiceFormProps) {
                   <FormItem>
                     <FormLabel>Title</FormLabel>
                     <FormControl>
-                      <Input {...field} className="!border-2 !border-border" />
+                      <Input {...field} className="border-2! border-border!" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -377,7 +377,7 @@ export function ServiceForm({ dict, lang, service }: ServiceFormProps) {
                       <Input 
                         {...field} 
                         readOnly={!isEditing}
-                        className={`!border-2 !border-border ${!isEditing ? "bg-white cursor-not-allowed" : ""}`}
+                        className={`border-2! border-border! ${!isEditing ? "bg-white cursor-not-allowed" : ""}`}
                       />
                     </FormControl>
                     <FormMessage />
@@ -392,7 +392,7 @@ export function ServiceForm({ dict, lang, service }: ServiceFormProps) {
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Textarea {...field} rows={4} className="!border-2 !border-border" />
+                    <Textarea {...field} rows={4} className="border-2! border-border!" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -415,7 +415,7 @@ export function ServiceForm({ dict, lang, service }: ServiceFormProps) {
                             newBenefits[index] = e.target.value
                             field.onChange(newBenefits)
                           }}
-                          className="!border-2 !border-border"
+                          className="border-2! border-border!"
                         />
                         <Button
                           type="button"

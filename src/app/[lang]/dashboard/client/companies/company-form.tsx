@@ -248,7 +248,7 @@ export function CompanyForm({ dict, lang, company }: CompanyFormProps) {
                 <FormControl>
                   <Input
                     {...field}
-                    className="!border-2 !border-border"
+                    className="border-2! border-border!"
                   />
                 </FormControl>
                 <FormMessage />
@@ -303,7 +303,7 @@ export function CompanyForm({ dict, lang, company }: CompanyFormProps) {
                             fileInputRef.current?.click()
                           }}
                           disabled={isUploading}
-                          className="!border-2 !border-border"
+                          className="border-2! border-border!"
                         >
                           {isUploading ? (
                             <>

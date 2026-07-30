@@ -148,7 +148,7 @@ export default async function ClientDashboardPage({ params }: {
                         </div>
                       )}
                     </div>
-                    <ArrowRight className="h-5 w-5 text-muted-foreground flex-shrink-0 ml-4" />
+                    <ArrowRight className="h-5 w-5 text-muted-foreground shrink-0 ml-4" />
                   </Link>
                 )
               })}

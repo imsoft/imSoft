@@ -93,14 +93,14 @@ export function ContactCard({ contact, lang }: ContactCardProps) {
                     href={`/${lang}/dashboard/admin/crm/contacts/${contact.id}/send-email`}
                     className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary transition-colors group"
                   >
-                    <Mail className="h-4 w-4 flex-shrink-0" />
+                    <Mail className="h-4 w-4 shrink-0" />
                     <span className="text-xs italic">
                       {lang === 'en' ? 'No name - Send email' : 'Sin nombre - Enviar correo'}
                     </span>
                   </Link>
                 ) : (
                   <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                    <User className="h-4 w-4 flex-shrink-0" />
+                    <User className="h-4 w-4 shrink-0" />
                     <span className="text-xs italic">
                       {lang === 'en' ? 'No name' : 'Sin nombre'}
                     </span>
@@ -123,19 +123,19 @@ export function ContactCard({ contact, lang }: ContactCardProps) {
             <div className="space-y-1.5 mb-3">
               {contact.company && (
                 <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                  <Building2 className="h-3 w-3 flex-shrink-0" />
+                  <Building2 className="h-3 w-3 shrink-0" />
                   <span className="truncate">{contact.company}</span>
                 </div>
               )}
               {contact.email && (
                 <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                  <Mail className="h-3 w-3 flex-shrink-0" />
+                  <Mail className="h-3 w-3 shrink-0" />
                   <span className="truncate">{contact.email}</span>
                 </div>
               )}
               {contact.phone && (
                 <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                  <Phone className="h-3 w-3 flex-shrink-0" />
+                  <Phone className="h-3 w-3 shrink-0" />
                   <span className="truncate">{contact.phone}</span>
                 </div>
               )}

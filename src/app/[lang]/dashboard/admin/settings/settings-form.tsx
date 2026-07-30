@@ -101,10 +101,10 @@ export function SettingsForm({ dict, lang }: SettingsFormProps) {
               {lang === 'en' ? 'Language' : 'Idioma'}
             </Label>
             <Select value={lang} onValueChange={handleLanguageChange}>
-              <SelectTrigger id="language" className="w-full !border-2 !border-border">
+              <SelectTrigger id="language" className="w-full border-2! border-border!">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="w-[var(--radix-select-trigger-width)]">
+              <SelectContent className="w-(--radix-select-trigger-width)">
                 <SelectItem value="es">
                   <div className="flex items-center gap-2">
                     <span>🇲🇽</span>
@@ -139,10 +139,10 @@ export function SettingsForm({ dict, lang }: SettingsFormProps) {
               {lang === 'en' ? 'Theme' : 'Tema'}
             </Label>
             <Select value={theme} onValueChange={handleThemeChange}>
-              <SelectTrigger id="theme" className="w-full !border-2 !border-border">
+              <SelectTrigger id="theme" className="w-full border-2! border-border!">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="w-[var(--radix-select-trigger-width)]">
+              <SelectContent className="w-(--radix-select-trigger-width)">
                 <SelectItem value="light">
                   <div className="flex items-center gap-2">
                     <Sun className="h-4 w-4" />

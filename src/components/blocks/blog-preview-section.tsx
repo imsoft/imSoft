@@ -85,12 +85,12 @@ export function BlogPreviewSection({ lang, posts }: BlogPreviewSectionProps) {
                 </div>
 
                 {/* Content */}
-                <div className="flex flex-col flex-grow p-5 gap-3">
+                <div className="flex flex-col grow p-5 gap-3">
                   <h3 className="font-bold text-base leading-snug line-clamp-2 group-hover:text-primary transition-colors duration-200">
                     {post.title}
                   </h3>
                   {post.excerpt && (
-                    <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed flex-grow">
+                    <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed grow">
                       {post.excerpt}
                     </p>
                   )}

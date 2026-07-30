@@ -265,7 +265,7 @@ export function SocialLinksEditor({ value = [], onChange, lang }: SocialLinksEdi
                     value={link.platform}
                     onValueChange={(val) => updateLinkPlatform(index, val as Platform)}
                   >
-                    <SelectTrigger className="w-full !border-2 !border-border h-10">
+                    <SelectTrigger className="w-full border-2! border-border! h-10">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -294,7 +294,7 @@ export function SocialLinksEditor({ value = [], onChange, lang }: SocialLinksEdi
                     value={link.url}
                     onChange={(e) => updateLinkUrl(index, e.target.value)}
                     placeholder={platformConfig.placeholder}
-                    className={`!border-2 !border-border h-10 ${
+                    className={`border-2! border-border! h-10 ${
                       platformConfig.isHandle ? 'rounded-l-none' : ''
                     }`}
                   />

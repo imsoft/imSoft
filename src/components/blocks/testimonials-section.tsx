@@ -36,7 +36,7 @@ export function TestimonialsSection({ dict, lang, testimonials = [] }: Testimoni
               >
                 <div className="flex flex-col h-full">
                   <div className="flex items-center gap-4 mb-4">
-                    <div className="relative w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 bg-white">
+                    <div className="relative w-12 h-12 rounded-lg overflow-hidden shrink-0 bg-white">
                       {companyLogo ? (
                         <Image
                           src={companyLogo}
@@ -58,7 +58,7 @@ export function TestimonialsSection({ dict, lang, testimonials = [] }: Testimoni
                       </h3>
                     </div>
                   </div>
-                  <p className="text-card-foreground flex-grow">
+                  <p className="text-card-foreground grow">
                     "{content}"
                   </p>
                 </div>

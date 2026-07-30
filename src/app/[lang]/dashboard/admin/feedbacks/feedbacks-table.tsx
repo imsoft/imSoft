@@ -256,7 +256,7 @@ export function FeedbacksTable({ feedbacks, dict, lang }: FeedbacksTableProps) {
             <div className="space-y-2">
               <label className="text-sm font-medium">{dict.feedback.status}</label>
               <Select value={status} onValueChange={(value) => setStatus(value as Feedback['status'])}>
-                <SelectTrigger className="w-full !border-2 !border-border">
+                <SelectTrigger className="w-full border-2! border-border!">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -275,7 +275,7 @@ export function FeedbacksTable({ feedbacks, dict, lang }: FeedbacksTableProps) {
                 value={adminNotes}
                 onChange={(e) => setAdminNotes(e.target.value)}
                 rows={4}
-                className="!border-2 !border-border"
+                className="border-2! border-border!"
               />
             </div>
           </div>

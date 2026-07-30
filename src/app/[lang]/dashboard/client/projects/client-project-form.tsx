@@ -272,7 +272,7 @@ export function ClientProjectForm({ dict, lang, companyId, companyName }: Client
                     />
                   </div>
                   <FormControl>
-                    <Input {...field} className="!border-2 !border-border" />
+                    <Input {...field} className="border-2! border-border!" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -292,7 +292,7 @@ export function ClientProjectForm({ dict, lang, companyId, companyName }: Client
                     />
                   </div>
                   <FormControl>
-                    <Textarea {...field} rows={4} className="!border-2 !border-border" />
+                    <Textarea {...field} rows={4} className="border-2! border-border!" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -308,7 +308,7 @@ export function ClientProjectForm({ dict, lang, companyId, companyName }: Client
                   <FormItem>
                     <FormLabel>Title</FormLabel>
                     <FormControl>
-                      <Input {...field} className="!border-2 !border-border" />
+                      <Input {...field} className="border-2! border-border!" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -324,7 +324,7 @@ export function ClientProjectForm({ dict, lang, companyId, companyName }: Client
                       <Input
                         {...field}
                         readOnly
-                        className="!border-2 !border-border bg-white cursor-not-allowed"
+                        className="border-2! border-border! bg-white cursor-not-allowed"
                       />
                     </FormControl>
                     <FormMessage />
@@ -339,7 +339,7 @@ export function ClientProjectForm({ dict, lang, companyId, companyName }: Client
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Textarea {...field} rows={4} className="!border-2 !border-border" />
+                    <Textarea {...field} rows={4} className="border-2! border-border!" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -463,7 +463,7 @@ export function ClientProjectForm({ dict, lang, companyId, companyName }: Client
             <FormItem>
               <FormLabel>{lang === 'en' ? 'Project URL (optional)' : 'URL del Proyecto (opcional)'}</FormLabel>
               <FormControl>
-                <Input {...field} type="url" className="!border-2 !border-border" />
+                <Input {...field} type="url" className="border-2! border-border!" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -482,7 +482,7 @@ export function ClientProjectForm({ dict, lang, companyId, companyName }: Client
                   : 'Enlace a recursos externos como Google Drive con imágenes y archivos del proyecto'}
               </FormDescription>
               <FormControl>
-                <Input {...field} type="url" className="!border-2 !border-border" />
+                <Input {...field} type="url" className="border-2! border-border!" />
               </FormControl>
               <FormMessage />
             </FormItem>
