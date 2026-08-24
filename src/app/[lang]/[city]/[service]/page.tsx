@@ -6,6 +6,7 @@ import { SolutionsSection } from '@/components/landing/solutions-section';
 import { ServicesSection } from '@/components/blocks/services-section';
 import { FooterSection } from '@/components/blocks/footer-section';
 import { landingPagesData } from '@/config/landing-pages-data';
+import { resolveLandingContent } from '@/config/landing-pages-i18n';
 import type { City, Industry } from '@/types/landing-pages';
 import { getDictionary } from '@/app/[lang]/dictionaries';
 import { createClient } from '@/lib/supabase/server';
@@ -64,7 +65,16 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
   }
 
-  const pageData = landingPagesData[city as City][service as Industry];
+  const resolved = resolveLandingContent(lang, city as City, service as Industry)!;
+  const pageData = resolved.data;
+  const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io';
+  const esUrl = `${SITE}/es/${city}/${service}`;
+
+  // Si se pidio /en y aun no hay traduccion, se sirve el contenido en español: la
+  // canonica apunta a /es y no se declara hreflang, para no registrar un duplicado.
+  const canonical = resolved.isTranslated
+    ? `${SITE}/${lang}/${city}/${service}`
+    : esUrl;
 
   return {
     title: pageData.seoTitle,
@@ -92,12 +102,16 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       images: [`${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io'}/og-image.jpg`],
     },
     alternates: {
-      canonical: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io'}/${lang}/${city}/${service}`,
-      languages: {
-        'es': `${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io'}/es/${city}/${service}`,
-        'en': `${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io'}/en/${city}/${service}`,
-        'x-default': `${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io'}/es/${city}/${service}`,
-      },
+      canonical,
+      ...(resolved.isTranslated
+        ? {
+            languages: {
+              'es-MX': esUrl,
+              en: `${SITE}/en/${city}/${service}`,
+              'x-default': esUrl,
+            },
+          }
+        : {}),
     },
     robots: {
       index: true,
@@ -127,7 +141,7 @@ export default async function LandingPage({ params }: PageProps) {
     notFound();
   }
 
-  const pageData = landingPagesData[city as City][service as Industry];
+  const pageData = resolveLandingContent(lang, city as City, service as Industry)!.data;
   const dict = await getDictionary(lang as 'es' | 'en');
   const supabase = await createClient();
 

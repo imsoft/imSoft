@@ -1,8 +1,8 @@
 {
   "hero": {
-    "announcement": "Introducing Support for AI Models",
+    "announcement": "Software development agency based in Mexico",
     "announcementLink": "Read more",
-    "title": "Transforming ideas into software",
+    "title": "Custom software development for growing businesses",
     "description": "We develop enterprise digital solutions that drive your business growth. Custom web platforms, mobile applications, and technology consulting.",
     "startBuilding": "Schedule a Free Call",
     "requestDemo": "View Portfolio",
@@ -17,7 +17,7 @@
     "portfolio": "Portfolio",
     "blog": "Blog",
     "contact": "Contact",
-"login": "Login",
+    "login": "Login",
     "signUp": "Sign Up",
     "getStarted": "Get Started"
   },
@@ -114,11 +114,11 @@
         "contact": "Contact",
         "contactMessages": "Contact Messages",
         "feedbacks": "Feedbacks",
-      "crm": "CRM",
-      "technologies": "Technologies",
-      "settings": "Settings",
-      "analytics": "Analytics",
-      "reports": "Reports"
+        "crm": "CRM",
+        "technologies": "Technologies",
+        "settings": "Settings",
+        "analytics": "Analytics",
+        "reports": "Reports"
       },
       "crud": {
         "create": "Create",
@@ -366,8 +366,8 @@
     "system": "System"
   },
   "services": {
-    "title": "Our Services",
-    "subtitle": "Modern technology solutions to grow your business in today's market",
+    "title": "Custom software development and digital marketing services",
+    "subtitle": "Web development, mobile apps, custom software and digital marketing for companies in Mexico, the US and Canada.",
     "webApps": {
       "title": "Custom Software",
       "description": "Stop adapting your business to existing software. Portals, SaaS, management systems — with a modern stack and 100% code ownership."
@@ -482,7 +482,7 @@
     }
   },
   "portfolio": {
-    "title": "Our Portfolio",
+    "title": "Portfolio of software and web development projects",
     "subtitle": "Successfully completed projects that showcase our expertise"
   },
   "blog": {
@@ -510,10 +510,12 @@
       "tutorials": "Tutorials",
       "news": "News",
       "tips": "Tips & Tricks"
-    }
+    },
+    "metaTitle": "Software Development & Digital Transformation Blog",
+    "metaDescription": "Practical guides on web development, mobile apps, e-commerce and business technology, written by the imSoft team."
   },
   "contact": {
-    "title": "Contact",
+    "title": "Contact your software development partner",
     "subtitle": "We're here to help. Get in touch with us.",
     "getInTouch": "Get in touch",
     "description": "We're here to help. If you have any questions, need more information about our services, or want to discuss a project, don't hesitate to contact us. Our team is ready to answer all your inquiries.",
@@ -545,7 +547,9 @@
         "emailInvalid": "Must be a valid email.",
         "messageMin": "Message must be at least 10 characters."
       }
-    }
+    },
+    "metaTitle": "Contact — Custom Software Development Agency",
+    "metaDescription": "Tell us about your project and get a no-commitment proposal. Custom software, web platforms and mobile apps for growing businesses."
   },
   "testimonials": {
     "title": "What Our Clients Say",
@@ -915,4 +919,3 @@
     }
   }
 }
-

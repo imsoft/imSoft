@@ -1,8 +1,9 @@
 import { MetadataRoute } from 'next';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
-import type { City, Industry } from '@/types/landing-pages';
 import { hreflangLanguageAlternates } from '@/lib/seo';
+import { LANDING_CITIES, LANDING_INDUSTRIES } from '@/config/landing-pages-index';
+import { hasEnglishLanding } from '@/config/landing-pages-i18n';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io';
 
@@ -127,6 +128,48 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       },
     },
     {
+      url: `${SITE_URL}/es/about`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.7,
+      alternates: {
+        languages: hreflangLanguageAlternates(`${SITE_URL}/es/about`, `${SITE_URL}/en/about`),
+      },
+    },
+    {
+      url: `${SITE_URL}/en/about`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.7,
+      alternates: {
+        languages: hreflangLanguageAlternates(`${SITE_URL}/es/about`, `${SITE_URL}/en/about`),
+      },
+    },
+    {
+      url: `${SITE_URL}/es/cookie-policy`,
+      lastModified: new Date(),
+      changeFrequency: 'yearly',
+      priority: 0.3,
+      alternates: {
+        languages: hreflangLanguageAlternates(
+          `${SITE_URL}/es/cookie-policy`,
+          `${SITE_URL}/en/cookie-policy`,
+        ),
+      },
+    },
+    {
+      url: `${SITE_URL}/en/cookie-policy`,
+      lastModified: new Date(),
+      changeFrequency: 'yearly',
+      priority: 0.3,
+      alternates: {
+        languages: hreflangLanguageAlternates(
+          `${SITE_URL}/es/cookie-policy`,
+          `${SITE_URL}/en/cookie-policy`,
+        ),
+      },
+    },
+    {
       url: `${SITE_URL}/es/terms-and-conditions`,
       lastModified: new Date(),
       changeFrequency: 'yearly',
@@ -178,29 +221,31 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // Agregar landing pages de ciudad + servicio
   const langs = ['es', 'en'];
-  const cities: City[] = ['guadalajara', 'cdmx', 'monterrey'];
-  const industries: Industry[] = [
-    'software-para-inmobiliarias',
-    'software-para-constructoras',
-    'software-para-restaurantes',
-    'software-para-clinicas',
-    'software-para-logistica',
-  ];
-
+  // Ciudades e industrias salen de la config compartida para que sitemap, enlaces
+  // internos y generateStaticParams no se desincronicen.
   langs.forEach((lang) => {
-    cities.forEach((city) => {
-      industries.forEach((industry) => {
+    LANDING_CITIES.forEach((city) => {
+      LANDING_INDUSTRIES.forEach((industry) => {
+        const translated = hasEnglishLanding(city, industry);
+        // Sin traduccion, la version /en es la misma pagina en español y canonicaliza
+        // a /es: incluirla solo gastaria rastreo en un duplicado.
+        if (lang === 'en' && !translated) return;
+
         routes.push({
           url: `${SITE_URL}/${lang}/${city}/${industry}`,
           lastModified: new Date(),
           changeFrequency: 'monthly',
           priority: 0.8,
-          alternates: {
-            languages: hreflangLanguageAlternates(
-              `${SITE_URL}/es/${city}/${industry}`,
-              `${SITE_URL}/en/${city}/${industry}`,
-            ),
-          },
+          ...(translated
+            ? {
+                alternates: {
+                  languages: hreflangLanguageAlternates(
+                    `${SITE_URL}/es/${city}/${industry}`,
+                    `${SITE_URL}/en/${city}/${industry}`,
+                  ),
+                },
+              }
+            : {}),
         });
       });
     });
@@ -238,6 +283,31 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
               `${SITE_URL}/en/services/${service.slug}`,
             ),
           },
+        });
+      });
+    }
+
+    // Fichas de portafolio (existen en /portfolio/[slug] y faltaban en el sitemap)
+    const { data: portfolioItems } = await supabase
+      .from('portfolio')
+      .select('slug, updated_at')
+      .not('slug', 'is', null);
+
+    if (portfolioItems) {
+      portfolioItems.forEach((item) => {
+        langs.forEach((lang) => {
+          routes.push({
+            url: `${SITE_URL}/${lang}/portfolio/${item.slug}`,
+            lastModified: item.updated_at ? new Date(item.updated_at) : new Date(),
+            changeFrequency: 'monthly',
+            priority: 0.6,
+            alternates: {
+              languages: hreflangLanguageAlternates(
+                `${SITE_URL}/es/portfolio/${item.slug}`,
+                `${SITE_URL}/en/portfolio/${item.slug}`,
+              ),
+            },
+          });
         });
       });
     }

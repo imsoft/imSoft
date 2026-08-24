@@ -161,6 +161,7 @@ export function generateStructuredData(config: {
       return {
         '@context': 'https://schema.org',
         '@type': 'Organization',
+        '@id': `${baseUrl}/#organization`,
         name: SITE_NAME,
         url: baseUrl,
         logo: `${baseUrl}/logos/logo-imsoft-blue.png`,
@@ -314,6 +315,8 @@ export function generateStructuredData(config: {
       return {
         '@context': 'https://schema.org',
         '@type': 'Organization',
+        // Mismo @id que el bloque Organization: son la misma entidad, no tres empresas.
+        '@id': `${baseUrl}/#organization`,
         name: SITE_NAME,
         url: baseUrl,
         aggregateRating: {

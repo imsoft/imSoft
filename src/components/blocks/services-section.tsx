@@ -6,9 +6,15 @@ import { ScrollReveal } from "@/components/animations/scroll-reveal"
 
 interface ServicesSectionClientProps extends ServicesSectionProps {
   services: Service[]
+  /**
+   * En /services esta seccion es el contenido principal, asi que su titulo debe ser el
+   * h1 de la pagina. En el home y en las landings ya hay un h1 antes, y se queda en h2.
+   */
+  headingLevel?: 'h1' | 'h2'
 }
 
-export function ServicesSection({ dict, lang, services }: ServicesSectionClientProps) {
+export function ServicesSection({ dict, lang, services, headingLevel = 'h2' }: ServicesSectionClientProps) {
+  const SectionHeading = headingLevel
   const displayServices = services.map((service) => ({
     id: service.id,
     slug: service.slug || '',
@@ -37,9 +43,9 @@ export function ServicesSection({ dict, lang, services }: ServicesSectionClientP
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         {/* ── Technology Services ── */}
         <ScrollReveal className="text-center mb-12" direction="up">
-          <h2 className="text-4xl md:text-5xl font-bold mb-4">
+          <SectionHeading className="text-4xl md:text-5xl font-bold mb-4">
             {sectionTitle}
-          </h2>
+          </SectionHeading>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             {sectionSubtitle}
           </p>

@@ -1,4 +1,5 @@
 import { ServicesSection } from "@/components/blocks/services-section";
+import { IndustryLinksSection } from "@/components/landing/industry-links-section";
 import { FooterSection } from "@/components/blocks/footer-section";
 import { HeroHeader } from "@/components/blocks/hero-section";
 import { getDictionary, hasLocale } from '../dictionaries';
@@ -61,7 +62,8 @@ export default async function ServicesPage({ params }: {
     <div>
       <HeroHeader dict={dict} lang={lang} />
       <main className="pt-24">
-        <ServicesSection dict={dict} lang={lang} services={services || []} />
+        <ServicesSection dict={dict} lang={lang} services={services || []} headingLevel="h1" />
+        <IndustryLinksSection lang={lang} />
       </main>
       <FooterSection dict={dict} lang={lang} contactData={contactData || undefined} />
     </div>

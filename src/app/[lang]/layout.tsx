@@ -55,6 +55,7 @@ export default async function RootLayout({
   const organizationStructuredData = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
+    '@id': `${SITE_URL}/#organization`,
     name: 'imSoft',
     url: SITE_URL,
     logo: `${SITE_URL}/logos/logo-imsoft-blue.png`,
@@ -108,11 +109,12 @@ export default async function RootLayout({
             }
           `}
         </Script>
-        <Script
-          id="organization-structured-data"
+        {/* JSON-LD via <script> plano para que se serialice en el SSR (next/script no lo hace). */}
+        <script
+          id="organization-structured-data-root"
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(organizationStructuredData),
+            __html: JSON.stringify(organizationStructuredData).replace(/</g, '\\u003c'),
           }}
         />
         {/* Google Analytics 4 */}

@@ -99,9 +99,9 @@ export default async function ContactPage({ params }: {
             {/* Columna izquierda - Información de contacto */}
             <ScrollReveal direction="left" className="relative px-6 pt-24 pb-20 sm:pt-32 lg:static lg:px-8 lg:py-48">
               <div className="mx-auto max-w-xl lg:mx-0 lg:max-w-lg">
-                <h2 className="text-4xl font-semibold tracking-tight text-pretty text-foreground sm:text-5xl">
-                  {dict.contact?.getInTouch ?? 'Get in touch'}
-                </h2>
+                <h1 className="text-4xl font-semibold tracking-tight text-pretty text-foreground sm:text-5xl">
+                  {dict.contact?.title ?? dict.contact?.getInTouch ?? 'Contacto'}
+                </h1>
                 <p className="mt-6 text-lg leading-8 text-muted-foreground">
                   {dict.contact?.description ?? ''}
                 </p>

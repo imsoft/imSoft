@@ -164,22 +164,6 @@ export default async function Home({ params }: {
   });
 
   // Structured data para Organization con datos de contacto
-  const organizationStructuredData = generateStructuredData({
-    type: 'Organization',
-    data: {
-      email: contactData?.email || '',
-      phone: contactData?.phone || '',
-      city: contactData?.city || '',
-      state: contactData?.state || '',
-      socialLinks: [
-        contactData?.facebook,
-        contactData?.twitter,
-        contactData?.instagram,
-        contactData?.linkedin,
-        contactData?.youtube,
-      ].filter(Boolean) as string[],
-    },
-  });
 
   // Structured data Reviews — testimonios como schema Review
   const reviewsStructuredData = formattedTestimonials.length > 0
@@ -236,7 +220,6 @@ export default async function Home({ params }: {
   return (
     <>
       <StructuredData data={websiteStructuredData} id="website-structured-data" />
-      <StructuredData data={organizationStructuredData} id="organization-structured-data" />
       <StructuredData data={localBusinessStructuredData} id="local-business-structured-data" />
       <StructuredData data={faqStructuredData} id="faq-structured-data" />
       {reviewsStructuredData && <StructuredData data={reviewsStructuredData} id="reviews-structured-data" />}

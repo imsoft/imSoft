@@ -1,8 +1,8 @@
 {
   "hero": {
-    "announcement": "Presentando Soporte para Modelos de IA",
+    "announcement": "Agencia de desarrollo de software en la ZMG",
     "announcementLink": "Leer más",
-    "title": "Transformando ideas en software",
+    "title": "Desarrollo de software a la medida en Guadalajara",
     "description": "Desarrollamos soluciones digitales empresariales que impulsan el crecimiento de tu negocio. Plataformas web, aplicaciones móviles y consultoría tecnológica a la medida.",
     "startBuilding": "Agenda una llamada gratis",
     "requestDemo": "Ver Portafolio",
@@ -17,7 +17,7 @@
     "portfolio": "Portafolio",
     "blog": "Blog",
     "contact": "Contacto",
-"login": "Iniciar Sesión",
+    "login": "Iniciar Sesión",
     "signUp": "Registrarse",
     "getStarted": "Comenzar"
   },
@@ -114,11 +114,11 @@
         "contact": "Contacto",
         "contactMessages": "Mensajes de Contacto",
         "feedbacks": "Feedbacks",
-      "crm": "CRM",
-      "technologies": "Tecnologías",
-      "settings": "Configuración",
-      "analytics": "Analíticas",
-      "reports": "Reportes"
+        "crm": "CRM",
+        "technologies": "Tecnologías",
+        "settings": "Configuración",
+        "analytics": "Analíticas",
+        "reports": "Reportes"
       },
       "crud": {
         "create": "Crear",
@@ -366,11 +366,11 @@
     "system": "Sistema"
   },
   "services": {
-    "title": "Nuestros Servicios",
-    "subtitle": "Soluciones tecnológicas modernas para hacer crecer tu negocio en el mercado actual",
+    "title": "Servicios de desarrollo de software y marketing digital",
+    "subtitle": "Desarrollo web, aplicaciones móviles, software a la medida y marketing digital para empresas de Guadalajara, Zapopan, Tlaquepaque y toda la Zona Metropolitana.",
     "webApps": {
       "title": "Software a Medida",
-      "description": "Deja de adaptar tu negocio al software que existe. Construimos exactamente lo que tu operación necesita, con stack moderno y el código 100% tuyo."
+      "description": "Deja de adaptar tu negocio al software que existe. Portales, SaaS, sistemas de gestión — con stack moderno y el código 100% tuyo."
     },
     "mobileApps": {
       "title": "Aplicaciones Móviles",
@@ -419,10 +419,6 @@
     "mvp": {
       "title": "Desarrollo de MVP",
       "description": "Tu producto funcional en 6-8 semanas. Solo las features que validan tu hipótesis, con stack escalable y listo para mostrar a inversores o primeros usuarios."
-    },
-    "webApps": {
-      "title": "Software a Medida",
-      "description": "Deja de adaptar tu negocio al software que existe. Portales, SaaS, sistemas de gestión — con stack moderno y el código 100% tuyo."
     }
   },
   "serviceDetail": {
@@ -486,8 +482,8 @@
     }
   },
   "portfolio": {
-    "title": "Nuestro Portafolio",
-    "subtitle": "Proyectos completados con éxito que demuestran nuestra experiencia"
+    "title": "Portafolio de proyectos de software y páginas web",
+    "subtitle": "Casos reales de empresas en Guadalajara y el resto de México a las que les construimos su plataforma, su tienda en línea o su app."
   },
   "blog": {
     "title": "Blog",
@@ -514,10 +510,12 @@
       "tutorials": "Tutoriales",
       "news": "Noticias",
       "tips": "Tips y Trucos"
-    }
+    },
+    "metaTitle": "Blog de Desarrollo de Software y Transformación Digital",
+    "metaDescription": "Guías prácticas sobre desarrollo web, aplicaciones móviles, comercio electrónico y tecnología para empresas mexicanas. Escrito por el equipo de imSoft."
   },
   "contact": {
-    "title": "Contacto",
+    "title": "Contacta a tu agencia de software en Guadalajara",
     "subtitle": "Estamos aquí para ayudarte. Ponte en contacto con nosotros.",
     "getInTouch": "Ponte en contacto",
     "description": "Estamos aquí para ayudarte. Si tienes alguna pregunta, necesitas más información sobre nuestros servicios o quieres discutir un proyecto, no dudes en contactarnos. Nuestro equipo está listo para responder a todas tus consultas.",
@@ -549,7 +547,9 @@
         "emailInvalid": "Debe ser un email válido.",
         "messageMin": "El mensaje debe tener al menos 10 caracteres."
       }
-    }
+    },
+    "metaTitle": "Contacto — Agencia de Desarrollo de Software en Guadalajara",
+    "metaDescription": "Cuéntanos tu proyecto y te damos una propuesta sin compromiso. Desarrollo de software, páginas web y apps para empresas de Guadalajara y toda la ZMG."
   },
   "testimonials": {
     "title": "Lo Que Dicen Nuestros Clientes",
@@ -919,4 +919,3 @@
     }
   }
 }
-

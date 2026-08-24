@@ -11,7 +11,10 @@ const defaultLocale = 'es'
 
 function getLocale(request: NextRequest): string {
   const headers = {
-    'accept-language': request.headers.get('accept-language') || 'en',
+    // Sin cabecera (Googlebot y la mayoria de crawlers no la envian) usamos el
+    // idioma por defecto del negocio, no 'en'. Este fallback pisaba a defaultLocale
+    // y hacia que Google indexara todo el sitio en ingles.
+    'accept-language': request.headers.get('accept-language') || defaultLocale,
   }
   const languages = new Negotiator({ headers }).languages()
   return match(languages, locales, defaultLocale)

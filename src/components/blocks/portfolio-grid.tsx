@@ -37,9 +37,10 @@ export function PortfolioGrid({ dict, lang, projects = [] }: PortfolioSectionPro
     <section className="py-16 md:py-24 bg-background overflow-x-hidden">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <ScrollReveal className="text-center mb-12" direction="up">
-          <h2 className="text-4xl md:text-5xl font-bold mb-4">
+          {/* h1 de /portfolio: este componente solo se usa en esa pagina */}
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">
             {dict.portfolio.title}
-          </h2>
+          </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             {dict.portfolio.subtitle}
           </p>

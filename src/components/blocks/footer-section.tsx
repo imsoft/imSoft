@@ -8,6 +8,12 @@ import type { ContactData } from '@/types/database'
 import { useCookieStore } from '@/stores/cookie-store'
 
 import type { FooterSectionProps } from '@/types/components'
+import {
+  LANDING_INDUSTRIES,
+  INDUSTRY_LABELS,
+  landingHref,
+  landingLinkText,
+} from '@/config/landing-pages-index'
 
 // Iconos para redes sociales
 const FacebookIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -119,10 +125,19 @@ export function FooterSection({ dict, lang, contactData }: FooterSectionProps) {
   if (contactData?.threads && (contactData?.threads_visible ?? true)) {
     socialLinks.push({ name: 'Threads', href: contactData.threads, icon: ThreadsIcon })
   }
+  // Enlaces site-wide a las landings de industria: sin ellos Google las descubre por el
+  // sitemap pero nunca las rastrea ("Descubierta: actualmente sin indexar").
+  const industryLinks = LANDING_INDUSTRIES.map((industry) => ({
+    id: industry,
+    name: INDUSTRY_LABELS[industry][lang === 'en' ? 'en' : 'es'],
+    href: landingHref(lang, 'guadalajara', industry),
+    title: landingLinkText(lang, 'guadalajara', industry),
+  }))
+
   const navigation = {
     solutions: [
       // Slugs deben coincidir con la tabla services (p. ej. seed: aplicaciones-web, aplicaciones-moviles, consultoria-tecnologica)
-      { id: 'marketing', name: dict.footer.solutions.items.marketing, href: `/${lang}/services/aplicaciones-web` },
+      { id: 'marketing', name: dict.footer.solutions.items.marketing, href: `/${lang}/services/gestion-de-redes-sociales` },
       { id: 'analytics', name: dict.footer.solutions.items.analytics, href: `/${lang}/services/aplicaciones-moviles` },
       { id: 'automation', name: dict.footer.solutions.items.automation, href: `/${lang}/services/consultoria-tecnologica` },
       { id: 'commerce', name: dict.footer.solutions.items.commerce, href: `/${lang}/services` },
@@ -132,7 +147,7 @@ export function FooterSection({ dict, lang, contactData }: FooterSectionProps) {
 { id: 'submitTicket', name: dict.footer.support.items.submitTicket, href: `/${lang}/contact` },
     ],
     company: [
-      { id: 'about', name: dict.footer.company.items.about, href: `/${lang}` },
+      { id: 'about', name: dict.footer.company.items.about, href: `/${lang}/about` },
       { id: 'blog', name: dict.footer.company.items.blog, href: `/${lang}/blog` },
       { id: 'jobs', name: dict.footer.company.items.jobs, href: `/${lang}/contact` },
     ],
@@ -189,8 +204,21 @@ export function FooterSection({ dict, lang, contactData }: FooterSectionProps) {
                 </ul>
               </div>
               <div className="mt-10 md:mt-0">
-                <h3 className="text-sm/6 font-semibold text-foreground">{dict.footer.support.title}</h3>
+                <h3 className="text-sm/6 font-semibold text-foreground">
+                  {lang === 'en' ? 'By industry' : 'Por industria'}
+                </h3>
                 <ul role="list" className="mt-6 space-y-4">
+                  {industryLinks.map((item) => (
+                    <li key={item.id}>
+                      <Link
+                        href={item.href}
+                        title={item.title}
+                        className="text-sm/6 text-muted-foreground hover:text-foreground"
+                      >
+                        {item.name}
+                      </Link>
+                    </li>
+                  ))}
                   {navigation.support.map((item) => (
                     <li key={item.id}>
                       <Link
