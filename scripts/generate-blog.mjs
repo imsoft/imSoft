@@ -57,7 +57,7 @@ function slugify(text) {
     .substring(0, 80);
 }
 
-async function generateBlogPost(category) {
+async function generateBlogPost(category, existingTitles = []) {
   const today = new Date().toLocaleDateString("es-MX", {
     year: "numeric",
     month: "long",
@@ -94,7 +94,14 @@ El artículo DEBE terminar con este bloque HTML exacto (no lo modifiques):
 - Entre 650-950 palabras de contenido real
 - HTML semántico: <h2>, <h3>, <p>, <ul>, <li>, <strong>, <em> — SIN <h1>, SIN markdown
 - Optimizado para SEO: incluye la keyword principal 3-5 veces de forma natural
-- Hoy es ${today}. Categoría del artículo: "${category.label_es}" (${category.label_en})`;
+- Hoy es ${today}. Categoría del artículo: "${category.label_es}" (${category.label_en})
+
+## ARTÍCULOS YA PUBLICADOS — NO LOS REPITAS
+Estos ${existingTitles.length} títulos ya están en el blog. El artículo nuevo debe cubrir un
+ángulo que NO esté aquí: otro subtema, otro nivel de detalle o un caso concreto distinto.
+No reformules ninguno de estos títulos con otras palabras.
+
+${existingTitles.map((t) => `- ${t.title_es}`).join("\n")}`;
 
   const response = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
@@ -200,6 +207,55 @@ async function uploadImageToSupabase(imageBuffer, slug, mimeType = "image/png") 
   }
 
   return `${SUPABASE_URL}/storage/v1/object/public/blog-images/${filename}`;
+}
+
+/**
+ * Titulos ya publicados. El generador corria a ciegas: pedia un articulo sobre uno de
+ * cuatro temas sin saber que ya habia 92 posts sobre esos mismos temas, asi que
+ * reescribia lo mismo un dia si y otro tambien. Google los rastreaba y los descartaba
+ * ("Rastreada: actualmente sin indexar").
+ */
+async function fetchExistingTitles() {
+  const response = await fetch(
+    `${SUPABASE_URL}/rest/v1/blog?select=title_es,title_en&order=created_at.desc`,
+    {
+      headers: {
+        apikey: SUPABASE_SERVICE_ROLE_KEY,
+        Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+      },
+    }
+  );
+  if (!response.ok) return [];
+  const data = await response.json();
+  return data.filter((p) => p.title_es);
+}
+
+/** Normaliza para comparar titulos ignorando acentos, signos y palabras vacias. */
+function titleFingerprint(title) {
+  const STOP = new Set([
+    "el","la","los","las","un","una","de","del","para","por","que","tu","tus","en","y","o",
+    "como","cual","sin","con","mas","the","a","an","of","for","to","your","in","and","or",
+    "how","what","why","without","with","more",
+  ]);
+  return new Set(
+    (title || "")
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9\s]/g, " ")
+      .split(/\s+/)
+      .filter((w) => w.length > 2 && !STOP.has(w))
+  );
+}
+
+/** Solapamiento de palabras significativas entre dos titulos (0 a 1). */
+function titleOverlap(a, b) {
+  const A = titleFingerprint(a);
+  const B = titleFingerprint(b);
+  if (!A.size || !B.size) return 0;
+  let shared = 0;
+  for (const w of A) if (B.has(w)) shared += 1;
+  return shared / Math.min(A.size, B.size);
 }
 
 async function slugExists(slug) {
@@ -465,16 +521,46 @@ async function sendEmail(subject, html) {
   }
 }
 
+/** Solapamiento maximo tolerado con un titulo ya publicado. */
+const MAX_TITLE_OVERLAP = 0.6;
+
 async function main() {
   const category = pickCategory();
   console.log(`Generando artículo para categoría: ${category.label_es}`);
 
-  const generated = await generateBlogPost(category);
+  const existingTitles = await fetchExistingTitles();
+  console.log(`Contexto: ${existingTitles.length} artículos ya publicados.`);
+
+  const generated = await generateBlogPost(category, existingTitles);
   console.log(`Título: ${generated.title_es}`);
 
-  let slug = slugify(generated.title_en);
+  // Puerta anti-canibalizacion. Antes se detectaba el slug repetido y se publicaba
+  // igual con `-${Date.now()}` pegado, que es como aparecieron cinco posts gemelos.
+  // Ahora se descarta la tirada: mejor no publicar que publicar un duplicado.
+  const clash = existingTitles
+    .map((p) => ({
+      title: p.title_es,
+      score: Math.max(
+        titleOverlap(generated.title_es, p.title_es),
+        titleOverlap(generated.title_en, p.title_en)
+      ),
+    }))
+    .sort((a, b) => b.score - a.score)[0];
+
+  if (clash && clash.score >= MAX_TITLE_OVERLAP) {
+    console.error(
+      `Descartado: el título propuesto solapa ${(clash.score * 100).toFixed(0)}% con uno ya publicado.\n` +
+        `  nuevo:     ${generated.title_es}\n` +
+        `  existente: ${clash.title}\n` +
+        `No se publica nada. Revisa la lista de temas si esto se repite varios días seguidos.`
+    );
+    process.exit(0);
+  }
+
+  const slug = slugify(generated.title_en);
   if (await slugExists(slug)) {
-    slug = `${slug}-${Date.now()}`;
+    console.error(`Descartado: el slug "${slug}" ya existe. No se publica nada.`);
+    process.exit(0);
   }
 
   let imageUrl = null;
