@@ -125,16 +125,22 @@ export function HeroSection({ dict, lang, companies = [], portfolioProjects = []
                                         </Link>
                                     </div>
                                 )}
-                                <AnimatedGroup variants={transitionVariants}>
-                                    <h1
-                                        className="mt-8 max-w-4xl mx-auto text-balance text-6xl md:text-7xl lg:mt-16 xl:text-[5.25rem]">
-                                        {dict.hero.title}
-                                    </h1>
-                                    <p
-                                        className="mx-auto mt-8 max-w-2xl text-balance text-lg">
-                                        {dict.hero.description}
-                                    </p>
-                                </AnimatedGroup>
+                                {/*
+                                  * El h1 es el elemento LCP de la home y NO se anima.
+                                  * Envuelto en AnimatedGroup salia del servidor con
+                                  * `opacity:0; filter:blur(12px)` y no se pintaba hasta
+                                  * que el bundle de motion se descargaba e hidrataba:
+                                  * 6.5s de render delay sobre un LCP de 7.2s. El texto
+                                  * ahora es visible en el primer paint.
+                                  */}
+                                <h1
+                                    className="mt-8 max-w-4xl mx-auto text-balance text-6xl md:text-7xl lg:mt-16 xl:text-[5.25rem]">
+                                    {dict.hero.title}
+                                </h1>
+                                <p
+                                    className="mx-auto mt-8 max-w-2xl text-balance text-lg">
+                                    {dict.hero.description}
+                                </p>
 
                                 <AnimatedGroup
                                     variants={{
