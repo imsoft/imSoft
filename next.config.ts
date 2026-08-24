@@ -1,11 +1,17 @@
 import type { NextConfig } from "next";
 import { BLOG_SLUG_REDIRECTS } from "./src/config/blog-redirects";
+import { legacyRedirects } from "./src/config/legacy-redirects";
+import { blogSlugLanguageRedirects } from "./src/config/blog-language-redirects";
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
   compress: true,
   async redirects() {
     return [
+      // URLs del sitio anterior que Search Console reporta en 404.
+      ...legacyRedirects(),
+      // Slug del otro idioma -> slug del idioma pedido.
+      ...(await blogSlugLanguageRedirects()),
       { source: '/:lang(es|en)/servicios', destination: '/:lang/services', permanent: true },
       { source: '/:lang(es|en)/servicios/:slug', destination: '/:lang/services/:slug', permanent: true },
       // /quote nunca existio: este redirect terminaba en 404. El cotizador es el

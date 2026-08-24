@@ -8,7 +8,6 @@ import Image from "next/image";
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { generateMetadata as generateSEOMetadata, generateStructuredData } from '@/lib/seo';
 import { canonicalBlogSlug, findBlogPostBySlug } from '@/lib/blog-slugs';
-import { permanentRedirect } from 'next/navigation';
 import { sanitizeBlogHtml } from '@/lib/sanitize-html';
 import { StructuredData } from '@/components/seo/structured-data';
 import { BreadcrumbNav } from '@/components/seo/breadcrumb-nav';
@@ -143,12 +142,14 @@ export default async function BlogPostPage({ params }: {
     notFound();
   }
 
-  // Se entro por el slug del otro idioma (o por uno antiguo): 301 al que toca, para
-  // que Google consolide en una sola URL por idioma.
-  const canonicalSlug = canonicalBlogSlug(post, lang);
-  if (canonicalSlug && canonicalSlug !== slug) {
-    permanentRedirect(`/${lang}/blog/${canonicalSlug}`);
-  }
+  // El 301 del slug del otro idioma al del idioma pedido NO se hace aqui: esta ruta se
+  // prerenderiza por ISR (`revalidate` arriba) y una redireccion lanzada dentro de un
+  // render cacheado se traga, devolviendo 200. Se resuelve en `next.config.ts`, con el
+  // mapa que genera `blogSlugLanguageRedirects()` leyendo la BD en build.
+  //
+  // Que la busqueda acepte los dos slugs se queda como red de seguridad: si un post
+  // nuevo aun no tiene su regla, la pagina responde con el contenido correcto y la
+  // canonica correcta en vez de un 404.
 
   const isEs = lang === 'es'
 
