@@ -319,37 +319,58 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       });
     }
 
-    // Obtener posts del blog publicados
-    const { data: blogPosts } = await supabase
+    // Posts publicados. Cada idioma va con su propio slug (`slug_es` para /es); si la
+    // columna aun no existe en la BD, se cae a `slug` para los dos.
+    let blogPosts: Array<{
+      slug: string | null;
+      slug_es?: string | null;
+      updated_at?: string | null;
+      created_at?: string | null;
+    }> | null = null;
+
+    const withEs = await supabase
       .from('blog')
-      .select('slug, updated_at, created_at')
+      .select('slug, slug_es, updated_at, created_at')
       .eq('published', true)
       .not('slug', 'is', null);
+
+    if (withEs.error) {
+      const legacy = await supabase
+        .from('blog')
+        .select('slug, updated_at, created_at')
+        .eq('published', true)
+        .not('slug', 'is', null);
+      blogPosts = legacy.data;
+    } else {
+      blogPosts = withEs.data;
+    }
 
     if (blogPosts) {
       blogPosts.forEach((post) => {
         const lastModified = post.updated_at || post.created_at;
+        const esSlug = post.slug_es || post.slug;
+        const enSlug = post.slug || post.slug_es;
         routes.push({
-          url: `${SITE_URL}/es/blog/${post.slug}`,
+          url: `${SITE_URL}/es/blog/${esSlug}`,
           lastModified: lastModified ? new Date(lastModified) : new Date(),
           changeFrequency: 'monthly',
           priority: 0.6,
           alternates: {
             languages: hreflangLanguageAlternates(
-              `${SITE_URL}/es/blog/${post.slug}`,
-              `${SITE_URL}/en/blog/${post.slug}`,
+              `${SITE_URL}/es/blog/${esSlug}`,
+              `${SITE_URL}/en/blog/${enSlug}`,
             ),
           },
         });
         routes.push({
-          url: `${SITE_URL}/en/blog/${post.slug}`,
+          url: `${SITE_URL}/en/blog/${enSlug}`,
           lastModified: lastModified ? new Date(lastModified) : new Date(),
           changeFrequency: 'monthly',
           priority: 0.6,
           alternates: {
             languages: hreflangLanguageAlternates(
-              `${SITE_URL}/es/blog/${post.slug}`,
-              `${SITE_URL}/en/blog/${post.slug}`,
+              `${SITE_URL}/es/blog/${esSlug}`,
+              `${SITE_URL}/en/blog/${enSlug}`,
             ),
           },
         });

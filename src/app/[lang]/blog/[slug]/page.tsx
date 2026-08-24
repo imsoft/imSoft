@@ -7,6 +7,8 @@ import { notFound } from 'next/navigation';
 import Image from "next/image";
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { generateMetadata as generateSEOMetadata, generateStructuredData } from '@/lib/seo';
+import { canonicalBlogSlug, findBlogPostBySlug } from '@/lib/blog-slugs';
+import { permanentRedirect } from 'next/navigation';
 import { sanitizeBlogHtml } from '@/lib/sanitize-html';
 import { StructuredData } from '@/components/seo/structured-data';
 import { BreadcrumbNav } from '@/components/seo/breadcrumb-nav';
@@ -18,14 +20,24 @@ export async function generateStaticParams() {
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
     { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } }
   );
-  const { data: posts } = await supabase
+  // `slug_es` puede no existir todavia (la migracion se aplica a mano): en ese caso
+  // PostgREST falla y se usa solo `slug`, como antes.
+  let posts: Array<{ slug: string | null; slug_es?: string | null }> = [];
+  const withEs = await supabase
     .from('blog')
-    .select('slug')
+    .select('slug, slug_es')
     .eq('published', true);
-  return (posts || []).flatMap((p) => [
-    { lang: 'es', slug: p.slug },
-    { lang: 'en', slug: p.slug },
-  ]);
+  if (withEs.error) {
+    const { data } = await supabase.from('blog').select('slug').eq('published', true);
+    posts = data || [];
+  } else {
+    posts = withEs.data || [];
+  }
+
+  return posts.flatMap((p) => [
+    { lang: 'es', slug: canonicalBlogSlug(p, 'es') },
+    { lang: 'en', slug: canonicalBlogSlug(p, 'en') },
+  ]).filter((p) => p.slug);
 }
 
 export async function generateMetadata({
@@ -47,16 +59,14 @@ export async function generateMetadata({
     }
   );
 
-  const { data: post } = await supabase
-    .from('blog')
-    .select('*')
-    .eq('slug', slug)
-    .eq('published', true)
-    .single();
+  const post = await findBlogPostBySlug(supabase, slug);
 
   if (!post) {
     return generateSEOMetadata({}, lang);
   }
+
+  // La canonica siempre apunta al slug del idioma, aunque se haya entrado por el otro.
+  const canonicalSlug = canonicalBlogSlug(post, lang);
 
   const title = lang === 'en'
     ? (post.title_en || post.title || '')
@@ -67,7 +77,7 @@ export async function generateMetadata({
     : (post.excerpt_es || post.excerpt || '');
 
   const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io';
-  const url = `${SITE_URL}/${lang}/blog/${slug}`;
+  const url = `${SITE_URL}/${lang}/blog/${canonicalSlug}`;
   const image = post.image_url || `${SITE_URL}/logos/logo-imsoft-blue.png`;
   const publishedTime = post.created_at || new Date().toISOString();
   const modifiedTime = post.updated_at || publishedTime;
@@ -84,8 +94,8 @@ export async function generateMetadata({
     section: post.category || 'Technology',
     tags: post.tags || [],
     alternateUrls: {
-      es: `${SITE_URL}/es/blog/${slug}`,
-      en: `${SITE_URL}/en/blog/${slug}`,
+      es: `${SITE_URL}/es/blog/${canonicalBlogSlug(post, 'es')}`,
+      en: `${SITE_URL}/en/blog/${canonicalBlogSlug(post, 'en')}`,
     },
   }, lang);
 }
@@ -126,16 +136,18 @@ export default async function BlogPostPage({ params }: {
     // Error fetching contact data - silently fail
   }
 
-  // Obtener el post del blog por slug
-  const { data: post, error } = await supabase
-    .from('blog')
-    .select('*')
-    .eq('slug', slug)
-    .eq('published', true)
-    .single();
+  // Obtener el post por cualquiera de sus dos slugs (es / en)
+  const post = await findBlogPostBySlug(supabase, slug);
 
-  if (error || !post) {
+  if (!post) {
     notFound();
+  }
+
+  // Se entro por el slug del otro idioma (o por uno antiguo): 301 al que toca, para
+  // que Google consolide en una sola URL por idioma.
+  const canonicalSlug = canonicalBlogSlug(post, lang);
+  if (canonicalSlug && canonicalSlug !== slug) {
+    permanentRedirect(`/${lang}/blog/${canonicalSlug}`);
   }
 
   const isEs = lang === 'es'
