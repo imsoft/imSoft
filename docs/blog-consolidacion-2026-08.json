@@ -1,0 +1,350 @@
+{
+ "keep": [
+  "why-your-website-isnt-converting-common-web-development-mistakes",
+  "seo-for-smes-how-to-rank-on-google-without-spending-on-ads",
+  "5-tips-to-optimize-your-website-and-multiply-your-conversions",
+  "how-to-build-an-online-store-with-react-practical-guide-for-2026",
+  "digital-transformation-for-smes-where-to-start-in-2026",
+  "how-to-build-a-mobile-app-with-react-native-a-practical-guide-for-entrepreneurs",
+  "responsive-web-design-why-your-site-must-look-perfect-on-every-device",
+  "5-mistakes-halting-your-digital-transformation-and-how-to-avoid-them",
+  "5-tech-trends-that-will-transform-your-business-in-2026",
+  "5-digital-marketing-strategies-that-drive-results-in-2026",
+  "complete-guide-how-to-create-a-profitable-online-store-from-scratch",
+  "google-ranking-the-strategy-that-generates-real-sales-for-your-business",
+  "native-vs-hybrid-mobile-apps-which-one-is-right-for-your-business",
+  "the-5-technologies-that-will-transform-your-business-in-2026",
+  "5-common-mistakes-when-building-an-online-store-and-how-to-avoid-them",
+  "how-to-choose-the-right-technology-for-your-mobile-app-in-2026",
+  "digital-marketing-strategy-for-smes-how-to-attract-customers-in-2026",
+  "modern-web-design-the-key-to-converting-visitors-into-customers",
+  "seo-for-smes-rank-your-business-on-google-without-agency-budget",
+  "how-to-choose-the-best-platform-for-mobile-app-development-in-2026",
+  "seo-in-2026-how-to-rank-your-website-without-breaking-the-bank",
+  "how-to-build-a-native-mobile-app-without-exceeding-your-budget",
+  "local-seo-how-to-rank-your-smb-on-google-maps",
+  "5-critical-e-commerce-mistakes-that-cost-you-customers-and-revenue",
+  "how-to-digitalize-your-sme-in-2026-the-practical-guide-you-need",
+  "how-to-choose-the-right-framework-for-your-web-project-in-2026",
+  "responsive-web-design-the-key-to-not-losing-customers-on-mobile",
+  "why-your-slow-website-is-costing-you-sales",
+  "5-mistakes-slowing-down-your-e-commerce-growth",
+  "seo-positioning-for-smes-how-to-dominate-google-without-expensive-agencies",
+  "digital-transformation-the-urgent-reality-your-smb-cant-ignore-in-2026",
+  "5-tricks-to-speed-up-your-website-and-boost-conversions",
+  "responsive-web-design-how-to-serve-customers-on-any-device",
+  "5-tricks-to-optimize-your-mobile-app-and-retain-more-users",
+  "how-to-choose-the-right-e-commerce-platform-for-your-smb-in-2026",
+  "mobile-apps-with-react-native-how-to-reach-ios-and-android-with-a-single-codebas",
+  "rest-apis-the-foundation-of-modern-digital-integration",
+  "5-web-development-tips-to-accelerate-your-online-presence",
+  "modern-web-design-how-to-attract-clients-with-quality-digital-presence",
+  "how-to-create-a-mobile-app-without-code-practical-guide-for-2026",
+  "how-digital-transformation-increases-your-business-profits",
+  "how-to-digitalize-your-sme-without-losing-control-of-your-business",
+  "professional-web-design-why-your-sme-cant-afford-to-skip-it",
+  "how-to-implement-a-smart-chatbot-to-capture-leads-on-your-website",
+  "seo-positioning-for-smbs-the-guide-you-need-in-2026",
+  "how-to-build-an-online-store-with-nextjs-a-practical-guide-for-smbs",
+  "how-to-build-a-rest-api-with-nodejs-and-express-in-2024",
+  "how-to-migrate-your-e-commerce-to-a-faster-and-scalable-platform",
+  "seo-in-2026-how-to-rank-on-google-without-losing-your-mind",
+  "mobile-app-development-how-to-reach-your-customers-where-they-are",
+  "nextjs-in-2026-why-your-smb-must-modernize-its-website",
+  "responsive-web-design-the-key-to-capturing-mobile-customers",
+  "web-or-mobile-app-the-ultimate-guide-for-your-business-in-2026",
+  "why-your-business-is-still-losing-customers-in-2026",
+  "nextjs-the-solution-your-business-needs-to-grow-online",
+  "best-web-development-practices-in-2024"
+ ],
+ "drop": [
+  {
+   "id": "63b41be3-6637-47b4-8252-ef99e0b0a492",
+   "slug": "digital-transformation-for-smbs-where-to-start-in-2026",
+   "title": "Transformación Digital para PyMEs: Por Dónde Empezar en 2026",
+   "toSlug": "digital-transformation-for-smes-where-to-start-in-2026",
+   "toTitle": "Transformación Digital para PyMEs: Por Dónde Empezar en 2026",
+   "score": 1
+  },
+  {
+   "id": "747036fd-e5f3-48b3-aa17-cb39c30c873e",
+   "slug": "modern-web-design-how-to-convert-visitors-into-customers-1784128744839",
+   "title": "Diseño Web Moderno: Cómo Convertir Visitantes en Clientes",
+   "toSlug": "modern-web-design-the-key-to-converting-visitors-into-customers",
+   "toTitle": "Diseño Web Moderno: La Clave para Convertir Visitantes en Clientes",
+   "score": 1
+  },
+  {
+   "id": "afed42ef-e053-4212-8296-7a1f9c0305be",
+   "slug": "modern-web-design-how-to-convert-visitors-into-customers",
+   "title": "Diseño Web Moderno: Cómo Convertir Visitantes en Clientes",
+   "toSlug": "modern-web-design-the-key-to-converting-visitors-into-customers",
+   "toTitle": "Diseño Web Moderno: La Clave para Convertir Visitantes en Clientes",
+   "score": 1
+  },
+  {
+   "id": "996a7c88-3c44-4582-901c-4af5a9d14fcb",
+   "slug": "responsive-web-design-the-key-to-converting-visitors-into-customers",
+   "title": "Diseño Web Responsivo: La Clave para Convertir Visitantes en Clientes",
+   "toSlug": "modern-web-design-the-key-to-converting-visitors-into-customers",
+   "toTitle": "Diseño Web Moderno: La Clave para Convertir Visitantes en Clientes",
+   "score": 0.86
+  },
+  {
+   "id": "9a66b5af-e6b2-462d-9091-bf611532db44",
+   "slug": "how-to-create-an-online-store-in-2026-practical-guide-for-smes",
+   "title": "Cómo crear una tienda online en 2026: guía práctica para PyMEs",
+   "toSlug": "how-to-build-an-online-store-with-react-practical-guide-for-2026",
+   "toTitle": "Cómo crear una tienda online con React: Guía práctica para negocios 2026",
+   "score": 0.86
+  },
+  {
+   "id": "fc909493-68be-4e08-ad58-73c2f6593eb0",
+   "slug": "how-to-create-an-online-store-in-2026-a-practical-guide-for-smbs",
+   "title": "Cómo Crear una Tienda Online en 2026: Guía Práctica para PyMEs",
+   "toSlug": "how-to-build-an-online-store-with-react-practical-guide-for-2026",
+   "toTitle": "Cómo crear una tienda online con React: Guía práctica para negocios 2026",
+   "score": 0.86
+  },
+  {
+   "id": "fef5117e-8b51-4d3b-8524-bbed8bca474b",
+   "slug": "the-software-trends-that-will-transform-your-business-in-2026",
+   "title": "Las tendencias de software que transformarán tu negocio en 2026",
+   "toSlug": "5-tech-trends-that-will-transform-your-business-in-2026",
+   "toTitle": "5 Tendencias Tech que Transformarán tu Negocio en 2026",
+   "score": 0.8
+  },
+  {
+   "id": "c0e69a80-70b2-4b40-9214-26adfd02b0b3",
+   "slug": "5-mistakes-that-destroy-your-online-store-and-how-to-fix-them",
+   "title": "5 Errores que Arruinan tu Tienda Online (y Cómo Evitarlos)",
+   "toSlug": "5-common-mistakes-when-building-an-online-store-and-how-to-avoid-them",
+   "toTitle": "5 Errores Comunes al Construir una Tienda Online (y Cómo Evitarlos)",
+   "score": 0.8
+  },
+  {
+   "id": "8fffd366-c961-4d71-ba36-61065bbc6465",
+   "slug": "how-to-automate-your-smb-the-practical-guide-for-2026",
+   "title": "Cómo Automatizar tu PyME: La Guía Práctica para 2026",
+   "toSlug": "how-to-digitalize-your-sme-in-2026-the-practical-guide-you-need",
+   "toTitle": "Cómo Digitalizar tu PyME en 2026: La Guía Práctica que Necesitas",
+   "score": 0.8
+  },
+  {
+   "id": "b10ff45a-d1ab-4210-af98-872ea92c6642",
+   "slug": "the-tech-trends-that-will-transform-your-business-in-2026",
+   "title": "Las tendencias tech que van a transformar tu negocio en 2026",
+   "toSlug": "5-tech-trends-that-will-transform-your-business-in-2026",
+   "toTitle": "5 Tendencias Tech que Transformarán tu Negocio en 2026",
+   "score": 0.8
+  },
+  {
+   "id": "45128734-f64e-42af-b793-6148b0fd271b",
+   "slug": "the-5-tech-trends-that-will-transform-your-business-in-2026-1784385835167",
+   "title": "Las 5 tendencias tecnológicas que transformarán tu negocio en 2026",
+   "toSlug": "5-tech-trends-that-will-transform-your-business-in-2026",
+   "toTitle": "5 Tendencias Tech que Transformarán tu Negocio en 2026",
+   "score": 0.8
+  },
+  {
+   "id": "7ef73432-3f2d-4edd-a9b2-fadcf5bed3dc",
+   "slug": "the-5-tech-trends-that-will-transform-your-business-in-2026-1787149413318",
+   "title": "Las 5 tendencias tecnológicas que transformarán tu negocio en 2026",
+   "toSlug": "5-tech-trends-that-will-transform-your-business-in-2026",
+   "toTitle": "5 Tendencias Tech que Transformarán tu Negocio en 2026",
+   "score": 0.8
+  },
+  {
+   "id": "8524c5fb-fc5b-4953-8e9b-f0cda8ba321f",
+   "slug": "5-common-mistakes-slowing-down-your-digital-transformation-in-2026",
+   "title": "5 Errores Comunes que Frenan tu Transformación Digital en 2026",
+   "toSlug": "5-mistakes-halting-your-digital-transformation-and-how-to-avoid-them",
+   "toTitle": "5 Errores que Frenan tu Transformación Digital (y Cómo Evitarlos)",
+   "score": 0.8
+  },
+  {
+   "id": "800ab857-6364-499c-bfcd-b3fcfe3b243a",
+   "slug": "the-5-tech-trends-that-will-transform-your-business-in-2026",
+   "title": "Las 5 tendencias tecnológicas que transformarán tu negocio en 2026",
+   "toSlug": "5-tech-trends-that-will-transform-your-business-in-2026",
+   "toTitle": "5 Tendencias Tech que Transformarán tu Negocio en 2026",
+   "score": 0.8
+  },
+  {
+   "id": "4239b4dd-9340-4e70-83ce-35f000ccbeb1",
+   "slug": "responsive-web-design-the-key-to-selling-on-every-device",
+   "title": "Diseño Web Responsivo: Clave para Vender en Todos los Dispositivos",
+   "toSlug": "responsive-web-design-why-your-site-must-look-perfect-on-every-device",
+   "toTitle": "Diseño Web Responsivo: Por Qué Tu Sitio Debe Verse Bien en Todos los Dispositivos",
+   "score": 0.71
+  },
+  {
+   "id": "4f191002-6e8e-45ba-ae7c-09d8fb8a7771",
+   "slug": "5-common-web-development-mistakes-costing-your-business-thousands",
+   "title": "5 Errores Comunes en el Desarrollo Web que Cuestan Miles a tu Negocio",
+   "toSlug": "why-your-website-isnt-converting-common-web-development-mistakes",
+   "toTitle": "¿Por qué tu sitio web no convierte? Errores comunes en desarrollo web",
+   "score": 0.67
+  },
+  {
+   "id": "b8b08450-a192-41b9-b0ad-b736fcaa32e8",
+   "slug": "digital-transformation-for-smes-the-practical-guide-you-need-in-2026",
+   "title": "Transformación Digital para PyMEs: La Guía Práctica que Necesitas en 2026",
+   "toSlug": "digital-transformation-for-smes-where-to-start-in-2026",
+   "toTitle": "Transformación Digital para PyMEs: Por Dónde Empezar en 2026",
+   "score": 0.67
+  },
+  {
+   "id": "6a229bd4-e9e4-46cb-9f2d-a695d3a594dd",
+   "slug": "mobile-app-vs-web-which-one-to-choose-for-your-business-in-2026",
+   "title": "App Móvil vs Web: Cuál Elegir para tu Negocio en 2026",
+   "toSlug": "how-to-choose-the-right-technology-for-your-mobile-app-in-2026",
+   "toTitle": "Cómo elegir la tecnología correcta para tu app móvil en 2026",
+   "score": 0.67
+  },
+  {
+   "id": "5c834cb3-07de-41c3-b2f3-d54c0cf49dbf",
+   "slug": "how-to-choose-the-right-technology-for-your-digital-project-in-2026",
+   "title": "Cómo Elegir la Tecnología Correcta para tu Proyecto Digital en 2026",
+   "toSlug": "how-to-choose-the-right-technology-for-your-mobile-app-in-2026",
+   "toTitle": "Cómo elegir la tecnología correcta para tu app móvil en 2026",
+   "score": 0.67
+  },
+  {
+   "id": "71a7d515-eccb-4718-beb2-8ef4b14a483e",
+   "slug": "how-to-build-an-online-store-that-actually-sells-in-2026",
+   "title": "Cómo crear una tienda online que realmente venda en 2026",
+   "toSlug": "how-to-build-an-online-store-with-react-practical-guide-for-2026",
+   "toTitle": "Cómo crear una tienda online con React: Guía práctica para negocios 2026",
+   "score": 0.67
+  },
+  {
+   "id": "add36c86-76e0-424b-8e71-8ad1f98b63ef",
+   "slug": "5-common-web-development-mistakes-that-cost-you-money",
+   "title": "5 Errores Comunes al Desarrollar tu Sitio Web que Cuestan Dinero",
+   "toSlug": "why-your-website-isnt-converting-common-web-development-mistakes",
+   "toTitle": "¿Por qué tu sitio web no convierte? Errores comunes en desarrollo web",
+   "score": 0.67
+  },
+  {
+   "id": "44c5af43-1e16-41f6-a147-e34147dfc3f1",
+   "slug": "how-to-choose-the-right-technology-for-your-startup-practical-guide-2026",
+   "title": "Cómo Elegir la Tecnología Correcta para tu Startup: Guía Práctica 2026",
+   "toSlug": "how-to-choose-the-right-technology-for-your-mobile-app-in-2026",
+   "toTitle": "Cómo elegir la tecnología correcta para tu app móvil en 2026",
+   "score": 0.67
+  },
+  {
+   "id": "faef9506-be9f-4d18-b74b-bf646665b38e",
+   "slug": "5-common-mistakes-when-launching-your-online-store-that-cost-money",
+   "title": "5 Errores Comunes al Lanzar tu Tienda Online que Cuestan Dinero",
+   "toSlug": "5-common-mistakes-when-building-an-online-store-and-how-to-avoid-them",
+   "toTitle": "5 Errores Comunes al Construir una Tienda Online (y Cómo Evitarlos)",
+   "score": 0.67
+  },
+  {
+   "id": "1e42cedf-2665-4911-975f-79c1f21c45af",
+   "slug": "digital-transformation-the-key-for-your-smb-to-grow-in-2026",
+   "title": "Transformación Digital: La Clave para que tu PyME Crezca en 2026",
+   "toSlug": "digital-transformation-the-urgent-reality-your-smb-cant-ignore-in-2026",
+   "toTitle": "Transformación Digital: La Urgencia que tu PyME no puede Ignorar en 2026",
+   "score": 0.67
+  },
+  {
+   "id": "7660e2e1-2702-45fb-9001-1aa7e60e044c",
+   "slug": "5-mistakes-sabotaging-your-online-store-and-how-to-fix-them",
+   "title": "5 Errores que Están Saboteando tu Tienda Online (y Cómo Evitarlos)",
+   "toSlug": "5-common-mistakes-when-building-an-online-store-and-how-to-avoid-them",
+   "toTitle": "5 Errores Comunes al Construir una Tienda Online (y Cómo Evitarlos)",
+   "score": 0.67
+  },
+  {
+   "id": "f3eea411-fddf-4fd9-a0e4-4e374f931e72",
+   "slug": "why-your-smb-needs-a-professional-website-in-2026",
+   "title": "¿Por Qué Tu PyME Necesita Un Sitio Web Profesional en 2026?",
+   "toSlug": "nextjs-in-2026-why-your-smb-must-modernize-its-website",
+   "toTitle": "Next.js en 2026: Por qué tu PyME debe modernizar su sitio web",
+   "score": 0.67
+  },
+  {
+   "id": "823f13c1-7035-40ce-b2a9-ab145bb3d872",
+   "slug": "why-your-smb-needs-a-mobile-app-in-2026-1783093749788",
+   "title": "Por qué tu PyME necesita una app móvil en 2026",
+   "toSlug": "how-to-choose-the-right-technology-for-your-mobile-app-in-2026",
+   "toTitle": "Cómo elegir la tecnología correcta para tu app móvil en 2026",
+   "score": 0.6
+  },
+  {
+   "id": "06253d49-2b0e-407d-a574-f30841e4cbb7",
+   "slug": "digital-transformation-how-to-modernize-your-business-in-2026",
+   "title": "Transformación Digital: Cómo Modernizar tu Negocio en 2026",
+   "toSlug": "digital-transformation-for-smes-where-to-start-in-2026",
+   "toTitle": "Transformación Digital para PyMEs: Por Dónde Empezar en 2026",
+   "score": 0.6
+  },
+  {
+   "id": "a5784540-382d-422e-a47d-c27f39d0cdf0",
+   "slug": "5-signs-your-business-needs-digital-transformation-now",
+   "title": "5 Señales de que tu negocio necesita transformación digital ya",
+   "toSlug": "how-digital-transformation-increases-your-business-profits",
+   "toTitle": "Cómo la Transformación Digital Aumenta las Ganancias de tu Negocio",
+   "score": 0.6
+  },
+  {
+   "id": "765dd9e5-bc4e-4aec-8443-425bc70c0187",
+   "slug": "why-your-smb-needs-a-mobile-app-in-2026",
+   "title": "¿Por qué tu PyME necesita una aplicación móvil en 2026?",
+   "toSlug": "how-to-choose-the-best-platform-for-mobile-app-development-in-2026",
+   "toTitle": "Cómo elegir la mejor plataforma para desarrollar tu aplicación móvil en 2026",
+   "score": 0.6
+  },
+  {
+   "id": "d6098d3c-78dc-4d82-bd81-067d144b7737",
+   "slug": "how-to-rank-your-smb-on-google-without-spending-on-ads",
+   "title": "Cómo posicionar tu PyME en Google sin gastar en publicidad",
+   "toSlug": "seo-for-smes-how-to-rank-on-google-without-spending-on-ads",
+   "toTitle": "SEO para PyMEs: Cómo posicionarte en Google sin gastar en publicidad",
+   "score": 0.6
+  },
+  {
+   "id": "8e8d5507-754f-4ec0-9eb7-82996ea80bc5",
+   "slug": "how-digital-transformation-saves-smes-from-extinction",
+   "title": "Cómo la Transformación Digital Salva PyMEs de la Extinción",
+   "toSlug": "digital-transformation-for-smes-where-to-start-in-2026",
+   "toTitle": "Transformación Digital para PyMEs: Por Dónde Empezar en 2026",
+   "score": 0.6
+  },
+  {
+   "id": "b36bbdd5-1561-4840-8489-a151c81e0bb6",
+   "slug": "software-trends-in-2026-what-you-need-to-know-for-your-business",
+   "title": "Las Tendencias de Software en 2026: Qué Debes Saber para tu Negocio",
+   "toSlug": "5-tech-trends-that-will-transform-your-business-in-2026",
+   "toTitle": "5 Tendencias Tech que Transformarán tu Negocio en 2026",
+   "score": 0.6
+  },
+  {
+   "id": "8e795c61-914b-4189-a31e-278ae184344e",
+   "slug": "the-technology-trends-that-will-transform-businesses-in-2026",
+   "title": "Las tendencias tecnológicas que transformarán los negocios en 2026",
+   "toSlug": "5-tech-trends-that-will-transform-your-business-in-2026",
+   "toTitle": "5 Tendencias Tech que Transformarán tu Negocio en 2026",
+   "score": 0.6
+  },
+  {
+   "id": "bec414dd-3e80-4e6f-9731-f73ef73faf70",
+   "slug": "5-mistakes-costing-you-sales-in-your-online-store",
+   "title": "5 Errores que te Cuestan Ventas en tu Tienda Online",
+   "toSlug": "5-common-mistakes-when-building-an-online-store-and-how-to-avoid-them",
+   "toTitle": "5 Errores Comunes al Construir una Tienda Online (y Cómo Evitarlos)",
+   "score": 0.6
+  },
+  {
+   "id": "71c7b49f-df4e-4277-94c7-8800d4e7adcf",
+   "slug": "why-your-smb-needs-a-mobile-app-in-2026-1781708631804",
+   "title": "¿Por qué tu PyME necesita una app móvil en 2026?",
+   "toSlug": "how-to-choose-the-right-technology-for-your-mobile-app-in-2026",
+   "toTitle": "Cómo elegir la tecnología correcta para tu app móvil en 2026",
+   "score": 0.6
+  }
+ ]
+}

@@ -2,8 +2,10 @@ name: Auto Blog Publisher
 
 on:
   schedule:
-    # Corre diariamente a las 14:00 UTC (8:00 AM hora México / 9:00 AM CDT)
-    - cron: "0 14 * * *"
+    # Lunes a las 14:00 UTC (8:00 AM hora México). Era diario, pero con 92 articulos
+    # sobre ~7 temas el generador ya no tiene angulos nuevos que cubrir a ese ritmo:
+    # semanal deja margen para que cada pieza aporte algo distinto.
+    - cron: "0 14 * * 1"
   workflow_dispatch: # Permite ejecutarlo manualmente desde GitHub
 
 jobs:

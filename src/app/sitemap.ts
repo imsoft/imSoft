@@ -7,6 +7,13 @@ import { hasEnglishLanding } from '@/config/landing-pages-i18n';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io';
 
+/**
+ * El sitemap se prerenderizaba en build y se quedaba congelado hasta el siguiente
+ * deploy: los articulos que publica el cron semanal no aparecian hasta que alguien
+ * volviera a desplegar. Se regenera cada hora.
+ */
+export const revalidate = 3600;
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Intentar usar cliente de administrador primero para evitar problemas de RLS
   let supabase;

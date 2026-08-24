@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { BLOG_SLUG_REDIRECTS } from "./src/config/blog-redirects";
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
@@ -7,7 +8,18 @@ const nextConfig: NextConfig = {
     return [
       { source: '/:lang(es|en)/servicios', destination: '/:lang/services', permanent: true },
       { source: '/:lang(es|en)/servicios/:slug', destination: '/:lang/services/:slug', permanent: true },
-      { source: '/:lang(es|en)/cotizador', destination: '/:lang/quote', permanent: true },
+      // /quote nunca existio: este redirect terminaba en 404. El cotizador es el
+      // formulario de contacto.
+      { source: '/:lang(es|en)/cotizador', destination: '/:lang/contact', permanent: true },
+      // Consolidacion del blog: los posts que canibalizaban a otro redirigen al que
+      // absorbe el tema, en ambos idiomas. Ver src/config/blog-redirects.ts.
+      // 301 explicito en vez de `permanent: true` (que emite 308): es una
+      // consolidacion de SEO y el 301 lo entiende cualquier rastreador o auditor.
+      ...Object.entries(BLOG_SLUG_REDIRECTS).map(([from, to]) => ({
+        source: `/:lang(es|en)/blog/${from}`,
+        destination: `/:lang/blog/${to}`,
+        statusCode: 301 as const,
+      })),
     ];
   },
   images: {
