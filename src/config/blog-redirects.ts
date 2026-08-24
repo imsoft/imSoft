@@ -10,6 +10,11 @@
  * Las redirecciones se aplican en `next.config.ts` para ambos idiomas.
  */
 export const BLOG_SLUG_REDIRECTS: Record<string, string> = {
+  // Diseño Web Responsivo: La Clave para Vender en Cualquier Dispositivo
+  // Publicado por el cron el 24-ago-2026, ya con la consolidacion hecha pero antes de
+  // desplegar la puerta anti-duplicados: solapa 71% con el destino.
+  'responsive-web-design-the-key-to-selling-on-any-device':
+    'responsive-web-design-how-to-serve-customers-on-any-device',
   // 5 Errores Comunes que Frenan tu Transformación Digital en 2026
   '5-common-mistakes-slowing-down-your-digital-transformation-in-2026':
     '5-mistakes-halting-your-digital-transformation-and-how-to-avoid-them',
