@@ -103,7 +103,6 @@ export async function POST(request: NextRequest) {
     const recipients: Recipient[] = []
     const seen = new Set<string>()
     let page = 1
-    // eslint-disable-next-line no-constant-condition
     while (true) {
       const { data: usersData, error: usersError } = await admin.auth.admin.listUsers({
         page,

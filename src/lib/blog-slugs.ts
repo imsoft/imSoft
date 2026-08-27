@@ -32,7 +32,6 @@ export function canonicalBlogSlug(post: BlogSlugRow, lang: string): string {
  */
 // El resto de la pagina lee campos del post sin un tipo generado (title_es, content_en,
 // author_name...), asi que se devuelve la fila tal cual la da PostgREST.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function findBlogPostBySlug(
   supabase: SupabaseClient,
   slug: string,

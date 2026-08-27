@@ -24,12 +24,15 @@ export const BUSINESS = {
     region: 'Jalisco',
     country: 'MX',
   },
-  /** Perfiles publicos. La URL de LinkedIn es la publica, no el panel de administracion. */
+  /**
+   * Perfiles publicos. LinkedIn va en su forma canonica `www.` y no en el espejo
+   * regional `mx.`: es la misma pagina, pero `sameAs` debe apuntar a la URL global.
+   */
   sameAs: [
     'https://www.facebook.com/weareimsoft',
     'https://x.com/weareimsoft',
     'https://www.instagram.com/weareimsoft/',
-    'https://www.linkedin.com/company/93322900/',
+    'https://www.linkedin.com/company/imsoft',
     'https://www.youtube.com/@weareimsoft',
     'https://www.tiktok.com/@weareimsoft',
     'https://www.threads.com/@weareimsoft',

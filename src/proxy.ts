@@ -26,7 +26,7 @@ export async function proxy(request: NextRequest) {
     (locale) => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`
   )
 
-  let response = pathnameHasLocale 
+  const response = pathnameHasLocale 
     ? NextResponse.next()
     : NextResponse.redirect(new URL(`/${getLocale(request)}${pathname}`, request.url))
 
