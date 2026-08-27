@@ -56,5 +56,6 @@ describe('landing de Zapopan', () => {
 
   it('el horario coincide con el que declara el schema', () => {
     expect(ZAPOPAN_WEB.cta.description).toContain('9:00 a 18:00');
+    expect(ZAPOPAN_WEB.cta.description).not.toContain('lunes a viernes');
   });
 });

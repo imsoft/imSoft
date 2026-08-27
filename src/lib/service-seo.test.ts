@@ -73,5 +73,7 @@ describe('serviceAreaSentence', () => {
   it('el horario que muestra es el mismo que declara el schema', () => {
     expect(serviceAreaSentence('es')).toContain('09:00');
     expect(serviceAreaSentence('es')).toContain('18:00');
+    // El texto visible no puede contradecir a openingHoursSpecification.
+    expect(serviceAreaSentence('es')).not.toContain('lunes a viernes');
   });
 });

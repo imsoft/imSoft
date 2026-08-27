@@ -28,13 +28,13 @@ describe('schema del negocio', () => {
     expect(org.address).not.toHaveProperty('streetAddress');
   });
 
-  it('publica el horario confirmado, 9:00 a 18:00', () => {
+  it('publica el horario confirmado: 9:00 a 18:00, los siete dias', () => {
     const [spec] = org.openingHoursSpecification;
     expect(spec.opens).toBe('09:00');
     expect(spec.closes).toBe('18:00');
-    expect(spec.dayOfWeek).toContain('Monday');
-    expect(spec.dayOfWeek).toContain('Friday');
-    expect(spec.dayOfWeek).not.toContain('Sunday');
+    expect(spec.dayOfWeek).toHaveLength(7);
+    expect(spec.dayOfWeek).toContain('Saturday');
+    expect(spec.dayOfWeek).toContain('Sunday');
   });
 
   it('el telefono va en E.164', () => {

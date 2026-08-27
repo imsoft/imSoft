@@ -36,9 +36,9 @@ export const BUSINESS = {
   ],
   languages: ['Spanish', 'English'],
   /**
-   * Horario de atencion confirmado: 9:00 a 18:00. Los dias no se especificaron, asi que
-   * se asume lunes a viernes; si se trabaja en sabado hay que anadirlo aqui y que
-   * coincida con Google Business Profile.
+   * Horario confirmado: 9:00 a 18:00, los siete dias. Tiene que coincidir con lo que
+   * declare Google Business Profile; si ahi dice otra cosa, la ficha se contradice con
+   * el schema y pierde confianza.
    */
   openingHours: {
     days: [
@@ -47,6 +47,8 @@ export const BUSINESS = {
       'Wednesday',
       'Thursday',
       'Friday',
+      'Saturday',
+      'Sunday',
     ],
     opens: '09:00',
     closes: '18:00',
