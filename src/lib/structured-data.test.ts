@@ -93,3 +93,11 @@ describe('schema del negocio', () => {
     expect(org.email).toBe(BUSINESS.email);
   });
 });
+
+describe('referencias entre bloques', () => {
+  it('WebSite no referencia al negocio por @id', () => {
+    // Ver el comentario de structured-data.ts: una referencia `{'@id': ...}` desde otro
+    // bloque hace que validator.schema.org descarte el nodo del negocio en silencio.
+    expect(websiteSchema('es')).not.toHaveProperty('publisher');
+  });
+});

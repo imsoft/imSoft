@@ -22,8 +22,12 @@ const LOGO = `${SITE_URL}/logos/logo-imsoft-blue.png`;
  * merece la pena arriesgarse a que el parser de Google haga lo mismo y la entidad
  * quede invisible.
  *
- * El `@id` se mantiene en `#organization` porque es el que referencian
- * `WebSite.publisher` y `Service.provider`.
+ * NINGUN otro bloque de la pagina debe referenciar este nodo con `{'@id': ...}`.
+ * Verificado en produccion contra validator.schema.org: en cuanto `WebSite.publisher` o
+ * `Service.provider` apuntaban aqui por @id, el validador descartaba este nodo entero
+ * sin reportar error y la empresa desaparecia de las entidades detectadas. Al quitar
+ * esas referencias reaparece. Los demas bloques describen a imSoft en linea con
+ * nombre y url, que es lo que Google usa para reconciliar la entidad.
  */
 
 export function businessSchema(lang: string) {

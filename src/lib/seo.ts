@@ -205,9 +205,16 @@ export function generateStructuredData(config: {
         '@context': 'https://schema.org',
         '@type': 'Service',
         serviceType: data.serviceType || 'Technology Consulting',
-        // Referencia por @id a la Organization del layout, en vez de repetir los datos:
-        // asi el servicio cuelga de la empresa que ya conoce Google.
-        provider: { '@id': `${baseUrl}/#organization` },
+        // Proveedor descrito en linea, NO como referencia `{'@id': ...}`. Verificado
+        // en produccion: cuando otro bloque de la pagina referencia por @id al nodo del
+        // negocio, validator.schema.org descarta ese nodo entero sin dar ningun error y
+        // la empresa deja de aparecer entre las entidades detectadas. Repetir dos campos
+        // sale mas barato que arriesgarse a que la ficha del negocio quede invisible.
+        provider: {
+          '@type': 'Organization',
+          name: SITE_NAME,
+          url: baseUrl,
+        },
         // La zona de servicio es la real del negocio (ZMG + Jalisco + Mexico), no la
         // lista de paises a la que se aspira a vender.
         areaServed: [...BUSINESS_AREA_SERVED],
