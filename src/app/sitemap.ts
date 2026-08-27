@@ -24,6 +24,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     supabase = await createClient();
   }
   
+  // Las paginas legales (privacy-policy, cookie-policy, terms-and-conditions) NO van
+  // aqui: su generateMetadata emite `noindex`. Listarlas en el sitemap y a la vez
+  // pedirle a Google que no las indexe es una contradiccion, y son exactamente las
+  // 6 URLs que Search Console reporta como "Excluida por una etiqueta noindex".
   const routes: MetadataRoute.Sitemap = [
     // Páginas principales
     {
@@ -150,78 +154,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
       alternates: {
         languages: hreflangLanguageAlternates(`${SITE_URL}/es/about`, `${SITE_URL}/en/about`),
-      },
-    },
-    {
-      url: `${SITE_URL}/es/cookie-policy`,
-      lastModified: new Date(),
-      changeFrequency: 'yearly',
-      priority: 0.3,
-      alternates: {
-        languages: hreflangLanguageAlternates(
-          `${SITE_URL}/es/cookie-policy`,
-          `${SITE_URL}/en/cookie-policy`,
-        ),
-      },
-    },
-    {
-      url: `${SITE_URL}/en/cookie-policy`,
-      lastModified: new Date(),
-      changeFrequency: 'yearly',
-      priority: 0.3,
-      alternates: {
-        languages: hreflangLanguageAlternates(
-          `${SITE_URL}/es/cookie-policy`,
-          `${SITE_URL}/en/cookie-policy`,
-        ),
-      },
-    },
-    {
-      url: `${SITE_URL}/es/terms-and-conditions`,
-      lastModified: new Date(),
-      changeFrequency: 'yearly',
-      priority: 0.3,
-      alternates: {
-        languages: hreflangLanguageAlternates(
-          `${SITE_URL}/es/terms-and-conditions`,
-          `${SITE_URL}/en/terms-and-conditions`,
-        ),
-      },
-    },
-    {
-      url: `${SITE_URL}/en/terms-and-conditions`,
-      lastModified: new Date(),
-      changeFrequency: 'yearly',
-      priority: 0.3,
-      alternates: {
-        languages: hreflangLanguageAlternates(
-          `${SITE_URL}/es/terms-and-conditions`,
-          `${SITE_URL}/en/terms-and-conditions`,
-        ),
-      },
-    },
-    {
-      url: `${SITE_URL}/es/privacy-policy`,
-      lastModified: new Date(),
-      changeFrequency: 'yearly',
-      priority: 0.3,
-      alternates: {
-        languages: hreflangLanguageAlternates(
-          `${SITE_URL}/es/privacy-policy`,
-          `${SITE_URL}/en/privacy-policy`,
-        ),
-      },
-    },
-    {
-      url: `${SITE_URL}/en/privacy-policy`,
-      lastModified: new Date(),
-      changeFrequency: 'yearly',
-      priority: 0.3,
-      alternates: {
-        languages: hreflangLanguageAlternates(
-          `${SITE_URL}/es/privacy-policy`,
-          `${SITE_URL}/en/privacy-policy`,
-        ),
       },
     },
   ];

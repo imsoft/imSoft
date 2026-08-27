@@ -6,7 +6,13 @@ import { getDictionary, hasLocale } from './dictionaries';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Analytics } from '@vercel/analytics/next';
 import { Toaster } from '@/components/ui/sonner';
-import { generateMetadata as generateSEOMetadata, SEO_AREA_SERVED_COUNTRIES } from '@/lib/seo';
+import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
+import {
+  organizationSchema,
+  professionalServiceSchema,
+  websiteSchema,
+} from '@/lib/structured-data';
+import { StructuredData } from '@/components/seo/structured-data';
 import Script from 'next/script';
 import { CookieBanner } from '@/components/cookies/cookie-banner';
 import { CookiePreferences } from '@/components/cookies/cookie-preferences';
@@ -51,22 +57,6 @@ export default async function RootLayout({
   const dict = await getDictionary(lang);
   const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io';
 
-  // Structured data para Organization
-  const organizationStructuredData = {
-    '@context': 'https://schema.org',
-    '@type': 'Organization',
-    '@id': `${SITE_URL}/#organization`,
-    name: 'imSoft',
-    url: SITE_URL,
-    logo: `${SITE_URL}/logos/logo-imsoft-blue.png`,
-    areaServed: [...SEO_AREA_SERVED_COUNTRIES],
-    contactPoint: {
-      '@type': 'ContactPoint',
-      contactType: 'customer service',
-      availableLanguage: ['Spanish', 'English'],
-    },
-    sameAs: [],
-  };
 
   return (
     <html
@@ -109,14 +99,14 @@ export default async function RootLayout({
             }
           `}
         </Script>
-        {/* JSON-LD via <script> plano para que se serialice en el SSR (next/script no lo hace). */}
-        <script
-          id="organization-structured-data-root"
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(organizationStructuredData).replace(/</g, '\\u003c'),
-          }}
-        />
+        {/*
+          * Identidad del negocio, en todas las paginas. Organization y
+          * ProfessionalService comparten @id/parentOrganization para que Google los
+          * lea como una sola empresa.
+          */}
+        <StructuredData data={organizationSchema(lang)} id="organization-schema" />
+        <StructuredData data={professionalServiceSchema(lang)} id="professional-service-schema" />
+        <StructuredData data={websiteSchema(lang)} id="website-schema" />
         {/* Google Analytics 4 */}
         {process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID && (
           <>

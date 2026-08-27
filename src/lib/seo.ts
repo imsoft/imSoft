@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import { BUSINESS_AREA_SERVED } from '@/config/business';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io';
 const SITE_NAME = 'imSoft';
@@ -204,12 +205,12 @@ export function generateStructuredData(config: {
         '@context': 'https://schema.org',
         '@type': 'Service',
         serviceType: data.serviceType || 'Technology Consulting',
-        provider: {
-          '@type': 'Organization',
-          name: SITE_NAME,
-          url: baseUrl,
-        },
-        areaServed: [...SEO_AREA_SERVED_COUNTRIES],
+        // Referencia por @id a la Organization del layout, en vez de repetir los datos:
+        // asi el servicio cuelga de la empresa que ya conoce Google.
+        provider: { '@id': `${baseUrl}/#organization` },
+        // La zona de servicio es la real del negocio (ZMG + Jalisco + Mexico), no la
+        // lista de paises a la que se aspira a vender.
+        areaServed: [...BUSINESS_AREA_SERVED],
         description: data.description || '',
         name: data.name || '',
         url: data.url || baseUrl,
