@@ -139,6 +139,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       },
     },
     {
+      // Landing de Zapopan: solo en español. El contenido apunta a busquedas locales
+      // que en ingles no tienen volumen, asi que /en canonicaliza aqui y no se lista.
+      url: `${SITE_URL}/es/zapopan/desarrollo-web`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    {
       url: `${SITE_URL}/es/about`,
       lastModified: new Date(),
       changeFrequency: 'monthly',

@@ -142,6 +142,9 @@ export function FooterSection({ dict, lang, contactData }: FooterSectionProps) {
       { id: 'automation', name: dict.footer.solutions.items.automation, href: `/${lang}/services/consultoria-tecnologica` },
       { id: 'commerce', name: dict.footer.solutions.items.commerce, href: `/${lang}/services` },
       { id: 'insights', name: dict.footer.solutions.items.insights, href: `/${lang}/portfolio` },
+      ...(lang === 'es'
+        ? [{ id: 'zapopan', name: 'Desarrollo web en Zapopan', href: '/es/zapopan/desarrollo-web' }]
+        : []),
     ],
     support: [
 { id: 'submitTicket', name: dict.footer.support.items.submitTicket, href: `/${lang}/contact` },

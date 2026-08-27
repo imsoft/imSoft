@@ -29,6 +29,20 @@ export function IndustryLinksSection({ lang }: { lang: string }) {
             : 'We know your sector’s processes. Pick your industry and city to see how we work with companies like yours.'}
         </p>
 
+        {l === 'es' && (
+          <p className="text-muted-foreground max-w-3xl mb-10">
+            ¿Buscas solo un sitio web?{' '}
+            <Link href="/es/zapopan/desarrollo-web" className="text-foreground underline underline-offset-4">
+              Desarrollo web en Zapopan
+            </Link>{' '}
+            y{' '}
+            <Link href="/es/services/web-pages" className="text-foreground underline underline-offset-4">
+              en Guadalajara
+            </Link>
+            .
+          </p>
+        )}
+
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
           {LANDING_CITIES.map((city) => (
             <div key={city}>
