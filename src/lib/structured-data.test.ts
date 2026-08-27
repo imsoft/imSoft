@@ -6,9 +6,9 @@ const SITE = 'https://www.imsoft.io';
 
 /**
  * Estas pruebas existen sobre todo para impedir que vuelva a colarse un dato inventado.
- * El schema anterior declaraba coordenadas del centro de Guadalajara, un radio de
- * servicio de 50 km y un horario que nadie confirmo; si eso no coincide con Google
- * Business Profile, resta credibilidad a la ficha en vez de sumarla.
+ * El schema anterior declaraba coordenadas del centro de Guadalajara y un radio de
+ * servicio de 50 km que nadie confirmo; si eso no coincide con Google Business Profile,
+ * resta credibilidad a la ficha en vez de sumarla.
  */
 describe('schema del negocio', () => {
   const org = businessSchema('es');
@@ -17,11 +17,24 @@ describe('schema del negocio', () => {
     for (const schema of [org] as Record<string, unknown>[]) {
       expect(schema).not.toHaveProperty('geo');
       expect(schema).not.toHaveProperty('serviceArea');
-      expect(schema).not.toHaveProperty('openingHours');
-      expect(schema).not.toHaveProperty('openingHoursSpecification');
       expect(schema).not.toHaveProperty('priceRange');
       expect(schema).not.toHaveProperty('aggregateRating');
     }
+  });
+
+  it('no declara un domicilio visitable: no hay local que reciba clientes', () => {
+    expect(org).not.toHaveProperty('geo');
+    expect(org).not.toHaveProperty('hasMap');
+    expect(org.address).not.toHaveProperty('streetAddress');
+  });
+
+  it('publica el horario confirmado, 9:00 a 18:00', () => {
+    const [spec] = org.openingHoursSpecification;
+    expect(spec.opens).toBe('09:00');
+    expect(spec.closes).toBe('18:00');
+    expect(spec.dayOfWeek).toContain('Monday');
+    expect(spec.dayOfWeek).toContain('Friday');
+    expect(spec.dayOfWeek).not.toContain('Sunday');
   });
 
   it('el telefono va en E.164', () => {

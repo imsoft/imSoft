@@ -8,6 +8,11 @@ import { Check, ChevronDown } from 'lucide-react';
 import { Card, CardContent } from "@/components/ui/card";
 import Magnet from "@/components/ui/magnet";
 import { generateMetadata as generateSEOMetadata, generateStructuredData } from '@/lib/seo';
+import {
+  localizedServiceTitle,
+  localizedServiceDescription,
+  serviceAreaSentence,
+} from '@/lib/service-seo';
 import { resolveServiceContent } from '@/lib/service-fallbacks';
 import { StructuredData } from '@/components/seo/structured-data';
 import { BreadcrumbNav } from '@/components/seo/breadcrumb-nav';
@@ -45,8 +50,10 @@ export async function generateMetadata({
       : ['service', 'technology', 'software development', 'consulting']);
 
   return generateSEOMetadata({
-    title,
-    description,
+    // El titulo y la descripcion llevan la ciudad: sin senal geografica estas paginas
+    // no competian por las consultas con intencion comercial.
+    title: localizedServiceTitle(slug, title, lang),
+    description: localizedServiceDescription(description, lang),
     url: `${SITE_URL}/${lang}/services/${slug}`,
     image: service.image_url || `${SITE_URL}/logos/logo-imsoft-blue.png`,
     type: 'website',
@@ -102,7 +109,13 @@ export default async function ServicePage({ params }: {
 
   const serviceStructuredData = generateStructuredData({
     type: 'Service',
-    data: { name: title, description, serviceType: title, url: serviceUrl, image: serviceImage },
+    data: {
+      name: localizedServiceTitle(slug, title, lang),
+      description,
+      serviceType: title,
+      url: serviceUrl,
+      image: serviceImage,
+    },
   });
 
   const breadcrumbStructuredData = generateStructuredData({
@@ -144,7 +157,13 @@ export default async function ServicePage({ params }: {
                       { name: title },
                     ]}
                   />
-                  <h1 className="text-4xl md:text-5xl font-bold mb-6">{title}</h1>
+                  {/* El h1 lleva la ciudad; el breadcrumb se queda con el nombre corto. */}
+                  <h1 className="text-4xl md:text-5xl font-bold mb-6">
+                    {localizedServiceTitle(slug, title, lang)}
+                  </h1>
+                  <p className="text-muted-foreground mb-6 max-w-2xl">
+                    {serviceAreaSentence(lang)}
+                  </p>
                   {service.image_url && (
                     <div className="relative w-full h-[400px] rounded-xl overflow-hidden">
                       <Image src={service.image_url} alt={title} fill className="object-cover" priority />

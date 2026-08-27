@@ -49,6 +49,14 @@ export function businessSchema(lang: string) {
     telephone: BUSINESS.telephone,
     address: postalAddress(),
     areaServed: [...BUSINESS_AREA_SERVED],
+    openingHoursSpecification: [
+      {
+        '@type': 'OpeningHoursSpecification',
+        dayOfWeek: [...BUSINESS.openingHours.days],
+        opens: BUSINESS.openingHours.opens,
+        closes: BUSINESS.openingHours.closes,
+      },
+    ],
     sameAs: [...BUSINESS.sameAs],
     contactPoint: {
       '@type': 'ContactPoint',

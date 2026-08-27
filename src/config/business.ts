@@ -1,11 +1,16 @@
 /**
  * Datos del negocio para schema.org. Fuente unica de verdad.
  *
- * Regla: aqui solo entran datos confirmados. Nada de coordenadas aproximadas, horarios
- * supuestos ni rangos de precio a ojo — schema.org es una declaracion sobre el negocio
- * y un dato inventado que no coincide con Google Business Profile resta confianza en
- * vez de sumarla. Si falta un campo, se omite: un schema corto y cierto vale mas que
- * uno largo y a medias.
+ * Regla: aqui solo entran datos confirmados. Nada de coordenadas aproximadas ni rangos
+ * de precio a ojo — schema.org es una declaracion sobre el negocio y un dato inventado
+ * que no coincide con Google Business Profile resta confianza en vez de sumarla. Si
+ * falta un campo, se omite: un schema corto y cierto vale mas que uno largo y a medias.
+ *
+ * imSoft NO tiene local donde reciba clientes: es un negocio de area de servicio. Por
+ * eso el domicilio llega solo a ciudad/estado y no hay `geo` ni `hasMap`. Declarar una
+ * direccion visitable que no existe es justo lo que Google penaliza en las fichas
+ * locales, y ademas tiene que cuadrar con como este dado de alta en Business Profile
+ * (ahi se registra ocultando el domicilio y declarando zona de servicio).
  */
 
 export const BUSINESS = {
@@ -30,6 +35,22 @@ export const BUSINESS = {
     'https://www.threads.com/@weareimsoft',
   ],
   languages: ['Spanish', 'English'],
+  /**
+   * Horario de atencion confirmado: 9:00 a 18:00. Los dias no se especificaron, asi que
+   * se asume lunes a viernes; si se trabaja en sabado hay que anadirlo aqui y que
+   * coincida con Google Business Profile.
+   */
+  openingHours: {
+    days: [
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+    ],
+    opens: '09:00',
+    closes: '18:00',
+  },
 } as const;
 
 /** Zona de servicio declarada: el area metropolitana de Guadalajara y, por encima, el pais. */
