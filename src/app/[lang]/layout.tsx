@@ -7,11 +7,7 @@ import { ThemeProvider } from '@/components/theme-provider';
 import { Analytics } from '@vercel/analytics/next';
 import { Toaster } from '@/components/ui/sonner';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
-import {
-  organizationSchema,
-  professionalServiceSchema,
-  websiteSchema,
-} from '@/lib/structured-data';
+import { businessSchema, websiteSchema } from '@/lib/structured-data';
 import { StructuredData } from '@/components/seo/structured-data';
 import Script from 'next/script';
 import { CookieBanner } from '@/components/cookies/cookie-banner';
@@ -99,13 +95,8 @@ export default async function RootLayout({
             }
           `}
         </Script>
-        {/*
-          * Identidad del negocio, en todas las paginas. Organization y
-          * ProfessionalService comparten @id/parentOrganization para que Google los
-          * lea como una sola empresa.
-          */}
-        <StructuredData data={organizationSchema(lang)} id="organization-schema" />
-        <StructuredData data={professionalServiceSchema(lang)} id="professional-service-schema" />
+        {/* Identidad del negocio, en todas las paginas. */}
+        <StructuredData data={businessSchema(lang)} id="business-schema" />
         <StructuredData data={websiteSchema(lang)} id="website-schema" />
         {/* Google Analytics 4 */}
         {process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID && (

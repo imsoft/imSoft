@@ -9,21 +9,27 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io';
 const LOGO = `${SITE_URL}/logos/logo-imsoft-blue.png`;
 
 /**
- * Bloques JSON-LD del negocio, emitidos una sola vez en el layout raiz.
+ * Identidad del negocio en JSON-LD, emitida una sola vez en el layout raiz.
  *
- * `Organization` y `ProfessionalService` describen la misma empresa desde dos angulos
- * (entidad corporativa y negocio local), asi que se enlazan por `@id` en vez de repetir
- * los datos: Google los funde en una entidad y no en dos empresas distintas.
+ * Un unico nodo con DOS tipos. `ProfessionalService` ya es subclase de `Organization`
+ * (via LocalBusiness), asi que publicar dos nodos separados y enlazarlos con
+ * `parentOrganization` le declara a Google que imSoft tiene una matriz llamada imSoft.
+ * Es la misma empresa: se declara con ambos tipos y un solo `@id`, que es lo que
+ * referencian `WebSite.publisher` y `Service.provider`.
  */
 
-export function organizationSchema(lang: string) {
+export function businessSchema(lang: string) {
   const ids = businessIds(SITE_URL);
+  const isEs = lang === 'es';
   return {
     '@context': 'https://schema.org',
-    '@type': 'Organization',
+    '@type': ['ProfessionalService', 'Organization'],
     '@id': ids.organization,
     name: BUSINESS.name,
     legalName: BUSINESS.legalName,
+    description: isEs
+      ? 'Agencia de desarrollo de software en Guadalajara. Creamos software a la medida, aplicaciones móviles, páginas web y tiendas en línea para empresas de Jalisco y todo México.'
+      : 'Software development agency based in Guadalajara, Mexico. We build custom software, mobile apps, websites and online stores for growing businesses.',
     url: SITE_URL,
     logo: LOGO,
     image: LOGO,
@@ -40,34 +46,12 @@ export function organizationSchema(lang: string) {
       areaServed: 'MX',
       availableLanguage: [...BUSINESS.languages],
     },
-    knowsLanguage: lang === 'es' ? ['es-MX', 'en'] : ['en', 'es-MX'],
+    // `knowsLanguage` si es valido en Organization; `availableLanguage` no lo es en
+    // LocalBusiness ni sus subtipos, solo dentro de ContactPoint.
+    knowsLanguage: isEs ? ['es-MX', 'en'] : ['en', 'es-MX'],
   };
 }
 
-export function professionalServiceSchema(lang: string) {
-  const ids = businessIds(SITE_URL);
-  const isEs = lang === 'es';
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'ProfessionalService',
-    '@id': ids.professionalService,
-    name: BUSINESS.name,
-    description: isEs
-      ? 'Agencia de desarrollo de software en Guadalajara. Creamos software a la medida, aplicaciones móviles, páginas web y tiendas en línea para empresas de Jalisco y todo México.'
-      : 'Software development agency based in Guadalajara, Mexico. We build custom software, mobile apps, websites and online stores for growing businesses.',
-    url: `${SITE_URL}/${isEs ? 'es' : 'en'}`,
-    image: LOGO,
-    logo: LOGO,
-    email: BUSINESS.email,
-    telephone: BUSINESS.telephone,
-    address: postalAddress(),
-    areaServed: [...BUSINESS_AREA_SERVED],
-    sameAs: [...BUSINESS.sameAs],
-    availableLanguage: [...BUSINESS.languages],
-    // Misma empresa que el bloque Organization, no una segunda entidad.
-    parentOrganization: { '@id': ids.organization },
-  };
-}
 
 export function websiteSchema(lang: string) {
   const ids = businessIds(SITE_URL);

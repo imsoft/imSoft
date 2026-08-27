@@ -1,9 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import {
-  organizationSchema,
-  professionalServiceSchema,
-  websiteSchema,
-} from './structured-data';
+import { businessSchema, websiteSchema } from './structured-data';
 import { BUSINESS } from '@/config/business';
 
 const SITE = 'https://www.imsoft.io';
@@ -15,11 +11,10 @@ const SITE = 'https://www.imsoft.io';
  * Business Profile, resta credibilidad a la ficha en vez de sumarla.
  */
 describe('schema del negocio', () => {
-  const org = organizationSchema('es');
-  const svc = professionalServiceSchema('es');
+  const org = businessSchema('es');
 
   it('no declara datos que nadie confirmo', () => {
-    for (const schema of [org, svc] as Record<string, unknown>[]) {
+    for (const schema of [org] as Record<string, unknown>[]) {
       expect(schema).not.toHaveProperty('geo');
       expect(schema).not.toHaveProperty('serviceArea');
       expect(schema).not.toHaveProperty('openingHours');
@@ -44,16 +39,23 @@ describe('schema del negocio', () => {
     }
   });
 
-  it('Organization y ProfessionalService son la misma entidad, no dos empresas', () => {
+  it('es UN nodo con los dos tipos, no dos empresas enlazadas', () => {
+    // ProfessionalService ya es subclase de Organization: dos nodos unidos por
+    // parentOrganization declararian que imSoft tiene una matriz llamada imSoft.
+    expect(org['@type']).toEqual(['ProfessionalService', 'Organization']);
     expect(org['@id']).toBe(`${SITE}/#organization`);
-    expect(svc['@id']).toBe(`${SITE}/#professionalservice`);
-    expect(svc['@id']).not.toBe(org['@id']);
-    expect(svc.parentOrganization).toEqual({ '@id': org['@id'] });
+    expect(org).not.toHaveProperty('parentOrganization');
+  });
+
+  it('no usa availableLanguage fuera de ContactPoint', () => {
+    // El validador de schema.org lo marca como UNKNOWN_FIELD en LocalBusiness.
+    expect(org).not.toHaveProperty('availableLanguage');
+    expect(org.contactPoint.availableLanguage).toEqual(['Spanish', 'English']);
   });
 
   it('el @id no colisiona con la URL de una pagina real', () => {
     // Antes LocalBusiness usaba `@id: https://www.imsoft.io/es`, que es la home.
-    for (const schema of [org, svc, websiteSchema('es')]) {
+    for (const schema of [org, websiteSchema('es')]) {
       expect(schema['@id']).toContain('#');
     }
   });
@@ -79,7 +81,7 @@ describe('schema del negocio', () => {
   });
 
   it('todo el bloque serializa a JSON valido', () => {
-    for (const schema of [org, svc, websiteSchema('en')]) {
+    for (const schema of [org, websiteSchema('en')]) {
       expect(() => JSON.parse(JSON.stringify(schema))).not.toThrow();
       expect(schema['@context']).toBe('https://schema.org');
     }
@@ -87,6 +89,5 @@ describe('schema del negocio', () => {
 
   it('el correo coincide con el configurado', () => {
     expect(org.email).toBe(BUSINESS.email);
-    expect(svc.email).toBe(BUSINESS.email);
   });
 });
