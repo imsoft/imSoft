@@ -17,9 +17,10 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { lang } = await params;
   return generateSEOMetadata({
+    // 77 caracteres se truncaban en resultados; Google muestra ~60 con el sufijo.
     title: lang === 'es'
-      ? 'Servicios de Desarrollo de Software, Marketing Digital y Consultoría'
-      : 'Software Development, Digital Marketing & Consulting Services',
+      ? 'Servicios de Desarrollo de Software en Guadalajara'
+      : 'Software Development Services in Guadalajara, Mexico',
     description: lang === 'es'
       ? 'Descubre nuestros servicios: desarrollo web, aplicaciones móviles, consultoría tecnológica, gestión de redes sociales, producción audiovisual, paid media e influencer marketing.'
       : 'Explore our services: web development, mobile apps, technology consulting, social media management, audiovisual production, paid media and influencer marketing.',

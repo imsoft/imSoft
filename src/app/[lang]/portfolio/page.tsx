@@ -20,7 +20,7 @@ export async function generateMetadata({
 
   return generateSEOMetadata({
     title: lang === 'es' 
-      ? 'Portafolio - Proyectos y Casos de Éxito'
+      ? 'Portafolio — Páginas Web y Software que Hemos Construido'
       : 'Portfolio - Projects and Success Cases',
     description: lang === 'es'
       ? 'Explora nuestro portafolio de proyectos exitosos. Desarrollo de software, aplicaciones web y soluciones tecnológicas personalizadas.'
