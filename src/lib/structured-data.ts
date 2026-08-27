@@ -70,6 +70,5 @@ export function websiteSchema(lang: string) {
     name: BUSINESS.name,
     url: SITE_URL,
     inLanguage: lang === 'es' ? 'es-MX' : 'en',
-    publisher: { '@id': ids.organization },
   };
 }

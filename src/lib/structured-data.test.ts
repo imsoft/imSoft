@@ -82,10 +82,6 @@ describe('schema del negocio', () => {
     expect(names).toContain('Jalisco');
   });
 
-  it('el sitio web cuelga de la Organization', () => {
-    expect(websiteSchema('es').publisher).toEqual({ '@id': org['@id'] });
-  });
-
   it('todo el bloque serializa a JSON valido', () => {
     for (const schema of [org, websiteSchema('en')]) {
       expect(() => JSON.parse(JSON.stringify(schema))).not.toThrow();
