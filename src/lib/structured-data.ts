@@ -11,11 +11,19 @@ const LOGO = `${SITE_URL}/logos/logo-imsoft-blue.png`;
 /**
  * Identidad del negocio en JSON-LD, emitida una sola vez en el layout raiz.
  *
- * Un unico nodo con DOS tipos. `ProfessionalService` ya es subclase de `Organization`
- * (via LocalBusiness), asi que publicar dos nodos separados y enlazarlos con
- * `parentOrganization` le declara a Google que imSoft tiene una matriz llamada imSoft.
- * Es la misma empresa: se declara con ambos tipos y un solo `@id`, que es lo que
- * referencian `WebSite.publisher` y `Service.provider`.
+ * Un unico nodo `ProfessionalService`, que por herencia (ProfessionalService <-
+ * LocalBusiness <- Organization) ya ES una Organization: hereda name, url, logo,
+ * sameAs, contactPoint, address, areaServed y legalName. Por eso no hace falta un
+ * segundo nodo Organization, y publicarlo aparte enlazado con `parentOrganization`
+ * seria peor: declararia que imSoft tiene una empresa matriz llamada imSoft.
+ *
+ * Se probo tambien `"@type": ["ProfessionalService", "Organization"]`. Es JSON-LD
+ * valido, pero validator.schema.org descarta el nodo entero sin dar error, asi que no
+ * merece la pena arriesgarse a que el parser de Google haga lo mismo y la entidad
+ * quede invisible.
+ *
+ * El `@id` se mantiene en `#organization` porque es el que referencian
+ * `WebSite.publisher` y `Service.provider`.
  */
 
 export function businessSchema(lang: string) {
@@ -23,7 +31,7 @@ export function businessSchema(lang: string) {
   const isEs = lang === 'es';
   return {
     '@context': 'https://schema.org',
-    '@type': ['ProfessionalService', 'Organization'],
+    '@type': 'ProfessionalService',
     '@id': ids.organization,
     name: BUSINESS.name,
     legalName: BUSINESS.legalName,

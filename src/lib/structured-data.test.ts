@@ -39,12 +39,18 @@ describe('schema del negocio', () => {
     }
   });
 
-  it('es UN nodo con los dos tipos, no dos empresas enlazadas', () => {
-    // ProfessionalService ya es subclase de Organization: dos nodos unidos por
-    // parentOrganization declararian que imSoft tiene una matriz llamada imSoft.
-    expect(org['@type']).toEqual(['ProfessionalService', 'Organization']);
+  it('es un solo nodo ProfessionalService, no dos empresas enlazadas', () => {
+    // ProfessionalService ya hereda de Organization. Un segundo nodo unido por
+    // parentOrganization declararia que imSoft tiene una matriz llamada imSoft.
+    expect(org['@type']).toBe('ProfessionalService');
     expect(org['@id']).toBe(`${SITE}/#organization`);
     expect(org).not.toHaveProperty('parentOrganization');
+  });
+
+  it('el @type es una cadena, no un array', () => {
+    // validator.schema.org descarta el nodo entero, sin dar error, cuando @type es
+    // un array de tipos. Verificado en produccion.
+    expect(Array.isArray(org['@type'])).toBe(false);
   });
 
   it('no usa availableLanguage fuera de ContactPoint', () => {
