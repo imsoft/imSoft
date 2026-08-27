@@ -19,7 +19,6 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
-import type { Dictionary, Locale } from '@/app/[lang]/dictionaries'
 import type { AdminContactFormProps } from '@/types/forms'
 
 const contactSchema = z.object({

@@ -3,7 +3,6 @@
 import SpotlightCard from "@/components/ui/spotlight-card"
 import Image from "next/image"
 import Link from "next/link"
-import { cn } from "@/lib/utils"
 import type { PortfolioSectionProps } from '@/types/components'
 import { ScrollReveal } from "@/components/animations/scroll-reveal"
 

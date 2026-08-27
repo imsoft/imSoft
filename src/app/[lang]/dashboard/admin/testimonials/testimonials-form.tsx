@@ -17,7 +17,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import type { Dictionary, Locale } from '@/app/[lang]/dictionaries'
 import type { TestimonialFormProps } from '@/types/forms'
 import {
   Command,

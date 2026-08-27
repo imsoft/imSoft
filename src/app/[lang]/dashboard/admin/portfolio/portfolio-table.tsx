@@ -34,7 +34,6 @@ import {
 } from "@/components/ui/empty"
 import { FolderOpen, Plus } from "lucide-react"
 import { DataTable } from "@/components/ui/data-table"
-import type { Dictionary, Locale } from '@/app/[lang]/dictionaries'
 import type { PortfolioItem, PortfolioTableProps } from '@/types'
 
 export type { PortfolioItem }

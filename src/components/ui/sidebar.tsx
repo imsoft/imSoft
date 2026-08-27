@@ -606,10 +606,18 @@ function SidebarMenuSkeleton({
 }: React.ComponentProps<"div"> & {
   showIcon?: boolean
 }) {
-  // Random width between 50 to 90%.
+  // Ancho variable entre 50% y 90%, derivado del id en vez de Math.random().
+  // Con Math.random() el servidor y el cliente generaban anchos distintos y la
+  // hidratacion no coincidia; useId es estable entre ambos y sigue dando variedad
+  // entre instancias.
+  const id = React.useId()
   const width = React.useMemo(() => {
-    return `${Math.floor(Math.random() * 40) + 50}%`
-  }, [])
+    let hash = 0
+    for (let i = 0; i < id.length; i++) {
+      hash = (hash * 31 + id.charCodeAt(i)) | 0
+    }
+    return `${(Math.abs(hash) % 41) + 50}%`
+  }, [id])
 
   return (
     <div

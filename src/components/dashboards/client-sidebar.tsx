@@ -6,11 +6,10 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
-  SidebarMenuItem,
+  SidebarMenuItem
 } from "@/components/ui/sidebar"
 import {
   LayoutDashboard,
@@ -28,7 +27,6 @@ import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 import { useSidebar } from "@/components/ui/sidebar"
-import type { Dictionary, Locale } from '@/app/[lang]/dictionaries'
 import type { ClientSidebarProps } from '@/types/dashboard'
 
 export function ClientSidebar({ dict, lang, user }: ClientSidebarProps) {

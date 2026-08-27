@@ -2,7 +2,6 @@ import { getDictionary, hasLocale } from '../../../../../dictionaries'
 import { notFound, redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { AdminCompanyForm } from '../../company-form'
-import type { Company } from '@/types'
 
 export default async function EditAdminCompanyPage({ params }: {
   params: Promise<{ lang: string; id: string }>

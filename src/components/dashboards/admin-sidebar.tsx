@@ -6,11 +6,10 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
-  SidebarMenuItem,
+  SidebarMenuItem
 } from "@/components/ui/sidebar"
 import {
   LayoutDashboard,
@@ -33,12 +32,10 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Button } from "@/components/ui/button"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 import { useSidebar } from "@/components/ui/sidebar"
-import type { Dictionary, Locale } from '@/app/[lang]/dictionaries'
 import type { AdminSidebarProps } from '@/types/dashboard'
 
 export function AdminSidebar({ dict, lang, user }: AdminSidebarProps) {

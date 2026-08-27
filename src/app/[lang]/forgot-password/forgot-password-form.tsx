@@ -82,7 +82,7 @@ export default function ForgotPasswordForm({ dict, lang }: ForgotPasswordFormPro
       setSuccess(true)
       setIsSubmitting(false)
       form.reset()
-    } catch (err) {
+    } catch {
       captchaRef.current?.reset()
       setCaptchaToken(undefined)
       setError(dict.auth.forgotPassword.errors.generic)

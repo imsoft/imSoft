@@ -156,7 +156,6 @@ export default async function Home({ params }: {
     created_at: post.created_at || undefined,
   }));
 
-  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io';
   
   // Structured data para WebSite
 

@@ -2,7 +2,7 @@
 
 import { useCookieStore } from '@/stores/cookie-store';
 import { Button } from '@/components/ui/button';
-import { Cookie, Settings, X } from 'lucide-react';
+import { Cookie, Settings } from 'lucide-react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'motion/react';
 

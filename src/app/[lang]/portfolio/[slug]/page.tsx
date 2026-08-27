@@ -279,7 +279,7 @@ export default async function PortfolioDetailPage({
               <div className="mx-auto max-w-3xl px-6 text-center">
                 <Quote className="h-10 w-10 text-primary/30 mx-auto mb-6" />
                 <blockquote className="text-xl md:text-2xl font-medium leading-relaxed text-foreground mb-6 italic">
-                  "{clientQuote}"
+                  &ldquo;{clientQuote}&rdquo;
                 </blockquote>
                 {project.client && (
                   <p className="text-sm text-muted-foreground font-semibold">{project.client}</p>

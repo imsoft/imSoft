@@ -131,7 +131,7 @@ export default async function BlogPostPage({ params }: {
       .limit(1)
       .maybeSingle();
     contactData = data || undefined;
-  } catch (error) {
+  } catch {
     // Error fetching contact data - silently fail
   }
 

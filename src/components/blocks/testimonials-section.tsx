@@ -1,5 +1,4 @@
 import SpotlightCard from "@/components/ui/spotlight-card"
-import type { Locale } from '@/app/[lang]/dictionaries'
 import Image from 'next/image'
 import { Building2 } from 'lucide-react'
 import { ScrollReveal } from "@/components/animations/scroll-reveal"
@@ -59,7 +58,7 @@ export function TestimonialsSection({ dict, lang, testimonials = [] }: Testimoni
                     </div>
                   </div>
                   <p className="text-card-foreground grow">
-                    "{content}"
+                    &ldquo;{content}&rdquo;
                   </p>
                 </div>
               </SpotlightCard>

@@ -13,7 +13,7 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { toast } from 'sonner'
-import type { ProjectTask, TaskPriority } from '@/types/database'
+import type { ProjectTask } from '@/types/database'
 import type { Locale } from '@/app/[lang]/dictionaries'
 import { Progress } from '@/components/ui/progress'
 

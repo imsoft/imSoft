@@ -3,16 +3,6 @@ import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { ContactForm } from './contact-form'
-import {
-  Empty,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-  EmptyAction,
-} from "@/components/ui/empty"
-import { Contact, Plus } from "lucide-react"
-import { Button } from "@/components/ui/button"
 
 export default async function AdminContactPage({ params }: {
   params: Promise<{ lang: string }>

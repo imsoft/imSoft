@@ -34,7 +34,6 @@ import {
 } from "@/components/ui/empty"
 import { BookOpen } from "lucide-react"
 import { DataTable } from "@/components/ui/data-table"
-import type { Dictionary, Locale } from '@/app/[lang]/dictionaries'
 import type { BlogPost, BlogTableProps } from '@/types'
 
 export type { BlogPost }

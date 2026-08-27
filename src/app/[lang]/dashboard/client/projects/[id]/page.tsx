@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/empty"
 import Image from "next/image"
 import Link from "next/link"
-import type { Project } from "@/types/database"
 import { CommitsTimeline } from "@/components/projects/commits-timeline"
 import { TaskProgress } from "@/components/projects/task-progress"
 import { ProjectCountdown } from "@/components/projects/project-countdown"

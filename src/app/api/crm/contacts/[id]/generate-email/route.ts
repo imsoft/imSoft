@@ -241,7 +241,7 @@ Responde SOLO con un JSON válido con esta estructura:
     let emailData
     try {
       emailData = JSON.parse(responseText)
-    } catch (parseError) {
+    } catch {
       // Si falla el parseo, intentar extraer JSON del texto
       const jsonMatch = responseText.match(/\{[\s\S]*\}/)
       if (jsonMatch) {

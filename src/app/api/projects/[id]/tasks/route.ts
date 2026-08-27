@@ -1,6 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
-import type { ProjectTask } from '@/types/database'
 
 /**
  * GET /api/projects/[id]/tasks

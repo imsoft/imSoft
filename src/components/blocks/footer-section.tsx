@@ -1,10 +1,8 @@
 'use client'
 
 import Link from 'next/link'
-import type { Locale } from '@/app/[lang]/dictionaries'
 import Magnet from '@/components/ui/magnet'
 import { Logo } from '@/components/blocks/hero-section'
-import type { ContactData } from '@/types/database'
 import { useCookieStore } from '@/stores/cookie-store'
 
 import type { FooterSectionProps } from '@/types/components'

@@ -19,7 +19,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   let supabase;
   try {
     supabase = createAdminClient();
-  } catch (error) {
+  } catch {
     // Fallback al cliente normal si no hay SERVICE_ROLE_KEY
     supabase = await createClient();
   }

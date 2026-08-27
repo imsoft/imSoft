@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Plus, Trash2, GripVertical, AlertCircle, Flag, ClipboardList, Filter } from 'lucide-react'
+import { Plus, Trash2, GripVertical, Flag, ClipboardList, Filter } from 'lucide-react'
 import {
   Empty,
   EmptyHeader,

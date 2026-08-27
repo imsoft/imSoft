@@ -95,7 +95,7 @@ export default function ResetPasswordForm({ dict, lang }: ResetPasswordFormProps
         router.push(`/${lang}/login`)
         router.refresh()
       }, 2000)
-    } catch (err) {
+    } catch {
       setError(dict.auth.resetPassword.errors.generic)
       setIsSubmitting(false)
     }

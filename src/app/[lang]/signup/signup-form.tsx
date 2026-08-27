@@ -15,7 +15,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { PasswordInput } from "@/components/ui/password-input"
 import { useRef, useState } from "react"
-import type { Dictionary, Locale } from '../dictionaries'
+import type { Dictionary } from '../dictionaries'
 import type { SignupFormProps } from '@/types/auth'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
@@ -128,7 +128,7 @@ export default function SignupForm({ dict, lang }: SignupFormProps) {
       setTimeout(() => {
         router.push(`/${lang}/login`)
       }, 2000)
-    } catch (err) {
+    } catch {
       captchaRef.current?.reset()
       setCaptchaToken(undefined)
       setError(dict.auth.signup.errors.emailExists)

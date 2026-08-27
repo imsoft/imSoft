@@ -3,7 +3,6 @@
 import { ColumnDef } from "@tanstack/react-table"
 import { ArrowUpDown, MoreHorizontal, Pencil, Trash2, Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import Image from "next/image"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   Dialog,
@@ -35,7 +34,6 @@ import {
 } from "@/components/ui/empty"
 import { MessageSquare } from "lucide-react"
 import { DataTable } from "@/components/ui/data-table"
-import type { Dictionary, Locale } from '@/app/[lang]/dictionaries'
 import type { Testimonial, TestimonialsTableProps } from '@/types'
 
 export type { Testimonial }

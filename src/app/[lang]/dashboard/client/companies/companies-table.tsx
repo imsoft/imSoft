@@ -8,8 +8,7 @@ import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogTitle,
-  DialogTrigger,
+  DialogTitle
 } from "@/components/ui/dialog"
 import {
   DropdownMenu,
@@ -21,7 +20,6 @@ import {
 } from "@/components/ui/dropdown-menu"
 import Link from "next/link"
 import { useState } from "react"
-import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
 import { toast } from 'sonner'
 import {

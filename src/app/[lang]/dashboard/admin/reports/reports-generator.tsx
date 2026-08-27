@@ -11,7 +11,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Label } from '@/components/ui/label'
-import { FileText, Download, Loader2 } from 'lucide-react'
+import { Download, Loader2 } from 'lucide-react'
 import type { Dictionary, Locale } from '@/app/[lang]/dictionaries'
 
 interface ReportsGeneratorProps {

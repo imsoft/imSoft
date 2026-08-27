@@ -10,7 +10,7 @@ import { HeadingNode, QuoteNode } from '@lexical/rich-text'
 import { ListItemNode, ListNode } from '@lexical/list'
 import { LinkNode } from '@lexical/link'
 import { CodeNode, CodeHighlightNode } from '@lexical/code'
-import { $getRoot, $getSelection, EditorState, $isRangeSelection, UNDO_COMMAND, REDO_COMMAND } from 'lexical'
+import { $getRoot, $getSelection, $isRangeSelection, UNDO_COMMAND, REDO_COMMAND } from 'lexical'
 import { useEffect, useState } from 'react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -33,7 +33,6 @@ import { INSERT_UNORDERED_LIST_COMMAND, INSERT_ORDERED_LIST_COMMAND, REMOVE_LIST
 import { $generateHtmlFromNodes, $generateNodesFromDOM } from '@lexical/html'
 import { ListPlugin } from '@lexical/react/LexicalListPlugin'
 import { $setBlocksType } from '@lexical/selection'
-import { $createParagraphNode, $createTextNode } from 'lexical'
 
 interface RichTextEditorProps {
   content: string

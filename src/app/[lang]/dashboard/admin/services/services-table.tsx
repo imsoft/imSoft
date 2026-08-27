@@ -8,8 +8,7 @@ import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogTitle,
-  DialogTrigger,
+  DialogTitle
 } from "@/components/ui/dialog"
 import {
   DropdownMenu,
@@ -34,7 +33,6 @@ import {
 import { Briefcase, Plus, ArrowUpDown, MoreHorizontal, Pencil, Trash2, ImageIcon } from "lucide-react"
 import { DataTable } from "@/components/ui/data-table"
 import Image from "next/image"
-import type { Dictionary, Locale } from '@/app/[lang]/dictionaries'
 import type { Service, ServicesTableProps } from '@/types'
 
 export type { Service }

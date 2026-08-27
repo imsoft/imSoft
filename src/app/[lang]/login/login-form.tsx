@@ -15,7 +15,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { PasswordInput } from "@/components/ui/password-input"
 import { useRef, useState } from "react"
-import type { Dictionary, Locale } from '../dictionaries'
+import type { Dictionary } from '../dictionaries'
 import type { LoginFormProps } from '@/types/auth'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
@@ -100,7 +100,7 @@ export default function LoginForm({ dict, lang }: LoginFormProps) {
       } else {
         window.location.href = `/${lang}`
       }
-    } catch (err) {
+    } catch {
       captchaRef.current?.reset()
       setCaptchaToken(undefined)
       setError(dict.auth.login.errors.invalidCredentials)

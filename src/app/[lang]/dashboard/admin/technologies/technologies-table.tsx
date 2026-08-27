@@ -8,8 +8,7 @@ import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogTitle,
-  DialogTrigger,
+  DialogTitle
 } from "@/components/ui/dialog"
 import {
   DropdownMenu,
@@ -38,7 +37,7 @@ import {
   EmptyTitle,
   EmptyAction,
 } from "@/components/ui/empty"
-import { Code, Plus, ArrowUpDown, MoreHorizontal, Pencil, Trash2, Building2 } from "lucide-react"
+import { Code, Plus, ArrowUpDown, MoreHorizontal, Pencil, Trash2 } from "lucide-react"
 import { DataTable } from "@/components/ui/data-table"
 import type { Dictionary, Locale } from '@/app/[lang]/dictionaries'
 import { Badge } from "@/components/ui/badge"
