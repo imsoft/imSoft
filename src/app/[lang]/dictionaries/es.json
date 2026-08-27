@@ -486,7 +486,7 @@
     "subtitle": "Casos reales de empresas en Guadalajara y el resto de México a las que les construimos su plataforma, su tienda en línea o su app."
   },
   "blog": {
-    "title": "Blog",
+    "title": "Blog de desarrollo de software y tecnología para empresas",
     "subtitle": "Últimas noticias, artículos y actualizaciones sobre tecnología y desarrollo",
     "readMore": "Leer más",
     "noPosts": "No hay publicaciones disponibles aún.",
@@ -600,10 +600,10 @@
   },
   "footer": {
     "cta": {
-      "title": "Registrarse",
-      "heading": "Aumenta tu productividad. Comienza a usar nuestra aplicación hoy.",
-      "description": "Únete a empresas que están transformando su negocio con soluciones tecnológicas personalizadas. Accede a herramientas profesionales para gestionar proyectos, clientes y cotizaciones de manera eficiente.",
-      "button": "Crear cuenta"
+      "title": "Hablemos de tu proyecto",
+      "heading": "¿Necesitas software, una página web o una app para tu negocio?",
+      "description": "Cuéntanos qué necesitas y te decimos cómo lo resolveríamos, con tiempos y costos claros. La primera conversación no cuesta nada.",
+      "button": "Agenda una llamada"
     },
     "solutions": {
       "title": "Servicios",

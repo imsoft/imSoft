@@ -11,10 +11,10 @@ import { generateStructuredData } from '@/lib/seo';
 import { ZAPOPAN_WEB } from '@/config/zapopan-web';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io';
-const ES_URL = `${SITE_URL}/es/zapopan/desarrollo-web`;
+const ES_URL = `${SITE_URL}/es/zapopan/paginas-web`;
 
 /**
- * Landing de desarrollo web en Zapopan.
+ * Landing de paginas web en Zapopan.
  *
  * Es una ruta estatica dentro de [lang], asi que gana a la dinamica [city]/[service]:
  * Next da precedencia al segmento literal. Por eso `zapopan` no necesita entrar en
@@ -77,7 +77,7 @@ export default async function ZapopanWebPage({
     type: 'Service',
     data: {
       name: ZAPOPAN_WEB.h1,
-      serviceType: 'Desarrollo web',
+      serviceType: 'Diseño y desarrollo de páginas web',
       description: ZAPOPAN_WEB.seoDescription,
       url: ES_URL,
     },
@@ -107,7 +107,7 @@ export default async function ZapopanWebPage({
             items={[
               { name: 'Inicio', href: `/${lang}` },
               { name: 'Servicios', href: `/${lang}/services` },
-              { name: 'Desarrollo web en Zapopan' },
+              { name: 'Páginas web en Zapopan' },
             ]}
           />
           <h1 className="text-4xl md:text-6xl font-bold mb-6 text-balance">{ZAPOPAN_WEB.h1}</h1>

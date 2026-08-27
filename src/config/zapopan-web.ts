@@ -9,15 +9,19 @@
  * el nombre cambiado, Google la trataria como duplicado y no rankearia ninguna de las
  * dos. Los proyectos que se citan son reales y estan en el portafolio; lo que NO se
  * afirma es que esos clientes esten en Zapopan, porque ese dato no se tiene.
+ *
+ * Se apunta a "paginas web zapopan", no a "desarrollo web zapopan". El autocompletado
+ * de Google (es-MX) sugiere la primera y no devuelve nada para la segunda: quien
+ * contrata escribe "paginas web", "desarrollo web" lo escribe quien las programa.
  */
 
 export const ZAPOPAN_WEB = {
-  seoTitle: 'Desarrollo Web en Zapopan | Sitios Corporativos y para PyME - imSoft',
+  seoTitle: 'Páginas Web en Zapopan | Diseño y Desarrollo para Empresas - imSoft',
   seoDescription:
-    'Desarrollo web en Zapopan para empresas de Andares, Puerta de Hierro y PyMEs de la zona. Sitios corporativos rápidos, medibles y hechos para captar clientes.',
-  h1: 'Desarrollo Web en Zapopan',
+    'Páginas web para empresas y PyMEs de Zapopan: Andares, Puerta de Hierro y toda la zona. Sitios rápidos, medibles y hechos para captar clientes.',
+  h1: 'Páginas Web en Zapopan',
   heroSubtitle:
-    'Construimos sitios corporativos y páginas para PyMEs en Zapopan: rápidos, medibles y pensados para que la gente que te encuentra en Google termine escribiéndote. Trabajamos con empresas de la zona de Andares y Puerta de Hierro, y con negocios de toda la ciudad.',
+    'Diseñamos y desarrollamos páginas web para empresas y PyMEs de Zapopan: rápidos, medibles y pensados para que la gente que te encuentra en Google termine escribiéndote. Trabajamos con empresas de la zona de Andares y Puerta de Hierro, y con negocios de toda la ciudad.',
 
   audience: {
     title: 'Dos tipos de proyecto que hacemos en Zapopan',

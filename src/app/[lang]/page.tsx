@@ -26,12 +26,15 @@ export async function generateMetadata({
   const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io';
 
   return generateSEOMetadata({
+    // El title es la senal on-page mas fuerte y es la pagina mas importante del sitio:
+    // lleva servicio + ciudad, no un lema. "Soluciones Tecnológicas Modernas para
+    // Empresas" no lo busca nadie.
     title: lang === 'es'
-      ? 'Soluciones Tecnológicas Modernas para Empresas'
-      : 'Modern Technology Solutions for Businesses',
+      ? 'Desarrollo de Software y Páginas Web en Guadalajara'
+      : 'Custom Software and Web Development Agency in Mexico',
     description: lang === 'es'
-      ? 'Desarrollo de software, consultoría tecnológica y servicios de transformación digital. Soluciones personalizadas para hacer crecer tu negocio.'
-      : 'Software development, technology consulting and digital transformation services. Custom solutions to grow your business.',
+      ? 'Empresa de desarrollo de software en Guadalajara. Creamos páginas web, software a la medida, aplicaciones móviles y tiendas en línea para empresas de Jalisco.'
+      : 'Software development company based in Guadalajara, Mexico. Websites, custom software, mobile apps and online stores for growing businesses.',
     url: `${SITE_URL}/${lang}`,
     type: 'website',
     alternateUrls: {

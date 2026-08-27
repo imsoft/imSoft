@@ -32,8 +32,8 @@ export function IndustryLinksSection({ lang }: { lang: string }) {
         {l === 'es' && (
           <p className="text-muted-foreground max-w-3xl mb-10">
             ¿Buscas solo un sitio web?{' '}
-            <Link href="/es/zapopan/desarrollo-web" className="text-foreground underline underline-offset-4">
-              Desarrollo web en Zapopan
+            <Link href="/es/zapopan/paginas-web" className="text-foreground underline underline-offset-4">
+              Páginas web en Zapopan
             </Link>{' '}
             y{' '}
             <Link href="/es/services/web-pages" className="text-foreground underline underline-offset-4">

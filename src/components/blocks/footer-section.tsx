@@ -143,7 +143,7 @@ export function FooterSection({ dict, lang, contactData }: FooterSectionProps) {
       { id: 'commerce', name: dict.footer.solutions.items.commerce, href: `/${lang}/services` },
       { id: 'insights', name: dict.footer.solutions.items.insights, href: `/${lang}/portfolio` },
       ...(lang === 'es'
-        ? [{ id: 'zapopan', name: 'Desarrollo web en Zapopan', href: '/es/zapopan/desarrollo-web' }]
+        ? [{ id: 'zapopan', name: 'Páginas web en Zapopan', href: '/es/zapopan/paginas-web' }]
         : []),
     ],
     support: [
@@ -165,11 +165,16 @@ export function FooterSection({ dict, lang, contactData }: FooterSectionProps) {
     <footer className="bg-background">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 py-16 sm:py-24 lg:px-8 lg:py-32">
         <div className="mx-auto max-w-2xl text-center">
+          {/*
+            * La jerarquia estaba invertida: el antetitulo era <h2> y el titular real un
+            * <p>, asi que en las paginas con poco contenido el unico h2 que veia Google
+            * era la palabra suelta del antetitulo.
+            */}
           <hgroup>
-            <h2 className="text-base/7 font-semibold text-primary">{dict.footer.cta.title}</h2>
-            <p className="mt-2 text-4xl font-semibold tracking-tight text-balance text-foreground sm:text-5xl">
+            <p className="text-base/7 font-semibold text-primary">{dict.footer.cta.title}</p>
+            <h2 className="mt-2 text-4xl font-semibold tracking-tight text-balance text-foreground sm:text-5xl">
               {dict.footer.cta.heading}
-            </p>
+            </h2>
           </hgroup>
           <p className="mx-auto mt-6 max-w-xl text-lg/8 text-pretty text-muted-foreground">
             {dict.footer.cta.description}
@@ -177,7 +182,7 @@ export function FooterSection({ dict, lang, contactData }: FooterSectionProps) {
           <div className="mt-8 flex justify-center">
             <Magnet padding={50} disabled={false} magnetStrength={10}>
               <Link
-                href={`/${lang}/signup`}
+                href={`/${lang}/contact`}
                 className="rounded-md bg-primary px-3.5 py-2.5 text-sm font-semibold text-primary-foreground shadow-xs hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
               >
                 {dict.footer.cta.button}

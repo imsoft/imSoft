@@ -486,7 +486,7 @@
     "subtitle": "Successfully completed projects that showcase our expertise"
   },
   "blog": {
-    "title": "Blog",
+    "title": "Software development and business technology blog",
     "subtitle": "Latest news, articles and updates about technology and development",
     "readMore": "Read more",
     "noPosts": "No posts available yet.",
@@ -600,10 +600,10 @@
   },
   "footer": {
     "cta": {
-      "title": "Sign up",
-      "heading": "Boost your productivity. Start using our app today.",
-      "description": "Join companies that are transforming their business with personalized technological solutions. Access professional tools to manage projects, clients, and quotes efficiently.",
-      "button": "Create account"
+      "title": "Let's talk about your project",
+      "heading": "Need custom software, a website or a mobile app for your business?",
+      "description": "Tell us what you need and we will tell you how we would build it, with clear timelines and costs. The first conversation is free.",
+      "button": "Schedule a call"
     },
     "solutions": {
       "title": "Services",

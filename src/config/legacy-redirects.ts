@@ -72,6 +72,15 @@ export function legacyRedirects(): Redirect[] {
     { source: '/servicios/:slug', destination: '/es/services', statusCode: 301 as const },
     { source: '/servicios', destination: '/es/services', statusCode: 301 as const },
 
+    // El slug de la landing de Zapopan cambio de `desarrollo-web` a `paginas-web`:
+    // el autocompletado de Google no devuelve nada para "desarrollo web zapopan" y si
+    // para "paginas web zapopan". Estuvo un dia en linea, asi que se redirige.
+    {
+      source: '/:lang(es|en)/zapopan/desarrollo-web',
+      destination: '/es/zapopan/paginas-web',
+      statusCode: 301 as const,
+    },
+
     // --- Rutas sueltas del sitio viejo ---
     { source: '/portafolio', destination: '/es/portfolio', statusCode: 301 as const },
     { source: '/historia', destination: '/es/about', statusCode: 301 as const },

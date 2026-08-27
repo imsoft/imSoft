@@ -21,6 +21,13 @@ describe('landing de Zapopan', () => {
     expect(ZAPOPAN_WEB.h1).toContain('Zapopan');
   });
 
+  it('apunta a "paginas web", que es como lo busca quien contrata', () => {
+    // El autocompletado de Google (es-MX) sugiere "paginas web zapopan" y no devuelve
+    // nada para "desarrollo web zapopan": ese segundo termino lo usa quien programa.
+    expect(ZAPOPAN_WEB.seoTitle.toLowerCase()).toContain('páginas web');
+    expect(ZAPOPAN_WEB.h1.toLowerCase()).toContain('páginas web');
+  });
+
   it('la meta description cabe en lo que Google muestra', () => {
     expect(ZAPOPAN_WEB.seoDescription.length).toBeLessThanOrEqual(160);
   });
