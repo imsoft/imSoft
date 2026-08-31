@@ -3,20 +3,14 @@
 import CardSwap, { Card } from "@/components/ui/card-swap"
 import Image from "next/image"
 import type { PortfolioSectionProps } from '@/types/components'
-import { useState, useEffect } from 'react'
 import { ScrollReveal } from "@/components/animations/scroll-reveal"
+import { useMediaQuery } from '@/hooks/use-mobile'
 
 export function PortfolioSection({ dict, lang, projects = [] }: PortfolioSectionProps) {
-  const [isDesktop, setIsDesktop] = useState(false)
+  // useSyncExternalStore en vez de useState + useEffect: evita el render extra con el
+  // valor provisional en cada carga.
+  const isDesktop = useMediaQuery('(min-width: 1024px)')
 
-  useEffect(() => {
-    // Usar matchMedia en lugar de resize listener: más eficiente, sin polling
-    const mql = window.matchMedia('(min-width: 1024px)')
-    const onChange = () => setIsDesktop(mql.matches)
-    mql.addEventListener('change', onChange)
-    setIsDesktop(mql.matches)          // valor inicial real
-    return () => mql.removeEventListener('change', onChange)
-  }, [])
   // Usar proyectos de la prop o proyectos de ejemplo si está vacío
   const displayProjects = projects.length > 0 ? projects : [
     {
