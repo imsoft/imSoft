@@ -1,9 +1,21 @@
 packages:
   - .
 
-# Paquetes cuyos scripts de instalacion si se ejecutan. pnpm 10+ los bloquea por
-# defecto y sale con error si encuentra alguno sin decidir, que es lo que tumbaba el CI.
-# `sharp` es el que importa: sin su binario, Next no optimiza imagenes.
+# Paquetes cuyos scripts de instalacion se permiten. pnpm 11 los bloquea por defecto y,
+# con CI=true, sale con ERR_PNPM_IGNORED_BUILDS si alguno queda sin decidir.
+#
+# La clave que pnpm 11 lee es `allowBuilds` (mapa a booleano). El propio pnpm la escribe
+# con el placeholder "set this to true or false" para que la rellenes; si se deja asi,
+# el install falla. `onlyBuiltDependencies` es la forma anterior y se mantiene por
+# compatibilidad.
+#
+# `sharp` es el que importa de verdad: sin su binario, Next no optimiza imagenes.
+allowBuilds:
+  core-js: true
+  msw: true
+  sharp: true
+  unrs-resolver: true
+
 onlyBuiltDependencies:
   - core-js
   - msw
