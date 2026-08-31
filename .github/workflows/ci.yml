@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  verify:
+    name: Tipos, pruebas, lint y build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4.2.2
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4.1.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4.4.0
+        with:
+          node-version: "24"
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Comprobar tipos
+        run: pnpm exec tsc --noEmit
+
+      - name: Pruebas
+        run: pnpm test
+
+      # No exige cero problemas: el repo arrastra deuda de cuando ESLint estuvo roto.
+      # Solo falla si la cuenta sube respecto a .lint-budget.json.
+      - name: Lint (trinquete)
+        run: node scripts/lint-budget.mjs
+
+      - name: Build
+        # El build prerenderiza paginas a partir de la BD (sitemap, blog, servicios),
+        # asi que necesita credenciales de Supabase de verdad. Son los mismos secretos
+        # que ya usa auto-blog.yml. Comprobado que con estos dos basta.
+        env:
+          NEXT_PUBLIC_SITE_URL: https://www.imsoft.io
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: pnpm build

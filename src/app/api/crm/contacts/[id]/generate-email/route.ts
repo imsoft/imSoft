@@ -2,9 +2,17 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import OpenAI from 'openai'
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
+/**
+ * Igual que con Resend: instanciar el cliente en el ambito del modulo hace que la ruta
+ * no cargue sin la clave y tumba `next build` en entornos sin .env.
+ */
+function getOpenAI(): OpenAI {
+  const apiKey = process.env.OPENAI_API_KEY
+  if (!apiKey) {
+    throw new Error('Falta OPENAI_API_KEY: no se puede generar el correo.')
+  }
+  return new OpenAI({ apiKey })
+}
 
 export async function POST(
   request: Request,
@@ -217,7 +225,7 @@ Responde SOLO con un JSON válido con esta estructura:
 }`
 
     // Llamar a ChatGPT
-    const completion = await openai.chat.completions.create({
+    const completion = await getOpenAI().chat.completions.create({
       model: 'gpt-4o-mini',
       messages: [
         {

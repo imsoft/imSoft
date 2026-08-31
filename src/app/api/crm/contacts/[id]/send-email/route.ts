@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { Resend } from 'resend'
+import { getResend } from '@/lib/email/resend-client';
 
-const resend = new Resend(process.env.RESEND_API_KEY)
 
 export async function POST(
   request: Request,
@@ -93,7 +92,7 @@ export async function POST(
     const fromName = 'imSoft'
     
     // Enviar email
-    const { data, error } = await resend.emails.send({
+    const { data, error } = await getResend().emails.send({
       from: `${fromName} <${fromEmail}>`,
       to: targetEmail,
       subject: subject,

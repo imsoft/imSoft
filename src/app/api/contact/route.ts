@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { Resend } from 'resend';
+import { getResend } from '@/lib/email/resend-client';
 import { createClient } from '@supabase/supabase-js';
 import { verifyTurnstileToken } from '@/lib/turnstile';
 
@@ -118,7 +118,6 @@ function buildContactEmailHtml({
 </html>`;
 }
 
-const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: Request) {
   try {
@@ -189,7 +188,7 @@ export async function POST(request: Request) {
     const fromEmail = process.env.RESEND_FROM_EMAIL || 'contacto@imsoft.io';
 
     try {
-      await resend.emails.send({
+      await getResend().emails.send({
         from: `imSoft <${fromEmail}>`,
         to: adminEmail,
         replyTo: email,

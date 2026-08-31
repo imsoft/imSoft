@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { Resend } from 'resend'
+import { getResend } from '@/lib/email/resend-client';
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { buildBlogNotificationHtml } from '@/lib/email/blog-notification-template'
 import { buildUnsubscribeUrl } from '@/lib/email/unsubscribe'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
 
 // Resend acepta hasta 100 correos por lote en batch.send().
 const BATCH_SIZE = 100
@@ -164,7 +163,7 @@ export async function POST(request: NextRequest) {
         }),
       }))
 
-      const { error: sendError } = await resend.batch.send(emails)
+      const { error: sendError } = await getResend().batch.send(emails)
       if (sendError) {
         // Detenemos el envío inmediatamente y reportamos al admin.
         throw new Error(
@@ -196,7 +195,7 @@ async function notifyAdminOfError(postTitle: string, message: string) {
     const fromEmail = process.env.RESEND_FROM_EMAIL || 'contacto@imsoft.io'
     const adminEmail = process.env.ADMIN_NOTIFICATION_EMAIL || 'weareimsoft@gmail.com'
 
-    await resend.emails.send({
+    await getResend().emails.send({
       from: `imSoft <${fromEmail}>`,
       to: [adminEmail],
       subject: `⚠️ Falló el envío del aviso de blog${postTitle ? `: ${postTitle}` : ''}`,

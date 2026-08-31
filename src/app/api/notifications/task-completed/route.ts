@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { Resend } from 'resend'
+import { getResend } from '@/lib/email/resend-client';
 import { createClient } from '@/lib/supabase/server'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
 
 export async function POST(request: NextRequest) {
   try {
@@ -73,7 +72,7 @@ export async function POST(request: NextRequest) {
     const progressPercentage = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0
 
     // Enviar email con Resend
-    const { data: emailData, error: emailError } = await resend.emails.send({
+    const { data: emailData, error: emailError } = await getResend().emails.send({
       from: 'imSoft <weareimsoft@gmail.com>',
       to: [clientEmail],
       subject: `Actualización de tu proyecto: ${project.title_es || project.title_en}`,
