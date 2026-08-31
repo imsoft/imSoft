@@ -1,12 +1,11 @@
 packages:
   - .
+
+# Paquetes cuyos scripts de instalacion si se ejecutan. pnpm 10+ los bloquea por
+# defecto y sale con error si encuentra alguno sin decidir, que es lo que tumbaba el CI.
+# `sharp` es el que importa: sin su binario, Next no optimiza imagenes.
 onlyBuiltDependencies:
   - core-js
   - msw
   - sharp
   - unrs-resolver
-approvedBuilds:
-  - msw
-  - unrs-resolver
-allowBuilds:
-  unrs-resolver: set this to true or false
