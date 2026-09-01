@@ -108,7 +108,7 @@ export const ZAPOPAN_WEB = {
   cta: {
     title: '¿Hablamos de tu sitio?',
     description:
-      'Cuéntanos qué tienes hoy y qué necesitas que haga tu página. Te decimos con qué nos encontramos y qué haríamos, sin compromiso. Atendemos de 9:00 a 18:00, los siete días.',
+      'Cuéntanos qué tienes hoy y qué necesitas que haga tu página. Te decimos con qué nos encontramos y qué haríamos, sin compromiso. Atendemos de lunes a sábado de 9:00 a 18:00, y los domingos de 9:00 a 13:00.',
     buttonText: 'Agenda una llamada',
   },
 } as const;

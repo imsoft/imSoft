@@ -71,6 +71,6 @@ export function localizedServiceDescription(description: string, lang: string): 
 /** Zona de servicio en texto, para el bloque local visible de la pagina. */
 export function serviceAreaSentence(lang: string): string {
   return lang === 'en'
-    ? 'We work with companies across the Guadalajara metro area — Zapopan, Tlaquepaque, Tonalá and Tlajomulco — and remotely throughout Mexico. We are available 09:00 to 18:00, seven days a week.'
-    : `Trabajamos con empresas de toda la Zona Metropolitana de ${CITY_ES}: Zapopan, Tlaquepaque, Tonalá y Tlajomulco, y en remoto con el resto de México. Atendemos de ${BUSINESS.openingHours.opens} a ${BUSINESS.openingHours.closes}, los siete días.`;
+    ? 'We work with companies across the Guadalajara metro area — Zapopan, Tlaquepaque, Tonalá and Tlajomulco — and remotely throughout Mexico. We are available Monday to Saturday from 09:00 to 18:00, and Sundays from 09:00 to 13:00.'
+    : `Trabajamos con empresas de toda la Zona Metropolitana de ${CITY_ES}: Zapopan, Tlaquepaque, Tonalá y Tlajomulco, y en remoto con el resto de México. Atendemos de lunes a sábado de ${BUSINESS.openingHours[0].opens} a ${BUSINESS.openingHours[0].closes}, y los domingos de ${BUSINESS.openingHours[1].opens} a ${BUSINESS.openingHours[1].closes}.`;
 }

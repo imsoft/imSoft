@@ -39,23 +39,22 @@ export const BUSINESS = {
   ],
   languages: ['Spanish', 'English'],
   /**
-   * Horario confirmado: 9:00 a 18:00, los siete dias. Tiene que coincidir con lo que
-   * declare Google Business Profile; si ahi dice otra cosa, la ficha se contradice con
-   * el schema y pierde confianza.
+   * Horario tal y como esta declarado en Google Business Profile. El domingo cierra
+   * antes, asi que son dos tramos y no uno: si el schema dijera 18:00 los siete dias
+   * contradiria a la ficha, y Google compara ambas fuentes.
    */
-  openingHours: {
-    days: [
-      'Monday',
-      'Tuesday',
-      'Wednesday',
-      'Thursday',
-      'Friday',
-      'Saturday',
-      'Sunday',
-    ],
-    opens: '09:00',
-    closes: '18:00',
-  },
+  openingHours: [
+    {
+      days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+      opens: '09:00',
+      closes: '18:00',
+    },
+    {
+      days: ['Sunday'],
+      opens: '09:00',
+      closes: '13:00',
+    },
+  ],
 } as const;
 
 /** Zona de servicio declarada: el area metropolitana de Guadalajara y, por encima, el pais. */

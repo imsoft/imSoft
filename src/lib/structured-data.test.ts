@@ -28,13 +28,22 @@ describe('schema del negocio', () => {
     expect(org.address).not.toHaveProperty('streetAddress');
   });
 
-  it('publica el horario confirmado: 9:00 a 18:00, los siete dias', () => {
-    const [spec] = org.openingHoursSpecification;
-    expect(spec.opens).toBe('09:00');
-    expect(spec.closes).toBe('18:00');
-    expect(spec.dayOfWeek).toHaveLength(7);
-    expect(spec.dayOfWeek).toContain('Saturday');
-    expect(spec.dayOfWeek).toContain('Sunday');
+  it('publica el horario exacto de Google Business Profile, domingo incluido', () => {
+    const [semana, domingo] = org.openingHoursSpecification;
+    expect(semana.dayOfWeek).toHaveLength(6);
+    expect(semana.dayOfWeek).toContain('Saturday');
+    expect(semana.opens).toBe('09:00');
+    expect(semana.closes).toBe('18:00');
+
+    // El domingo cierra antes; declararlo igual que el resto contradiria la ficha.
+    expect(domingo.dayOfWeek).toEqual(['Sunday']);
+    expect(domingo.closes).toBe('13:00');
+  });
+
+  it('los siete dias estan cubiertos, sin repetirse', () => {
+    const dias = org.openingHoursSpecification.flatMap((s) => s.dayOfWeek);
+    expect(new Set(dias).size).toBe(7);
+    expect(dias).toHaveLength(7);
   });
 
   it('el telefono va en E.164', () => {
