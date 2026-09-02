@@ -296,9 +296,17 @@ export const HeroHeader = ({ dict, lang }: HeroHeaderProps) => {
                                 </ul>
                             </div>
                             <div className="flex w-full flex-col space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit items-center">
+                                {/*
+                                  * El boton primario lleva a contacto, no al alta.
+                                  * Los tres botones destacados apuntaban a /signup, o sea
+                                  * que a un prospecto que busca agencia se le pedia darse
+                                  * de alta en el panel de clientes antes que escribir.
+                                  * El acceso y el registro siguen disponibles, en segundo
+                                  * plano: los usa quien ya es cliente.
+                                  */}
                                 <Button
                                     asChild
-                                    variant="outline"
+                                    variant="ghost"
                                     size="sm"
                                     className={cn(isScrolled && 'lg:hidden')}>
                                     <Link href={`/${lang}/login`}>
@@ -307,18 +315,16 @@ export const HeroHeader = ({ dict, lang }: HeroHeaderProps) => {
                                 </Button>
                                 <Button
                                     asChild
+                                    variant="outline"
                                     size="sm"
                                     className={cn(isScrolled && 'lg:hidden')}>
                                     <Link href={`/${lang}/signup`}>
                                         <span>{dict.nav.signUp}</span>
                                     </Link>
                                 </Button>
-                                <Button
-                                    asChild
-                                    size="sm"
-                                    className={cn(isScrolled ? 'lg:inline-flex' : 'hidden')}>
-                                    <Link href={`/${lang}/signup`}>
-                                        <span>{dict.nav.getStarted}</span>
+                                <Button asChild size="sm">
+                                    <Link href={`/${lang}/contact`}>
+                                        <span>{dict.nav.talkToUs}</span>
                                     </Link>
                                 </Button>
                                 <div className="hidden lg:block w-px h-5 bg-border mx-1" />

@@ -35,7 +35,9 @@ const createFormSchema = (dict: Dictionary) => {
   const val = formValidation(dict);
   return z.object({
     firstName: z.string().min(2, { message: val.firstNameMin }),
-    lastName: z.string().min(2, { message: val.lastNameMin }),
+    // Opcional a proposito: para un primer contacto el apellido no aporta nada y cada
+    // campo obligatorio de mas cuesta envios.
+    lastName: z.string().optional(),
     email: z.string().email({ message: val.emailInvalid }),
     phoneNumber: z.string().optional(),
     message: z.string().min(10, { message: val.messageMin }),

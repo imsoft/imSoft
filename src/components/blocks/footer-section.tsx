@@ -4,6 +4,7 @@ import Link from 'next/link'
 import Magnet from '@/components/ui/magnet'
 import { Logo } from '@/components/blocks/hero-section'
 import { useCookieStore } from '@/stores/cookie-store'
+import { formatPhoneNumber } from '@/lib/utils/format-phone'
 
 import type { FooterSectionProps } from '@/types/components'
 import {
@@ -189,9 +190,53 @@ export function FooterSection({ dict, lang, contactData }: FooterSectionProps) {
           </div>
         </div>
         <div className="mt-24 border-t border-border pt-12 xl:grid xl:grid-cols-3 xl:gap-8">
-          <Link href={`/${lang}`} className="flex items-center justify-start">
-            <Logo className="h-16 w-16" />
-          </Link>
+          <div>
+            <Link href={`/${lang}`} className="flex items-center justify-start">
+              <Logo className="h-16 w-16" />
+            </Link>
+
+            {/*
+              * Telefono, correo y WhatsApp clicables en TODAS las paginas. Antes solo
+              * existian en /contact: quien leia un articulo del blog en el movil y
+              * queria llamar tenia que navegar primero.
+              */}
+            <ul className="mt-6 space-y-3 text-sm/6">
+              {contactData?.phone && (
+                <li>
+                  <a
+                    href={`tel:+52${contactData.phone.replace(/\D/g, '').slice(-10)}`}
+                    className="text-muted-foreground hover:text-foreground"
+                  >
+                    {formatPhoneNumber(contactData.phone)}
+                  </a>
+                </li>
+              )}
+              {contactData?.email && (
+                <li>
+                  <a
+                    href={`mailto:${contactData.email}`}
+                    className="text-muted-foreground hover:text-foreground"
+                  >
+                    {contactData.email}
+                  </a>
+                </li>
+              )}
+              <li>
+                <a
+                  href={`https://wa.me/523325365558?text=${encodeURIComponent(
+                    lang === 'en'
+                      ? 'Hi imSoft, I would like to learn more about your services.'
+                      : 'Hola imSoft, me gustaría conocer más sobre sus servicios.',
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  WhatsApp
+                </a>
+              </li>
+            </ul>
+          </div>
           <div className="mt-16 grid grid-cols-2 gap-8 xl:col-span-2 xl:mt-0">
             <div className="md:grid md:grid-cols-2 md:gap-8">
               <div>

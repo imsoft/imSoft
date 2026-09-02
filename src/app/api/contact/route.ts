@@ -12,12 +12,13 @@ function buildContactEmailHtml({
   dashboardUrl,
 }: {
   firstName: string;
-  lastName: string;
+  lastName?: string;
   email: string;
   phoneNumber?: string;
   message: string;
   dashboardUrl: string;
 }): string {
+  const fullName = [firstName, lastName].filter(Boolean).join(' ');
   const BRAND = '#6366f1';
   const BRAND_DARK = '#4f46e5';
   const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io';
@@ -50,7 +51,7 @@ function buildContactEmailHtml({
                 <span style="color:#fff;font-size:12px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;">Formulario de Contacto</span>
               </div>
               <h1 style="color:#fff;margin:0;font-size:22px;font-weight:700;line-height:1.3;">
-                Nuevo mensaje de <span style="color:#a5b4fc;">${firstName} ${lastName}</span>
+                Nuevo mensaje de <span style="color:#a5b4fc;">${fullName}</span>
               </h1>
             </td>
           </tr>
@@ -64,7 +65,7 @@ function buildContactEmailHtml({
               <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e2e8f0;border-radius:8px;overflow:hidden;margin-bottom:28px;">
                 <tr style="background-color:#f8fafc;">
                   <td style="padding:12px 16px;font-size:13px;font-weight:600;color:#64748b;width:110px;border-bottom:1px solid #e2e8f0;">Nombre</td>
-                  <td style="padding:12px 16px;font-size:14px;color:#0f172a;font-weight:500;border-bottom:1px solid #e2e8f0;">${firstName} ${lastName}</td>
+                  <td style="padding:12px 16px;font-size:14px;color:#0f172a;font-weight:500;border-bottom:1px solid #e2e8f0;">${fullName}</td>
                 </tr>
                 <tr>
                   <td style="padding:12px 16px;font-size:13px;font-weight:600;color:#64748b;border-bottom:${phoneNumber ? '1px solid #e2e8f0' : 'none'};">Email</td>
@@ -124,8 +125,9 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { firstName, lastName, email, phoneNumber, message, captchaToken } = body;
 
-    // Validar datos requeridos
-    if (!firstName || !lastName || !email || !message) {
+    // El apellido es opcional: para un primer contacto no aporta nada y exigirlo
+    // cuesta envios. El formulario tampoco lo pide ya.
+    if (!firstName || !email || !message) {
       return NextResponse.json(
         { error: 'Faltan campos requeridos' },
         { status: 400 }
@@ -192,7 +194,7 @@ export async function POST(request: Request) {
         from: `imSoft <${fromEmail}>`,
         to: adminEmail,
         replyTo: email,
-        subject: `Nuevo mensaje de ${firstName} ${lastName} — imSoft`,
+        subject: `Nuevo mensaje de ${[firstName, lastName].filter(Boolean).join(' ')} — imSoft`,
         html: buildContactEmailHtml({
           firstName,
           lastName,

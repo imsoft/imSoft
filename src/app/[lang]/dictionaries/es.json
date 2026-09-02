@@ -19,7 +19,8 @@
     "contact": "Contacto",
     "login": "Iniciar Sesión",
     "signUp": "Registrarse",
-    "getStarted": "Comenzar"
+    "getStarted": "Comenzar",
+    "talkToUs": "Agenda una llamada"
   },
   "auth": {
     "login": {
