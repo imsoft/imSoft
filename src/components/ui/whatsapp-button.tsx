@@ -1,13 +1,9 @@
 'use client'
 
 import { usePathname } from 'next/navigation'
+import { whatsAppMessage } from '@/lib/whatsapp-message'
 
 const WHATSAPP_NUMBER = '523325365558'
-
-const MESSAGES: Record<string, string> = {
-  es: 'Hola imSoft, me gustaría conocer más sobre sus servicios. ¿Podemos agendar una llamada?',
-  en: 'Hi imSoft, I would like to learn more about your services. Can we schedule a call?',
-}
 
 interface WhatsAppButtonProps {
   lang: string
@@ -18,7 +14,9 @@ export function WhatsAppButton({ lang }: WhatsAppButtonProps) {
 
   if (pathname.includes('/dashboard')) return null
 
-  const message = MESSAGES[lang] ?? MESSAGES.es
+  // El mensaje lleva el contexto de la pagina: asi cada conversacion llega sabiendo
+  // de donde venia el interes, sin depender de analitica.
+  const message = whatsAppMessage(pathname, lang)
   const href = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`
 
   return (
