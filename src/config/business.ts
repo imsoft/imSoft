@@ -57,13 +57,19 @@ export const BUSINESS = {
   ],
 } as const;
 
-/** Zona de servicio declarada: el area metropolitana de Guadalajara y, por encima, el pais. */
+/**
+ * Zona de servicio declarada. Debe coincidir con las areas que declara Google Business
+ * Profile: la ZMG completa, mas Ciudad de Mexico y Monterrey, que son las otras dos
+ * ciudades con landing propia.
+ */
 export const BUSINESS_AREA_SERVED = [
   { '@type': 'City', name: 'Guadalajara' },
   { '@type': 'City', name: 'Zapopan' },
   { '@type': 'City', name: 'Tlaquepaque' },
   { '@type': 'City', name: 'Tonalá' },
   { '@type': 'City', name: 'Tlajomulco de Zúñiga' },
+  { '@type': 'City', name: 'Mexico City' },
+  { '@type': 'City', name: 'Monterrey' },
   { '@type': 'State', name: 'Jalisco' },
   { '@type': 'Country', name: 'Mexico' },
 ] as const;

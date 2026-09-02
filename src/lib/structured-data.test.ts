@@ -97,10 +97,21 @@ describe('schema del negocio', () => {
     });
   });
 
-  it('areaServed cubre la zona metropolitana, no solo el pais', () => {
+  it('areaServed coincide con las areas de Google Business Profile', () => {
+    // Si la ficha y el schema declaran zonas distintas, Google recibe dos versiones
+    // del alcance del negocio.
     const names = org.areaServed.map((a) => a.name);
-    expect(names).toContain('Guadalajara');
-    expect(names).toContain('Zapopan');
+    for (const zona of [
+      'Guadalajara',
+      'Zapopan',
+      'Tlaquepaque',
+      'Tonalá',
+      'Tlajomulco de Zúñiga',
+      'Mexico City',
+      'Monterrey',
+    ]) {
+      expect(names).toContain(zona);
+    }
     expect(names).toContain('Jalisco');
   });
 
