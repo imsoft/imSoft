@@ -1,7 +1,10 @@
 // v2: navegación network-first + nunca cachear redirecciones.
 // v1 cacheaba '/' (una redirección a /es|/en) y la servía cache-first:
 // Chromium rechaza respuestas redirigidas cacheadas en navegaciones (ERR_FAILED).
-const CACHE_NAME = 'imsoft-cache-v2';
+// v3: offline.html con el logo incrustado (data URI) y centrado corregido.
+// Subir la version fuerza la reinstalacion: si no, los clientes que ya tienen
+// offline.html precacheado nunca verian el nuevo.
+const CACHE_NAME = 'imsoft-cache-v3';
 const OFFLINE_URL = '/offline.html';
 
 const ASSETS_TO_CACHE = [
