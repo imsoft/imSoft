@@ -234,10 +234,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       });
     }
 
-    // Fichas de portafolio (existen en /portfolio/[slug] y faltaban en el sitemap)
+    // Fichas de portafolio. La tabla no tiene `updated_at`: pedirla hacia fallar la
+    // consulta en silencio y las fichas se quedaban fuera del sitemap.
     const { data: portfolioItems } = await supabase
       .from('portfolio')
-      .select('slug, updated_at')
+      .select('slug, created_at')
       .not('slug', 'is', null);
 
     if (portfolioItems) {
@@ -245,7 +246,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         langs.forEach((lang) => {
           routes.push({
             url: `${SITE_URL}/${lang}/portfolio/${item.slug}`,
-            lastModified: item.updated_at ? new Date(item.updated_at) : new Date(),
+            lastModified: item.created_at ? new Date(item.created_at) : new Date(),
             changeFrequency: 'monthly',
             priority: 0.6,
             alternates: {

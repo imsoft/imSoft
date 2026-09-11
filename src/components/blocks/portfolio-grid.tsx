@@ -4,33 +4,48 @@ import SpotlightCard from "@/components/ui/spotlight-card"
 import Image from "next/image"
 import Link from "next/link"
 import type { PortfolioSectionProps } from '@/types/components'
+import type { PortfolioCard } from '@/lib/portfolio-card'
+import { CheckCircle2 } from 'lucide-react'
 import { ScrollReveal } from "@/components/animations/scroll-reveal"
 
 export function PortfolioGrid({ dict, lang, projects = [] }: PortfolioSectionProps) {
-  // Usar proyectos de la prop o proyectos de ejemplo si está vacío
-  const displayProjects = projects.length > 0 ? projects : [
+  // Proyectos de ejemplo solo si la base de datos no devolvio nada.
+  const displayProjects: PortfolioCard[] = projects.length > 0 ? projects : [
     {
       id: '1',
+      slug: '1',
       title: "E-Commerce Platform",
       description: "Modern e-commerce solution with advanced features",
+      challenge: null,
+      results: [],
       image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&h=600&fit=crop",
-      project_url: undefined
+      client: null,
+      year: null,
     },
     {
       id: '2',
+      slug: '2',
       title: "Mobile Banking App",
       description: "Secure mobile banking application for iOS and Android",
+      challenge: null,
+      results: [],
       image: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=800&h=600&fit=crop",
-      project_url: undefined
+      client: null,
+      year: null,
     },
     {
       id: '3',
+      slug: '3',
       title: "Enterprise Dashboard",
       description: "Analytics dashboard for enterprise management",
+      challenge: null,
+      results: [],
       image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop",
-      project_url: undefined
+      client: null,
+      year: null,
     }
   ]
+  const isEs = lang !== 'en'
 
   return (
     <section className="py-16 md:py-24 bg-background overflow-x-hidden">
@@ -61,13 +76,37 @@ export function PortfolioGrid({ dict, lang, projects = [] }: PortfolioSectionPro
                 <h3 className="text-2xl font-bold mb-3 text-card-foreground">
                   {project.title}
                 </h3>
-                <p className="text-muted-foreground grow">
+                <p className="text-muted-foreground">
                   {project.description}
                 </p>
+                {project.challenge && (
+                  <p className="mt-4 text-sm text-muted-foreground/90 leading-relaxed">
+                    <span className="font-semibold text-card-foreground">
+                      {isEs ? 'El reto: ' : 'The challenge: '}
+                    </span>
+                    {project.challenge}
+                  </p>
+                )}
+                {project.results.length > 0 && (
+                  <ul className="mt-4 space-y-2 text-sm" aria-label={isEs ? 'Resultados' : 'Results'}>
+                    {project.results.map((result) => (
+                      <li key={result} className="flex items-start gap-2">
+                        <CheckCircle2 className="h-4 w-4 text-primary shrink-0 mt-0.5" aria-hidden="true" />
+                        <span>{result}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                <div className="grow" />
+                {(project.client || project.year) && (
+                  <p className="mt-4 text-xs text-muted-foreground">
+                    {[project.client, project.year].filter(Boolean).join(' · ')}
+                  </p>
+                )}
               </div>
             )
 
-            const detailSlug = (project as any).slug || project.id
+            const detailSlug = project.slug
 
             return (
               <ScrollReveal key={project.id} direction="up" delay={i * 0.1}>

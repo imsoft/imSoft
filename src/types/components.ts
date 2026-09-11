@@ -1,3 +1,4 @@
+import type { PortfolioCard } from '@/lib/portfolio-card'
 import type { Dictionary, Locale } from '@/app/[lang]/dictionaries'
 import type { ContactData } from '@/types/database'
 
@@ -41,13 +42,7 @@ export interface ServicesSectionProps {
 export interface PortfolioSectionProps {
   dict: Dictionary
   lang: Locale
-  projects?: Array<{
-    id: string
-    title: string
-    description: string
-    image: string
-    project_url?: string
-  }>
+  projects?: PortfolioCard[]
 }
 
 export interface TestimonialsSectionProps {

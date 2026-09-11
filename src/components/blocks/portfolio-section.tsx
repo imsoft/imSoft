@@ -15,18 +15,33 @@ export function PortfolioSection({ dict, lang, projects = [] }: PortfolioSection
   const displayProjects = projects.length > 0 ? projects : [
     {
       id: '1',
+      slug: '1',
+      challenge: null,
+      results: [],
+      client: null,
+      year: null,
       title: "E-Commerce Platform",
       description: "Modern e-commerce solution with advanced features",
       image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&h=600&fit=crop"
     },
     {
       id: '2',
+      slug: '2',
+      challenge: null,
+      results: [],
+      client: null,
+      year: null,
       title: "Mobile Banking App",
       description: "Secure mobile banking application for iOS and Android",
       image: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=800&h=600&fit=crop"
     },
     {
       id: '3',
+      slug: '3',
+      challenge: null,
+      results: [],
+      client: null,
+      year: null,
       title: "Enterprise Dashboard",
       description: "Analytics dashboard for enterprise management",
       image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop"

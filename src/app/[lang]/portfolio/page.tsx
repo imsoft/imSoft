@@ -6,6 +6,7 @@ import { notFound } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { generateMetadata as generateSEOMetadata, generateStructuredData } from '@/lib/seo';
 import { StructuredData } from '@/components/seo/structured-data';
+import { portfolioCard } from '@/lib/portfolio-card';
 import type { Metadata } from 'next';
 
 export async function generateMetadata({
@@ -56,18 +57,8 @@ export default async function PortfolioPage({ params }: {
     .select('*')
     .order('created_at', { ascending: false });
 
-  // Mapear los proyectos según el idioma
-  const projects = (portfolioData || []).map((project) => ({
-    id: project.id,
-    title: lang === 'en'
-      ? (project.title_en || project.title || '')
-      : (project.title_es || project.title || ''),
-    description: lang === 'en'
-      ? (project.description_en || project.description || '')
-      : (project.description_es || project.description || ''),
-    image: project.image_url || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop',
-    project_url: project.project_url,
-  }));
+  // Reto y resultados incluidos: la lista solo con la frase corta era contenido delgado.
+  const projects = (portfolioData || []).map((project) => portfolioCard(project, lang));
 
   const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io';
   

@@ -16,6 +16,7 @@ import { generateMetadata as generateSEOMetadata, generateStructuredData } from 
 import { StructuredData } from '@/components/seo/structured-data';
 import { faqs } from '@/config/faq-data';
 import type { Metadata } from 'next';
+import { portfolioCard } from '@/lib/portfolio-card';
 
 export async function generateMetadata({
   params,
@@ -117,17 +118,7 @@ export default async function Home({ params }: {
     content: testimonial.content,
   }));
 
-  // Mapear los proyectos según el idioma
-  const projects = (portfolioData || []).map((project) => ({
-    id: project.id,
-    title: lang === 'en'
-      ? (project.title_en || project.title || '')
-      : (project.title_es || project.title || ''),
-    description: lang === 'en'
-      ? (project.description_en || project.description || '')
-      : (project.description_es || project.description || ''),
-    image: project.image_url || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop',
-  }));
+  const projects = (portfolioData || []).map((project) => portfolioCard(project, lang));
 
   // Mapear los títulos según el idioma (para el hero)
   const blogTitles = (blogPosts || []).map((post) => {
