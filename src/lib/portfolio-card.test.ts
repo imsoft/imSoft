@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { MAX_RESULTADOS_EN_TARJETA, portfolioCard, type PortfolioRow } from './portfolio-card';
+import { MAX_RESULTADOS_EN_TARJETA, portfolioCard, portfolioLookup, type PortfolioRow } from './portfolio-card';
 
 const fila: PortfolioRow = {
   id: '0a15d020-12a3-416e-a175-50bd5c993d7a',
@@ -62,5 +62,19 @@ describe('portfolioCard', () => {
 
   it('descarta resultados vacios', () => {
     expect(portfolioCard({ id: 'x', results_es: ['', '  ', 'Real'] }, 'es').results).toEqual(['Real']);
+  });
+});
+
+describe('portfolioLookup', () => {
+  it('busca por id cuando la URL trae el uuid viejo', () => {
+    expect(portfolioLookup('0a15d020-12a3-416e-a175-50bd5c993d7a')).toEqual({
+      column: 'id',
+      value: '0a15d020-12a3-416e-a175-50bd5c993d7a',
+    });
+  });
+
+  it('busca por slug con nombre, que no es un uuid valido', () => {
+    expect(portfolioLookup('aduvanta')).toEqual({ column: 'slug', value: 'aduvanta' });
+    expect(portfolioLookup('steridantal-order-generator').column).toBe('slug');
   });
 });

@@ -66,3 +66,15 @@ export function portfolioCard(row: PortfolioRow, lang: string): PortfolioCard {
     year: row.year ?? null,
   };
 }
+
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/**
+ * Por que columna buscar la ficha. Las URLs viejas llevan el uuid y las nuevas el slug;
+ * mandar un slug a la columna `id` hace que Postgres falle ("invalid input syntax for
+ * type uuid") y la ficha devolvia 404.
+ */
+export function portfolioLookup(segment: string): { column: 'id' | 'slug'; value: string } {
+  const value = segment.trim();
+  return { column: UUID.test(value) ? 'id' : 'slug', value };
+}

@@ -10,6 +10,7 @@ import { ArrowLeft, ExternalLink, CheckCircle2, Quote } from 'lucide-react';
 import Link from 'next/link';
 import Magnet from '@/components/ui/magnet';
 import { BreadcrumbNav } from '@/components/seo/breadcrumb-nav';
+import { portfolioLookup } from '@/lib/portfolio-card';
 import type { Metadata } from 'next';
 
 export async function generateMetadata({
@@ -19,12 +20,13 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { lang, slug } = await params;
   const supabase = await createClient();
+  const lookup = portfolioLookup(slug);
 
   const { data } = await supabase
     .from('portfolio')
     .select('title_es,title_en,description_es,description_en,image_url')
-    .or(`slug.eq.${slug},id.eq.${slug}`)
-    .single();
+    .eq(lookup.column, lookup.value)
+    .maybeSingle();
 
   if (!data) return generateSEOMetadata({}, lang);
 
@@ -58,14 +60,11 @@ export default async function PortfolioDetailPage({
 
   const dict = await getDictionary(lang);
   const supabase = await createClient();
+  const lookup = portfolioLookup(slug);
 
   const [{ data: contactData }, { data: project }] = await Promise.all([
     supabase.from('contact').select('*').limit(1).maybeSingle(),
-    supabase
-      .from('portfolio')
-      .select('*')
-      .or(`slug.eq.${slug},id.eq.${slug}`)
-      .single(),
+    supabase.from('portfolio').select('*').eq(lookup.column, lookup.value).maybeSingle(),
   ]);
 
   if (!project) notFound();
