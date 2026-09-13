@@ -18,13 +18,13 @@ export function FaqSection({ lang }: FaqSectionProps) {
   const faqs = faqData[isEs ? 'es' : 'en']
 
   return (
-    <section className="py-16 md:py-24 bg-background">
+    <section className="py-16 md:py-24 bg-primary">
       <ScrollReveal className="mx-auto max-w-3xl px-6" direction="up">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-5xl font-bold mb-4 text-foreground">
+          <h2 className="text-3xl md:text-5xl font-bold mb-4 text-primary-foreground">
             {isEs ? 'Preguntas frecuentes' : 'Frequently asked questions'}
           </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+          <p className="text-primary-foreground/75 text-lg max-w-2xl mx-auto">
             {isEs
               ? 'Lo que la mayoría de nuestros clientes quiere saber antes de empezar.'
               : 'What most of our clients want to know before getting started.'}
@@ -38,7 +38,7 @@ export function FaqSection({ lang }: FaqSectionProps) {
               <div
                 key={i}
                 className={`rounded-2xl border bg-card transition-all duration-300 ${
-                  isOpen ? 'border-primary/40 shadow-lg shadow-primary/5' : 'border-border hover:border-primary/30'
+                  isOpen ? 'border-primary-foreground/60 shadow-lg shadow-black/10' : 'border-primary-foreground/20 hover:border-primary-foreground/50'
                 }`}
               >
                 <button

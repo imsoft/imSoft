@@ -39,14 +39,14 @@ export function ServicesSection({ dict, lang, services, headingLevel = 'h2' }: S
     : 'Soluciones estratégicas de marketing para fortalecer tu marca y conectar con tu audiencia'
 
   return (
-    <section id="services" className="py-16 md:py-24 bg-background">
+    <section id="services" className="py-16 md:py-24 bg-primary text-primary-foreground">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         {/* ── Technology Services ── */}
         <ScrollReveal className="text-center mb-12" direction="up">
           <SectionHeading className="text-4xl md:text-5xl font-bold mb-4">
             {sectionTitle}
           </SectionHeading>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-lg text-primary-foreground/75 max-w-2xl mx-auto">
             {sectionSubtitle}
           </p>
         </ScrollReveal>
@@ -102,7 +102,7 @@ export function ServicesSection({ dict, lang, services, headingLevel = 'h2' }: S
               <h2 className="text-4xl md:text-5xl font-bold mb-4">
                 {marketingTitle}
               </h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              <p className="text-lg text-primary-foreground/75 max-w-2xl mx-auto">
                 {marketingSubtitle}
               </p>
             </ScrollReveal>

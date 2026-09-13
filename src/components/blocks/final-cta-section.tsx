@@ -24,14 +24,14 @@ export function FinalCtaSection({ lang }: FinalCtaSectionProps) {
       ]
 
   return (
-    <section className="py-16 md:py-24 bg-primary text-primary-foreground">
+    <section className="py-16 md:py-24 bg-background">
       <ScrollReveal className="mx-auto max-w-4xl px-6 text-center" direction="up">
-        <h2 className="text-3xl md:text-5xl font-bold mb-4 text-primary-foreground text-balance">
+        <h2 className="text-3xl md:text-5xl font-bold mb-4 text-foreground text-balance">
           {isEs
             ? '¿Listo para transformar tu idea en software?'
             : 'Ready to turn your idea into software?'}
         </h2>
-        <p className="text-primary-foreground/75 text-lg max-w-2xl mx-auto mb-10 text-balance">
+        <p className="text-muted-foreground text-lg max-w-2xl mx-auto mb-10 text-balance">
           {isEs
             ? 'Agenda una llamada gratis. Sin compromiso: platicamos tu proyecto y te enviamos una propuesta con precio fijo en 48 horas.'
             : 'Book a free call. No commitment: we’ll talk through your project and send you a fixed-price proposal within 48 hours.'}
@@ -46,7 +46,7 @@ export function FinalCtaSection({ lang }: FinalCtaSectionProps) {
             )}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="group inline-flex items-center justify-center gap-2 rounded-xl bg-background px-7 py-3.5 text-base font-semibold text-foreground transition-all duration-300 hover:bg-muted hover:shadow-xl hover:shadow-black/20 hover:-translate-y-0.5"
+            className="group inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-7 py-3.5 text-base font-semibold text-primary-foreground transition-all duration-300 hover:bg-primary/90 hover:shadow-xl hover:shadow-primary/20 hover:-translate-y-0.5"
           >
             <span className="text-nowrap">
               {isEs ? 'Agenda una llamada gratis' : 'Book a free call'}
@@ -55,7 +55,7 @@ export function FinalCtaSection({ lang }: FinalCtaSectionProps) {
           </a>
           <Link
             href={`/${lang}/portfolio`}
-            className="inline-flex items-center justify-center rounded-xl border border-primary-foreground/30 px-7 py-3.5 text-base font-semibold text-primary-foreground transition-all duration-300 hover:bg-primary-foreground/10 hover:border-primary-foreground/60"
+            className="inline-flex items-center justify-center rounded-xl border border-border px-7 py-3.5 text-base font-semibold text-foreground transition-all duration-300 hover:bg-muted"
           >
             <span className="text-nowrap">
               {isEs ? 'Ver portafolio' : 'View portfolio'}
@@ -65,7 +65,7 @@ export function FinalCtaSection({ lang }: FinalCtaSectionProps) {
 
         <div className="mt-12 flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
           {trust.map(({ icon: Icon, text }) => (
-            <div key={text} className="flex items-center gap-2 text-primary-foreground/85">
+            <div key={text} className="flex items-center gap-2 text-muted-foreground">
               <Icon className="h-4 w-4 shrink-0" />
               <span className="text-sm font-medium">{text}</span>
             </div>
