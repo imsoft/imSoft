@@ -45,12 +45,14 @@ const LEGACY_SERVICIOS_SLUGS: Record<string, string> = {
  * Los que no lo tienen van al indice del blog mas abajo.
  */
 const LEGACY_BLOG_POSTS: Record<string, string> = {
+  // Era la URL con mas demanda del sitio viejo ("cuanto cuesta una app", pos. 24 en 2025).
+  // Apuntaba a un post que no respondia la pregunta; ahora hay uno que si.
   'cuanto-cuesta-desarrollar-una-app-movil-en-mexico-precios-tiempos-y-factores-clave':
-    '/es/blog/how-to-build-a-native-mobile-app-without-exceeding-your-budget',
+    '/es/blog/cuanto-cuesta-desarrollar-una-app-en-mexico',
   'las-mejores-ideas-para-digitalizar-tu-negocio-este-ano-y-como-empezar':
-    '/es/blog/how-to-digitalize-your-sme-without-losing-control-of-your-business',
+    '/es/blog/como-digitalizar-pyme-sin-perder-control-negocio',
   'vale-la-pena-invertir-en-google-ads-pros-contras-y-cuanto-deberias-invertir':
-    '/es/blog/5-digital-marketing-strategies-that-drive-results-in-2026',
+    '/es/blog/5-estrategias-marketing-digital-generan-resultados-2026',
 };
 
 export function legacyRedirects(): Redirect[] {
