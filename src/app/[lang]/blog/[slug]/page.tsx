@@ -60,8 +60,11 @@ export async function generateMetadata({
 
   const post = await findBlogPostBySlug(supabase, slug);
 
+  // Con blog/loading.tsx la respuesta empieza a enviarse antes de que el render llame a
+  // notFound(), y un slug inexistente salia con 200 e "index, follow". Los metadatos se
+  // resuelven antes de enviar nada, asi que aqui el 404 si llega al cliente.
   if (!post) {
-    return generateSEOMetadata({}, lang);
+    notFound();
   }
 
   // La canonica siempre apunta al slug del idioma, aunque se haya entrado por el otro.
