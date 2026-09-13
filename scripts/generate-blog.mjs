@@ -10,7 +10,7 @@
  * - Texto: Claude Opus 5 con búsqueda web, para que las cifras salgan de fuentes reales.
  * - Validación (src/lib/blog-generator.ts): toda cifra con fuente enlazada en el mismo
  *   párrafo, mínimo 2 fuentes externas y que cada una responda 200. Si no pasa, no publica.
- * - Imagen: Imagen 4 (Google AI Studio). Si falla, NO se publica sin portada.
+ * - Imagen: Gemini 3.1 Flash Image (Google AI Studio). Si falla, NO se publica sin portada.
  * - Guarda `slug` (inglés) y `slug_es`, que es la URL que ve Google en /es.
  *
  * Variables de entorno: ANTHROPIC_API_KEY, GEMINI_API_KEY, NEXT_PUBLIC_SUPABASE_URL,
@@ -196,28 +196,30 @@ async function verifySources(fuentes) {
 async function generateImage(title_en) {
   const prompt = `2D flat vector illustration, pure white background (#FFFFFF). Topic: "${title_en}". Main character: one friendly cute robot mascot with rounded body, big expressive circular eyes, small antennas on top, smooth geometric limbs, colored in blue #4A7FD4 and white with navy #1e3a5f accents. The robot must be physically interacting with objects that represent the article topic — for example: if the topic is web optimization, the robot is tuning gears or a speedometer; if about e-commerce, the robot holds a shopping cart; if about digital transformation, the robot pushes a rocket; if about mistakes/errors, the robot holds a checklist with X marks. Floating around the robot: 3-5 simple flat icons directly related to "${title_en}" (no UI mockups, just symbolic icons like gears, charts, rockets, locks, stars). Color palette: blue #4A7FD4 dominant on robot, icon fills in soft blue #DBEAFE, background strictly white #FFFFFF, shadows/outlines in #1e3a5f. Art style: Undraw.co clean flat 2D, bold smooth outlines, zero gradients, zero textures. 16:9 wide composition, robot centered or slightly left. Absolutely NO: humans, website screenshots, UI mockups, text labels, logos, watermarks, photo-realism.`;
 
+  // Imagen 4 ya no existe en esta API (404); las imagenes salen de los modelos Gemini
+  // con salida de imagen via generateContent.
   const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-fast-generate-001:predict?key=${GEMINI_API_KEY}`,
+    "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-image:generateContent",
     {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", "x-goog-api-key": GEMINI_API_KEY },
       body: JSON.stringify({
-        instances: [{ prompt }],
-        parameters: { sampleCount: 1, aspectRatio: "16:9" },
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: { responseModalities: ["IMAGE"], imageConfig: { aspectRatio: "16:9" } },
       }),
     }
   );
 
   if (!response.ok) {
     const error = await response.text();
-    throw new Error(`Imagen 4.0 API error ${response.status}: ${error}`);
+    throw new Error(`Gemini image API error ${response.status}: ${error.slice(0, 300)}`);
   }
 
   const data = await response.json();
-  const prediction = data.predictions?.[0];
-  if (!prediction?.bytesBase64Encoded) throw new Error("Imagen 4.0 no devolvió imagen.");
+  const part = data.candidates?.[0]?.content?.parts?.find((p) => p.inlineData?.data);
+  if (!part) throw new Error("Gemini no devolvió imagen.");
 
-  return { buffer: Buffer.from(prediction.bytesBase64Encoded, "base64"), mimeType: prediction.mimeType || "image/png" };
+  return { buffer: Buffer.from(part.inlineData.data, "base64"), mimeType: part.inlineData.mimeType || "image/png" };
 }
 
 async function uploadImageToSupabase(imageBuffer, slug, mimeType = "image/png") {
