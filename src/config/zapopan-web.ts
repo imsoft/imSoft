@@ -16,7 +16,7 @@
  */
 
 export const ZAPOPAN_WEB = {
-  seoTitle: 'Páginas Web en Zapopan | Diseño y Desarrollo para Empresas - imSoft',
+  seoTitle: 'Páginas web en Zapopan para empresas | imSoft',
   seoDescription:
     'Páginas web para empresas y PyMEs de Zapopan: Andares, Puerta de Hierro y toda la zona. Sitios rápidos, medibles y hechos para captar clientes.',
   h1: 'Páginas Web en Zapopan',

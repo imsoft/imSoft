@@ -2,8 +2,9 @@
 /**
  * Pone portada a los articulos publicados que no tienen (salian con el logo).
  *
- *   node scripts/backfill-blog-images.mjs            # lista lo que haria
- *   node scripts/backfill-blog-images.mjs --apply    # genera, sube y asigna
+ *   node scripts/backfill-blog-images.mjs               # lista lo que haria
+ *   node scripts/backfill-blog-images.mjs --apply       # genera, sube y asigna
+ *   node scripts/backfill-blog-images.mjs --recompress  # recomprime las portadas pesadas ya subidas
  *
  * Usa el mismo generador que el blog automatico (scripts/lib/blog-image.mjs), asi que
  * las portadas quedan con el mismo estilo. Necesita GEMINI_API_KEY,
@@ -12,10 +13,12 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { generateImage, uploadImageToSupabase } from "./lib/blog-image.mjs";
+import { compressCover, generateImage, uploadImageToSupabase } from "./lib/blog-image.mjs";
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 const APPLY = process.argv.includes("--apply");
+const RECOMPRESS = process.argv.includes("--recompress");
+const PESO_MAXIMO = 200 * 1024;
 
 // Lector minimo de .env, como en gsc-report.mjs.
 const envPath = path.join(ROOT, ".env");
@@ -35,7 +38,37 @@ if (!GEMINI_API_KEY || !SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
 }
 const headers = { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` };
 
+/** Portadas ya subidas que pesan mas de PESO_MAXIMO: se bajan, comprimen y reemplazan. */
+async function recompress() {
+  const r = await fetch(`${SUPABASE_URL}/rest/v1/blog?select=id,slug,slug_es,image_url&published=eq.true&image_url=like.*blog-images*`, { headers });
+  if (!r.ok) throw new Error(`Supabase ${r.status}: ${await r.text()}`);
+  const posts = await r.json();
+  let hechas = 0;
+  for (const p of posts) {
+    const head = await fetch(p.image_url, { method: "HEAD" });
+    const peso = Number(head.headers.get("content-length") ?? 0);
+    if (!head.ok || peso <= PESO_MAXIMO) continue;
+    try {
+      const original = Buffer.from(await (await fetch(p.image_url)).arrayBuffer());
+      const { buffer, mimeType } = await compressCover(original);
+      const url = await uploadImageToSupabase(buffer, p.slug, mimeType, { SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY });
+      const u = await fetch(`${SUPABASE_URL}/rest/v1/blog?id=eq.${p.id}`, {
+        method: "PATCH",
+        headers: { ...headers, "Content-Type": "application/json", Prefer: "return=minimal" },
+        body: JSON.stringify({ image_url: url }),
+      });
+      if (!u.ok) throw new Error(`PATCH ${u.status}: ${await u.text()}`);
+      hechas += 1;
+      console.log(`✓ ${p.slug_es || p.slug}: ${Math.round(peso / 1024)} KB → ${Math.round(buffer.length / 1024)} KB`);
+    } catch (err) {
+      console.error(`✗ ${p.slug_es || p.slug}: ${err.message}`);
+    }
+  }
+  console.log(`\nRecomprimidas: ${hechas} de ${posts.length} portadas.`);
+}
+
 async function main() {
+  if (RECOMPRESS) return recompress();
   const r = await fetch(
     `${SUPABASE_URL}/rest/v1/blog?select=id,slug,slug_es,title_en,title_es&published=eq.true&image_url=is.null&order=created_at.desc`,
     { headers }

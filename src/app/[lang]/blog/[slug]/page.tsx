@@ -8,6 +8,8 @@ import Image from "@/components/ui/image";
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { generateMetadata as generateSEOMetadata, generateStructuredData } from '@/lib/seo';
 import { canonicalBlogSlug, findBlogPostBySlug } from '@/lib/blog-slugs';
+import { relatedServicesForPost } from '@/config/related-content';
+import Link from 'next/link';
 import { sanitizeBlogHtml } from '@/lib/sanitize-html';
 import { StructuredData } from '@/components/seo/structured-data';
 import { BreadcrumbNav } from '@/components/seo/breadcrumb-nav';
@@ -66,6 +68,7 @@ export async function generateMetadata({
   if (!post) {
     notFound();
   }
+
 
   // La canonica siempre apunta al slug del idioma, aunque se haya entrado por el otro.
   const canonicalSlug = canonicalBlogSlug(post, lang);
@@ -144,6 +147,17 @@ export default async function BlogPostPage({ params }: {
   if (!post) {
     notFound();
   }
+
+  // Enlaces internos: el servicio que corresponde a este articulo (si hay).
+  const relatedServiceSlugs = relatedServicesForPost(post.slug_es || '');
+  const { data: relatedServicesRaw } = relatedServiceSlugs.length
+    ? await supabase.from('services').select('slug, title_es, title_en, description_es, description_en').in('slug', relatedServiceSlugs)
+    : { data: [] as Array<Record<string, string | null>> };
+  const relatedServices = (relatedServicesRaw ?? []).map((s) => ({
+    href: `/${lang}/services/${s.slug}`,
+    title: (lang === 'en' ? s.title_en : s.title_es) || s.title_es || '',
+    description: (lang === 'en' ? s.description_en : s.description_es) || '',
+  }));
 
   // El 301 del slug del otro idioma al del idioma pedido NO se hace aqui: esta ruta se
   // prerenderiza por ISR (`revalidate` arriba) y una redireccion lanzada dentro de un
@@ -300,6 +314,27 @@ export default async function BlogPostPage({ params }: {
             />
           </div>
         </article>
+
+        {relatedServices.length > 0 && (
+          <section className="py-12 md:py-16 bg-muted/40">
+            <div className="mx-auto max-w-4xl px-6">
+              <p className="text-sm font-semibold text-primary mb-2">
+                {isEs ? 'Servicio relacionado' : 'Related service'}
+              </p>
+              <div className="grid gap-4 sm:grid-cols-2">
+                {relatedServices.map((s) => (
+                  <Link key={s.href} href={s.href} className="group rounded-2xl border border-border bg-background p-6 hover:border-primary/50 transition-colors">
+                    <h2 className="text-xl font-bold group-hover:text-primary transition-colors">{s.title}</h2>
+                    {s.description && <p className="mt-2 text-sm text-muted-foreground line-clamp-3">{s.description}</p>}
+                    <span className="mt-4 inline-block text-sm font-semibold text-primary">
+                      {isEs ? 'Ver servicio →' : 'View service →'}
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
       </main>
       <FooterSection dict={dict} lang={lang} contactData={contactData || undefined} />
     </div>

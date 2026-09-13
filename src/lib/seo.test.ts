@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { generateMetadata, hreflangLanguageAlternates } from './seo';
+import { generateMetadata, hreflangLanguageAlternates, truncateDescription } from './seo';
 
 const SITE = 'https://www.imsoft.io';
 
@@ -68,5 +68,22 @@ describe('generateMetadata', () => {
   it('noindex se refleja en robots', () => {
     const meta = generateMetadata({ noindex: true }, 'es');
     expect(meta.robots).toMatchObject({ index: false });
+  });
+});
+
+describe('truncateDescription', () => {
+  it('corta en la ultima palabra completa antes de 155 y marca el corte', () => {
+    const t = truncateDescription('palabra '.repeat(40));
+    expect(t.length).toBeLessThanOrEqual(155);
+    expect(t.endsWith('palabra…')).toBe(true);
+  });
+
+  it('no toca las que caben', () => {
+    expect(truncateDescription('  corta   y limpia ')).toBe('corta y limpia');
+  });
+
+  it('generateMetadata la aplica a toda descripcion', () => {
+    const m = generateMetadata({ description: 'a'.repeat(100) + ' ' + 'b'.repeat(100) }, 'es');
+    expect(String(m.description).length).toBeLessThanOrEqual(155);
   });
 });

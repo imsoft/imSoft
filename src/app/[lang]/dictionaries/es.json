@@ -512,7 +512,7 @@
       "news": "Noticias",
       "tips": "Tips y Trucos"
     },
-    "metaTitle": "Blog de Desarrollo de Software y Transformación Digital",
+    "metaTitle": "Blog de desarrollo de software",
     "metaDescription": "Guías prácticas sobre desarrollo web, aplicaciones móviles, comercio electrónico y tecnología para empresas mexicanas. Escrito por el equipo de imSoft."
   },
   "contact": {
@@ -549,7 +549,7 @@
         "messageMin": "El mensaje debe tener al menos 10 caracteres."
       }
     },
-    "metaTitle": "Contacto — Agencia de Desarrollo de Software en Guadalajara",
+    "metaTitle": "Contacto: agencia de software en Guadalajara",
     "metaDescription": "Cuéntanos tu proyecto y te damos una propuesta sin compromiso. Desarrollo de software, páginas web y apps para empresas de Guadalajara y toda la ZMG."
   },
   "testimonials": {

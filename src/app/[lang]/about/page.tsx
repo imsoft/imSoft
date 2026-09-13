@@ -21,8 +21,8 @@ export async function generateMetadata({
   return generateSEOMetadata({
     title: lang === 'es' ? 'Quiénes Somos — Agencia de Software en Guadalajara' : 'About Us — imSoft',
     description: lang === 'es'
-      ? 'Somos imSoft, una agencia de desarrollo de software en Guadalajara. Construimos el software exacto que tu negocio necesita con tecnologías modernas y un equipo comprometido con tus resultados.'
-      : 'We are imSoft, a software development agency in Guadalajara. We build the exact software your business needs with modern technologies and a team committed to your results.',
+      ? 'Agencia de desarrollo de software en Guadalajara. Construimos el software que tu negocio necesita, con precio fijo, avances visibles y código 100% tuyo.'
+      : 'Software development agency in Guadalajara, Mexico. We build the software your business needs, with a fixed price, visible progress and code you fully own.',
     url: `${SITE_URL}/${lang}/about`,
     type: 'website',
     tags: lang === 'es'

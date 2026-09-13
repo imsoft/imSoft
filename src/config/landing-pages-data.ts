@@ -7,7 +7,7 @@ import type { LandingPageConfig } from '@/types/landing-pages';
 export const landingPagesData: LandingPageConfig = {
   guadalajara: {
     'software-para-inmobiliarias': {
-      seoTitle: 'Software para Inmobiliarias en Guadalajara | Desarrollo a la Medida - imSoft',
+      seoTitle: 'Software para Inmobiliarias en Guadalajara | imSoft',
       seoDescription:
         'Desarrollamos plataformas digitales para inmobiliarias en Guadalajara. Sistemas de gestión de propiedades, portales web y apps móviles que impulsan tus ventas.',
       h1: 'Software Especializado para Inmobiliarias en Guadalajara',
@@ -95,7 +95,7 @@ export const landingPagesData: LandingPageConfig = {
     },
 
     'software-para-constructoras': {
-      seoTitle: 'Software para Constructoras en Guadalajara | Sistemas de Gestión - imSoft',
+      seoTitle: 'Software para Constructoras en Guadalajara | imSoft',
       seoDescription:
         'Plataformas digitales para constructoras en Guadalajara. Gestión de proyectos, control de obra, ERP especializado y apps móviles para construcción.',
       h1: 'Sistemas de Gestión para Constructoras en Guadalajara',
@@ -183,7 +183,7 @@ export const landingPagesData: LandingPageConfig = {
     },
 
     'software-para-restaurantes': {
-      seoTitle: 'Software para Restaurantes en Guadalajara | Sistemas POS y Pedidos - imSoft',
+      seoTitle: 'Software para Restaurantes en Guadalajara | imSoft',
       seoDescription:
         'Soluciones digitales para restaurantes en Guadalajara. Sistemas POS, apps de pedidos, gestión de cocina e integraciones con delivery.',
       h1: 'Plataformas Digitales para Restaurantes en Guadalajara',
@@ -271,7 +271,7 @@ export const landingPagesData: LandingPageConfig = {
     },
 
     'software-para-clinicas': {
-      seoTitle: 'Software para Clínicas en Guadalajara | Sistemas Médicos - imSoft',
+      seoTitle: 'Software para Clínicas en Guadalajara | imSoft',
       seoDescription:
         'Sistemas de gestión para clínicas y consultorios en Guadalajara. Expediente electrónico, agendamiento, facturación y telemedicina.',
       h1: 'Software Médico para Clínicas en Guadalajara',
@@ -365,7 +365,7 @@ export const landingPagesData: LandingPageConfig = {
     },
 
     'software-para-logistica': {
-      seoTitle: 'Software para Logística en Guadalajara | Sistemas TMS y Rastreo - imSoft',
+      seoTitle: 'Software para Logística en Guadalajara | imSoft',
       seoDescription:
         'Plataformas de gestión logística en Guadalajara. TMS, rastreo GPS, gestión de flotas, almacenes y distribución para empresas.',
       h1: 'Sistemas de Gestión Logística en Guadalajara',
@@ -473,7 +473,7 @@ export const landingPagesData: LandingPageConfig = {
 
   cdmx: {
     'software-para-inmobiliarias': {
-      seoTitle: 'Software para Inmobiliarias en CDMX | Desarrollo a la Medida - imSoft',
+      seoTitle: 'Software para Inmobiliarias en CDMX | imSoft',
       seoDescription:
         'Desarrollamos plataformas digitales para inmobiliarias en Ciudad de México. Sistemas de gestión de propiedades, portales web y apps móviles.',
       h1: 'Software Especializado para Inmobiliarias en CDMX',
@@ -561,7 +561,7 @@ export const landingPagesData: LandingPageConfig = {
     },
 
     'software-para-constructoras': {
-      seoTitle: 'Software para Constructoras en CDMX | Sistemas de Gestión ERP - imSoft',
+      seoTitle: 'Software para Constructoras en CDMX | imSoft',
       seoDescription:
         'Plataformas digitales para constructoras en Ciudad de México. Gestión de proyectos, control de obra, ERP especializado y apps móviles.',
       h1: 'Sistemas de Gestión para Constructoras en CDMX',
@@ -649,7 +649,7 @@ export const landingPagesData: LandingPageConfig = {
     },
 
     'software-para-restaurantes': {
-      seoTitle: 'Software para Restaurantes en CDMX | Sistemas POS y Apps - imSoft',
+      seoTitle: 'Software para Restaurantes en CDMX | imSoft',
       seoDescription:
         'Soluciones digitales para restaurantes en Ciudad de México. Sistemas POS, apps de pedidos, gestión de cocina y múltiples sucursales.',
       h1: 'Plataformas Digitales para Restaurantes en CDMX',
@@ -737,7 +737,7 @@ export const landingPagesData: LandingPageConfig = {
     },
 
     'software-para-clinicas': {
-      seoTitle: 'Software para Clínicas en CDMX | Sistemas Médicos - imSoft',
+      seoTitle: 'Software para Clínicas en CDMX | imSoft',
       seoDescription:
         'Sistemas de gestión para clínicas en Ciudad de México. Expediente electrónico, agendamiento, facturación, telemedicina y NOM-024.',
       h1: 'Software Médico para Clínicas en CDMX',
@@ -837,7 +837,7 @@ export const landingPagesData: LandingPageConfig = {
     },
 
     'software-para-logistica': {
-      seoTitle: 'Software para Logística en CDMX | Sistemas TMS y Rastreo - imSoft',
+      seoTitle: 'Software para Logística en CDMX | imSoft',
       seoDescription:
         'Plataformas de gestión logística en Ciudad de México. TMS, rastreo GPS, gestión de flotas, almacenes y distribución urbana.',
       h1: 'Sistemas de Gestión Logística en CDMX',
@@ -927,7 +927,7 @@ export const landingPagesData: LandingPageConfig = {
 
   monterrey: {
     'software-para-inmobiliarias': {
-      seoTitle: 'Software para Inmobiliarias en Monterrey | Desarrollo a la Medida - imSoft',
+      seoTitle: 'Software para Inmobiliarias en Monterrey | imSoft',
       seoDescription:
         'Desarrollamos plataformas digitales para inmobiliarias en Monterrey. Sistemas de gestión de propiedades, portales web y apps móviles para empresas.',
       h1: 'Software Especializado para Inmobiliarias en Monterrey',
@@ -1015,7 +1015,7 @@ export const landingPagesData: LandingPageConfig = {
     },
 
     'software-para-constructoras': {
-      seoTitle: 'Software para Constructoras en Monterrey | Sistemas ERP - imSoft',
+      seoTitle: 'Software para Constructoras en Monterrey | imSoft',
       seoDescription:
         'Plataformas digitales para constructoras en Monterrey. Gestión de proyectos industriales, control de obra, ERP especializado y apps móviles.',
       h1: 'Sistemas de Gestión para Constructoras en Monterrey',
@@ -1103,7 +1103,7 @@ export const landingPagesData: LandingPageConfig = {
     },
 
     'software-para-restaurantes': {
-      seoTitle: 'Software para Restaurantes en Monterrey | Sistemas POS - imSoft',
+      seoTitle: 'Software para Restaurantes en Monterrey | imSoft',
       seoDescription:
         'Soluciones digitales para restaurantes en Monterrey. Sistemas POS, apps de pedidos, gestión de cocina y múltiples sucursales para cadenas.',
       h1: 'Plataformas Digitales para Restaurantes en Monterrey',
@@ -1191,7 +1191,7 @@ export const landingPagesData: LandingPageConfig = {
     },
 
     'software-para-clinicas': {
-      seoTitle: 'Software para Clínicas en Monterrey | Sistemas Médicos - imSoft',
+      seoTitle: 'Software para Clínicas en Monterrey | imSoft',
       seoDescription:
         'Sistemas de gestión para clínicas en Monterrey. Expediente electrónico NOM-024, agendamiento, facturación, telemedicina y estándares internacionales.',
       h1: 'Software Médico para Clínicas en Monterrey',
@@ -1279,7 +1279,7 @@ export const landingPagesData: LandingPageConfig = {
     },
 
     'software-para-logistica': {
-      seoTitle: 'Software para Logística en Monterrey | Sistemas TMS - imSoft',
+      seoTitle: 'Software para Logística en Monterrey | imSoft',
       seoDescription:
         'Plataformas de gestión logística en Monterrey. TMS, rastreo GPS, gestión de flotas, almacenes y distribución para empresas industriales.',
       h1: 'Sistemas de Gestión Logística en Monterrey',

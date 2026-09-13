@@ -78,3 +78,14 @@ export function portfolioLookup(segment: string): { column: 'id' | 'slug'; value
   const value = segment.trim();
   return { column: UUID.test(value) ? 'id' : 'slug', value };
 }
+
+/**
+ * Meta description de la ficha. Varias descripciones son de una linea ("Aplicacion web
+ * para la generacion de pedidos"): se completa con el reto para llegar a un largo util.
+ * El recorte a ~155 lo hace generateMetadata.
+ */
+export function portfolioMetaDescription(row: PortfolioRow, lang: string): string {
+  const description = porIdioma(lang, row.description_es, row.description_en, row.description);
+  const challenge = porIdioma(lang, row.challenge_es, row.challenge_en);
+  return description.length >= 70 || !challenge ? description : `${description.replace(/\.?$/, '.')} ${challenge}`;
+}

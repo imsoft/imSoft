@@ -1,3 +1,4 @@
+import { truncateDescription } from './seo';
 import { BUSINESS } from '@/config/business';
 
 /**
@@ -65,7 +66,7 @@ export function localizedServiceDescription(description: string, lang: string): 
       ? 'Software agency based in Guadalajara, Jalisco. '
       : `Agencia de software en ${CITY_ES}, Jalisco. `;
   // El limite util de Google ronda los 155 caracteres.
-  return `${lead}${clean}`.slice(0, 155).trim();
+  return truncateDescription(`${lead}${clean}`);
 }
 
 /** Zona de servicio en texto, para el bloque local visible de la pagina. */

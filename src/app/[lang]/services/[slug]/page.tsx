@@ -1,4 +1,7 @@
+import Link from 'next/link';
 import { FooterSection } from "@/components/blocks/footer-section";
+import { relatedPostsForService } from '@/config/related-content';
+import { canonicalBlogSlug } from '@/lib/blog-slugs';
 import { HeroHeader } from "@/components/blocks/hero-section";
 import { getDictionary, hasLocale } from '../../dictionaries';
 import { notFound } from 'next/navigation';
@@ -55,7 +58,9 @@ export async function generateMetadata({
     title: localizedServiceTitle(slug, title, lang),
     description: localizedServiceDescription(description, lang),
     url: `${SITE_URL}/${lang}/services/${slug}`,
-    image: service.image_url || `${SITE_URL}/logos/logo-imsoft-blue.png`,
+    // La imagen para compartir la genera opengraph-image.tsx (con marca y titulo); la
+    // foto de stock del servicio se queda solo dentro de la pagina.
+    image: `${SITE_URL}/${lang}/services/${slug}/opengraph-image`,
     type: 'website',
     tags,
     alternateUrls: {
@@ -86,6 +91,17 @@ export default async function ServicePage({ params }: {
   } catch {}
 
   const { data: serviceRow } = await supabase.from('services').select('*').eq('slug', slug).single();
+
+  // Enlaces internos: articulos del blog relacionados con este servicio (si existen).
+  const relatedSlugs = relatedPostsForService(slug);
+  const { data: relatedPostsRaw } = relatedSlugs.length
+    ? await supabase.from('blog').select('slug, slug_es, title_es, title_en, excerpt_es, excerpt_en').in('slug_es', relatedSlugs).eq('published', true)
+    : { data: [] as Array<Record<string, string | null>> };
+  const relatedPosts = (relatedPostsRaw ?? []).map((p) => ({
+    href: `/${lang}/blog/${canonicalBlogSlug(p, lang)}`,
+    title: (lang === 'en' ? p.title_en : p.title_es) || p.title_es || '',
+    excerpt: (lang === 'en' ? p.excerpt_en : p.excerpt_es) || '',
+  }));
   const service = resolveServiceContent(slug, serviceRow);
   if (!service) notFound();
 
@@ -226,6 +242,32 @@ export default async function ServicePage({ params }: {
                     </div>
                   ))}
                 </div>
+              </div>
+            </section>
+          )}
+
+          {/* ── Lecturas utiles: enlaces internos a los articulos de precios ── */}
+          {relatedPosts.length > 0 && (
+            <section className="py-12 md:py-16 bg-muted/40">
+              <div className="mx-auto max-w-3xl px-6">
+                <h2 className="text-2xl md:text-3xl font-bold mb-2">
+                  {lang === 'en' ? 'Useful reading before you ask for a quote' : 'Lecturas útiles antes de pedir cotización'}
+                </h2>
+                <p className="text-muted-foreground mb-6">
+                  {lang === 'en'
+                    ? 'Real published price ranges and what actually drives the cost.'
+                    : 'Rangos de precio publicados y qué mueve el costo de verdad.'}
+                </p>
+                <ul className="space-y-3">
+                  {relatedPosts.map((p) => (
+                    <li key={p.href}>
+                      <Link href={p.href} className="group block rounded-xl border border-border bg-background p-5 hover:border-primary/50 transition-colors">
+                        <span className="font-semibold text-foreground group-hover:text-primary transition-colors">{p.title}</span>
+                        {p.excerpt && <p className="mt-1 text-sm text-muted-foreground">{p.excerpt}</p>}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
               </div>
             </section>
           )}

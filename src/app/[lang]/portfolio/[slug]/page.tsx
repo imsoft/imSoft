@@ -10,7 +10,7 @@ import { ArrowLeft, ExternalLink, CheckCircle2, Quote } from 'lucide-react';
 import Link from 'next/link';
 import Magnet from '@/components/ui/magnet';
 import { BreadcrumbNav } from '@/components/seo/breadcrumb-nav';
-import { portfolioLookup } from '@/lib/portfolio-card';
+import { portfolioLookup, portfolioMetaDescription } from '@/lib/portfolio-card';
 import type { Metadata } from 'next';
 
 export async function generateMetadata({
@@ -24,14 +24,14 @@ export async function generateMetadata({
 
   const { data } = await supabase
     .from('portfolio')
-    .select('title_es,title_en,description_es,description_en,image_url')
+    .select('id,title_es,title_en,description_es,description_en,challenge_es,challenge_en,image_url')
     .eq(lookup.column, lookup.value)
     .maybeSingle();
 
   if (!data) return generateSEOMetadata({}, lang);
 
   const title = lang === 'en' ? (data.title_en || data.title_es || '') : (data.title_es || data.title_en || '');
-  const description = lang === 'en' ? (data.description_en || data.description_es || '') : (data.description_es || data.description_en || '');
+  const description = portfolioMetaDescription(data, lang);
   const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io';
 
   return generateSEOMetadata({

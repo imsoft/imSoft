@@ -45,6 +45,17 @@ export interface SEOConfig {
   };
 }
 
+/**
+ * Google muestra ~155 caracteres de la meta description. Se corta en la ultima palabra
+ * completa y se marca con puntos suspensivos para que no quede una frase a medias.
+ */
+export function truncateDescription(text: string, max = 155): string {
+  const clean = (text || '').replace(/\s+/g, ' ').trim();
+  if (clean.length <= max) return clean;
+  const corte = clean.lastIndexOf(' ', max - 1);
+  return `${clean.slice(0, corte > 60 ? corte : max - 1).replace(/[,;:.]$/, '')}…`;
+}
+
 export function generateMetadata(config: SEOConfig, lang: string = 'es'): Metadata {
   const {
     title,
@@ -74,7 +85,7 @@ export function generateMetadata(config: SEOConfig, lang: string = 'es'): Metada
     ? `${title} | ${SITE_NAME}`
     : defaultTitle;
 
-  const metaDescription = description || defaultDescription;
+  const metaDescription = truncateDescription(description || defaultDescription);
   const canonicalUrl = url || `${SITE_URL}/${lang}`;
   const ogImage = image || `${SITE_URL}/logos/logo-imsoft-blue.png`;
 

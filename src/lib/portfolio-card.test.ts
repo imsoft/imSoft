@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { MAX_RESULTADOS_EN_TARJETA, portfolioCard, portfolioLookup, type PortfolioRow } from './portfolio-card';
+import { MAX_RESULTADOS_EN_TARJETA, portfolioCard, portfolioLookup, portfolioMetaDescription, type PortfolioRow } from './portfolio-card';
 
 const fila: PortfolioRow = {
   id: '0a15d020-12a3-416e-a175-50bd5c993d7a',
@@ -76,5 +76,17 @@ describe('portfolioLookup', () => {
   it('busca por slug con nombre, que no es un uuid valido', () => {
     expect(portfolioLookup('aduvanta')).toEqual({ column: 'slug', value: 'aduvanta' });
     expect(portfolioLookup('steridantal-order-generator').column).toBe('slug');
+  });
+});
+
+describe('portfolioMetaDescription', () => {
+  it('completa con el reto las descripciones de una linea', () => {
+    const d = portfolioMetaDescription({ id: 'x', description_es: 'Aplicación web para pedidos', challenge_es: 'Los clientes llamaban para pedir.' }, 'es');
+    expect(d).toBe('Aplicación web para pedidos. Los clientes llamaban para pedir.');
+  });
+
+  it('deja en paz las descripciones ya completas', () => {
+    const larga = 'x'.repeat(80);
+    expect(portfolioMetaDescription({ id: 'x', description_es: larga, challenge_es: 'reto' }, 'es')).toBe(larga);
   });
 });
