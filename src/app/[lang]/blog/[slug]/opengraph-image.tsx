@@ -7,9 +7,9 @@ export const contentType = 'image/png'
 export default async function Image({
   params,
 }: {
-  params: { lang: string; slug: string }
+  params: Promise<{ lang: string; slug: string }>
 }) {
-  const { lang, slug } = params
+  const { lang, slug } = await params
   const isEs = lang === 'es'
 
   let title = ''

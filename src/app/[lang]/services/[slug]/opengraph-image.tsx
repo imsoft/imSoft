@@ -9,8 +9,8 @@ export const contentType = 'image/png';
  * Imagen para compartir de cada servicio. Antes era la foto de stock de Unsplash del
  * servicio: al compartir el enlace se veia una foto ajena sin marca ni titulo.
  */
-export default async function Image({ params }: { params: { lang: string; slug: string } }) {
-  const { lang, slug } = params;
+export default async function Image({ params }: { params: Promise<{ lang: string; slug: string }> }) {
+  const { lang, slug } = await params;
   const isEs = lang === 'es';
   let title = '';
   let description = '';
