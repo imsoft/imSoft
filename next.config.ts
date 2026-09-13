@@ -29,6 +29,10 @@ const nextConfig: NextConfig = {
     ];
   },
   images: {
+    // Vercel Hobby agoto la cuota del optimizador (402 tambien para /logos). No hay
+    // imagenes locales pesadas, asi que se sirven tal cual; las remotas ya iban
+    // directas via src/components/ui/image.tsx.
+    unoptimized: true,
     formats: ['image/avif', 'image/webp'],
     remotePatterns: [
       // Supabase Storage (cualquier proyecto)
