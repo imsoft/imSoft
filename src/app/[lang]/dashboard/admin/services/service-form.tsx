@@ -21,7 +21,7 @@ import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
 import type { ServiceFormProps } from '@/types/forms'
 import { X, Image as ImageIcon, Plus, Trash2 } from 'lucide-react'
-import Image from 'next/image'
+import Image from '@/components/ui/image'
 import { TranslateButton } from '@/components/ui/translate-button'
 
 // Función para generar slug desde un texto

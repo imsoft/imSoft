@@ -22,7 +22,7 @@ import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
 import type { Dictionary, Locale } from '@/app/[lang]/dictionaries'
 import { X, Image as ImageIcon } from 'lucide-react'
-import Image from 'next/image'
+import Image from '@/components/ui/image'
 import { TranslateButton } from '@/components/ui/translate-button'
 
 // Función para generar slug desde un texto

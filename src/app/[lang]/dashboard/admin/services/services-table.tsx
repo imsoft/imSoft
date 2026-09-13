@@ -32,7 +32,7 @@ import {
 } from "@/components/ui/empty"
 import { Briefcase, Plus, ArrowUpDown, MoreHorizontal, Pencil, Trash2, ImageIcon } from "lucide-react"
 import { DataTable } from "@/components/ui/data-table"
-import Image from "next/image"
+import Image from "@/components/ui/image"
 import type { Service, ServicesTableProps } from '@/types'
 
 export type { Service }

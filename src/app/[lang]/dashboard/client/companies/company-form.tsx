@@ -20,7 +20,7 @@ import { toast } from 'sonner'
 import type { Dictionary, Locale } from '@/app/[lang]/dictionaries'
 import type { Company } from '@/types/database'
 import { X, Image as ImageIcon, Upload } from 'lucide-react'
-import Image from 'next/image'
+import Image from '@/components/ui/image'
 import { Card } from '@/components/ui/card'
 
 // Función para generar slug desde un texto

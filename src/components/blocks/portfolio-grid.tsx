@@ -1,7 +1,7 @@
 'use client'
 
 import SpotlightCard from "@/components/ui/spotlight-card"
-import Image from "next/image"
+import Image from "@/components/ui/image"
 import Link from "next/link"
 import type { PortfolioSectionProps } from '@/types/components'
 import type { PortfolioCard } from '@/lib/portfolio-card'

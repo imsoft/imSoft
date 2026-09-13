@@ -1,7 +1,7 @@
 'use client'
 
 import CardSwap, { Card } from "@/components/ui/card-swap"
-import Image from "next/image"
+import Image from "@/components/ui/image"
 import type { PortfolioSectionProps } from '@/types/components'
 import { ScrollReveal } from "@/components/animations/scroll-reveal"
 import { useMediaQuery } from '@/hooks/use-mobile'

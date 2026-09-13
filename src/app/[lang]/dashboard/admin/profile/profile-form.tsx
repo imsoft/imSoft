@@ -7,7 +7,7 @@ import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { User, X, Image as ImageIcon } from 'lucide-react'
-import Image from 'next/image'
+import Image from '@/components/ui/image'
 import type { Dictionary, Locale } from '@/app/[lang]/dictionaries'
 
 interface ProfileFormProps {

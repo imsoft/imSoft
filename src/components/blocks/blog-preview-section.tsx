@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import Image from 'next/image'
+import Image from '@/components/ui/image'
 import { ArrowRight, CalendarDays, Tag } from 'lucide-react'
 import { ScrollReveal } from "@/components/animations/scroll-reveal"
 

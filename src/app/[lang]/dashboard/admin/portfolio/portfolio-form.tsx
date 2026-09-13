@@ -21,7 +21,7 @@ import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
 import type { PortfolioFormProps } from '@/types/forms'
 import { X, Image as ImageIcon, Check, ChevronsUpDown } from 'lucide-react'
-import Image from 'next/image'
+import Image from '@/components/ui/image'
 import { cn } from '@/lib/utils'
 import { TranslateButton } from '@/components/ui/translate-button'
 import {

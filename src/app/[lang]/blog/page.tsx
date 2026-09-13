@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/empty";
 import { Newspaper } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
+import Image from "@/components/ui/image";
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { generateMetadata as generateSEOMetadata, generateStructuredData } from '@/lib/seo';
 import { StructuredData } from '@/components/seo/structured-data';

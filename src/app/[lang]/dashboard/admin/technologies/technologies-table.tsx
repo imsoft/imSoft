@@ -41,7 +41,7 @@ import { Code, Plus, ArrowUpDown, MoreHorizontal, Pencil, Trash2 } from "lucide-
 import { DataTable } from "@/components/ui/data-table"
 import type { Dictionary, Locale } from '@/app/[lang]/dictionaries'
 import { Badge } from "@/components/ui/badge"
-import Image from "next/image"
+import Image from "@/components/ui/image"
 
 interface Technology {
   id: string

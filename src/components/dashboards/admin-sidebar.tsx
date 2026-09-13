@@ -34,7 +34,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
-import Image from "next/image"
+import Image from "@/components/ui/image"
 import { useSidebar } from "@/components/ui/sidebar"
 import type { AdminSidebarProps } from '@/types/dashboard'
 

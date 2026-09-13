@@ -4,7 +4,7 @@ import { FooterSection } from "@/components/blocks/footer-section";
 import { HeroHeader } from "@/components/blocks/hero-section";
 import { getDictionary, hasLocale } from '../../dictionaries';
 import { notFound } from 'next/navigation';
-import Image from "next/image";
+import Image from "@/components/ui/image";
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { generateMetadata as generateSEOMetadata, generateStructuredData } from '@/lib/seo';
 import { canonicalBlogSlug, findBlogPostBySlug } from '@/lib/blog-slugs';

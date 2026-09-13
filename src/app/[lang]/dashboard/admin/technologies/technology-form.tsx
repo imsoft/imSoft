@@ -24,7 +24,7 @@ import { TranslateButton } from '@/components/ui/translate-button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { X, Image as ImageIcon, Plus, Trash2 } from 'lucide-react'
-import Image from 'next/image'
+import Image from '@/components/ui/image'
 
 const companySchema = z.object({
   name: z.string().min(1, 'El nombre de la empresa es requerido'),

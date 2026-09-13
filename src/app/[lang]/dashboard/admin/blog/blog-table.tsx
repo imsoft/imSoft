@@ -3,7 +3,7 @@
 import { ColumnDef } from "@tanstack/react-table"
 import { ArrowUpDown, MoreHorizontal, Pencil, Trash2, Plus, ImageIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import Image from "next/image"
+import Image from "@/components/ui/image"
 import {
   Dialog,
   DialogContent,

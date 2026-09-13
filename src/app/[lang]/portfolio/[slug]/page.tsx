@@ -2,7 +2,7 @@ import { FooterSection } from "@/components/blocks/footer-section";
 import { HeroHeader } from "@/components/blocks/hero-section";
 import { getDictionary, hasLocale } from '../../dictionaries';
 import { notFound } from 'next/navigation';
-import Image from "next/image";
+import Image from "@/components/ui/image";
 import { createClient } from '@/lib/supabase/server';
 import { generateMetadata as generateSEOMetadata, generateStructuredData } from '@/lib/seo';
 import { StructuredData } from '@/components/seo/structured-data';

@@ -12,7 +12,7 @@ import {
   EmptyMedia,
   EmptyDescription,
 } from "@/components/ui/empty"
-import Image from "next/image"
+import Image from "@/components/ui/image"
 import Link from "next/link"
 import { CommitsTimeline } from "@/components/projects/commits-timeline"
 import { TaskProgress } from "@/components/projects/task-progress"

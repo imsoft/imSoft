@@ -32,7 +32,7 @@ import {
 } from "@/components/ui/empty"
 import { Building2, Plus, ArrowUpDown, MoreHorizontal, Pencil, Trash2, User } from "lucide-react"
 import { DataTable } from "@/components/ui/data-table"
-import Image from "next/image"
+import Image from "@/components/ui/image"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import type { Dictionary, Locale } from '@/app/[lang]/dictionaries'
 import type { Company } from '@/types/database'

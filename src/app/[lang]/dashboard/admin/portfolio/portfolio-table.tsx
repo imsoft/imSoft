@@ -23,7 +23,7 @@ import Link from "next/link"
 import { useState } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
-import Image from "next/image"
+import Image from "@/components/ui/image"
 import {
   Empty,
   EmptyDescription,

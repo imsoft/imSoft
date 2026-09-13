@@ -20,7 +20,7 @@ import { toast } from 'sonner'
 import type { Dictionary, Locale } from '@/app/[lang]/dictionaries'
 import type { Company } from '@/types/database'
 import { X, Upload, Building2, Check, ChevronsUpDown } from 'lucide-react'
-import Image from 'next/image'
+import Image from '@/components/ui/image'
 import { Card } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 import {
