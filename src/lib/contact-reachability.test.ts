@@ -16,18 +16,29 @@ const read = (p: string) => fs.readFileSync(path.join(ROOT, p), 'utf8');
 
 describe('el header empuja a contactar, no a registrarse', () => {
   const header = read('src/components/blocks/hero-section.tsx');
+  const landing = read('src/components/landing/hero-section-landing.tsx');
   const botones = header.slice(header.indexOf('const menuItems'));
+  const botonesLanding = landing.slice(landing.indexOf('const menuItems'));
 
-  it('el boton primario lleva a /contact', () => {
-    // El primario es el unico <Button> sin `variant`.
-    expect(botones).toMatch(/<Button asChild size="sm">\s*<Link href=\{`\/\$\{lang\}\/contact`\}/);
+  it('el unico boton de la cabecera lleva a WhatsApp con el contexto de la pagina', () => {
+    expect(botones).toMatch(/<Button asChild size="sm">\s*<WhatsAppCtaLink lang=\{lang\}>/);
+    expect(botonesLanding).toMatch(/<Button asChild size="sm">\s*<WhatsAppCtaLink lang=\{lang\}>/);
   });
 
-  it('acceso y registro siguen accesibles, pero en segundo plano', () => {
-    expect(botones).toContain('variant="ghost"');
-    expect(botones).toContain('variant="outline"');
-    expect(botones).toContain('/login`}');
-    expect(botones).toContain('/signup`}');
+  it('acceso y registro ya no compiten con el CTA en la cabecera', () => {
+    for (const b of [botones, botonesLanding]) {
+      expect(b).not.toContain('/login`}');
+      expect(b).not.toContain('/signup`}');
+    }
+  });
+
+  it('el acceso de clientes sigue disponible en el pie', () => {
+    expect(read('src/components/blocks/footer-section.tsx')).toContain('href={`/${lang}/login`}');
+  });
+
+  it('los clics de contacto se registran en analitica desde el layout', () => {
+    expect(read('src/app/[lang]/layout.tsx')).toContain('<CtaTracker />');
+    expect(read('src/app/[lang]/contact/contact-form.tsx')).toContain('new CustomEvent(LEAD_EVENT)');
   });
 });
 

@@ -600,6 +600,7 @@
     "updatedAt": "Updated At"
   },
   "footer": {
+    "clientAccess": "Client access",
     "cta": {
       "title": "Let's talk about your project",
       "heading": "Need custom software, a website or a mobile app for your business?",
@@ -646,6 +647,8 @@
   },
   "cookies": {
     "banner": {
+      "short": "We use cookies to measure visits. You can change this anytime.",
+      "ok": "Got it",
       "title": "We use cookies",
       "description": "We use essential cookies for site functionality and optional cookies to enhance your experience. You can customize your preferences at any time.",
       "acceptAll": "Accept all",

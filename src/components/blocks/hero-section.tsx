@@ -12,6 +12,7 @@ import { LanguageSwitcher } from '@/components/language-switcher'
 import { ModeToggle } from '@/components/mode-toggle'
 import Magnet from '@/components/ui/magnet'
 import type { HeroSectionProps, HeroHeaderProps } from '@/types/components'
+import { WhatsAppCtaLink } from '@/components/ui/whatsapp-cta-link'
 
 const transitionVariants: { item: Variants } = {
     item: {
@@ -133,7 +134,7 @@ export function HeroSection({ dict, lang, companies = [], portfolioProjects = []
                                   * ahora es visible en el primer paint.
                                   */}
                                 <h1
-                                    className="mt-8 max-w-4xl mx-auto text-balance text-6xl md:text-7xl lg:mt-16 xl:text-[5.25rem]">
+                                    className="mt-8 max-w-4xl mx-auto text-balance text-4xl sm:text-5xl md:text-7xl lg:mt-16 xl:text-[5.25rem]">
                                     {dict.hero.title}
                                 </h1>
                                 <p
@@ -297,35 +298,15 @@ export const HeroHeader = ({ dict, lang }: HeroHeaderProps) => {
                             </div>
                             <div className="flex w-full flex-col space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit items-center">
                                 {/*
-                                  * El boton primario lleva a contacto, no al alta.
-                                  * Los tres botones destacados apuntaban a /signup, o sea
-                                  * que a un prospecto que busca agencia se le pedia darse
-                                  * de alta en el panel de clientes antes que escribir.
-                                  * El acceso y el registro siguen disponibles, en segundo
-                                  * plano: los usa quien ya es cliente.
+                                  * Un solo boton, y a WhatsApp con el contexto de la
+                                  * pagina: es el canal que se atiende. Acceso y registro
+                                  * son para clientes con panel y viven en el pie; en la
+                                  * cabecera competian con el CTA.
                                   */}
-                                <Button
-                                    asChild
-                                    variant="ghost"
-                                    size="sm"
-                                    className={cn(isScrolled && 'lg:hidden')}>
-                                    <Link href={`/${lang}/login`}>
-                                        <span>{dict.nav.login}</span>
-                                    </Link>
-                                </Button>
-                                <Button
-                                    asChild
-                                    variant="outline"
-                                    size="sm"
-                                    className={cn(isScrolled && 'lg:hidden')}>
-                                    <Link href={`/${lang}/signup`}>
-                                        <span>{dict.nav.signUp}</span>
-                                    </Link>
-                                </Button>
                                 <Button asChild size="sm">
-                                    <Link href={`/${lang}/contact`}>
+                                    <WhatsAppCtaLink lang={lang}>
                                         <span>{dict.nav.talkToUs}</span>
-                                    </Link>
+                                    </WhatsAppCtaLink>
                                 </Button>
                                 <div className="hidden lg:block w-px h-5 bg-border mx-1" />
                                 <div className="flex items-center gap-2">

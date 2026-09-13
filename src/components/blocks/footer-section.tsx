@@ -345,6 +345,12 @@ export function FooterSection({ dict, lang, contactData }: FooterSectionProps) {
             >
               {dict.footer.cookieSettings}
             </button>
+            <Link
+              href={`/${lang}/login`}
+              className="text-sm underline underline-offset-4 hover:text-foreground transition-colors"
+            >
+              {dict.footer.clientAccess ?? (lang === 'en' ? 'Client access' : 'Acceso a clientes')}
+            </Link>
           </div>
         </div>
       </div>

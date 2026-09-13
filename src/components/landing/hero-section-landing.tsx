@@ -12,6 +12,7 @@ import { LanguageSwitcher } from '@/components/language-switcher';
 import { ModeToggle } from '@/components/mode-toggle';
 import Magnet from '@/components/ui/magnet';
 import { Logo } from '@/components/blocks/hero-section';
+import { WhatsAppCtaLink } from '@/components/ui/whatsapp-cta-link';
 
 interface HeroSectionLandingProps {
   h1: string;
@@ -62,7 +63,7 @@ export function HeroSectionLanding({ h1, subtitle, lang, dict }: HeroSectionLand
             <div className="mx-auto max-w-7xl px-4 sm:px-6">
               <div className="text-center sm:mx-auto lg:mr-auto lg:mt-0">
                 <AnimatedGroup variants={transitionVariants}>
-                  <h1 className="mt-8 max-w-4xl mx-auto text-balance text-6xl md:text-7xl lg:mt-16 xl:text-[5.25rem]">
+                  <h1 className="mt-8 max-w-4xl mx-auto text-balance text-4xl sm:text-5xl md:text-7xl lg:mt-16 xl:text-[5.25rem]">
                     {h1}
                   </h1>
                   <p className="mx-auto mt-8 max-w-2xl text-balance text-lg">
@@ -91,11 +92,11 @@ export function HeroSectionLanding({ h1, subtitle, lang, dict }: HeroSectionLand
                       size="lg"
                       className="rounded-xl px-5 text-base"
                     >
-                      <Link href={`/${lang}/contact`}>
+                      <WhatsAppCtaLink lang={lang}>
                         <span className="text-nowrap">
-                          {lang === 'es' ? 'Solicitar Cotización' : 'Request Quote'}
+                          {lang === 'es' ? 'Solicitar cotización' : 'Request a quote'}
                         </span>
-                      </Link>
+                      </WhatsAppCtaLink>
                     </Button>
                   </Magnet>
                   <Magnet padding={50} disabled={false} magnetStrength={10}>
@@ -216,29 +217,10 @@ const HeroHeader = ({ dict, lang }: { dict: any; lang: Locale }) => {
                 </ul>
               </div>
               <div className="flex w-full flex-col space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit items-center">
-                <Button
-                  asChild
-                  variant="outline"
-                  size="sm"
-                  className={cn(isScrolled && 'lg:hidden')}
-                >
-                  <Link href={`/${lang}/login`}>
-                    <span>{dict.nav.login}</span>
-                  </Link>
-                </Button>
-                <Button asChild size="sm" className={cn(isScrolled && 'lg:hidden')}>
-                  <Link href={`/${lang}/signup`}>
-                    <span>{dict.nav.signUp}</span>
-                  </Link>
-                </Button>
-                <Button
-                  asChild
-                  size="sm"
-                  className={cn(isScrolled ? 'lg:inline-flex' : 'hidden')}
-                >
-                  <Link href={`/${lang}/signup`}>
-                    <span>{dict.nav.getStarted}</span>
-                  </Link>
+                <Button asChild size="sm">
+                  <WhatsAppCtaLink lang={lang}>
+                    <span>{dict.nav.talkToUs}</span>
+                  </WhatsAppCtaLink>
                 </Button>
                 <div className="flex items-center gap-2 ml-2">
                   <LanguageSwitcher currentLang={lang} />

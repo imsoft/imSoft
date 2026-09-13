@@ -20,6 +20,7 @@ import type { ContactFormProps } from '@/types/components'
 import Magnet from "@/components/ui/magnet"
 import { Captcha } from "@/components/ui/captcha"
 import type { TurnstileInstance } from '@marsidev/react-turnstile'
+import { LEAD_EVENT } from '@/lib/cta-events'
 
 const formValidation = (dict: Dictionary) => {
   const v = (dict.contact?.form as { validation?: Record<string, string> })?.validation;
@@ -89,6 +90,8 @@ export default function ContactForm({ dict }: ContactFormProps) {
       }
 
       setSubmitStatus('success')
+      // Lo escucha CtaTracker para registrar el envio en analitica.
+      window.dispatchEvent(new CustomEvent(LEAD_EVENT))
       form.reset()
       captchaRef.current?.reset()
       setCaptchaToken(undefined)

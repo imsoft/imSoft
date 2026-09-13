@@ -13,6 +13,7 @@ import Script from 'next/script';
 import { CookieBanner } from '@/components/cookies/cookie-banner';
 import { CookiePreferences } from '@/components/cookies/cookie-preferences';
 import { WhatsAppButton } from '@/components/ui/whatsapp-button';
+import { CtaTracker } from '@/components/analytics/cta-tracker';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -127,6 +128,7 @@ export default async function RootLayout({
         >
           {children}
           <Analytics />
+          <CtaTracker />
           <WhatsAppButton lang={lang} />
           <CookieBanner lang={lang as 'es' | 'en'} dict={dict} />
           <CookiePreferences lang={lang as 'es' | 'en'} dict={dict} />

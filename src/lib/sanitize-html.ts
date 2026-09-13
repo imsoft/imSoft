@@ -23,5 +23,7 @@ export function sanitizeBlogHtml(html: string): string {
     // Merge <li><ul>...</ul></li> that follows a </li> into the previous <li>.
     // Rich-text editors sometimes produce <ol><li>Heading</li><li><ul>sub-items</ul></li></ol>
     // instead of the correct <ol><li>Heading<ul>sub-items</ul></li></ol>.
-    .replace(/<\/li>(\s*)<li>(\s*)<ul>/gi, '<ul>');
+    .replace(/<\/li>(\s*)<li>(\s*)<ul>/gi, '<ul>')
+    // Las tablas se salian del ancho en movil: van en un contenedor con scroll horizontal.
+    .replace(/<table\b[^>]*>[\s\S]*?<\/table>/gi, (table) => `<div class="overflow-x-auto">${table}</div>`);
 }

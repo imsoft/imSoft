@@ -600,6 +600,7 @@
     "updatedAt": "Fecha de Actualización"
   },
   "footer": {
+    "clientAccess": "Acceso a clientes",
     "cta": {
       "title": "Hablemos de tu proyecto",
       "heading": "¿Necesitas software, una página web o una app para tu negocio?",
@@ -646,6 +647,8 @@
   },
   "cookies": {
     "banner": {
+      "short": "Usamos cookies para medir visitas. Puedes cambiarlo cuando quieras.",
+      "ok": "Entendido",
       "title": "Utilizamos cookies",
       "description": "Utilizamos cookies esenciales para el funcionamiento del sitio y cookies opcionales para mejorar tu experiencia. Puedes personalizar tus preferencias en cualquier momento.",
       "acceptAll": "Aceptar todo",
