@@ -2,10 +2,10 @@ name: Auto Blog Publisher
 
 on:
   schedule:
-    # Lunes a las 14:00 UTC (8:00 AM hora México). Era diario, pero con 92 articulos
-    # sobre ~7 temas el generador ya no tiene angulos nuevos que cubrir a ese ritmo:
-    # semanal deja margen para que cada pieza aporte algo distinto.
-    - cron: "0 14 * * 1"
+    # Días 1 y 15 de cada mes a las 14:00 UTC (8:00 AM hora México). Fue diario, luego
+    # semanal; con 59 posts que Google no indexa, dos al mes con fuentes reales rinden
+    # más que uno a la semana sin ellas. El tema sale de content/blog-queue.json.
+    - cron: "0 14 1,15 * *"
   workflow_dispatch: # Permite ejecutarlo manualmente desde GitHub
 
 jobs:
@@ -18,10 +18,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4.2.2
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4.1.0
+
       - name: Setup Node.js
         uses: actions/setup-node@v4.4.0
         with:
           node-version: "24"
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Generate and publish blog post
         env:
@@ -31,4 +38,4 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           BLOG_AUTHOR_ID: ${{ secrets.BLOG_AUTHOR_ID }}
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
-        run: node scripts/generate-blog.mjs
+        run: node --experimental-strip-types scripts/generate-blog.mjs

@@ -1,17 +1,31 @@
 #!/usr/bin/env node
 /**
- * Genera y publica un artículo de blog automáticamente en Supabase.
- * - Texto: Claude Haiku (Anthropic)
- * - Imagen: Gemini 2.0 Flash Image Generation (Google AI Studio)
- * - Almacenamiento: Supabase Storage (bucket "blog-images")
+ * Genera y publica un artículo de blog en Supabase, a partir de una cola de búsquedas
+ * reales (content/blog-queue.json).
  *
- * Variables de entorno requeridas:
- *   ANTHROPIC_API_KEY         — API key de Anthropic
- *   GEMINI_API_KEY            — API key de Google AI Studio
- *   NEXT_PUBLIC_SUPABASE_URL  — URL del proyecto Supabase
- *   SUPABASE_SERVICE_ROLE_KEY — Service role key (bypasses RLS)
- *   BLOG_AUTHOR_ID            — UUID del usuario autor en Supabase
+ *   node --experimental-strip-types scripts/generate-blog.mjs            # publica
+ *   node --experimental-strip-types scripts/generate-blog.mjs --dry-run  # genera y valida, no publica
+ *
+ * - Tema: la primera entrada de la cola sin post publicado. Sin cola pendiente, no publica.
+ * - Texto: Claude Opus 5 con búsqueda web, para que las cifras salgan de fuentes reales.
+ * - Validación (src/lib/blog-generator.ts): toda cifra con fuente enlazada en el mismo
+ *   párrafo, mínimo 2 fuentes externas y que cada una responda 200. Si no pasa, no publica.
+ * - Imagen: Imagen 4 (Google AI Studio). Si falla, NO se publica sin portada.
+ * - Guarda `slug` (inglés) y `slug_es`, que es la URL que ve Google en /es.
+ *
+ * Variables de entorno: ANTHROPIC_API_KEY, GEMINI_API_KEY, NEXT_PUBLIC_SUPABASE_URL,
+ * SUPABASE_SERVICE_ROLE_KEY, BLOG_AUTHOR_ID y, opcional, RESEND_API_KEY.
  */
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import Anthropic from "@anthropic-ai/sdk";
+import {
+  MAX_TITLE_OVERLAP,
+  pickNextTopic,
+  titleOverlap,
+  validateArticle,
+} from "../src/lib/blog-generator.ts";
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
@@ -19,141 +33,164 @@ const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const BLOG_AUTHOR_ID = process.env.BLOG_AUTHOR_ID;
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
-const SITE_URL = "https://imsoft.io";
+const SITE_URL = "https://www.imsoft.io";
 const NOTIFY_EMAIL = "contacto@imsoft.io";
 const NOTIFY_EMAIL_CC = "weareimsoft@gmail.com";
+const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
+const DRY_RUN = process.argv.includes("--dry-run");
 
 if (!ANTHROPIC_API_KEY || !GEMINI_API_KEY || !SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY || !BLOG_AUTHOR_ID) {
   console.error("Faltan variables de entorno requeridas.");
   process.exit(1);
 }
 
-const CATEGORIES = [
-  { value: "technology", label_es: "Tecnología", label_en: "Technology" },
-  { value: "development", label_es: "Desarrollo", label_en: "Development" },
-  { value: "business", label_es: "Negocios", label_en: "Business" },
-  { value: "marketing", label_es: "Marketing", label_en: "Marketing" },
-  { value: "design", label_es: "Diseño", label_en: "Design" },
-  { value: "tutorials", label_es: "Tutoriales", label_en: "Tutorials" },
-  { value: "tips", label_es: "Tips y Trucos", label_en: "Tips & Tricks" },
-  { value: "news", label_es: "Noticias", label_en: "News" },
-];
+const CATEGORY_LABELS = {
+  technology: "Tecnología",
+  development: "Desarrollo",
+  business: "Negocios",
+  marketing: "Marketing",
+  design: "Diseño",
+  tutorials: "Tutoriales",
+  tips: "Tips y Trucos",
+  news: "Noticias",
+};
 
-function pickCategory() {
-  const dayOfYear = Math.floor(
-    (Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 86400000
+const supabaseHeaders = {
+  apikey: SUPABASE_SERVICE_ROLE_KEY,
+  Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+};
+
+/** Slugs y títulos ya publicados: para elegir tema y para la puerta anti-duplicados. */
+async function fetchExistingPosts() {
+  const response = await fetch(
+    `${SUPABASE_URL}/rest/v1/blog?select=slug,slug_es,title_es,title_en&order=created_at.desc`,
+    { headers: supabaseHeaders }
   );
-  return CATEGORIES[dayOfYear % CATEGORIES.length];
+  if (!response.ok) throw new Error(`Supabase ${response.status} al leer los posts existentes`);
+  return response.json();
 }
 
-function slugify(text) {
-  return text
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .replace(/[^a-z0-9\s-]/g, "")
-    .trim()
-    .replace(/\s+/g, "-")
-    .substring(0, 80);
+function loadQueue() {
+  const raw = fs.readFileSync(path.join(ROOT, "content", "blog-queue.json"), "utf8");
+  return JSON.parse(raw).temas;
 }
 
-async function generateBlogPost(category, existingTitles = []) {
-  const today = new Date().toLocaleDateString("es-MX", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+const CTA_HTML =
+  '<div class="cta-blog"><p><strong>¿Listo para dar el siguiente paso?</strong> En imSoft te ayudamos a llevarlo a la realidad. <a href="https://wa.me/523325365558" target="_blank" rel="noopener noreferrer">Escríbenos por WhatsApp</a> y cuéntanos tu proyecto — la primera consultoría es sin costo.</p></div>';
+const CTA_HTML_EN =
+  '<div class="cta-blog"><p><strong>Ready to take the next step?</strong> At imSoft we help you make it real. <a href="https://wa.me/523325365558" target="_blank" rel="noopener noreferrer">Message us on WhatsApp</a> and tell us about your project — the first consultation is free.</p></div>';
 
-  const prompt = `Eres el redactor de contenido de imSoft, una agencia de desarrollo de software mexicana especializada en sitios web, aplicaciones móviles, e-commerce y transformación digital.
-
-## AUDIENCIA
-Emprendedores, dueños de PyME, directores/gerentes y startups tech en México y Latinoamérica que quieren digitalizarse o mejorar su presencia online.
-
-## OBJETIVO
-Cada artículo debe GENERAR LEADS para imSoft. El lector debe terminar con ganas de contactar a imSoft para resolver su problema.
-
-## TONO
-Profesional y directo. Sin rodeos. Orientado a resultados de negocio. Primera persona plural ("en imSoft sabemos que...", "lo que hacemos es..."). Sin tutear.
-
-## TEMAS PRINCIPALES (rota entre estos según sea relevante para la categoría)
-- Desarrollo web y apps (Next.js, React, apps móviles, tecnologías modernas)
-- Transformación digital (cómo digitalizar negocios, automatización, herramientas para PyMEs)
-- E-commerce y ventas online (tiendas en línea, pagos, estrategias de venta digital)
-- Marketing digital y SEO (posicionamiento, Google, redes sociales, contenido)
-
-## ESTRUCTURA DEL ARTÍCULO
-1. Introducción: enganchar con un problema real del lector (2-3 párrafos)
-2. Desarrollo: 3-4 secciones con subtítulos <h2>, datos concretos y ejemplos prácticos
-3. Conclusión: síntesis del valor + CTA directo a WhatsApp
-
-## CTA OBLIGATORIO AL FINAL
-El artículo DEBE terminar con este bloque HTML exacto (no lo modifiques):
-<div class="cta-blog"><p><strong>¿Listo para dar el siguiente paso?</strong> En imSoft te ayudamos a llevarlo a la realidad. <a href="https://wa.me/523325365558" target="_blank" rel="noopener noreferrer">Escríbenos por WhatsApp</a> y cuéntanos tu proyecto — la primera consultoría es sin costo.</p></div>
-
-## REQUISITOS TÉCNICOS
-- Entre 650-950 palabras de contenido real
-- HTML semántico: <h2>, <h3>, <p>, <ul>, <li>, <strong>, <em> — SIN <h1>, SIN markdown
-- Optimizado para SEO: incluye la keyword principal 3-5 veces de forma natural
-- Hoy es ${today}. Categoría del artículo: "${category.label_es}" (${category.label_en})
-
-## ARTÍCULOS YA PUBLICADOS — NO LOS REPITAS
-Estos ${existingTitles.length} títulos ya están en el blog. El artículo nuevo debe cubrir un
-ángulo que NO esté aquí: otro subtema, otro nivel de detalle o un caso concreto distinto.
-No reformules ninguno de estos títulos con otras palabras.
-
-${existingTitles.map((t) => `- ${t.title_es}`).join("\n")}`;
-
-  const response = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: {
-      "x-api-key": ANTHROPIC_API_KEY,
-      "anthropic-version": "2023-06-01",
-      "content-type": "application/json",
-    },
-    body: JSON.stringify({
-      model: "claude-haiku-4-5-20251001",
-      max_tokens: 8192,
-      tools: [
-        {
-          name: "publish_blog_post",
-          description: "Publica un artículo de blog bilingüe en el sitio de imSoft.",
-          input_schema: {
-            type: "object",
-            properties: {
-              title_es: { type: "string", description: "Título en español (máx 70 chars)" },
-              title_en: { type: "string", description: "Title in English (max 70 chars)" },
-              excerpt_es: { type: "string", description: "Resumen en español (máx 160 chars)" },
-              excerpt_en: { type: "string", description: "Summary in English (max 160 chars)" },
-              content_es: { type: "string", description: "Contenido HTML completo en español" },
-              content_en: { type: "string", description: "Full HTML content in English" },
-            },
-            required: ["title_es", "title_en", "excerpt_es", "excerpt_en", "content_es", "content_en"],
+const PUBLISH_TOOL = {
+  name: "publish_blog_post",
+  description:
+    "Entrega el artículo terminado. Llámala una sola vez, al final, cuando ya investigaste y tienes las fuentes.",
+  strict: true,
+  input_schema: {
+    type: "object",
+    additionalProperties: false,
+    properties: {
+      title_es: { type: "string", description: "Título en español, máximo 70 caracteres, que responda la búsqueda" },
+      title_en: { type: "string", description: "Title in English, max 70 characters" },
+      excerpt_es: { type: "string", description: "Resumen en español, máximo 160 caracteres" },
+      excerpt_en: { type: "string", description: "Summary in English, max 160 characters" },
+      content_es: { type: "string", description: "Cuerpo en HTML (h2, h3, p, ul, ol, li, table, strong, a). Sin h1, sin markdown, sin el CTA final." },
+      content_en: { type: "string", description: "Body in HTML, same rules, English" },
+      fuentes: {
+        type: "array",
+        description: "Cada fuente externa que enlazas en el texto. La URL debe ser exactamente la que pusiste en el href.",
+        items: {
+          type: "object",
+          additionalProperties: false,
+          properties: {
+            url: { type: "string" },
+            titulo: { type: "string" },
+            respalda: { type: "string", description: "Qué dato del artículo respalda esta fuente" },
           },
+          required: ["url", "titulo", "respalda"],
         },
-      ],
-      tool_choice: { type: "tool", name: "publish_blog_post" },
-      messages: [{ role: "user", content: prompt }],
-    }),
-  });
+      },
+    },
+    required: ["title_es", "title_en", "excerpt_es", "excerpt_en", "content_es", "content_en", "fuentes"],
+  },
+};
 
-  const rawText = await response.text();
+function buildPrompt(topic, existingTitles) {
+  const today = new Date().toLocaleDateString("es-MX", { year: "numeric", month: "long", day: "numeric" });
+  return `Escribes para el blog de imSoft, una agencia de desarrollo de software de Guadalajara, México (páginas web, tiendas en línea, apps móviles y software a medida). Hoy es ${today}.
 
-  if (!response.ok) {
-    throw new Error(`Claude API error ${response.status}: ${rawText}`);
+## Para quién
+Dueños de negocio y directivos en México que teclearon en Google exactamente esto: "${topic.busqueda}". Quieren una respuesta útil, no un discurso de ventas.
+
+## Qué debe cubrir el artículo
+${topic.angulo}
+
+## Regla número uno: nada de cifras sin fuente
+Antes de escribir, investiga con la herramienta de búsqueda web. Toda cifra (precios, porcentajes, tarifas, plazos, "según…") tiene que venir de una página real que hayas encontrado, enlazada con <a href="URL exacta"> en el MISMO párrafo o item de lista donde aparece la cifra. Si no encuentras fuente para un dato, no lo pongas. Preferimos un artículo con cuatro cifras verificables a uno con veinte inventadas. Prioriza fuentes mexicanas y recientes, y anota junto a cada fuente su fecha si la tiene.
+
+Declara cada fuente que enlaces en el campo "fuentes", con la URL idéntica a la del href. Mínimo dos fuentes externas distintas. No enlaces a imsoft.io ni a wa.me dentro del cuerpo.
+
+## Cómo escribir
+- Responde la pregunta en los primeros dos párrafos. Después, el detalle.
+- Tono directo y concreto, de alguien que hace este trabajo todos los días. Primera persona del plural cuando hables de imSoft, y solo al final.
+- Sin frases de relleno ("en el mundo digital de hoy…"), sin prometer resultados, sin adjetivos vacíos.
+- Cuando compares opciones, di honestamente cuándo la opción barata es la correcta.
+- Entre 900 y 1,400 palabras por idioma. HTML semántico: <h2>, <h3>, <p>, <ul>, <ol>, <li>, <table>, <strong>, <a>. Sin <h1>, sin markdown.
+- Termina con una sección corta sobre cómo lo hacemos en imSoft, sin inventar precios ni cifras nuestras: solo que damos una propuesta con precio fijo en 48 horas y que la primera llamada no cuesta. No incluyas el bloque CTA final: lo agrega el sistema.
+- La versión en inglés es una traducción fiel de la española, con las mismas fuentes y enlaces.
+
+## Ya publicado (no repitas ni reformules)
+${existingTitles.map((t) => `- ${t}`).join("\n")}
+
+Cuando termines, llama a publish_blog_post una sola vez con el artículo completo.`;
+}
+
+async function generateBlogPost(topic, existingTitles) {
+  const client = new Anthropic({ apiKey: ANTHROPIC_API_KEY });
+  const tools = [
+    { type: "web_search_20260209", name: "web_search", max_uses: 10, user_location: { type: "approximate", country: "MX" } },
+    PUBLISH_TOOL,
+  ];
+  const messages = [{ role: "user", content: buildPrompt(topic, existingTitles) }];
+
+  for (let intento = 0; intento < 4; intento += 1) {
+    // Streaming: el SDK lo exige para respuestas largas, y esta puede tardar minutos.
+    const response = await client.messages
+      .stream({
+        model: "claude-opus-5",
+        max_tokens: 32000,
+        thinking: { type: "adaptive" },
+        output_config: { effort: "high" },
+        tools,
+        messages,
+      })
+      .finalMessage();
+    const publish = response.content.find((b) => b.type === "tool_use" && b.name === "publish_blog_post");
+    if (publish) return publish.input;
+    if (response.stop_reason === "pause_turn") {
+      // El bucle de búsqueda del servidor se pausó: se reenvía tal cual y continúa.
+      messages.push({ role: "assistant", content: response.content });
+      continue;
+    }
+    if (response.stop_reason === "refusal") {
+      throw new Error(`Claude rechazó la petición: ${response.stop_details?.explanation ?? "sin detalle"}`);
+    }
+    throw new Error(`Claude terminó con stop_reason=${response.stop_reason} sin llamar a publish_blog_post.`);
   }
+  throw new Error("Claude no entregó el artículo tras varias pausas de búsqueda.");
+}
 
-  let data;
-  try {
-    data = JSON.parse(rawText);
-  } catch (e) {
-    console.error("Respuesta de Claude (primeros 500 chars):", rawText.substring(0, 500));
-    throw new Error(`Respuesta de Claude no es JSON válido: ${e.message}`);
+/** Cada fuente declarada tiene que responder: una URL alucinada no pasa. */
+async function verifySources(fuentes) {
+  const fallidas = [];
+  for (const f of fuentes) {
+    try {
+      const r = await fetch(f.url, { method: "GET", redirect: "follow", headers: { "user-agent": "Mozilla/5.0 (imSoft blog source check)" }, signal: AbortSignal.timeout(15000) });
+      if (!r.ok) fallidas.push(`${f.url} → HTTP ${r.status}`);
+    } catch (err) {
+      fallidas.push(`${f.url} → ${err.message}`);
+    }
   }
-
-  const toolUse = data.content.find((b) => b.type === "tool_use");
-  if (!toolUse) throw new Error("Claude no devolvió una llamada de herramienta.");
-
-  return toolUse.input;
+  return fallidas;
 }
 
 async function generateImage(title_en) {
@@ -209,69 +246,6 @@ async function uploadImageToSupabase(imageBuffer, slug, mimeType = "image/png") 
   return `${SUPABASE_URL}/storage/v1/object/public/blog-images/${filename}`;
 }
 
-/**
- * Titulos ya publicados. El generador corria a ciegas: pedia un articulo sobre uno de
- * cuatro temas sin saber que ya habia 92 posts sobre esos mismos temas, asi que
- * reescribia lo mismo un dia si y otro tambien. Google los rastreaba y los descartaba
- * ("Rastreada: actualmente sin indexar").
- */
-async function fetchExistingTitles() {
-  const response = await fetch(
-    `${SUPABASE_URL}/rest/v1/blog?select=title_es,title_en&order=created_at.desc`,
-    {
-      headers: {
-        apikey: SUPABASE_SERVICE_ROLE_KEY,
-        Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-      },
-    }
-  );
-  if (!response.ok) return [];
-  const data = await response.json();
-  return data.filter((p) => p.title_es);
-}
-
-/** Normaliza para comparar titulos ignorando acentos, signos y palabras vacias. */
-function titleFingerprint(title) {
-  const STOP = new Set([
-    "el","la","los","las","un","una","de","del","para","por","que","tu","tus","en","y","o",
-    "como","cual","sin","con","mas","the","a","an","of","for","to","your","in","and","or",
-    "how","what","why","without","with","more",
-  ]);
-  return new Set(
-    (title || "")
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/[^a-z0-9\s]/g, " ")
-      .split(/\s+/)
-      .filter((w) => w.length > 2 && !STOP.has(w))
-  );
-}
-
-/** Solapamiento de palabras significativas entre dos titulos (0 a 1). */
-function titleOverlap(a, b) {
-  const A = titleFingerprint(a);
-  const B = titleFingerprint(b);
-  if (!A.size || !B.size) return 0;
-  let shared = 0;
-  for (const w of A) if (B.has(w)) shared += 1;
-  return shared / Math.min(A.size, B.size);
-}
-
-async function slugExists(slug) {
-  const response = await fetch(
-    `${SUPABASE_URL}/rest/v1/blog?slug=eq.${encodeURIComponent(slug)}&select=id`,
-    {
-      headers: {
-        apikey: SUPABASE_SERVICE_ROLE_KEY,
-        Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-      },
-    }
-  );
-  const data = await response.json();
-  return Array.isArray(data) && data.length > 0;
-}
-
 async function publishPost(post) {
   const response = await fetch(`${SUPABASE_URL}/rest/v1/blog`, {
     method: "POST",
@@ -293,7 +267,7 @@ async function publishPost(post) {
 }
 
 function buildSuccessEmail({ title_es, title_en, slug, category, imageUrl }) {
-  const postUrl = `${SITE_URL}/es/blog/${slug}`;
+  const postUrl = `${SITE_URL}/es/blog/${slug}`; // slug_es
   const date = new Date().toLocaleDateString("es-MX", { year: "numeric", month: "long", day: "numeric" });
 
   return `<!DOCTYPE html>
@@ -521,86 +495,78 @@ async function sendEmail(subject, html) {
   }
 }
 
-/** Solapamiento maximo tolerado con un titulo ya publicado. */
-const MAX_TITLE_OVERLAP = 0.6;
-
 async function main() {
-  const category = pickCategory();
-  console.log(`Generando artículo para categoría: ${category.label_es}`);
+  const queue = loadQueue();
+  const existing = await fetchExistingPosts();
+  const existingSlugs = existing.flatMap((p) => [p.slug, p.slug_es]);
+  const topic = pickNextTopic(queue, existingSlugs);
+  if (!topic) {
+    console.log("Cola de temas agotada: no se publica nada. Agrega búsquedas a content/blog-queue.json.");
+    await sendEmail("Blog automático: cola de temas vacía", buildErrorEmail("No quedan temas pendientes en content/blog-queue.json. No se publicó nada."));
+    return;
+  }
+  console.log(`Tema: "${topic.busqueda}" → /es/blog/${topic.slug_es}`);
 
-  const existingTitles = await fetchExistingTitles();
-  console.log(`Contexto: ${existingTitles.length} artículos ya publicados.`);
-
-  const generated = await generateBlogPost(category, existingTitles);
+  const existingTitles = existing.map((p) => p.title_es).filter(Boolean);
+  const generated = await generateBlogPost(topic, existingTitles);
   console.log(`Título: ${generated.title_es}`);
 
-  // Puerta anti-canibalizacion. Antes se detectaba el slug repetido y se publicaba
-  // igual con `-${Date.now()}` pegado, que es como aparecieron cinco posts gemelos.
-  // Ahora se descarta la tirada: mejor no publicar que publicar un duplicado.
+  const problemas = [...validateArticle(generated, "es"), ...validateArticle(generated, "en")];
   const clash = existingTitles
-    .map((p) => ({
-      title: p.title_es,
-      score: Math.max(
-        titleOverlap(generated.title_es, p.title_es),
-        titleOverlap(generated.title_en, p.title_en)
-      ),
-    }))
+    .map((t) => ({ t, score: titleOverlap(generated.title_es, t) }))
     .sort((a, b) => b.score - a.score)[0];
-
   if (clash && clash.score >= MAX_TITLE_OVERLAP) {
-    console.error(
-      `Descartado: el título propuesto solapa ${(clash.score * 100).toFixed(0)}% con uno ya publicado.\n` +
-        `  nuevo:     ${generated.title_es}\n` +
-        `  existente: ${clash.title}\n` +
-        `No se publica nada. Revisa la lista de temas si esto se repite varios días seguidos.`
-    );
-    process.exit(0);
+    problemas.push(`el título solapa ${(clash.score * 100).toFixed(0)}% con uno publicado: "${clash.t}"`);
+  }
+  problemas.push(...(await verifySources(generated.fuentes)).map((f) => `fuente que no responde: ${f}`));
+
+  if (problemas.length > 0) {
+    const detalle = problemas.map((p) => `- ${p}`).join("\n");
+    throw new Error(`El artículo no pasó la validación y NO se publicó:\n${detalle}`);
+  }
+  console.log(`Validado: ${generated.fuentes.length} fuentes, todas responden.`);
+
+  if (DRY_RUN) {
+    const out = path.join(ROOT, ".blog-dry-run.json");
+    fs.writeFileSync(out, JSON.stringify({ topic, ...generated }, null, 2));
+    console.log(`--dry-run: no se genera imagen ni se publica. Artículo guardado en ${out}`);
+    return;
   }
 
-  const slug = slugify(generated.title_en);
-  if (await slugExists(slug)) {
-    console.error(`Descartado: el slug "${slug}" ya existe. No se publica nada.`);
-    process.exit(0);
-  }
-
-  let imageUrl = null;
-  try {
-    console.log("Generando imagen con Gemini 2.5 Flash Image...");
-    const { buffer, mimeType } = await generateImage(generated.title_en);
-    console.log("Subiendo imagen a Supabase Storage...");
-    imageUrl = await uploadImageToSupabase(buffer, slug, mimeType);
-    console.log(`Imagen: ${imageUrl}`);
-  } catch (imgErr) {
-    console.warn(`Advertencia: no se pudo generar la imagen (${imgErr.message}). El artículo se publicará sin imagen.`);
-  }
+  // Sin portada no se publica: antes se publicaba igual y quedaron 11 posts sin imagen.
+  console.log("Generando imagen...");
+  const { buffer, mimeType } = await generateImage(generated.title_en);
+  const imageUrl = await uploadImageToSupabase(buffer, topic.slug_en, mimeType);
+  console.log(`Imagen: ${imageUrl}`);
 
   const post = {
     title_es: generated.title_es,
     title_en: generated.title_en,
     title: generated.title_es,
-    content_es: generated.content_es,
-    content_en: generated.content_en,
-    content: generated.content_es,
-    excerpt_es: generated.excerpt_es || null,
-    excerpt_en: generated.excerpt_en || null,
-    excerpt: generated.excerpt_es || null,
-    slug,
+    content_es: `${generated.content_es}\n${CTA_HTML}`,
+    content_en: `${generated.content_en}\n${CTA_HTML_EN}`,
+    content: `${generated.content_es}\n${CTA_HTML}`,
+    excerpt_es: generated.excerpt_es,
+    excerpt_en: generated.excerpt_en,
+    excerpt: generated.excerpt_es,
+    slug: topic.slug_en,
+    slug_es: topic.slug_es,
     image_url: imageUrl,
-    category: category.value,
+    category: topic.categoria,
     author_id: BLOG_AUTHOR_ID,
     published: true,
   };
 
   const result = await publishPost(post);
-  console.log(`Publicado exitosamente. ID: ${result[0]?.id}, Slug: ${slug}`);
+  console.log(`Publicado. ID: ${result[0]?.id} → ${SITE_URL}/es/blog/${topic.slug_es}`);
 
   await sendEmail(
     `✓ Nuevo artículo publicado: ${generated.title_es}`,
     buildSuccessEmail({
       title_es: generated.title_es,
       title_en: generated.title_en,
-      slug,
-      category: category.label_es,
+      slug: topic.slug_es,
+      category: CATEGORY_LABELS[topic.categoria] ?? topic.categoria,
       imageUrl,
     })
   );
@@ -608,8 +574,9 @@ async function main() {
 
 main().catch(async (err) => {
   console.error("Error:", err.message);
+  if (DRY_RUN) process.exit(1);
   await sendEmail(
-    `✗ Error al publicar artículo automático — ${new Date().toLocaleDateString("es-MX")}`,
+    `✗ Blog automático: no se publicó — ${new Date().toLocaleDateString("es-MX")}`,
     buildErrorEmail(err.message)
   );
   process.exit(1);

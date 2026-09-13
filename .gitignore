@@ -59,3 +59,4 @@ scripts/prospects/*.local.csv
 .idea/
 *.swp
 *.swo
+.blog-dry-run.json

@@ -1,0 +1,61 @@
+{
+  "_doc": "Cola de temas del blog automatico. Cada entrada es una busqueda REAL (validada con el autocompletado de Google es-MX o con Search Console). El script publica la primera cuyo slug_es no exista aun en la tabla blog; no hace falta marcarla como usada. Sin entradas pendientes, no publica nada.",
+  "temas": [
+    {
+      "slug_es": "cuanto-cuesta-una-pagina-web-en-mexico",
+      "slug_en": "how-much-does-a-website-cost-in-mexico",
+      "busqueda": "cuanto cuesta una pagina web",
+      "angulo": "Rangos publicados por agencias y freelancers mexicanos en 2026 para pagina basica, corporativa y tienda; que incluye cada rango; costos anuales (dominio, hosting, mantenimiento); como pedir una cotizacion util.",
+      "categoria": "business"
+    },
+    {
+      "slug_es": "cuanto-cuesta-una-tienda-en-linea-en-mexico",
+      "slug_en": "how-much-does-an-online-store-cost-in-mexico",
+      "busqueda": "cuanto cuesta una tienda en linea en mexico",
+      "angulo": "Comparar Shopify/Tiendanube (mensualidad + comisiones) contra tienda a medida; comisiones reales de pasarelas en Mexico (Stripe, Mercado Pago, Conekta) citadas de sus paginas de precios; en que punto conviene cada opcion.",
+      "categoria": "business"
+    },
+    {
+      "slug_es": "cuanto-cuesta-mantener-una-app-al-mes",
+      "slug_en": "how-much-does-it-cost-to-maintain-an-app-per-month",
+      "busqueda": "cuanto cuesta mantener una app",
+      "angulo": "Costos recurrentes reales: cuentas de Apple y Google, servidores, servicios (notificaciones, correo, mapas), actualizaciones obligatorias por cambios de iOS/Android, y el porcentaje anual que publican las agencias. Para quien ya tiene una app o esta por encargarla.",
+      "categoria": "business"
+    },
+    {
+      "slug_es": "cuanto-cobra-un-programador-por-hacer-una-pagina-web",
+      "slug_en": "how-much-does-a-programmer-charge-to-build-a-website",
+      "busqueda": "cuanto cobra un programador por hacer una pagina web",
+      "angulo": "Tarifas por hora y por proyecto de freelancers en Mexico (Workana, Freelancer, encuestas salariales publicas), diferencia contra agencia, y que preguntas hacer antes de contratar. Sin inventar tarifas: solo cifras citadas.",
+      "categoria": "business"
+    },
+    {
+      "slug_es": "software-de-logistica-para-empresas-en-mexico",
+      "slug_en": "logistics-software-for-companies-in-mexico",
+      "busqueda": "software de logistica",
+      "angulo": "Que resuelve un software de logistica (rutas, flotilla, almacen, tracking), opciones comerciales disponibles en Mexico con sus precios publicados, y cuando conviene uno a medida. Es la unica vertical con impresiones reales en Search Console.",
+      "categoria": "technology"
+    },
+    {
+      "slug_es": "cuanto-cuesta-un-sistema-de-inventario",
+      "slug_en": "how-much-does-an-inventory-system-cost",
+      "busqueda": "cuanto cuesta un sistema de inventario",
+      "angulo": "Precios publicados de sistemas de inventario comerciales en Mexico (mensualidad por usuario/sucursal) contra desarrollo a medida; senales de que una hoja de calculo ya no alcanza. Citar paginas de precios reales.",
+      "categoria": "business"
+    },
+    {
+      "slug_es": "cuanto-cuesta-un-erp-para-pymes-en-mexico",
+      "slug_en": "how-much-does-an-erp-for-smes-cost-in-mexico",
+      "busqueda": "cuanto cuesta un erp para pymes",
+      "angulo": "Rangos de licencia e implementacion de ERPs que se venden en Mexico (Odoo, SAP Business One, CONTPAQi, Microsoft) citados de fuentes publicas, costos ocultos de implementacion, y cuando un sistema a medida sale mejor.",
+      "categoria": "business"
+    },
+    {
+      "slug_es": "software-para-clinicas-que-necesita-y-cuanto-cuesta",
+      "slug_en": "clinic-software-what-you-need-and-what-it-costs",
+      "busqueda": "software para clinicas",
+      "angulo": "Funciones que una clinica en Mexico necesita (agenda, expediente, facturacion CFDI, recordatorios por WhatsApp), opciones comerciales con precios publicados, y cuando conviene a medida. Conectar con la landing de clinicas.",
+      "categoria": "technology"
+    }
+  ]
+}
