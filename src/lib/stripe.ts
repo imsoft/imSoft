@@ -17,6 +17,10 @@ export interface CreatePaymentLinkParams {
   currency: string
   projectId: string
   projectName: string
+  /** Fila de project_payments (status pending) que este enlace liquida. */
+  paymentId?: string
+  /** "Anticipo (50%)", "Liquidación"... aparece en la pantalla de pago. */
+  label?: string
   enableInstallments?: boolean
   installmentOptions?: number[]
 }
@@ -26,6 +30,8 @@ export async function createPaymentLink({
   currency,
   projectId,
   projectName,
+  paymentId,
+  label,
   enableInstallments = false,
   installmentOptions = [],
 }: CreatePaymentLinkParams): Promise<{ id: string; url: string }> {
@@ -36,6 +42,8 @@ export async function createPaymentLink({
   try {
     // Convertir amount a centavos (Stripe usa la menor unidad de moneda)
     const amountInCents = Math.round(amount * 100)
+    const metadata: Record<string, string> = { project_id: projectId }
+    if (paymentId) metadata.payment_id = paymentId
 
     const paymentLinkData: Stripe.PaymentLinkCreateParams = {
       line_items: [
@@ -43,16 +51,19 @@ export async function createPaymentLink({
           price_data: {
             currency: currency.toLowerCase(),
             product_data: {
-              name: projectName,
+              name: label ? `${projectName} · ${label}` : projectName,
             },
             unit_amount: amountInCents,
           },
           quantity: 1,
         },
       ],
-      metadata: {
-        project_id: projectId,
-      },
+      // En la sesion de Checkout y tambien en el PaymentIntent: el webhook recibe los
+      // dos eventos y con payment_id marca la misma fila, sin duplicar el pago.
+      metadata,
+      payment_intent_data: { metadata },
+      // Un hito se cobra una vez: el enlace se desactiva tras el primer pago.
+      restrictions: { completed_sessions: { limit: 1 } },
     }
 
     // Meses sin intereses: para Payment Links los planes y minimos los gobierna la

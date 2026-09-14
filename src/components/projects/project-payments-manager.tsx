@@ -38,6 +38,7 @@ import {
   FormMessage
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { etiquetaSugerida, hitoSugerido, saldoPendiente, urlDeNotas } from '@/lib/payment-links'
 import { Textarea } from '@/components/ui/textarea'
 import {
   Select,
@@ -100,6 +101,8 @@ export function ProjectPaymentsManager({ projectId, projectCurrency = 'MXN', pro
   const [copied, setCopied] = useState(false)
   const [enableInstallments, setEnableInstallments] = useState(false)
   const [installmentOptions, setInstallmentOptions] = useState<number[]>([])
+  const [linkAmount, setLinkAmount] = useState<string>('')
+  const [linkLabel, setLinkLabel] = useState<string>('')
   const [paymentToDelete, setPaymentToDelete] = useState<string | null>(null)
 
   const form = useForm<PaymentFormValues>({
@@ -149,6 +152,8 @@ export function ProjectPaymentsManager({ projectId, projectCurrency = 'MXN', pro
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+          amount: Number(linkAmount) || hitoSugerido(projectTotalPrice, payments),
+          label: linkLabel.trim() || etiquetaSugerida(payments, lang),
           enableInstallments,
           installmentOptions: installmentOptions.length > 0 ? installmentOptions : [3, 6, 12],
         }),
@@ -161,6 +166,9 @@ export function ProjectPaymentsManager({ projectId, projectCurrency = 'MXN', pro
 
       const data = await response.json()
       setStripePaymentLink({ id: data.paymentLinkId, url: data.paymentLinkUrl })
+      setLinkAmount('')
+      setLinkLabel('')
+      await fetchPayments()
       toast.success(lang === 'en' ? 'Payment link created successfully' : 'Enlace de pago creado exitosamente')
     } catch (error) {
       console.error('Error generating payment link:', error)
@@ -374,10 +382,48 @@ export function ProjectPaymentsManager({ projectId, projectCurrency = 'MXN', pro
                 >
                   {lang === 'en' ? 'Share via Email' : 'Compartir por Email'}
                 </Button>
+                <Button variant="ghost" size="sm" onClick={() => setStripePaymentLink(null)}>
+                  {lang === 'en' ? 'New link (next milestone)' : 'Nuevo enlace (siguiente hito)'}
+                </Button>
               </div>
             </div>
           ) : (
             <div className="space-y-3">
+              {(() => {
+                const saldo = saldoPendiente(projectTotalPrice, payments)
+                const sugerido = hitoSugerido(projectTotalPrice, payments)
+                return (
+                  <p className="text-sm text-muted-foreground">
+                    {lang === 'en'
+                      ? `Outstanding: ${formatCurrency(saldo, projectCurrency)}. Suggested milestone: ${formatCurrency(sugerido, projectCurrency)}.`
+                      : `Por cobrar: ${formatCurrency(saldo, projectCurrency)}. Hito sugerido: ${formatCurrency(sugerido, projectCurrency)}.`}
+                  </p>
+                )
+              })()}
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div className="space-y-1">
+                  <label className="text-sm font-medium">{lang === 'en' ? 'Amount for this link' : 'Monto de este enlace'}</label>
+                  <Input
+                    type="number"
+                    min={1}
+                    step="0.01"
+                    placeholder={String(hitoSugerido(projectTotalPrice, payments))}
+                    value={linkAmount}
+                    onChange={(e) => setLinkAmount(e.target.value)}
+                    className="border-2! border-border!"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-sm font-medium">{lang === 'en' ? 'Label' : 'Concepto'}</label>
+                  <Input
+                    type="text"
+                    placeholder={etiquetaSugerida(payments, lang)}
+                    value={linkLabel}
+                    onChange={(e) => setLinkLabel(e.target.value)}
+                    className="border-2! border-border!"
+                  />
+                </div>
+              </div>
               <div className="flex items-center justify-between">
                 <label className="text-sm font-medium flex items-center gap-2">
                   {lang === 'en' ? 'Enable installments (months without interest)' : 'Habilitar meses sin intereses'}
@@ -388,30 +434,11 @@ export function ProjectPaymentsManager({ projectId, projectCurrency = 'MXN', pro
                 />
               </div>
               {enableInstallments && (
-                <div className="space-y-2">
-                  <label className="text-sm text-muted-foreground">
-                    {lang === 'en' ? 'Available options (comma separated):' : 'Opciones disponibles (separadas por comas):'}
-                  </label>
-                  <Input
-                    type="text"
-                    placeholder="3, 6, 12"
-                    value={installmentOptions.join(', ')}
-                    onChange={(e) => {
-                      const values = e.target.value
-                        .split(',')
-                        .map(v => parseInt(v.trim()))
-                        .filter(v => !isNaN(v) && v > 0)
-                      setInstallmentOptions(values)
-                    }}
-                    className="border-2! border-border!"
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    {lang === 'en' 
-                      ? 'Note: Available options depend on the customer\'s bank and country'
-                      : 'Nota: Las opciones disponibles dependen del banco y país del cliente'
-                    }
-                  </p>
-                </div>
+                <p className="text-xs text-muted-foreground">
+                  {lang === 'en'
+                    ? 'Plans and minimums come from the Stripe Dashboard (payment methods → Meses sin intereses). Mexican credit cards only.'
+                    : 'Los plazos y mínimos los define el Dashboard de Stripe (métodos de pago → Meses sin intereses). Solo tarjetas de crédito mexicanas.'}
+                </p>
               )}
               <Button
                 onClick={generateStripePaymentLink}
@@ -676,7 +703,19 @@ export function ProjectPaymentsManager({ projectId, projectCurrency = 'MXN', pro
                       </div>
                     )}
                     {payment.notes && (
-                      <div className="text-xs">{payment.notes}</div>
+                      <div className="text-xs flex items-center gap-2 flex-wrap">
+                        <span>{payment.notes}</span>
+                        {payment.status === 'pending' && urlDeNotas(payment.notes) && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-6 px-2 text-xs"
+                            onClick={() => copyToClipboard(urlDeNotas(payment.notes) as string)}
+                          >
+                            {lang === 'en' ? 'Copy link' : 'Copiar enlace'}
+                          </Button>
+                        )}
+                      </div>
                     )}
                   </div>
                 </div>

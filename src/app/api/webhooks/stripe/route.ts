@@ -12,6 +12,37 @@ if (!webhookSecret) {
   }
 }
 
+
+/**
+ * Enlaces por hito: el enlace lleva payment_id y el webhook marca esa fila como
+ * completada. Devuelve true si la manejo (o ya estaba completada); false si el evento
+ * es de un enlace antiguo sin payment_id y hay que seguir por la via anterior.
+ */
+async function completarPagoPendiente(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  paymentId: string | undefined,
+  referencia: string,
+): Promise<boolean> {
+  if (!paymentId) return false
+  const { data: fila } = await supabase
+    .from('project_payments')
+    .select('id, status, notes')
+    .eq('id', paymentId)
+    .maybeSingle()
+  if (!fila) return false
+  if (fila.status === 'completed') return true
+  const { error } = await supabase
+    .from('project_payments')
+    .update({
+      status: 'completed',
+      payment_date: new Date().toISOString().split('T')[0],
+      notes: `${fila.notes ?? ''} · ${referencia}`.trim(),
+    })
+    .eq('id', paymentId)
+  if (error) console.error('[Stripe Webhook] Error completando pago pendiente:', error)
+  return !error
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.text()
@@ -85,14 +116,19 @@ export async function POST(request: NextRequest) {
           break
         }
 
-        // Verificar si el pago ya fue registrado
+        if (await completarPagoPendiente(supabase, session.metadata?.payment_id, `Stripe Session ${session.id}`)) {
+          break
+        }
+
+        // Enlaces antiguos (sin payment_id): se registra como antes, una sola vez.
         const { data: existingPayment } = await supabase
           .from('project_payments')
           .select('id')
           .eq('project_id', projectId)
-          .eq('payment_method', 'stripe')
+          .eq('payment_method', 'card')
           .eq('status', 'completed')
-          .single()
+          .ilike('notes', `%${session.id}%`)
+          .maybeSingle()
 
         if (existingPayment) {
           break
@@ -134,14 +170,19 @@ export async function POST(request: NextRequest) {
         const projectId = paymentIntent.metadata?.project_id
 
         if (projectId) {
-          // Verificar si el pago ya fue registrado
+          if (await completarPagoPendiente(supabase, paymentIntent.metadata?.payment_id, `Stripe PaymentIntent ${paymentIntent.id}`)) {
+            break
+          }
+          // Enlaces antiguos: checkout.session.completed ya registro este mismo cobro,
+          // asi que aqui solo se inserta si no hay ningun pago con tarjeta completado.
           const { data: existingPayment } = await supabase
             .from('project_payments')
             .select('id')
             .eq('project_id', projectId)
-            .eq('payment_method', 'stripe')
+            .eq('payment_method', 'card')
             .eq('status', 'completed')
-            .single()
+            .limit(1)
+            .maybeSingle()
 
           if (!existingPayment) {
             const amount = paymentIntent.amount ? paymentIntent.amount / 100 : 0
