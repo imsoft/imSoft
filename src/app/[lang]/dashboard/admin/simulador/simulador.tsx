@@ -91,11 +91,11 @@ export function Simulador({ lang }: { lang: string }) {
           <div className="space-y-3 border-t pt-4">
             <div className="flex items-center justify-between gap-3">
               <Label htmlFor="sim-iva">{es ? 'Cobro IVA (16 %)' : 'Charge VAT (16 %)'}</Label>
-              <Switch id="sim-iva" checked={cfg.cobraIva} onCheckedChange={(v) => set('cobraIva', v)} />
+              <Switch className="border-2! border-border! data-[state=unchecked]:bg-muted!" id="sim-iva" checked={cfg.cobraIva} onCheckedChange={(v) => set('cobraIva', v)} />
             </div>
             <div className="flex items-center justify-between gap-3">
               <Label htmlFor="sim-pm" className="leading-snug">{es ? 'Cliente persona moral que paga por transferencia (retiene 1.25 % ISR y ⅔ del IVA)' : 'Corporate client paying by transfer (withholds 1.25 % ISR and ⅔ VAT)'}</Label>
-              <Switch id="sim-pm" checked={cfg.clientePersonaMoral} onCheckedChange={(v) => set('clientePersonaMoral', v)} />
+              <Switch className="border-2! border-border! data-[state=unchecked]:bg-muted!" id="sim-pm" checked={cfg.clientePersonaMoral} onCheckedChange={(v) => set('clientePersonaMoral', v)} />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="sim-ingreso">{es ? 'Tus ingresos del mes, sin IVA' : 'Your monthly income, before VAT'}</Label>
@@ -104,7 +104,7 @@ export function Simulador({ lang }: { lang: string }) {
             </div>
             <div className="flex items-center justify-between gap-3">
               <Label htmlFor="sim-ivafee" className="leading-snug">{es ? 'Stripe cobra IVA sobre su comisión (confírmalo en tu primera factura)' : 'Stripe charges VAT on its fee (check your first invoice)'}</Label>
-              <Switch id="sim-ivafee" checked={cfg.ivaSobreComision} onCheckedChange={(v) => set('ivaSobreComision', v)} />
+              <Switch className="border-2! border-border! data-[state=unchecked]:bg-muted!" id="sim-ivafee" checked={cfg.ivaSobreComision} onCheckedChange={(v) => set('ivaSobreComision', v)} />
             </div>
           </div>
 
