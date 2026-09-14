@@ -119,7 +119,8 @@
         "technologies": "Tecnologías",
         "settings": "Configuración",
         "analytics": "Analíticas",
-        "reports": "Reportes"
+        "reports": "Reportes",
+        "simulador": "Simulador de cobros"
       },
       "crud": {
         "create": "Crear",

@@ -119,7 +119,8 @@
         "technologies": "Technologies",
         "settings": "Settings",
         "analytics": "Analytics",
-        "reports": "Reports"
+        "reports": "Reports",
+        "simulador": "Pricing simulator"
       },
       "crud": {
         "create": "Create",

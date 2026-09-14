@@ -28,8 +28,7 @@ import {
   Building2,
   UserCog,
   Code,
-  Mail
-} from "lucide-react"
+  Mail, Calculator } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
@@ -120,6 +119,11 @@ export function AdminSidebar({ dict, lang, user }: AdminSidebarProps) {
       title: dict.dashboard.admin.nav.reports,
       url: `/${lang}/dashboard/admin/reports`,
       icon: FileText,
+    },
+    {
+      title: dict.dashboard.admin.nav.simulador,
+      url: `/${lang}/dashboard/admin/simulador`,
+      icon: Calculator,
     },
     {
       title: dict.dashboard.admin.nav.settings,
