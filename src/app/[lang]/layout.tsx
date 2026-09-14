@@ -14,6 +14,7 @@ import { CookieBanner } from '@/components/cookies/cookie-banner';
 import { CookiePreferences } from '@/components/cookies/cookie-preferences';
 import { WhatsAppButton } from '@/components/ui/whatsapp-button';
 import { CtaTracker } from '@/components/analytics/cta-tracker';
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -133,6 +134,7 @@ export default async function RootLayout({
           <CookieBanner lang={lang as 'es' | 'en'} dict={dict} />
           <CookiePreferences lang={lang as 'es' | 'en'} dict={dict} />
           <Toaster />
+          <SpeedInsights />
         </ThemeProvider>
       </body>
     </html>
