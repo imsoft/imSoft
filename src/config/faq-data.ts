@@ -11,7 +11,7 @@ export const faqs: Record<'es' | 'en', Faq[]> = {
   es: [
     {
       q: '¿Cuánto cuesta mi proyecto?',
-      a: 'Cada proyecto recibe una propuesta con precio fijo en un máximo de 48 horas. No cobramos por hora ni hay sorpresas al final: sabes exactamente cuánto vas a pagar antes de empezar.',
+      a: 'Cada proyecto recibe una propuesta con precio fijo en un máximo de 48 horas. No cobramos por hora ni hay sorpresas al final: sabes exactamente cuánto vas a pagar antes de empezar. Y puedes pagar a 3, 6 o 12 meses sin intereses con tarjeta de crédito de bancos participantes.',
     },
     {
       q: '¿Cuánto tardan en entregar?',
@@ -37,7 +37,7 @@ export const faqs: Record<'es' | 'en', Faq[]> = {
   en: [
     {
       q: 'How much will my project cost?',
-      a: 'Every project gets a fixed-price proposal within 48 hours. We don’t charge by the hour and there are no surprises at the end: you know exactly what you’ll pay before we start.',
+      a: 'Every project gets a fixed-price proposal within 48 hours. We don’t charge by the hour and there are no surprises at the end: you know exactly what you’ll pay before we start. Mexican credit cards can pay in 3, 6 or 12 interest-free installments.',
     },
     {
       q: 'How long does delivery take?',

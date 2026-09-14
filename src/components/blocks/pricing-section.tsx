@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { Check, ArrowRight } from 'lucide-react'
 import type { Dictionary } from '@/app/[lang]/dictionaries'
 import { ScrollReveal } from "@/components/animations/scroll-reveal"
+import { montoDesde, msiEtiqueta } from '@/lib/msi'
 
 interface PricingSectionProps {
   dict: Dictionary
@@ -110,8 +111,18 @@ export function PricingSection({ dict, lang }: PricingSectionProps) {
                   </p>
                 </div>
 
-                <div className={`text-3xl font-black transition-colors duration-300 ${tier.highlight ? 'text-primary' : 'text-primary-foreground'}`}>
-                  {tier.price}
+                <div>
+                  <div className={`text-3xl font-black transition-colors duration-300 ${tier.highlight ? 'text-primary' : 'text-primary-foreground'}`}>
+                    {tier.price}
+                  </div>
+                  {(() => {
+                    // Solo en pesos: los MSI son de tarjetas mexicanas. Bajo el minimo no se anuncia.
+                    const monto = isEs ? montoDesde(tier.price) : null;
+                    const msi = monto !== null ? msiEtiqueta(monto) : null;
+                    return msi ? (
+                      <p className={`mt-1 text-sm font-medium ${tier.highlight ? 'text-muted-foreground' : 'text-primary-foreground/80'}`}>{msi}</p>
+                    ) : null;
+                  })()}
                 </div>
 
                 <ul className="space-y-2.5">
@@ -158,8 +169,8 @@ export function PricingSection({ dict, lang }: PricingSectionProps) {
           </a>
           <p className="text-center text-sm text-primary-foreground/60 max-w-2xl">
             {isEs
-              ? '* Los precios son referencias orientativas. Cada proyecto recibe una propuesta con precio fijo en 48 horas.'
-              : '* Prices are indicative references. Every project receives a fixed-price proposal within 48 hours.'}
+              ? '* Los precios son referencias orientativas. Cada proyecto recibe una propuesta con precio fijo en 48 horas. Aceptamos 3, 6 y 12 meses sin intereses con tarjeta de crédito de bancos participantes.'
+              : '* Prices are indicative references. Every project receives a fixed-price proposal within 48 hours. Mexican credit cards can pay in 3, 6 or 12 interest-free installments.'}
           </p>
         </ScrollReveal>
       </div>

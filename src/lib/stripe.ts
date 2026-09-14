@@ -55,15 +55,12 @@ export async function createPaymentLink({
       },
     }
 
-    // Si se habilitan cuotas y hay opciones, agregar configuración de installments
+    // Meses sin intereses: para Payment Links los planes y minimos los gobierna la
+    // configuracion de metodos de pago del Dashboard de Stripe (activada el
+    // 13-sep-2026), no este parametro. Aqui solo se limita el enlace a tarjeta para
+    // que la pantalla de pago muestre los plazos al capturar una tarjeta mexicana.
     if (enableInstallments && installmentOptions.length > 0) {
-      // Stripe maneja installments automáticamente en algunos países
-      // Para México, se puede configurar en el dashboard o usar payment_method_options
       paymentLinkData.payment_method_types = ['card']
-      
-      // Nota: La configuración de meses sin intereses puede variar por país
-      // En México, Stripe detecta automáticamente las opciones disponibles del banco
-      // Para forzar opciones específicas, se puede usar payment_method_options
     }
 
     const paymentLink = await stripe.paymentLinks.create(paymentLinkData)
