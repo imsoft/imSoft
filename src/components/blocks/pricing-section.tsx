@@ -1,8 +1,11 @@
+'use client'
+
+import { useState } from 'react'
 import Link from 'next/link'
 import { Check, ArrowRight } from 'lucide-react'
 import type { Dictionary } from '@/app/[lang]/dictionaries'
 import { ScrollReveal } from "@/components/animations/scroll-reveal"
-import { montoDesde, msiEtiqueta } from '@/lib/msi'
+import { MSI_PLAZOS, MSI_PLAZO_EJEMPLO, montoDesde, msiEtiqueta } from '@/lib/msi'
 
 interface PricingSectionProps {
   dict: Dictionary
@@ -11,6 +14,7 @@ interface PricingSectionProps {
 
 export function PricingSection({ dict, lang }: PricingSectionProps) {
   const isEs = lang === 'es'
+  const [plazo, setPlazo] = useState<number>(MSI_PLAZO_EJEMPLO)
 
   const tiers = [
     {
@@ -79,6 +83,26 @@ export function PricingSection({ dict, lang }: PricingSectionProps) {
               ? 'Precios orientativos según el tipo de proyecto. Cada propuesta tiene precio fijo — sin cobros sorpresa al final.'
               : 'Indicative prices by project type. Every proposal has a fixed price — no surprise charges at the end.'}
           </p>
+          {isEs && (
+            <div className="mt-6 inline-flex flex-wrap items-center justify-center gap-2 rounded-full bg-primary-foreground/10 px-3 py-2 text-sm">
+              <span className="px-1 font-medium">Paga a meses sin intereses con tarjeta de crédito:</span>
+              <div role="group" aria-label="Plazo de meses sin intereses" className="flex gap-1">
+                {MSI_PLAZOS.map((meses) => (
+                  <button
+                    key={meses}
+                    type="button"
+                    aria-pressed={plazo === meses}
+                    onClick={() => setPlazo(meses)}
+                    className={`rounded-full px-3 py-1 font-semibold transition-colors ${
+                      plazo === meses ? 'bg-primary-foreground text-primary' : 'text-primary-foreground/80 hover:bg-primary-foreground/15'
+                    }`}
+                  >
+                    {meses} MSI
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </ScrollReveal>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -118,7 +142,7 @@ export function PricingSection({ dict, lang }: PricingSectionProps) {
                   {(() => {
                     // Solo en pesos: los MSI son de tarjetas mexicanas. Bajo el minimo no se anuncia.
                     const monto = isEs ? montoDesde(tier.price) : null;
-                    const msi = monto !== null ? msiEtiqueta(monto) : null;
+                    const msi = monto !== null ? msiEtiqueta(monto, plazo) : null;
                     return msi ? (
                       <p className={`mt-1 text-sm font-medium ${tier.highlight ? 'text-muted-foreground' : 'text-primary-foreground/80'}`}>{msi}</p>
                     ) : null;

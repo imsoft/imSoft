@@ -177,8 +177,13 @@ export default async function ServicePage({ params }: {
                   <h1 className="text-4xl md:text-5xl font-bold mb-6">
                     {localizedServiceTitle(slug, title, lang)}
                   </h1>
-                  <p className="text-muted-foreground mb-6 max-w-2xl">
+                  <p className="text-muted-foreground mb-3 max-w-2xl">
                     {serviceAreaSentence(lang)}
+                  </p>
+                  <p className="text-sm font-medium text-primary mb-6">
+                    {lang === 'es'
+                      ? 'Precio fijo en la propuesta. Paga hasta en 12 meses sin intereses con tarjeta de crédito.'
+                      : 'Fixed-price proposal. Mexican credit cards can pay in up to 12 interest-free months.'}
                   </p>
                   {service.image_url && (
                     <div className="relative w-full h-[400px] rounded-xl overflow-hidden">

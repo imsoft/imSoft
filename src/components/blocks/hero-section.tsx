@@ -183,6 +183,11 @@ export function HeroSection({ dict, lang, companies = [], portfolioProjects = []
                                         </Button>
                                     </Magnet>
                                 </AnimatedGroup>
+                                <p className="mt-6 text-sm text-muted-foreground">
+                                    {lang === 'es'
+                                        ? 'Precio fijo en 48 horas · Hasta 12 meses sin intereses con tarjeta · La primera llamada es gratis'
+                                        : 'Fixed price within 48 hours · Up to 12 interest-free months with Mexican credit cards · The first call is free'}
+                                </p>
                             </div>
                         </div>
 
