@@ -216,7 +216,7 @@ export function renderContrato(q: QuoteLike & { created_at?: string | null }, fo
 
   return `
 <h1>Contrato de prestación de servicios de desarrollo de software</h1>
-<p class="folio">Folio ${esc(folioContrato)} · Cotización ${esc(q.folio)} · ${esc(fechaTxt)}</p>
+<p class="folio">Con base en la cotización ${esc(q.folio)} · ${esc(fechaTxt)}</p>
 
 <p>Contrato que celebran, por una parte, <strong>${esc(EMISOR.nombre)}</strong>, persona física con RFC ${esc(EMISOR.rfc)}, inscrita en el ${esc(EMISOR.regimen)}, con domicilio en ${esc(EMISOR.domicilio)}, ${esc(EMISOR.ciudad)}, quien opera bajo la marca ${esc(EMISOR.marca)}, en adelante <strong>el Prestador</strong>; y por la otra, <strong>${cliente}</strong>, en adelante <strong>el Cliente</strong>. Ambas partes se reconocen capacidad para obligarse y acuerdan las siguientes cláusulas.</p>
 

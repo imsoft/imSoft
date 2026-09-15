@@ -1,4 +1,4 @@
-import { EMISOR } from '@/config/emisor'
+import { DocumentHeader } from './document-header'
 import { fechaLarga, importesHitos, mxn, plazoEntrega, textoFormaDePago, totales, type QuoteLike } from '@/lib/cotizaciones'
 import { FIRMA_PRESTADOR, SignatureBlock } from './signature-block'
 
@@ -14,20 +14,11 @@ export function QuoteDocument({ quote }: { quote: QuoteLike & { created_at?: str
   const formaPago = textoFormaDePago(quote)
   return (
     <article className="doc mx-auto max-w-3xl bg-white text-neutral-900 p-8 md:p-12 rounded-xl shadow-sm print:shadow-none print:p-0 print:max-w-none">
-      <header className="flex flex-wrap justify-between gap-4 border-b border-neutral-200 pb-6">
-        <div>
-          <p className="text-2xl font-bold tracking-tight text-sky-600">{EMISOR.marca}</p>
-          <p className="text-sm text-neutral-600">{EMISOR.nombre}</p>
-          <p className="text-sm text-neutral-600">RFC {EMISOR.rfc} · {EMISOR.regimen}</p>
-          <p className="text-sm text-neutral-600">{EMISOR.domicilio}, {EMISOR.ciudad}</p>
-          <p className="text-sm text-neutral-600">{EMISOR.email} · {EMISOR.telefono}</p>
-        </div>
-        <div className="text-right">
-          <p className="text-xs uppercase tracking-widest text-neutral-500">Cotización</p>
-          <p className="text-xl font-semibold font-mono">{quote.folio}</p>
-          <p className="text-sm text-neutral-600 mt-2">Vigente hasta el {fechaLarga(quote.valid_until)}</p>
-        </div>
-      </header>
+      <DocumentHeader
+        tipo="Cotización"
+        folio={quote.folio}
+        extra={<p className="text-sm text-neutral-600 mt-2">Vigente hasta el {fechaLarga(quote.valid_until)}</p>}
+      />
 
       <section className="grid gap-6 sm:grid-cols-2 py-6 border-b border-neutral-200">
         <div>
