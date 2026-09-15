@@ -61,5 +61,11 @@ scripts/prospects/*.local.csv
 *.swo
 .blog-dry-run.json
 
-# Listas de prospectos: datos personales, nunca al repo (es publico)
+# Listas de prospectos: datos personales, nunca al repo (es publico).
+# Incluye las subcarpetas por campana y los correos ya renderizados, que
+# llevan nombre, empresa y direccion de cada persona.
 scripts/prospects/*.csv
+scripts/prospects/**/*.csv
+scripts/prospects/**/correos.md
+scripts/prospects/**/preview.html
+scripts/prospects/**/*.json
