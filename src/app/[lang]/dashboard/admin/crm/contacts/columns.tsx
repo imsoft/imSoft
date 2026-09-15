@@ -1,7 +1,7 @@
 'use client'
 
 import { ColumnDef } from '@tanstack/react-table'
-import { ArrowUpDown, MoreHorizontal, Eye, Edit, Trash2, Mail, Copy, Check, Globe, Phone, Link as LinkIcon, AlertTriangle } from 'lucide-react'
+import { ArrowUpDown, MoreHorizontal, Eye, Edit, Trash2, Mail, Copy, Check, Globe, Phone, Link as LinkIcon, AlertTriangle, ChevronDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -16,6 +16,8 @@ import Link from 'next/link'
 import type { Contact, SocialLink } from '@/types/database'
 import { useState } from 'react'
 import { toast } from 'sonner'
+import { useRouter } from 'next/navigation'
+import { createClient } from '@/lib/supabase/client'
 
 // Local SVG brand icons to avoid compilation issues due to lucide-react versions
 const Instagram = (props: React.HTMLAttributes<SVGElement>) => (
@@ -276,6 +278,72 @@ function DescriptionCell({ description, lang }: { description: string | null | u
   )
 }
 
+const STATUS_LABELS: Record<string, { en: string; es: string }> = {
+  no_contact: { en: 'No Contact', es: 'Sin Contacto' },
+  qualification: { en: 'Prospecting', es: 'Prospección' },
+  negotiation: { en: 'Negotiation', es: 'Negociación' },
+  closed_won: { en: 'Won', es: 'Ganado' },
+  closed_lost: { en: 'Lost', es: 'Perdido' },
+}
+
+const STATUS_COLORS: Record<string, string> = {
+  no_contact: 'bg-gray-500/10 text-gray-700 dark:text-gray-400',
+  qualification: 'bg-blue-500/10 text-blue-700 dark:text-blue-400',
+  negotiation: 'bg-purple-500/10 text-purple-700 dark:text-purple-400',
+  closed_won: 'bg-green-500/10 text-green-700 dark:text-green-400',
+  closed_lost: 'bg-red-500/10 text-red-700 dark:text-red-400',
+}
+
+export function statusLabel(status: string, lang: string): string {
+  const l = STATUS_LABELS[status]
+  return l ? (lang === 'en' ? l.en : l.es) : status
+}
+
+/** Insignia de estado que abre un menu para cambiarlo sin salir de la tabla. */
+function StatusCell({ contactId, status, lang }: { contactId: string; status: string; lang: string }) {
+  const router = useRouter()
+  const [actual, setActual] = useState(status)
+  const [ocupado, setOcupado] = useState(false)
+
+  const cambiar = async (nuevo: string) => {
+    if (nuevo === actual) return
+    setOcupado(true)
+    const anterior = actual
+    setActual(nuevo)
+    const { error } = await createClient().from('contacts').update({ status: nuevo, updated_at: new Date().toISOString() }).eq('id', contactId)
+    setOcupado(false)
+    if (error) {
+      setActual(anterior)
+      toast.error(lang === 'en' ? 'Could not update status' : 'No se pudo cambiar el estado')
+      return
+    }
+    toast.success(lang === 'en' ? `Status: ${statusLabel(nuevo, lang)}` : `Estado: ${statusLabel(nuevo, lang)}`)
+    router.refresh()
+  }
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button type="button" disabled={ocupado} className="rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring" title={lang === 'en' ? 'Change status' : 'Cambiar estado'}>
+          <Badge className={`${STATUS_COLORS[actual] || ''} cursor-pointer gap-1 pr-1.5`}>
+            {statusLabel(actual, lang)}
+            <ChevronDown className="size-3 opacity-70" />
+          </Badge>
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start">
+        {Object.keys(STATUS_LABELS).map((k) => (
+          <DropdownMenuItem key={k} onClick={() => cambiar(k)} className={k === actual ? 'font-medium' : ''}>
+            <span className={`mr-2 inline-block size-2 rounded-full ${STATUS_COLORS[k]?.split(' ')[0].replace('/10', '') || 'bg-gray-400'}`} />
+            {statusLabel(k, lang)}
+            {k === actual && <Check className="ml-auto size-3.5" />}
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+}
+
 interface ColumnsProps {
   lang: string
   onDelete: (id: string) => void
@@ -283,25 +351,6 @@ interface ColumnsProps {
 }
 
 export function createColumns({ lang, onDelete, isDeleting }: ColumnsProps): ColumnDef<Contact>[] {
-  const getStatusLabel = (status: string) => {
-    const labels: Record<string, { en: string; es: string }> = {
-      no_contact: { en: 'No Contact', es: 'Sin Contacto' },
-      qualification: { en: 'Prospecting', es: 'Prospección' },
-      negotiation: { en: 'Negotiation', es: 'Negociación' },
-      closed_won: { en: 'Won', es: 'Ganado' },
-      closed_lost: { en: 'Lost', es: 'Perdido' },
-    }
-    return lang === 'en' ? labels[status]?.en || status : labels[status]?.es || status
-  }
-
-  const statusColors: Record<string, string> = {
-    no_contact: 'bg-gray-500/10 text-gray-700 dark:text-gray-400',
-    qualification: 'bg-blue-500/10 text-blue-700 dark:text-blue-400',
-    negotiation: 'bg-purple-500/10 text-purple-700 dark:text-purple-400',
-    closed_won: 'bg-green-500/10 text-green-700 dark:text-green-400',
-    closed_lost: 'bg-red-500/10 text-red-700 dark:text-red-400',
-  }
-
   return [
     {
       accessorKey: 'name',
@@ -430,12 +479,7 @@ export function createColumns({ lang, onDelete, isDeleting }: ColumnsProps): Col
       accessorKey: 'status',
       header: lang === 'en' ? 'Status' : 'Estado',
       cell: ({ row }) => {
-        const status = row.original.status
-        return (
-          <Badge className={statusColors[status] || ''}>
-            {getStatusLabel(status)}
-          </Badge>
-        )
+        return <StatusCell contactId={row.original.id} status={row.original.status} lang={lang} />
       },
       filterFn: (row, _id, value) => {
         if (!value || value === 'all') return true
