@@ -8,6 +8,7 @@ describe('gancho con IA', () => {
     expect(p).toContain('Omar, Gerente');
     expect(p).toContain('Sector: logistica');
     expect(p).toContain('sin datos inventados');
+    expect(p).toContain('No menciones a imSoft, JTP Logistics');
   });
 
   it('limpia comillas, exclamaciones y recorta a dos frases', () => {
