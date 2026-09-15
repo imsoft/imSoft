@@ -1,0 +1,237 @@
+'use client'
+
+import { useEffect, useMemo, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { createClient } from '@/lib/supabase/client'
+import { toast } from 'sonner'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Switch } from '@/components/ui/switch'
+import { Textarea } from '@/components/ui/textarea'
+import { Trash2, Plus } from 'lucide-react'
+import { CONDICIONES_DEFAULT } from '@/config/emisor'
+import { fechaVigencia, generarToken, hitosValidos, itemsValidos, mxn, siguienteFolio, totales, type Hito, type QuoteItem, type QuoteTerms } from '@/lib/cotizaciones'
+import type { Quote } from '@/types/quotes'
+
+const campo = 'border-2! border-border!'
+const sw = 'border-2! border-border! data-[state=unchecked]:bg-muted!'
+
+interface ContactoLite { id: string; first_name: string; last_name: string; email?: string | null; company?: string | null; address_street?: string | null; address_city?: string | null; address_state?: string | null }
+
+export function QuoteForm({ lang, quote }: { lang: string; quote?: Quote }) {
+  const es = lang !== 'en'
+  const router = useRouter()
+  const [guardando, setGuardando] = useState(false)
+  const [contactos, setContactos] = useState<ContactoLite[]>([])
+
+  const [cliente, setCliente] = useState({
+    contact_id: quote?.contact_id ?? '',
+    client_name: quote?.client_name ?? '',
+    client_company: quote?.client_company ?? '',
+    client_email: quote?.client_email ?? '',
+    client_rfc: quote?.client_rfc ?? '',
+    client_address: quote?.client_address ?? '',
+  })
+  const [title, setTitle] = useState(quote?.title ?? '')
+  const [intro, setIntro] = useState(quote?.intro ?? '')
+  const [items, setItems] = useState<QuoteItem[]>(quote?.items?.length ? quote.items : [{ concepto: '', descripcion: '', cantidad: 1, precio: 0 }])
+  const [applyIva, setApplyIva] = useState(quote?.apply_iva ?? true)
+  const [hitos, setHitos] = useState<Hito[]>(quote?.payment?.hitos ?? CONDICIONES_DEFAULT.hitos.map((h) => ({ ...h })))
+  const [msi, setMsi] = useState(quote?.payment?.msi ?? CONDICIONES_DEFAULT.msi)
+  const [terms, setTerms] = useState<QuoteTerms>(quote?.terms ?? {
+    garantia_dias: CONDICIONES_DEFAULT.garantia_dias,
+    soporte: CONDICIONES_DEFAULT.soporte,
+    propiedad: CONDICIONES_DEFAULT.propiedad,
+    cambios_alcance: CONDICIONES_DEFAULT.cambios_alcance,
+    penalizacion_dia: CONDICIONES_DEFAULT.penalizacion_dia,
+    entrega_semanas: CONDICIONES_DEFAULT.entrega_semanas,
+  })
+  const [validUntil, setValidUntil] = useState(quote?.valid_until ?? fechaVigencia(CONDICIONES_DEFAULT.vigencia_dias))
+  const [notes, setNotes] = useState(quote?.notes ?? '')
+
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.from('contacts').select('id, first_name, last_name, email, company, address_street, address_city, address_state').order('first_name').limit(500)
+      .then(({ data }) => setContactos((data ?? []) as ContactoLite[]))
+  }, [])
+
+  const t = useMemo(() => totales({ items, apply_iva: applyIva }), [items, applyIva])
+  const errorHitos = hitosValidos(hitos)
+  const errorItems = itemsValidos(items)
+
+  function elegirContacto(id: string) {
+    const c = contactos.find((x) => x.id === id)
+    if (!c) { setCliente((v) => ({ ...v, contact_id: '' })); return }
+    setCliente((v) => ({
+      ...v,
+      contact_id: c.id,
+      client_name: `${c.first_name} ${c.last_name}`.trim(),
+      client_company: c.company ?? v.client_company,
+      client_email: c.email ?? v.client_email,
+      client_address: [c.address_street, c.address_city, c.address_state].filter(Boolean).join(', ') || v.client_address,
+    }))
+  }
+
+  async function guardar() {
+    if (!cliente.client_name.trim()) return toast.error(es ? 'Falta el nombre del cliente.' : 'Client name is required.')
+    if (!title.trim()) return toast.error(es ? 'Falta el nombre del proyecto.' : 'Project title is required.')
+    if (errorItems) return toast.error(errorItems)
+    if (errorHitos) return toast.error(errorHitos)
+    setGuardando(true)
+    const supabase = createClient()
+    const datos = {
+      lang,
+      contact_id: cliente.contact_id || null,
+      client_name: cliente.client_name.trim(),
+      client_company: cliente.client_company.trim() || null,
+      client_email: cliente.client_email.trim() || null,
+      client_rfc: cliente.client_rfc.trim() || null,
+      client_address: cliente.client_address.trim() || null,
+      title: title.trim(),
+      intro: intro.trim() || null,
+      items: items.map((i) => ({ ...i, concepto: i.concepto.trim(), descripcion: (i.descripcion ?? '').trim() || undefined, cantidad: Number(i.cantidad), precio: Number(i.precio) })),
+      currency: 'MXN',
+      apply_iva: applyIva,
+      payment: { hitos: hitos.map((h) => ({ label: h.label.trim(), pct: Number(h.pct) })), msi },
+      terms: { ...terms, garantia_dias: Number(terms.garantia_dias), penalizacion_dia: Number(terms.penalizacion_dia), entrega_semanas: Number(terms.entrega_semanas) },
+      notes: notes.trim() || null,
+      valid_until: validUntil,
+      updated_at: new Date().toISOString(),
+    }
+    try {
+      if (quote) {
+        const { error } = await supabase.from('quotes').update(datos).eq('id', quote.id)
+        if (error) throw error
+        toast.success(es ? 'Cotización guardada' : 'Quote saved')
+        router.push(`/${lang}/dashboard/admin/cotizaciones/${quote.id}`)
+      } else {
+        const { data: ultimo } = await supabase.from('quotes').select('folio').like('folio', 'COT-%').order('created_at', { ascending: false }).limit(1).maybeSingle()
+        const folio = siguienteFolio('COT', ultimo?.folio)
+        const token = generarToken(crypto.getRandomValues(new Uint8Array(24)))
+        const { data: { user } } = await supabase.auth.getUser()
+        const { data, error } = await supabase.from('quotes').insert({ ...datos, folio, token, status: 'draft', created_by: user?.id ?? null }).select('id').single()
+        if (error) throw error
+        toast.success(`${es ? 'Cotización creada' : 'Quote created'}: ${folio}`)
+        router.push(`/${lang}/dashboard/admin/cotizaciones/${data.id}`)
+      }
+      router.refresh()
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : String(err))
+    } finally {
+      setGuardando(false)
+    }
+  }
+
+  const setItem = (i: number, patch: Partial<QuoteItem>) => setItems((arr) => arr.map((x, idx) => (idx === i ? { ...x, ...patch } : x)))
+  const setHito = (i: number, patch: Partial<Hito>) => setHitos((arr) => arr.map((x, idx) => (idx === i ? { ...x, ...patch } : x)))
+
+  return (
+    <div className="grid gap-6 lg:grid-cols-[1fr_320px] items-start">
+      <div className="space-y-6">
+        <Card>
+          <CardHeader><CardTitle className="text-base">{es ? 'Cliente' : 'Client'}</CardTitle></CardHeader>
+          <CardContent className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-1.5 sm:col-span-2">
+              <Label htmlFor="q-contacto">{es ? 'Tomar del CRM (opcional)' : 'Pick from CRM (optional)'}</Label>
+              <select id="q-contacto" className="w-full rounded-md border-2 border-border bg-background px-3 py-2 text-sm" value={cliente.contact_id} onChange={(e) => elegirContacto(e.target.value)}>
+                <option value="">{es ? '— escribir a mano —' : '— type manually —'}</option>
+                {contactos.map((c) => <option key={c.id} value={c.id}>{c.first_name} {c.last_name}{c.company ? ` · ${c.company}` : ''}</option>)}
+              </select>
+            </div>
+            {([['client_name', es ? 'Nombre' : 'Name'], ['client_company', es ? 'Empresa' : 'Company'], ['client_email', 'Email'], ['client_rfc', 'RFC'], ['client_address', es ? 'Domicilio' : 'Address']] as const).map(([k, label]) => (
+              <div key={k} className={`space-y-1.5 ${k === 'client_address' ? 'sm:col-span-2' : ''}`}>
+                <Label htmlFor={`q-${k}`}>{label}</Label>
+                <Input id={`q-${k}`} className={campo} value={cliente[k]} onChange={(e) => setCliente((v) => ({ ...v, [k]: e.target.value }))} />
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader><CardTitle className="text-base">{es ? 'Proyecto y conceptos' : 'Project and items'}</CardTitle></CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-1.5">
+              <Label htmlFor="q-title">{es ? 'Nombre del proyecto' : 'Project title'}</Label>
+              <Input id="q-title" className={campo} value={title} onChange={(e) => setTitle(e.target.value)} placeholder={es ? 'Página web corporativa para Clínica Sonrisa' : 'Corporate website for Sonrisa Clinic'} />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="q-intro">{es ? 'Resumen (opcional)' : 'Summary (optional)'}</Label>
+              <Textarea id="q-intro" className={campo} rows={2} value={intro} onChange={(e) => setIntro(e.target.value)} placeholder={es ? 'Qué problema resuelve y qué incluye, en dos frases.' : 'What it solves and what it includes, in two sentences.'} />
+            </div>
+            <div className="space-y-3">
+              {items.map((it, i) => (
+                <div key={i} className="grid gap-2 sm:grid-cols-[1fr_80px_130px_40px] items-start rounded-lg border p-3">
+                  <div className="space-y-2">
+                    <Input className={campo} placeholder={es ? 'Concepto' : 'Item'} value={it.concepto} onChange={(e) => setItem(i, { concepto: e.target.value })} />
+                    <Textarea className={campo} rows={2} placeholder={es ? 'Descripción (opcional)' : 'Description (optional)'} value={it.descripcion ?? ''} onChange={(e) => setItem(i, { descripcion: e.target.value })} />
+                  </div>
+                  <Input className={campo} type="number" min={1} step={1} aria-label={es ? 'Cantidad' : 'Quantity'} value={it.cantidad} onChange={(e) => setItem(i, { cantidad: Number(e.target.value) })} />
+                  <Input className={campo} type="number" min={0} step={100} aria-label={es ? 'Precio unitario' : 'Unit price'} value={it.precio} onChange={(e) => setItem(i, { precio: Number(e.target.value) })} />
+                  <Button type="button" variant="ghost" size="icon" aria-label={es ? 'Quitar concepto' : 'Remove item'} onClick={() => setItems((arr) => arr.filter((_, idx) => idx !== i))} disabled={items.length === 1}><Trash2 className="size-4" /></Button>
+                </div>
+              ))}
+              <Button type="button" variant="outline" size="sm" onClick={() => setItems((arr) => [...arr, { concepto: '', descripcion: '', cantidad: 1, precio: 0 }])}><Plus className="size-4 mr-1" />{es ? 'Agregar concepto' : 'Add item'}</Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader><CardTitle className="text-base">{es ? 'Forma de pago' : 'Payment terms'}</CardTitle></CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              {hitos.map((h, i) => (
+                <div key={i} className="grid gap-2 grid-cols-[1fr_90px_40px] items-center">
+                  <Input className={campo} value={h.label} onChange={(e) => setHito(i, { label: e.target.value })} placeholder={es ? 'Nombre del hito' : 'Milestone'} />
+                  <div className="relative"><Input className={`${campo} pr-7`} type="number" min={1} max={100} value={h.pct} onChange={(e) => setHito(i, { pct: Number(e.target.value) })} /><span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">%</span></div>
+                  <Button type="button" variant="ghost" size="icon" aria-label={es ? 'Quitar hito' : 'Remove milestone'} onClick={() => setHitos((arr) => arr.filter((_, idx) => idx !== i))} disabled={hitos.length === 1}><Trash2 className="size-4" /></Button>
+                </div>
+              ))}
+              <div className="flex items-center justify-between">
+                <Button type="button" variant="outline" size="sm" onClick={() => setHitos((arr) => [...arr, { label: '', pct: 0 }])}><Plus className="size-4 mr-1" />{es ? 'Agregar hito' : 'Add milestone'}</Button>
+                {errorHitos && <p className="text-xs text-destructive">{errorHitos}</p>}
+              </div>
+            </div>
+            <div className="flex items-center justify-between gap-3">
+              <Label htmlFor="q-iva">{es ? 'Desglosar IVA (16 %)' : 'Add VAT (16 %)'}</Label>
+              <Switch id="q-iva" className={sw} checked={applyIva} onCheckedChange={setApplyIva} />
+            </div>
+            <div className="flex items-center justify-between gap-3">
+              <Label htmlFor="q-msi">{es ? 'Ofrecer meses sin intereses con tarjeta' : 'Offer interest-free installments'}</Label>
+              <Switch id="q-msi" className={sw} checked={msi} onCheckedChange={setMsi} />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader><CardTitle className="text-base">{es ? 'Condiciones' : 'Terms'}</CardTitle></CardHeader>
+          <CardContent className="grid gap-4 sm:grid-cols-3">
+            <div className="space-y-1.5"><Label htmlFor="q-entrega">{es ? 'Entrega (semanas)' : 'Delivery (weeks)'}</Label><Input id="q-entrega" className={campo} type="number" min={1} value={terms.entrega_semanas} onChange={(e) => setTerms((v) => ({ ...v, entrega_semanas: Number(e.target.value) }))} /></div>
+            <div className="space-y-1.5"><Label htmlFor="q-garantia">{es ? 'Garantía (días)' : 'Warranty (days)'}</Label><Input id="q-garantia" className={campo} type="number" min={0} value={terms.garantia_dias} onChange={(e) => setTerms((v) => ({ ...v, garantia_dias: Number(e.target.value) }))} /></div>
+            <div className="space-y-1.5"><Label htmlFor="q-penal">{es ? 'Penalización por día de retraso del cliente (MXN)' : 'Client delay penalty per day (MXN)'}</Label><Input id="q-penal" className={campo} type="number" min={0} step={100} value={terms.penalizacion_dia} onChange={(e) => setTerms((v) => ({ ...v, penalizacion_dia: Number(e.target.value) }))} /></div>
+            <div className="space-y-1.5 sm:col-span-3"><Label htmlFor="q-soporte">{es ? 'Soporte' : 'Support'}</Label><Textarea id="q-soporte" className={campo} rows={2} value={terms.soporte} onChange={(e) => setTerms((v) => ({ ...v, soporte: e.target.value }))} /></div>
+            <div className="space-y-1.5 sm:col-span-3"><Label htmlFor="q-propiedad">{es ? 'Propiedad del código' : 'Code ownership'}</Label><Textarea id="q-propiedad" className={campo} rows={2} value={terms.propiedad} onChange={(e) => setTerms((v) => ({ ...v, propiedad: e.target.value }))} /></div>
+            <div className="space-y-1.5 sm:col-span-3"><Label htmlFor="q-cambios">{es ? 'Cambios de alcance' : 'Scope changes'}</Label><Textarea id="q-cambios" className={campo} rows={2} value={terms.cambios_alcance} onChange={(e) => setTerms((v) => ({ ...v, cambios_alcance: e.target.value }))} /></div>
+            <div className="space-y-1.5"><Label htmlFor="q-vigencia">{es ? 'Vigente hasta' : 'Valid until'}</Label><Input id="q-vigencia" className={campo} type="date" value={validUntil} onChange={(e) => setValidUntil(e.target.value)} /></div>
+            <div className="space-y-1.5 sm:col-span-3"><Label htmlFor="q-notes">{es ? 'Notas para el cliente (opcional)' : 'Notes for the client (optional)'}</Label><Textarea id="q-notes" className={campo} rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} /></div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card className="lg:sticky lg:top-6">
+        <CardHeader><CardTitle className="text-base">{es ? 'Resumen' : 'Summary'}</CardTitle></CardHeader>
+        <CardContent className="space-y-3 text-sm">
+          <div className="flex justify-between"><span className="text-muted-foreground">Subtotal</span><span className="font-mono tabular-nums">{mxn(t.subtotal)}</span></div>
+          {applyIva && <div className="flex justify-between"><span className="text-muted-foreground">IVA</span><span className="font-mono tabular-nums">{mxn(t.iva)}</span></div>}
+          <div className="flex justify-between text-base font-semibold border-t pt-2"><span>Total</span><span className="font-mono tabular-nums">{mxn(t.total)}</span></div>
+          {!errorHitos && hitos.map((h) => <div key={h.label} className="flex justify-between text-muted-foreground"><span>{h.label || '—'}</span><span className="font-mono tabular-nums">{mxn((t.total * h.pct) / 100)}</span></div>)}
+          <Button className="w-full mt-2" onClick={guardar} disabled={guardando}>
+            {guardando ? (es ? 'Guardando…' : 'Saving…') : quote ? (es ? 'Guardar cambios' : 'Save changes') : (es ? 'Crear cotización' : 'Create quote')}
+          </Button>
+          <p className="text-xs text-muted-foreground">{es ? 'Se crea como borrador. Desde el detalle la envías y generas el contrato.' : 'Created as a draft. Send it and generate the contract from the detail page.'}</p>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}

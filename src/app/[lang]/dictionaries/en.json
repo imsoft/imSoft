@@ -120,7 +120,8 @@
         "settings": "Settings",
         "analytics": "Analytics",
         "reports": "Reports",
-        "simulador": "Pricing simulator"
+        "simulador": "Pricing simulator",
+        "cotizaciones": "Quotes and contracts"
       },
       "crud": {
         "create": "Create",

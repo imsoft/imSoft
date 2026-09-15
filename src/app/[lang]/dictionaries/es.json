@@ -120,7 +120,8 @@
         "settings": "Configuración",
         "analytics": "Analíticas",
         "reports": "Reportes",
-        "simulador": "Simulador de cobros"
+        "simulador": "Simulador de cobros",
+        "cotizaciones": "Cotizaciones y contratos"
       },
       "crud": {
         "create": "Crear",
