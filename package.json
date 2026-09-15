@@ -13,7 +13,9 @@
     "test:watch": "vitest",
     "gsc:report": "node --experimental-strip-types scripts/gsc-report.mjs",
     "blog:generate": "node --experimental-strip-types scripts/generate-blog.mjs",
-    "blog:dry-run": "node --experimental-strip-types scripts/generate-blog.mjs --dry-run"
+    "blog:dry-run": "node --experimental-strip-types scripts/generate-blog.mjs --dry-run",
+    "crm:import": "node --env-file=.env --experimental-strip-types scripts/import-contacts.mjs",
+    "db:schema": "node --env-file=.env scripts/dump-schema.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

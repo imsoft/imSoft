@@ -60,3 +60,6 @@ scripts/prospects/*.local.csv
 *.swp
 *.swo
 .blog-dry-run.json
+
+# Listas de prospectos: datos personales, nunca al repo (es publico)
+scripts/prospects/*.csv
