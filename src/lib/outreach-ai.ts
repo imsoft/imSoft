@@ -50,3 +50,14 @@ export function limpiarGancho(raw: unknown): string {
   if (frases && frases.length > 2) g = frases.slice(0, 2).join('').trim();
   return g;
 }
+
+/**
+ * Las notas del CRM sirven de gancho solo si parecen un gancho (una o dos frases) y no
+ * un correo completo pegado por el importador. En ese caso se le pasan a la IA como contexto.
+ */
+export function ganchoDesdeNotas(notas: string | null | undefined): string | null {
+  const n = (notas ?? '').trim();
+  if (!n || n.length > 320) return null;
+  if (/^asunto:/im.test(n) || /^hola\b/im.test(n) || /\n\s*\n/.test(n) || /https?:\/\//.test(n)) return null;
+  return n;
+}

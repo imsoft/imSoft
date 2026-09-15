@@ -192,7 +192,7 @@ export function Prospeccion({ lang, gmail, gmailConfigurado, campana, filas, sin
       {respondieron.length > 0 && <Cola titulo={es ? `Respondieron (${respondieron.length})` : `Replied (${respondieron.length})`} filas={respondieron} vacio="" abrir={abrir} enviar={enviar} saltar={saltar} ocupado={ocupado} puedeEnviar={false} es={es} />}
 
       <Dialog open={abierto !== null} onOpenChange={(o) => !o && setAbierto(null)}>
-        <DialogContent className="max-w-5xl">
+        <DialogContent className="sm:max-w-5xl max-h-[90vh] overflow-y-auto">
           {abierto && (
             <>
               <DialogHeader>
@@ -227,7 +227,7 @@ export function Prospeccion({ lang, gmail, gmailConfigurado, campana, filas, sin
                 </div>
                 <div className="rounded-lg border bg-white">
                   <p className="border-b px-3 py-2 text-xs font-medium text-muted-foreground">{es ? 'Vista previa' : 'Preview'}</p>
-                  <iframe title="preview" className="h-[420px] w-full" sandbox="" srcDoc={`<body style="margin:16px">${abierto.html}</body>`} />
+                  <iframe title="preview" className="h-[60vh] min-h-[420px] w-full" sandbox="" srcDoc={`<body style="margin:16px">${abierto.html}</body>`} />
                 </div>
               </div>
             </>

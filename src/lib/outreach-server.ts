@@ -4,7 +4,7 @@
 import Anthropic from '@anthropic-ai/sdk'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { enviarRaw, hiloTieneRespuesta, messageIdHeader } from '@/lib/gmail/server'
-import { GANCHO_TOOL, limpiarGancho, promptGancho } from '@/lib/outreach-ai'
+import { GANCHO_TOOL, ganchoDesdeNotas, limpiarGancho, promptGancho } from '@/lib/outreach-ai'
 import { construirMime, cuerpoDe, fechaSiguientePaso, renderDesdeCuerpo, renderOutreach, segmentoDe, topeDiario, type Step } from '@/lib/outreach'
 
 const TZ = 'America/Mexico_City'
@@ -51,7 +51,7 @@ export async function ganchoConIA(c: ContactoMin): Promise<string> {
     max_tokens: 300,
     tools: [GANCHO_TOOL],
     tool_choice: { type: 'tool', name: 'gancho' },
-    messages: [{ role: 'user', content: promptGancho({ nombre: nombreDe(c), empresa: c.company ?? '', segmento: segmentoDe(c.tags), sitio: c.website_url, notas: c.notes, cargo: c.job_title }) }],
+    messages: [{ role: 'user', content: promptGancho({ nombre: nombreDe(c), empresa: c.company ?? '', segmento: segmentoDe(c.tags), sitio: c.website_url, notas: (c.notes ?? '').slice(0, 1500), cargo: c.job_title }) }],
   })
   const tool = msg.content.find((b) => b.type === 'tool_use')
   return limpiarGancho(tool && tool.type === 'tool_use' ? tool.input : null)
@@ -71,7 +71,7 @@ export async function crearBorradoresPaso1(db: SupabaseClient, limite: number, c
   const errores: string[] = []
   for (const c of candidatos) {
     try {
-      const gancho = (c.notes ?? '').trim() || (await ganchoConIA(c))
+      const gancho = ganchoDesdeNotas(c.notes) ?? (await ganchoConIA(c))
       const r = renderOutreach(1, { nombre: nombreDe(c), empresa: c.company ?? '', gancho, segmento: segmentoDe(c.tags) })
       const { error: e } = await db.from('outreach_emails').insert({ contact_id: c.id, step: 1, status: 'draft', campaign: campaign ?? segmentoDe(c.tags), gancho, subject: r.subject, html: r.html, text: r.text, scheduled_for: hoyLocal() })
       if (e) throw new Error(e.message)
@@ -96,7 +96,7 @@ export async function crearBorradorParaContacto(db: SupabaseClient, contactId: s
   if (!c) throw new Error('Contacto no encontrado')
   if (!c.email) throw new Error('El contacto no tiene correo')
   if ((c.tags ?? []).includes('correo-invalido')) throw new Error('El correo de este contacto está marcado como inválido')
-  const gancho = (c.notes ?? '').trim() || (await ganchoConIA(c as ContactoMin))
+  const gancho = ganchoDesdeNotas(c.notes) ?? (await ganchoConIA(c as ContactoMin))
   const r = renderOutreach(1, { nombre: nombreDe(c), empresa: c.company ?? '', gancho, segmento: segmentoDe(c.tags) })
   const { data, error } = await db.from('outreach_emails').insert({ contact_id: c.id, step: 1, status: 'draft', campaign: segmentoDe(c.tags), gancho, subject: r.subject, html: r.html, text: r.text, scheduled_for: hoyLocal() }).select('id').single()
   if (error) throw new Error(error.message)
@@ -188,7 +188,7 @@ export async function sincronizar(db: SupabaseClient, userId: string) {
       if (yaHay) continue
       const c = contactoDe.get(contactId)
       if (!c) continue
-      const gancho = (filas![0].gancho as string | null) ?? (c.notes ?? '')
+      const gancho = ganchoDesdeNotas(filas![0].gancho as string | null) ?? ganchoDesdeNotas(c.notes) ?? (await ganchoConIA(c))
       const r = renderOutreach(siguiente, { nombre: nombreDe(c), empresa: c.company ?? '', gancho, segmento: segmentoDe(c.tags) })
       const { error } = await db.from('outreach_emails').insert({ contact_id: contactId, step: siguiente, status: 'draft', campaign: filas![0].campaign, gancho, subject: r.subject, html: r.html, text: r.text, scheduled_for: toca })
       if (error) throw new Error(error.message)
@@ -205,7 +205,7 @@ export async function registrarEnviadosAMano(db: SupabaseClient, contactIds: str
   const { data: contactos } = await db.from('contacts').select(CONTACTO_COLS).in('id', contactIds)
   let creados = 0
   for (const c of (contactos ?? []) as ContactoMin[]) {
-    const gancho = (c.notes ?? '').trim()
+    const gancho = ganchoDesdeNotas(c.notes) ?? ''
     const r = renderOutreach(1, { nombre: nombreDe(c), empresa: c.company ?? '', gancho, segmento: segmentoDe(c.tags) })
     const { error } = await db.from('outreach_emails').upsert({ contact_id: c.id, step: 1, status: 'sent', campaign: segmentoDe(c.tags), gancho, subject: r.subject, html: r.html, text: r.text, scheduled_for: sentAt.slice(0, 10), sent_at: sentAt, sent_via: 'manual' }, { onConflict: 'contact_id,step', ignoreDuplicates: true })
     if (!error) creados += 1

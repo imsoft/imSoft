@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { limpiarGancho, promptGancho } from './outreach-ai';
+import { ganchoDesdeNotas, limpiarGancho, promptGancho } from './outreach-ai';
 
 describe('gancho con IA', () => {
   it('el prompt lleva los datos del prospecto y las reglas', () => {
@@ -14,5 +14,14 @@ describe('gancho con IA', () => {
     expect(limpiarGancho({ gancho: '"Hola!"' })).toBe('Hola.');
     expect(limpiarGancho({ gancho: 'Una. Dos. Tres. Cuatro.' })).toBe('Una. Dos.');
     expect(limpiarGancho(null)).toBe('');
+  });
+
+  it('solo usa las notas como gancho si son un gancho y no un correo entero', () => {
+    expect(ganchoDesdeNotas('Sus clientes llaman a preguntar dónde va la carga.')).toBe('Sus clientes llaman a preguntar dónde va la carga.');
+    expect(ganchoDesdeNotas('Asunto: ¿Cuántas veces...?\n\nHola Alejandra:\n\nSoy Brandon...')).toBeNull();
+    expect(ganchoDesdeNotas('Hola Mario:\n\nSoy Brandon')).toBeNull();
+    expect(ganchoDesdeNotas('Agenda aquí https://wa.me/1')).toBeNull();
+    expect(ganchoDesdeNotas('x'.repeat(400))).toBeNull();
+    expect(ganchoDesdeNotas(null)).toBeNull();
   });
 });
