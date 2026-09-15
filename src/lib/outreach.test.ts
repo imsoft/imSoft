@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { construirMime, fechaSiguientePaso, plantillaDe, renderOutreach, segmentoDe, sumarDiasHabiles, topeDiario } from './outreach';
+import { conFirma, construirMime, fechaSiguientePaso, plantillaDe, renderOutreach, segmentoDe, sinFirma, sumarDiasHabiles, topeDiario } from './outreach';
 
 describe('prospeccion', () => {
   it('rampa de envios diarios', () => {
@@ -28,21 +28,26 @@ describe('prospeccion', () => {
     expect(segmentoDe(['gdl'])).toBeNull();
   });
 
-  it('el primer correo lleva saludo, gancho, firma con logo y linea legal', () => {
+  it('el primer correo lleva saludo, gancho, boton de WhatsApp y linea legal', () => {
     const e = renderOutreach(1, { nombre: 'Omar', empresa: 'Proicomex', gancho: 'Vi que manejan carga refrigerada y pensé en su control de temperaturas.', segmento: 'logistica' });
     expect(e.subject).toBe('Software para la operación de Proicomex');
     expect(e.text).toContain('Hola Omar:');
     expect(e.text).toContain('carga refrigerada');
     expect(e.text).toContain('JTP Logistics');
-    expect(e.text).toContain('33 2536 5558');
     expect(e.text).toContain('respóndeme "no"');
+    // Sin firma: la pone Gmail al pegar; al enviar por la API se inserta con conFirma()
+    expect(e.text).not.toContain('33 2536 5558');
+    expect(e.html).toContain('{{FIRMA}}');
+    expect(conFirma(e.html)).toContain('isotype-imsoft-blue.png');
+    expect(sinFirma(e.html)).not.toContain('{{FIRMA}}');
     expect(e.html).toContain('isotype-imsoft-blue.png');
+    expect(e.html).toContain(`<h1`);
     expect(e.html).not.toContain('<script');
     // Diseño de correo: boton de WhatsApp con mensaje prellenado y tablas (compatibles con Gmail/Outlook)
     expect(e.html).toContain('Agendar 15 minutos por WhatsApp');
     expect(e.html).toContain('https://wa.me/523325365558?text=');
     expect(e.html).toContain('role="presentation"');
-    expect(e.text).toContain('Agenda 15 minutos por WhatsApp: https://wa.me/');
+    expect(e.text).toContain('Agendar 15 minutos por WhatsApp: https://wa.me/');
   });
 
   it('los seguimientos son cortos, van como respuesta y sin linea legal', () => {
@@ -81,7 +86,8 @@ describe('edición del cuerpo', () => {
     expect(cuerpo).not.toContain('respóndeme "no"');
     const r = renderDesdeCuerpo(1, { subject: 'Hola', cuerpo: `${cuerpo}\n\nPárrafo extra <x>.`, empresa: 'Acme' });
     expect(r.text).toContain('Párrafo extra <x>.');
-    expect(r.text).toContain(firmaTexto());
+    expect(r.text).not.toContain(firmaTexto());
+    expect(r.text).toContain('Agendar 15 minutos por WhatsApp:');
     expect(r.text).toContain('encontré a Acme');
     expect(r.html).toContain('Párrafo extra &lt;x&gt;.');
     expect(renderDesdeCuerpo(2, { subject: 'Re: Hola', cuerpo: 'Solo uno.', empresa: 'Acme' }).text).not.toContain('respóndeme');

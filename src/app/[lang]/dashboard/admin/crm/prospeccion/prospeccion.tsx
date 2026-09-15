@@ -10,7 +10,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Copy, Mail, RefreshCw, Send, Sparkles, X } from 'lucide-react'
-import { cuerpoDe } from '@/lib/outreach'
+import { cuerpoDe, sinFirma } from '@/lib/outreach'
 
 export interface FilaOutreach {
   id: string
@@ -127,6 +127,20 @@ export function Prospeccion({ lang, gmail, gmailConfigurado, campana, filas, sin
     }
   }
 
+  /** Copia el correo con formato (HTML + texto): al pegarlo en Gmail conserva el diseño. */
+  async function copiarConFormato(html: string, text: string) {
+    try {
+      const item = new ClipboardItem({
+        'text/html': new Blob([html], { type: 'text/html' }),
+        'text/plain': new Blob([text], { type: 'text/plain' }),
+      })
+      await navigator.clipboard.write([item])
+      toast.success(es ? 'Correo copiado con formato. Pégalo en un mensaje nuevo de Gmail.' : 'Email copied with formatting. Paste it into a new Gmail message.')
+    } catch {
+      await copiar(text, es ? 'Copiado como texto (el navegador no permite copiar con formato)' : 'Copied as plain text')
+    }
+  }
+
   function abrir(f: FilaOutreach) {
     setAbierto(f)
     setSubject(f.subject)
@@ -201,49 +215,61 @@ export function Prospeccion({ lang, gmail, gmailConfigurado, campana, filas, sin
       {respondieron.length > 0 && <Cola titulo={es ? `Respondieron (${respondieron.length})` : `Replied (${respondieron.length})`} filas={respondieron} vacio="" abrir={abrir} enviar={enviar} saltar={saltar} ocupado={ocupado} puedeEnviar={false} es={es} />}
 
       <Dialog open={abierto !== null} onOpenChange={(o) => !o && setAbierto(null)}>
-        <DialogContent className="sm:max-w-5xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-6xl max-h-[92vh] overflow-y-auto">
           {abierto && (
             <>
               <DialogHeader>
                 <DialogTitle>{PASO[abierto.step]} · {abierto.empresa || abierto.nombre} <span className="font-normal text-muted-foreground">&lt;{abierto.email}&gt;</span></DialogTitle>
               </DialogHeader>
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="space-y-3">
-                  {abierto.status === 'draft' ? (
-                    <>
-                      <div>
-                        <label className="text-xs font-medium text-muted-foreground">{es ? 'Asunto' : 'Subject'}</label>
-                        <Input value={subject} onChange={(e) => setSubject(e.target.value)} />
-                      </div>
-                      <div>
-                        <label className="text-xs font-medium text-muted-foreground">{es ? 'Cuerpo (la firma y la línea legal se agregan solas)' : 'Body (signature and legal line are added automatically)'}</label>
-                        <Textarea rows={14} value={cuerpo} onChange={(e) => setCuerpo(e.target.value)} />
-                      </div>
-                      {abierto.gancho && <p className="text-xs text-muted-foreground">{es ? 'Gancho: ' : 'Hook: '}{abierto.gancho}</p>}
-                      <div className="flex flex-wrap gap-2">
-                        <Button variant="outline" onClick={guardar} disabled={ocupado !== null}>{ocupado === 'save' ? (es ? 'Guardando…' : 'Saving…') : es ? 'Guardar cambios' : 'Save changes'}</Button>
-                        <Button onClick={() => enviar(abierto)} disabled={ocupado !== null || !puedeEnviar || subject !== abierto.subject || cuerpo !== cuerpoDe(abierto.text)}><Send className="mr-2 h-4 w-4" />{es ? 'Enviar por Gmail' : 'Send via Gmail'}</Button>
-                        <Button variant="ghost" onClick={() => saltar(abierto)} disabled={ocupado !== null}><X className="mr-2 h-4 w-4" />{es ? 'Descartar' : 'Skip'}</Button>
-                      </div>
-                      {(subject !== abierto.subject || cuerpo !== cuerpoDe(abierto.text)) && <p className="text-xs text-muted-foreground">{es ? 'Guarda los cambios antes de enviar.' : 'Save your changes before sending.'}</p>}
-                    </>
-                  ) : (
-                    <div className="text-sm space-y-1">
-                      <p><span className="text-muted-foreground">{es ? 'Asunto: ' : 'Subject: '}</span>{abierto.subject}</p>
-                      <p><span className="text-muted-foreground">{es ? 'Enviado: ' : 'Sent: '}</span>{abierto.sent_at ? new Date(abierto.sent_at).toLocaleString(es ? 'es-MX' : 'en-US') : '—'} ({abierto.sent_via})</p>
+              {(() => {
+                const esBorrador = abierto.status === 'draft'
+                const sucio = esBorrador && (subject !== abierto.subject || cuerpo !== cuerpoDe(abierto.text))
+                const htmlPreview = sinFirma(abierto.html)
+                return (
+                  <div className="space-y-4">
+                    {/* Fila 1: asunto a lo ancho */}
+                    <div className="flex flex-wrap items-center gap-2">
+                      <label className="w-16 shrink-0 text-xs font-medium text-muted-foreground">{es ? 'Asunto' : 'Subject'}</label>
+                      {esBorrador ? (
+                        <Input className="min-w-0 flex-1" value={subject} onChange={(e) => setSubject(e.target.value)} />
+                      ) : (
+                        <p className="min-w-0 flex-1 text-sm">{abierto.subject}</p>
+                      )}
+                      <Button size="sm" variant="outline" onClick={() => copiar(esBorrador ? subject : abierto.subject, es ? 'Asunto copiado' : 'Subject copied')}><Copy className="mr-1 h-3.5 w-3.5" />{es ? 'Copiar asunto' : 'Copy subject'}</Button>
                     </div>
-                  )}
-                </div>
-                <div className="rounded-lg border bg-white">
-                  <div className="flex flex-wrap items-center gap-1 border-b px-3 py-1.5">
-                    <p className="mr-auto text-xs font-medium text-muted-foreground">{es ? 'Vista previa' : 'Preview'}</p>
-                    <Button size="sm" variant="ghost" onClick={() => copiar(abierto.subject, es ? 'Asunto copiado' : 'Subject copied')}><Copy className="mr-1 h-3.5 w-3.5" />{es ? 'Asunto' : 'Subject'}</Button>
-                    <Button size="sm" variant="ghost" onClick={() => copiar(abierto.text, es ? 'Texto copiado' : 'Text copied')}><Copy className="mr-1 h-3.5 w-3.5" />{es ? 'Texto' : 'Text'}</Button>
-                    <Button size="sm" variant="ghost" onClick={() => copiar(abierto.html, 'HTML copiado')}><Copy className="mr-1 h-3.5 w-3.5" />HTML</Button>
+
+                    {/* Fila 2: cuerpo y vista previa a la par */}
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <div className="flex flex-col gap-2">
+                        <label className="text-xs font-medium text-muted-foreground">{es ? 'Mensaje (el botón de WhatsApp y la línea legal se agregan solos; la firma la pone tu Gmail)' : 'Message (WhatsApp button and legal line are added automatically; your Gmail adds the signature)'}</label>
+                        {esBorrador ? (
+                          <Textarea className="min-h-[60vh] flex-1 resize-none font-mono text-[13px] leading-relaxed" value={cuerpo} onChange={(e) => setCuerpo(e.target.value)} />
+                        ) : (
+                          <pre className="min-h-[60vh] flex-1 whitespace-pre-wrap rounded-md border bg-muted/30 p-3 text-[13px] leading-relaxed">{cuerpoDe(abierto.text)}</pre>
+                        )}
+                        {!esBorrador && <p className="text-xs text-muted-foreground">{es ? 'Enviado: ' : 'Sent: '}{abierto.sent_at ? new Date(abierto.sent_at).toLocaleString(es ? 'es-MX' : 'en-US') : '—'} ({abierto.sent_via})</p>}
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        <div className="flex flex-wrap items-center gap-1">
+                          <p className="mr-auto text-xs font-medium text-muted-foreground">{es ? 'Vista previa' : 'Preview'}</p>
+                          <Button size="sm" variant="outline" onClick={() => copiarConFormato(htmlPreview, abierto.text)}><Copy className="mr-1 h-3.5 w-3.5" />{es ? 'Copiar para pegar en Gmail' : 'Copy for Gmail'}</Button>
+                        </div>
+                        <iframe title="preview" className="min-h-[60vh] flex-1 w-full rounded-md border bg-white" sandbox="" srcDoc={htmlPreview} />
+                      </div>
+                    </div>
+
+                    {esBorrador && (
+                      <div className="flex flex-wrap items-center gap-2">
+                        <Button variant="outline" onClick={guardar} disabled={ocupado !== null}>{ocupado === 'save' ? (es ? 'Guardando…' : 'Saving…') : es ? 'Guardar cambios' : 'Save changes'}</Button>
+                        <Button onClick={() => enviar(abierto)} disabled={ocupado !== null || !puedeEnviar || sucio}><Send className="mr-2 h-4 w-4" />{es ? 'Enviar por Gmail' : 'Send via Gmail'}</Button>
+                        <Button variant="ghost" onClick={() => saltar(abierto)} disabled={ocupado !== null}><X className="mr-2 h-4 w-4" />{es ? 'Descartar' : 'Skip'}</Button>
+                        {sucio && <p className="text-xs text-muted-foreground">{es ? 'Guarda los cambios para actualizar la vista previa y poder enviar.' : 'Save your changes to refresh the preview and send.'}</p>}
+                        {!sucio && abierto.gancho && <p className="ml-auto max-w-[50%] truncate text-xs text-muted-foreground" title={abierto.gancho}>{es ? 'Gancho: ' : 'Hook: '}{abierto.gancho}</p>}
+                      </div>
+                    )}
                   </div>
-                  <iframe title="preview" className="h-[60vh] min-h-[420px] w-full" sandbox="" srcDoc={abierto.html} />
-                </div>
-              </div>
+                )
+              })()}
             </>
           )}
         </DialogContent>

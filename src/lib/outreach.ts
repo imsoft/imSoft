@@ -48,6 +48,7 @@ export function fechaSiguientePaso(sentAt: Date, siguiente: 2 | 3): string {
 
 const SITE = 'https://www.imsoft.io';
 const LOGO = `${SITE}/logos/isotype-imsoft-blue.png`;
+export const LINEA_WHATSAPP = 'Agendar 15 minutos por WhatsApp:';
 /** Boton principal del correo: WhatsApp con mensaje prellenado. */
 export const WHATSAPP_URL = `https://wa.me/523325365558?text=${encodeURIComponent('Hola Brandon, me llegó tu correo de imSoft y me gustaría platicarlo.')}`;
 
@@ -167,45 +168,60 @@ export function renderOutreach(step: Step, vars: OutreachVars): RenderedEmail {
 export function renderDesdeCuerpo(step: Step, d: { subject: string; cuerpo: string; empresa: string }): RenderedEmail {
   const parrafos = d.cuerpo.split(/\n\s*\n/).map((x) => x.trim()).filter(Boolean);
   const legal = step === 1 ? sustituir(LINEA_LEGAL, { nombre: '', empresa: d.empresa.trim() || 'tu empresa', gancho: '' }) : null;
-  const text = [...parrafos, '', `Agenda 15 minutos por WhatsApp: ${WHATSAPP_URL}`, '', firmaTexto(), ...(legal ? ['', legal] : [])].join('\n\n').replace(/\n{3,}/g, '\n\n');
+  // Sin firma: Brandon la tiene configurada en Gmail. Al enviar por la API se inserta en {{FIRMA}}.
+  const text = [...parrafos, '', `${LINEA_WHATSAPP} ${WHATSAPP_URL}`, ...(legal ? ['', legal] : [])].join('\n\n').replace(/\n{3,}/g, '\n\n');
+  const [titulo, ...resto] = parrafos;
+  const saludo = /^hola\b/i.test(titulo ?? '') ? titulo : null;
+  const cuerpoHtml = (saludo ? resto : parrafos).map((x) => `      <p style="margin:0 0 18px;font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:1.6;color:#1f2937">${esc(x)}</p>`).join('\n');
   const html = `<!DOCTYPE html>
 <html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>${esc(d.subject.trim())}</title></head>
-<body style="margin:0;padding:0;background:#f3f7fb">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f3f7fb">
-<tr><td align="center" style="padding:24px 12px">
-<table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:14px;overflow:hidden;border:1px solid #e3ecf5">
-  <tr><td style="height:5px;background:#1e88e5;font-size:0;line-height:0">&nbsp;</td></tr>
-  <tr><td style="padding:22px 32px 0">
+<body style="margin:0;padding:0;background:#f4f6fa">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f4f6fa">
+<tr><td align="center" style="padding:32px 12px">
+<table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:16px">
+  <tr><td style="padding:40px 48px 0">
     <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
-      <td style="padding-right:10px"><img src="${LOGO}" width="28" height="28" alt="imSoft" style="display:block;border-radius:7px"></td>
-      <td style="font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:bold;color:#1e88e5;letter-spacing:.2px">imSoft</td>
+      <td style="padding-right:10px"><img src="${LOGO}" width="34" height="44" alt="" style="display:block;width:34px;height:auto"></td>
+      <td style="font-family:Arial,Helvetica,sans-serif;font-size:26px;font-weight:bold;color:#1e88e5;letter-spacing:-.3px">imSoft</td>
     </tr></table>
   </td></tr>
-  <tr><td style="padding:22px 32px 6px;font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:1.6;color:#111827">
-${parrafos.map((x) => `    <p style="margin:0 0 16px">${esc(x)}</p>`).join('\n')}
+  <tr><td style="padding:36px 48px 0">
+    <h1 style="margin:0 0 20px;font-family:Arial,Helvetica,sans-serif;font-size:26px;line-height:1.25;font-weight:bold;color:#111827">${esc(d.subject.trim())}</h1>
+${saludo ? `      <p style="margin:0 0 18px;font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:1.6;color:#1f2937">${esc(saludo)}</p>` : ''}
+${cuerpoHtml}
   </td></tr>
-  <tr><td style="padding:6px 32px 8px">
-    <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
-      <td style="background:#1e88e5;border-radius:10px;mso-padding-alt:12px 22px">
-        <a href="${WHATSAPP_URL}" style="display:inline-block;padding:12px 22px;font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:bold;color:#ffffff;text-decoration:none">Agendar 15 minutos por WhatsApp</a>
+  <tr><td style="padding:8px 48px 0">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+      <td align="center" style="background:#1e88e5;border-radius:8px">
+        <a href="${WHATSAPP_URL}" style="display:block;padding:15px 20px;font-family:Arial,Helvetica,sans-serif;font-size:16px;font-weight:bold;color:#ffffff;text-decoration:none">${LINEA_WHATSAPP.replace(/:$/, '')}</a>
       </td>
     </tr></table>
-    <p style="margin:12px 0 0;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#6b7280">O responde a este correo y lo vemos por aquí. Puedes ver proyectos en <a href="${SITE}/es/portfolio" style="color:#1e88e5;text-decoration:none">imsoft.io</a>.</p>
   </td></tr>
-  <tr><td style="padding:10px 32px 26px">
-    ${firmaHtml()}
+  <tr><td style="padding:20px 48px 0;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.6;color:#6b7280">
+    O responde a este correo y lo vemos por aquí. Puedes ver proyectos que hemos hecho en <a href="${SITE}/es/portfolio" style="color:#1e88e5;text-decoration:none;font-weight:bold">imsoft.io</a>.
   </td></tr>
+  <tr><td style="padding:24px 48px 36px">{{FIRMA}}</td></tr>
 </table>
-${legal ? `<table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%"><tr><td style="padding:14px 8px 0;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.5;color:#6b7280">${esc(legal)}</td></tr></table>` : ''}
+${legal ? `<table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%"><tr><td style="padding:18px 12px 0;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.5;color:#9ca3af">${esc(legal)}</td></tr></table>` : ''}
 </td></tr>
 </table>
 </body></html>`;
   return { subject: d.subject.trim(), html, text };
 }
 
-/** Cuerpo editable: el texto antes de la firma. */
+/** Al enviar por la API, Gmail no agrega la firma: se inserta aqui. Al copiar y pegar, la pone Gmail. */
+export function conFirma(html: string): string {
+  return html.replace('{{FIRMA}}', firmaHtml());
+}
+
+export function sinFirma(html: string): string {
+  return html.replace('{{FIRMA}}', '');
+}
+
+/** Cuerpo editable: el texto antes del boton de WhatsApp (o de la firma, en correos viejos). */
 export function cuerpoDe(text: string): string {
-  const i = text.indexOf(firmaTexto());
+  const cortes = [text.indexOf(LINEA_WHATSAPP), text.indexOf(firmaTexto())].filter((i) => i >= 0);
+  const i = cortes.length ? Math.min(...cortes) : -1;
   return (i >= 0 ? text.slice(0, i) : text).trim();
 }
 
