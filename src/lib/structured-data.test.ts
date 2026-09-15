@@ -78,7 +78,9 @@ describe('schema del negocio', () => {
   it('no usa availableLanguage fuera de ContactPoint', () => {
     // El validador de schema.org lo marca como UNKNOWN_FIELD en LocalBusiness.
     expect(org).not.toHaveProperty('availableLanguage');
-    expect(org.contactPoint.availableLanguage).toEqual(['Spanish', 'English']);
+    expect(org.contactPoint[0].availableLanguage).toEqual(['Spanish', 'English']);
+    expect(org.contactPoint.map((c: { contactType: string }) => c.contactType)).toEqual(['customer service', 'sales', 'billing support', 'technical support']);
+    expect(org.contactPoint[3].email).toBe('soporte@imsoft.io');
   });
 
   it('el @id no colisiona con la URL de una pagina real', () => {

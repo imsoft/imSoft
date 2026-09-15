@@ -4,6 +4,7 @@ import { getDictionary, hasLocale } from '../dictionaries';
 import { notFound } from 'next/navigation';
 import ContactForm from './contact-form';
 import { Building2, Mail, Phone } from 'lucide-react';
+import { BUSINESS } from '@/config/business';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import { formatPhoneNumber } from '@/lib/utils/format-phone';
@@ -150,6 +151,22 @@ export default async function ContactPage({ params }: {
                     </div>
                   )}
                 </dl>
+                {/* Alias por funcion: el cliente escribe a la direccion correcta desde el primer correo. */}
+                <div className="mt-10 border-t border-border pt-8">
+                  <p className="text-sm font-semibold mb-3">{lang === 'en' ? 'Write to the right inbox' : 'Escríbenos según lo que necesites'}</p>
+                  <dl className="space-y-2 text-base text-muted-foreground">
+                    {([
+                      [lang === 'en' ? 'New projects and quotes' : 'Proyectos nuevos y cotizaciones', BUSINESS.contactEmails.sales],
+                      [lang === 'en' ? 'Invoices and payments' : 'Facturas y pagos', BUSINESS.contactEmails.billing],
+                      [lang === 'en' ? 'Support for existing clients' : 'Soporte para clientes actuales', BUSINESS.contactEmails.support],
+                    ] as const).map(([label, email]) => (
+                      <div key={email} className="flex flex-wrap gap-x-3">
+                        <dt className="w-64 shrink-0">{label}</dt>
+                        <dd><Link href={`mailto:${email}`} className="hover:text-foreground transition-colors">{email}</Link></dd>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
               </div>
             </ScrollReveal>
             

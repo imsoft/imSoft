@@ -56,14 +56,13 @@ export function businessSchema(lang: string) {
       closes: tramo.closes,
     })),
     sameAs: [...BUSINESS.sameAs],
-    contactPoint: {
-      '@type': 'ContactPoint',
-      contactType: 'customer service',
-      email: BUSINESS.email,
-      telephone: BUSINESS.telephone,
-      areaServed: 'MX',
-      availableLanguage: [...BUSINESS.languages],
-    },
+    // Un punto de contacto por funcion: Google los muestra en el panel de conocimiento.
+    contactPoint: [
+      { '@type': 'ContactPoint', contactType: 'customer service', email: BUSINESS.email, telephone: BUSINESS.telephone, areaServed: 'MX', availableLanguage: [...BUSINESS.languages] },
+      { '@type': 'ContactPoint', contactType: 'sales', email: BUSINESS.contactEmails.sales, telephone: BUSINESS.telephone, areaServed: 'MX', availableLanguage: [...BUSINESS.languages] },
+      { '@type': 'ContactPoint', contactType: 'billing support', email: BUSINESS.contactEmails.billing, areaServed: 'MX', availableLanguage: [...BUSINESS.languages] },
+      { '@type': 'ContactPoint', contactType: 'technical support', email: BUSINESS.contactEmails.support, areaServed: 'MX', availableLanguage: [...BUSINESS.languages] },
+    ],
     // `knowsLanguage` si es valido en Organization; `availableLanguage` no lo es en
     // LocalBusiness ni sus subtipos, solo dentro de ContactPoint.
     knowsLanguage: isEs ? ['es-MX', 'en'] : ['en', 'es-MX'],

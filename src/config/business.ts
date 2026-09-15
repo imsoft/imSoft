@@ -17,6 +17,12 @@ export const BUSINESS = {
   name: 'imSoft',
   legalName: 'imSoft',
   email: 'contacto@imsoft.io',
+  /** Alias por funcion (Workspace, 15-sep-2026); todos llegan a la misma bandeja. */
+  contactEmails: {
+    sales: 'hola@imsoft.io',
+    billing: 'facturacion@imsoft.io',
+    support: 'soporte@imsoft.io',
+  },
   /** E.164, que es lo que espera schema.org. */
   telephone: '+523325365558',
   address: {
