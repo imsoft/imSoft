@@ -38,6 +38,11 @@ describe('prospeccion', () => {
     expect(e.text).toContain('respóndeme "no"');
     expect(e.html).toContain('isotype-imsoft-blue.png');
     expect(e.html).not.toContain('<script');
+    // Diseño de correo: boton de WhatsApp con mensaje prellenado y tablas (compatibles con Gmail/Outlook)
+    expect(e.html).toContain('Agendar 15 minutos por WhatsApp');
+    expect(e.html).toContain('https://wa.me/523325365558?text=');
+    expect(e.html).toContain('role="presentation"');
+    expect(e.text).toContain('Agenda 15 minutos por WhatsApp: https://wa.me/');
   });
 
   it('los seguimientos son cortos, van como respuesta y sin linea legal', () => {

@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Mail, RefreshCw, Send, Sparkles, X } from 'lucide-react'
+import { Copy, Mail, RefreshCw, Send, Sparkles, X } from 'lucide-react'
 import { cuerpoDe } from '@/lib/outreach'
 
 export interface FilaOutreach {
@@ -116,6 +116,15 @@ export function Prospeccion({ lang, gmail, gmailConfigurado, campana, filas, sin
   async function saltar(f: FilaOutreach) {
     if (await llamar(`/api/outreach/${f.id}/skip`, `skip-${f.id}`, {})) toast.success(es ? 'Descartado' : 'Skipped')
     if (abierto?.id === f.id) setAbierto(null)
+  }
+
+  async function copiar(valor: string, msg: string) {
+    try {
+      await navigator.clipboard.writeText(valor)
+      toast.success(msg)
+    } catch {
+      toast.error(es ? 'No se pudo copiar' : 'Could not copy')
+    }
   }
 
   function abrir(f: FilaOutreach) {
@@ -226,8 +235,13 @@ export function Prospeccion({ lang, gmail, gmailConfigurado, campana, filas, sin
                   )}
                 </div>
                 <div className="rounded-lg border bg-white">
-                  <p className="border-b px-3 py-2 text-xs font-medium text-muted-foreground">{es ? 'Vista previa' : 'Preview'}</p>
-                  <iframe title="preview" className="h-[60vh] min-h-[420px] w-full" sandbox="" srcDoc={`<body style="margin:16px">${abierto.html}</body>`} />
+                  <div className="flex flex-wrap items-center gap-1 border-b px-3 py-1.5">
+                    <p className="mr-auto text-xs font-medium text-muted-foreground">{es ? 'Vista previa' : 'Preview'}</p>
+                    <Button size="sm" variant="ghost" onClick={() => copiar(abierto.subject, es ? 'Asunto copiado' : 'Subject copied')}><Copy className="mr-1 h-3.5 w-3.5" />{es ? 'Asunto' : 'Subject'}</Button>
+                    <Button size="sm" variant="ghost" onClick={() => copiar(abierto.text, es ? 'Texto copiado' : 'Text copied')}><Copy className="mr-1 h-3.5 w-3.5" />{es ? 'Texto' : 'Text'}</Button>
+                    <Button size="sm" variant="ghost" onClick={() => copiar(abierto.html, 'HTML copiado')}><Copy className="mr-1 h-3.5 w-3.5" />HTML</Button>
+                  </div>
+                  <iframe title="preview" className="h-[60vh] min-h-[420px] w-full" sandbox="" srcDoc={abierto.html} />
                 </div>
               </div>
             </>
