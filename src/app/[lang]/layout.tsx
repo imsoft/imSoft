@@ -118,9 +118,9 @@ export default async function RootLayout({
           </>
         )}
       </head>
-      <body
-        className={`${geistSans.variable} antialiased overflow-x-hidden`}
-      >
+      {/* Sin overflow-x-hidden en body: con <html> ya recortado, body se volveria un
+          contenedor de scroll que nunca se desplaza y anularia todo position: sticky. */}
+      <body className={`${geistSans.variable} antialiased`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

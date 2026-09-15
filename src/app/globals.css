@@ -170,8 +170,13 @@
   * {
     @apply border-border outline-ring/50;
   }
-  html, body {
+  /* Solo html recorta el eje X (se aplica al viewport). Si body tambien lo hace, body se
+     vuelve un contenedor de scroll que nunca se desplaza y position: sticky deja de
+     funcionar en toda la app. */
+  html {
     @apply overflow-x-hidden;
+  }
+  html, body {
     max-width: 100vw;
   }
   body {
