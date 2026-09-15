@@ -90,6 +90,7 @@ describe('cotizaciones', () => {
     expect(t[1]).toBe('Liquidación: 50% ($10,440.00)');
     expect(t[2]).toMatch(/3, 6 o 12 meses sin intereses/);
     expect(t[2]).toMatch(/6 pagos de \$3,480/);
+    expect(t[3]).toContain('facturacion@imsoft.io');
     expect(textoFormaDePago({ ...q, payment: { ...q.payment, msi: false } })).toHaveLength(3);
   });
 
@@ -106,6 +107,8 @@ describe('cotizaciones', () => {
     expect(html).toContain('Guadalajara, Jalisco, México');
     expect(html).toContain('Col. Parques del Nilo, C.P. 44860');
     expect(html).toContain('propiedad del cliente');
+    expect(html).toContain('facturacion@imsoft.io');
+    expect(html).toContain('soporte@imsoft.io');
     // Sin penalizacion el texto cambia
     expect(renderContrato({ ...q, terms: { ...q.terms, penalizacion_dia: 0 } }, 'CON-2026-002')).not.toContain('por cada día hábil adicional');
     // Escapa HTML del cliente

@@ -185,7 +185,7 @@ export function textoFormaDePago(q: Pick<QuoteLike, 'items' | 'apply_iva' | 'pay
     const seis = msiEtiqueta(total, 6);
     lineas.push(`Cada hito puede pagarse con tarjeta de crédito a 3, 6 o 12 meses sin intereses con bancos participantes${seis ? `; a 6 meses, el total equivale a ${seis.replace(/^o /, '')}` : ''}.`);
   }
-  lineas.push('Por transferencia bancaria o con tarjeta mediante enlace de pago seguro (Stripe). Se emite CFDI por cada pago.');
+  lineas.push(`Por transferencia bancaria o con tarjeta mediante enlace de pago seguro (Stripe). Se emite CFDI por cada pago; dudas de facturación a ${EMISOR.emailFacturacion}.`);
   return lineas;
 }
 
@@ -229,7 +229,7 @@ ${q.intro ? `<p>${esc(q.intro)}</p>` : ''}
 <h2>Segunda. Precio y forma de pago</h2>
 <p>El precio total es de <strong>${mxn(t.total, q.currency)}</strong> (${mxn(t.subtotal, q.currency)}${q.apply_iva ? ` más ${mxn(t.iva, q.currency)} de IVA` : ', sin IVA'}), pagadero así:</p>
 <ul>${pagos}</ul>
-<p>Los pagos se realizan por transferencia bancaria o mediante enlace de pago con tarjeta${q.payment.msi ? ', incluidos meses sin intereses cuando el banco emisor lo permita' : ''}. El Prestador emite CFDI por cada pago recibido. Ningún entregable se pone en producción ni se transfiere hasta recibir el pago del hito correspondiente.</p>
+<p>Los pagos se realizan por transferencia bancaria o mediante enlace de pago con tarjeta${q.payment.msi ? ', incluidos meses sin intereses cuando el banco emisor lo permita' : ''}. El Prestador emite CFDI por cada pago recibido; los asuntos de facturación se atienden en ${esc(EMISOR.emailFacturacion)}. Ningún entregable se pone en producción ni se transfiere hasta recibir el pago del hito correspondiente.</p>
 
 <h2>Tercera. Plazo de entrega</h2>
 <p>El Prestador entregará el proyecto a más tardar el <strong>${esc(fechaLarga(plazo.fechaLimite))}</strong>, es decir, en un plazo de ${plazo.semanas} ${plazo.semanas === 1 ? 'semana' : 'semanas'} contado desde la cotización, siempre que el Cliente entregue el anticipo y los insumos iniciales oportunamente. El plazo se ajustará de común acuerdo si el alcance cambia o si el Cliente retrasa la entrega de insumos, conforme a las cláusulas Quinta y Sexta.</p>
@@ -244,7 +244,7 @@ ${q.intro ? `<p>${esc(q.intro)}</p>` : ''}
 <p>El Cliente entregará oportunamente la información, contenidos, accesos, materiales y aprobaciones necesarios para el desarrollo, y revisará los avances en un plazo razonable. ${esc(penal)}</p>
 
 <h2>Séptima. Garantía y soporte</h2>
-<p>El Prestador corregirá sin costo, durante ${q.terms.garantia_dias} días naturales después de la entrega, cualquier defecto de funcionamiento respecto a lo contratado. La garantía no cubre cambios de alcance, fallas causadas por terceros, ni modificaciones realizadas por personas ajenas al Prestador. ${esc(q.terms.soporte)}</p>
+<p>El Prestador corregirá sin costo, durante ${q.terms.garantia_dias} días naturales después de la entrega, cualquier defecto de funcionamiento respecto a lo contratado. La garantía no cubre cambios de alcance, fallas causadas por terceros, ni modificaciones realizadas por personas ajenas al Prestador. ${esc(q.terms.soporte)} Las solicitudes de garantía y soporte se envían a ${esc(EMISOR.emailSoporte)}.</p>
 
 <h2>Octava. Confidencialidad</h2>
 <p>Ambas partes tratarán como confidencial la información técnica, comercial y de negocio que conozcan con motivo de este contrato, y no la divulgarán a terceros sin autorización escrita, durante la vigencia del contrato y dos años después.</p>

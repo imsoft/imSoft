@@ -10,6 +10,9 @@ export const EMISOR = {
   domicilio: 'Cipriano Campos Alatorre #752, interior #104, Col. Parques del Nilo, C.P. 44860',
   ciudad: 'Guadalajara, Jalisco, México',
   email: 'contacto@imsoft.io',
+  /** Alias de Workspace creados el 15-sep-2026; llegan a la misma bandeja. */
+  emailFacturacion: 'facturacion@imsoft.io',
+  emailSoporte: 'soporte@imsoft.io',
   telefono: '+52 33 2536 5558',
   sitio: 'https://www.imsoft.io',
 } as const;
