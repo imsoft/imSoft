@@ -6,7 +6,6 @@ import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Copy, Mail, RefreshCw, Send, Sparkles, X } from 'lucide-react'
@@ -226,7 +225,7 @@ export function Prospeccion({ lang, gmail, gmailConfigurado, campana, filas, sin
                 const sucio = esBorrador && (subject !== abierto.subject || cuerpo !== cuerpoDe(abierto.text))
                 const htmlPreview = sinFirma(abierto.html)
                 return (
-                  <div className="space-y-4">
+                  <div className="min-w-0 space-y-4">
                     {/* Fila 1: asunto a lo ancho */}
                     <div className="flex flex-wrap items-center gap-2">
                       <label className="w-16 shrink-0 text-xs font-medium text-muted-foreground">{es ? 'Asunto' : 'Subject'}</label>
@@ -243,7 +242,12 @@ export function Prospeccion({ lang, gmail, gmailConfigurado, campana, filas, sin
                       <div className="flex min-w-0 flex-col gap-2">
                         <label className="text-xs font-medium text-muted-foreground">{es ? 'Mensaje (el botón de WhatsApp y la línea legal se agregan solos; la firma la pone tu Gmail)' : 'Message (WhatsApp button and legal line are added automatically; your Gmail adds the signature)'}</label>
                         {esBorrador ? (
-                          <Textarea className="h-[60vh] w-full min-w-0 resize-none [field-sizing:fixed] text-sm leading-relaxed" value={cuerpo} onChange={(e) => setCuerpo(e.target.value)} />
+                          <textarea
+                            className="h-[60vh] w-full min-w-0 resize-none rounded-md border-2 border-border/90 bg-transparent px-3 py-2 text-sm leading-relaxed shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                            style={{ fieldSizing: 'fixed' } as React.CSSProperties}
+                            value={cuerpo}
+                            onChange={(e) => setCuerpo(e.target.value)}
+                          />
                         ) : (
                           <pre className="h-[60vh] min-w-0 overflow-auto whitespace-pre-wrap break-words rounded-md border bg-muted/30 p-3 font-sans text-sm leading-relaxed">{cuerpoDe(abierto.text)}</pre>
                         )}
