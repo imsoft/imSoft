@@ -41,7 +41,8 @@ export default async function AdminDashboardLayout({
         <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
           <SidebarTrigger className="-ml-1" />
         </header>
-        <div className="flex min-w-0 flex-1 flex-col gap-4 overflow-x-hidden p-4">
+        {/* overflow-x-clip y no -hidden: hidden convierte este div en contenedor de scroll y anula los sticky del contenido. */}
+        <div className="flex min-w-0 flex-1 flex-col gap-4 overflow-x-clip p-4">
           {children}
         </div>
       </SidebarInset>

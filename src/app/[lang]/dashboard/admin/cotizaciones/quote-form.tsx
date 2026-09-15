@@ -161,11 +161,19 @@ export function QuoteForm({ lang, quote }: { lang: string; quote?: Quote }) {
               <Textarea id="q-intro" className={campo} rows={2} value={intro} onChange={(e) => setIntro(e.target.value)} placeholder={es ? 'Qué problema resuelve y qué incluye, en dos frases.' : 'What it solves and what it includes, in two sentences.'} />
             </div>
             <div className="space-y-3">
+              <div>
+                <p className="text-sm font-medium">{es ? 'Conceptos: lo que cobras' : 'Items: what you charge for'}</p>
+                <p className="text-xs text-muted-foreground">
+                  {es
+                    ? 'Cada línea es un rubro de la cotización, por ejemplo "Diseño y desarrollo del sitio web" o "Sesión de fotos". Cantidad × precio unitario = importe; el total sale de sumar las líneas.'
+                    : 'Each line is one billable item, e.g. "Website design and development" or "Photo session". Quantity × unit price = amount; the total is the sum of the lines.'}
+                </p>
+              </div>
               {items.map((it, i) => (
                 <div key={i} className="grid gap-2 sm:grid-cols-[1fr_80px_130px_40px] items-start rounded-lg border p-3">
                   <div className="space-y-2">
-                    <Input className={campo} placeholder={es ? 'Concepto' : 'Item'} value={it.concepto} onChange={(e) => setItem(i, { concepto: e.target.value })} />
-                    <Textarea className={campo} rows={2} placeholder={es ? 'Descripción (opcional)' : 'Description (optional)'} value={it.descripcion ?? ''} onChange={(e) => setItem(i, { descripcion: e.target.value })} />
+                    <Input className={campo} placeholder={es ? 'Concepto, p. ej. Diseño y desarrollo del sitio web' : 'Item, e.g. Website design and development'} value={it.concepto} onChange={(e) => setItem(i, { concepto: e.target.value })} />
+                    <Textarea className={campo} rows={2} placeholder={es ? 'Qué incluye (opcional): 6 secciones, formulario de citas, SEO básico…' : 'What it includes (optional)'} value={it.descripcion ?? ''} onChange={(e) => setItem(i, { descripcion: e.target.value })} />
                   </div>
                   <Input className={campo} type="number" min={1} step={1} aria-label={es ? 'Cantidad' : 'Quantity'} value={it.cantidad} onChange={(e) => setItem(i, { cantidad: Number(e.target.value) })} />
                   <Input className={campo} type="number" min={0} step={100} aria-label={es ? 'Precio unitario' : 'Unit price'} value={it.precio} onChange={(e) => setItem(i, { precio: Number(e.target.value) })} />
