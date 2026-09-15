@@ -28,6 +28,7 @@ import {
 } from '@/components/ui/select'
 import { createClient } from '@/lib/supabase/client'
 import { Activity, Contact, Deal } from '@/types/database'
+import { contactName } from '@/lib/contact-name'
 
 const activitySchema = z.object({
   activity_type: z.enum(['call', 'email', 'meeting', 'note', 'task']),
@@ -228,7 +229,7 @@ export function ActivityForm({ activity, contacts, deals, lang, userId }: Activi
                     <SelectContent>
                       {contacts.map((contact) => (
                         <SelectItem key={contact.id} value={contact.id}>
-                          {contact.first_name} {contact.last_name}
+                          {contactName(contact)}
                           {contact.company && ` - ${contact.company}`}
                         </SelectItem>
                       ))}

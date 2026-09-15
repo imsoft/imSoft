@@ -9,6 +9,7 @@ import Link from 'next/link'
 import { formatPhoneNumber } from '@/lib/utils/format-phone'
 import { SocialLink } from '@/types/database'
 import { ContactEmailsList } from '@/components/crm/contact-emails-list'
+import { contactName } from '@/lib/contact-name'
 
 // Local SVG brand icons to avoid compilation issues due to lucide-react versions
 const Instagram = (props: React.HTMLAttributes<SVGElement>) => (
@@ -131,7 +132,7 @@ export default async function ContactDetailPage({ params }: {
           </Button>
           <div>
             <h1 className="text-3xl font-bold">
-              {contact.first_name} {contact.last_name}
+              {contactName(contact)}
             </h1>
             <p className="text-muted-foreground">
               {lang === 'en' ? 'Contact Details' : 'Detalles del Contacto'}
@@ -167,7 +168,7 @@ export default async function ContactDetailPage({ params }: {
               {lang === 'en' ? 'Full Name' : 'Nombre Completo'}
             </p>
             <p className="font-medium">
-              {contact.first_name} {contact.last_name}
+              {contactName(contact)}
             </p>
           </div>
 

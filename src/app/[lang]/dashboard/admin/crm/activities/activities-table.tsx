@@ -18,6 +18,7 @@ import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
+import { contactName } from '@/lib/contact-name'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -193,7 +194,7 @@ export function ActivitiesTable({ activities, dict, lang }: ActivitiesTableProps
                   {activity.contacts ? (
                     <div>
                       <p className="text-sm">
-                        {activity.contacts.first_name} {activity.contacts.last_name}
+                        {contactName(activity.contacts)}
                       </p>
                       {activity.contacts.company && (
                         <p className="text-xs text-muted-foreground">{activity.contacts.company}</p>

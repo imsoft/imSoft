@@ -11,6 +11,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import type { Contact } from '@/types/database'
+import { contactName } from '@/lib/contact-name'
 
 interface ContactCardProps {
   contact: Contact
@@ -113,7 +114,7 @@ export function ContactCard({ contact, lang }: ContactCardProps) {
                   className="flex-1 min-w-0 group"
                 >
                   <h3 className="font-semibold text-sm group-hover:text-primary transition-colors truncate">
-                    {contact.first_name} {contact.last_name}
+                    {contactName(contact)}
                   </h3>
                 </Link>
               )}

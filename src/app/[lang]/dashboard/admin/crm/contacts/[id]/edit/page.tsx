@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import { ContactFormSimple } from '../../contact-form-simple'
+import { contactName } from '@/lib/contact-name'
 
 export default async function EditContactPage({ params }: {
   params: Promise<{ lang: string; id: string }>
@@ -51,8 +52,8 @@ export default async function EditContactPage({ params }: {
           </h1>
           <p className="text-muted-foreground">
             {lang === 'en'
-              ? `Editing ${contact.first_name} ${contact.last_name}`
-              : `Editando ${contact.first_name} ${contact.last_name}`}
+              ? `Editing ${contactName(contact)}`
+              : `Editando ${contactName(contact)}`}
           </p>
         </div>
       </div>

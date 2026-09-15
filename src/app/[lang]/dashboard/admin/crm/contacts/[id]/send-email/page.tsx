@@ -3,6 +3,7 @@ import { notFound, redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { SendEmailPageClient } from './send-email-client'
 import { CAMPO_ASUNTO, CAMPO_HTML } from '@/lib/prospect-email'
+import { contactName } from '@/lib/contact-name'
 
 export default async function SendEmailPage({ params }: {
   params: Promise<{ lang: string; id: string }>
@@ -50,12 +51,12 @@ export default async function SendEmailPage({ params }: {
   const campo = (nombre: string) =>
     customFields?.find((f) => f.field_name === nombre)?.field_value || ''
 
-  const contactName = `${contact.first_name} ${contact.last_name}`
+  const nombre = contactName(contact)
 
   return (
     <SendEmailPageClient
       contactId={id}
-      contactName={contactName}
+      contactName={nombre}
       contactFirstName={contact.first_name || ''}
       contactEmail={contact.email}
       additionalEmails={contact.additional_emails || []}
