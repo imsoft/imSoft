@@ -16,7 +16,9 @@
   --secondary: oklch(0.1884 0.0128 248.5103);
   --secondary-foreground: oklch(1.0000 0 0);
   --muted: oklch(0.9222 0.0013 286.3737);
-  --muted-foreground: oklch(0.1884 0.0128 248.5103);
+  /* Antes era igual al texto normal (0.1884): los textos secundarios y los placeholders
+     se veian como texto real. Gris azulado con contraste AA sobre blanco. */
+  --muted-foreground: oklch(0.5 0.016 248.5);
   --accent: oklch(0.9392 0.0166 250.8453);
   --accent-foreground: oklch(0.6723 0.1606 244.9955);
   --destructive: oklch(0.6188 0.2376 25.7658);
@@ -172,4 +174,124 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* ---- Lo que sigue vivia en src/app/globals.css, un archivo que nada importaba. ---- */
+
+/* Lexical Editor Styles */
+[contenteditable] {
+  outline: none;
+}
+
+[contenteditable] p {
+  margin: 0.5em 0;
+}
+
+[contenteditable] h1 {
+  font-size: 2.25em;
+  font-weight: 700;
+  margin-top: 0;
+  margin-bottom: 0.8888889em;
+  line-height: 1.1111111;
+}
+
+[contenteditable] h2 {
+  font-size: 1.5em;
+  font-weight: 700;
+  margin-top: 2em;
+  margin-bottom: 1em;
+  line-height: 1.3333333;
+}
+
+[contenteditable] h3 {
+  font-size: 1.25em;
+  font-weight: 700;
+  margin-top: 1.6em;
+  margin-bottom: 0.6em;
+  line-height: 1.6;
+}
+
+[contenteditable] ul,
+[contenteditable] ol {
+  margin: 1.25em 0;
+  padding-left: 1.625em;
+}
+
+[contenteditable] ul {
+  list-style-type: disc;
+}
+
+[contenteditable] ol {
+  list-style-type: decimal;
+}
+
+[contenteditable] li {
+  margin: 0.5em 0;
+}
+
+[contenteditable] blockquote {
+  border-left: 4px solid hsl(var(--primary));
+  padding-left: 1em;
+  margin: 1.6em 0;
+  font-style: italic;
+  color: hsl(var(--muted-foreground));
+}
+
+[contenteditable] code {
+  background-color: hsl(var(--muted));
+  color: hsl(var(--primary));
+  padding: 0.125em 0.25em;
+  border-radius: 0.25rem;
+  font-size: 0.875em;
+}
+
+[contenteditable] pre {
+  background-color: hsl(var(--muted));
+  color: hsl(var(--foreground));
+  padding: 1em;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+}
+
+[contenteditable] pre code {
+  background-color: transparent;
+  color: inherit;
+  padding: 0;
+}
+
+/* ── Blog CTA block (WhatsApp call-to-action at end of articles) ─────── */
+.prose .cta-blog {
+  background-color: hsl(var(--accent));
+  border-left: 4px solid hsl(var(--primary));
+  border-radius: 0 0.5rem 0.5rem 0;
+  padding: 1.25rem 1.5rem;
+  margin-top: 2.5rem;
+  font-size: 1rem;
+  font-style: normal;
+}
+
+.prose .cta-blog p {
+  margin: 0;
+  color: hsl(var(--foreground));
+  font-style: normal;
+}
+
+.prose .cta-blog a {
+  font-weight: 700;
+  color: hsl(var(--primary));
+  text-decoration: underline;
+}
+
+/* Documentos (cotizaciones y contratos): tipografia del contrato e impresion a PDF. */
+.contrato h1 { font-size: 1.5rem; font-weight: 700; line-height: 1.2; margin-bottom: 0.5rem; }
+.contrato .folio { font-size: 0.85rem; color: #525252; margin-bottom: 1.5rem; }
+.contrato h2 { font-size: 1rem; font-weight: 700; margin-top: 1.5rem; margin-bottom: 0.5rem; }
+.contrato p { margin-bottom: 0.75rem; line-height: 1.6; }
+.contrato ul { list-style: disc; padding-left: 1.5rem; margin-bottom: 0.75rem; }
+.contrato li { margin-bottom: 0.25rem; }
+@media print {
+  body { background: white !important; }
+  .no-print { display: none !important; }
+  .doc { color: black; }
+  @page { margin: 18mm; }
 }
