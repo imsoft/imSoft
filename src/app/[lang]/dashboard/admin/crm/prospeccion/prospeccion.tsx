@@ -239,22 +239,22 @@ export function Prospeccion({ lang, gmail, gmailConfigurado, campana, filas, sin
                     </div>
 
                     {/* Fila 2: cuerpo y vista previa a la par */}
-                    <div className="grid gap-4 md:grid-cols-2">
-                      <div className="flex flex-col gap-2">
+                    <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+                      <div className="flex min-w-0 flex-col gap-2">
                         <label className="text-xs font-medium text-muted-foreground">{es ? 'Mensaje (el botón de WhatsApp y la línea legal se agregan solos; la firma la pone tu Gmail)' : 'Message (WhatsApp button and legal line are added automatically; your Gmail adds the signature)'}</label>
                         {esBorrador ? (
-                          <Textarea className="min-h-[60vh] flex-1 resize-none font-mono text-[13px] leading-relaxed" value={cuerpo} onChange={(e) => setCuerpo(e.target.value)} />
+                          <Textarea className="h-[60vh] w-full min-w-0 resize-none [field-sizing:fixed] text-sm leading-relaxed" value={cuerpo} onChange={(e) => setCuerpo(e.target.value)} />
                         ) : (
-                          <pre className="min-h-[60vh] flex-1 whitespace-pre-wrap rounded-md border bg-muted/30 p-3 text-[13px] leading-relaxed">{cuerpoDe(abierto.text)}</pre>
+                          <pre className="h-[60vh] min-w-0 overflow-auto whitespace-pre-wrap break-words rounded-md border bg-muted/30 p-3 font-sans text-sm leading-relaxed">{cuerpoDe(abierto.text)}</pre>
                         )}
                         {!esBorrador && <p className="text-xs text-muted-foreground">{es ? 'Enviado: ' : 'Sent: '}{abierto.sent_at ? new Date(abierto.sent_at).toLocaleString(es ? 'es-MX' : 'en-US') : '—'} ({abierto.sent_via})</p>}
                       </div>
-                      <div className="flex flex-col gap-2">
+                      <div className="flex min-w-0 flex-col gap-2">
                         <div className="flex flex-wrap items-center gap-1">
                           <p className="mr-auto text-xs font-medium text-muted-foreground">{es ? 'Vista previa' : 'Preview'}</p>
                           <Button size="sm" variant="outline" onClick={() => copiarConFormato(htmlPreview, abierto.text)}><Copy className="mr-1 h-3.5 w-3.5" />{es ? 'Copiar para pegar en Gmail' : 'Copy for Gmail'}</Button>
                         </div>
-                        <iframe title="preview" className="min-h-[60vh] flex-1 w-full rounded-md border bg-white" sandbox="" srcDoc={htmlPreview} />
+                        <iframe title="preview" className="h-[60vh] w-full min-w-0 rounded-md border bg-white" sandbox="" srcDoc={htmlPreview} />
                       </div>
                     </div>
 
