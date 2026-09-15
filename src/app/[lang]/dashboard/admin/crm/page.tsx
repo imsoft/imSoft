@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Plus } from 'lucide-react'
 import Link from 'next/link'
 import { ContactsTable } from './contacts/contacts-table'
+import { CrmTabs } from './crm-tabs'
 
 export default async function CRMPage({ params }: {
   params: Promise<{ lang: string }>
@@ -38,7 +39,7 @@ export default async function CRMPage({ params }: {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">
-            {lang === 'en' ? 'Contacts' : 'Contactos'}
+            CRM
           </h1>
           <p className="text-muted-foreground">
             {lang === 'en'
@@ -53,6 +54,7 @@ export default async function CRMPage({ params }: {
           </Link>
         </Button>
       </div>
+      <CrmTabs lang={lang} activa="contactos" />
       <ContactsTable contacts={contacts || []} dict={dict} lang={lang} />
     </div>
   )

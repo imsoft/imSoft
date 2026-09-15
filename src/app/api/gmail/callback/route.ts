@@ -6,7 +6,7 @@ import { conectarCuenta } from '@/lib/gmail/server'
 /** Vuelta del consentimiento de Google: guarda los tokens y regresa a Prospección. */
 export async function GET(req: NextRequest) {
   const auth = await requireAdmin()
-  const volver = (q: string) => NextResponse.redirect(`${SITE_URL}/es/dashboard/admin/prospeccion?${q}`)
+  const volver = (q: string) => NextResponse.redirect(`${SITE_URL}/es/dashboard/admin/crm/prospeccion?${q}`)
   if (!auth.ok) return NextResponse.redirect(`${SITE_URL}/es/login`)
   const code = req.nextUrl.searchParams.get('code')
   const state = req.nextUrl.searchParams.get('state')

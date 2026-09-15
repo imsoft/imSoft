@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
-import { getDictionary, hasLocale } from '../../../dictionaries'
+import { hasLocale } from '../../../../dictionaries'
+import { CrmTabs } from '../crm-tabs'
 import { requireAdmin, serviceClient } from '@/lib/quotes/server'
 import { cuentaConectada, gmailConfigurado } from '@/lib/gmail/server'
 import { CONTACTO_COLS, estadoCampana, type ContactoMin } from '@/lib/outreach-server'
@@ -10,7 +11,6 @@ export const dynamic = 'force-dynamic'
 export default async function AdminProspeccionPage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params
   if (!hasLocale(lang)) notFound()
-  const dict = await getDictionary(lang)
   const auth = await requireAdmin()
   if (!auth.ok) notFound()
 
@@ -35,13 +35,14 @@ export default async function AdminProspeccionPage({ params }: { params: Promise
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">{dict.dashboard.admin.nav.prospeccion}</h1>
+        <h1 className="text-3xl font-bold">CRM</h1>
         <p className="text-muted-foreground">
           {lang === 'en'
             ? 'Personalized cold emails sent from your Gmail, with two automatic follow-ups.'
             : 'Correos en frío personalizados, enviados desde tu Gmail, con dos seguimientos automáticos.'}
         </p>
       </div>
+      <CrmTabs lang={lang} activa="prospeccion" />
       <Prospeccion lang={lang} gmail={gmail} gmailConfigurado={gmailConfigurado()} campana={campana} filas={rows} sinContactar={sinContactar ?? 0} />
     </div>
   )

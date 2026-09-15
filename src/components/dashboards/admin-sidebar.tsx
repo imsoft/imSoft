@@ -25,7 +25,7 @@ import {
   Building2,
   UserCog,
   Code,
-  Mail, Calculator, FileSignature, Send } from "lucide-react"
+  Mail, Calculator, FileSignature } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import Image from "@/components/ui/image"
@@ -117,11 +117,6 @@ export function AdminSidebar({ dict, lang }: AdminSidebarProps) {
       title: dict.dashboard.admin.nav.cotizaciones,
       url: `/${lang}/dashboard/admin/cotizaciones`,
       icon: FileSignature,
-    },
-    {
-      title: dict.dashboard.admin.nav.prospeccion,
-      url: `/${lang}/dashboard/admin/prospeccion`,
-      icon: Send,
     },
     {
       title: dict.dashboard.admin.nav.simulador,
