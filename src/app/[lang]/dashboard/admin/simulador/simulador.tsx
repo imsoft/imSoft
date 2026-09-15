@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
+import { NumberInput } from '@/components/ui/number-input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Button } from '@/components/ui/button'
@@ -74,7 +74,7 @@ export function Simulador({ lang }: { lang: string }) {
         <CardContent className="space-y-5">
           <div className="space-y-1.5">
             <Label htmlFor="sim-precio">{es ? 'Precio del proyecto (sin IVA)' : 'Project price (before VAT)'}</Label>
-            <Input className="border-2! border-border!" id="sim-precio" type="number" min={0} step={100} value={cfg.precio} onChange={(e) => set('precio', Number(e.target.value) || 0)} />
+            <NumberInput className="border-2! border-border!" id="sim-precio" value={cfg.precio} onValueChange={(n) => set('precio', n)} />
           </div>
           <div className="space-y-1.5">
             <Label>{es ? 'Forma de pago' : 'Payment method'}</Label>
@@ -99,7 +99,7 @@ export function Simulador({ lang }: { lang: string }) {
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="sim-ingreso">{es ? 'Tus ingresos del mes, sin IVA' : 'Your monthly income, before VAT'}</Label>
-              <Input className="border-2! border-border!" id="sim-ingreso" type="number" min={0} step={1000} value={cfg.ingresoMensual} onChange={(e) => set('ingresoMensual', Number(e.target.value) || 0)} />
+              <NumberInput className="border-2! border-border!" id="sim-ingreso" value={cfg.ingresoMensual} onValueChange={(n) => set('ingresoMensual', n)} />
               <p className="text-xs text-muted-foreground">{es ? 'Tasa ISR RESICO' : 'RESICO income tax rate'}: {pct(r.tasa)}</p>
             </div>
             <div className="flex items-center justify-between gap-3">
@@ -110,7 +110,7 @@ export function Simulador({ lang }: { lang: string }) {
 
           <div className="space-y-1.5 border-t pt-4">
             <Label htmlFor="sim-neto">{es ? 'Al revés: quiero que me caigan, después de Stripe' : 'Reverse: I want to receive, after Stripe'}</Label>
-            <Input className="border-2! border-border!" id="sim-neto" type="number" min={0} step={100} value={neto} onChange={(e) => setNeto(Number(e.target.value) || 0)} />
+            <NumberInput className="border-2! border-border!" id="sim-neto" value={neto} onValueChange={setNeto} />
             <p className="text-sm">
               {es ? 'Cotiza ' : 'Quote '}<span className="font-mono font-semibold text-primary text-lg">{mxn(precioParaNeto(neto, cfg))}</span>
               <span className="text-muted-foreground"> {es ? 'sin IVA, redondeado a la centena' : 'before VAT, rounded up'}</span>

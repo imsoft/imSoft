@@ -7,6 +7,7 @@ import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
+import { NumberInput } from '@/components/ui/number-input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
@@ -162,7 +163,7 @@ export function QuoteForm({ lang, quote }: { lang: string; quote?: Quote }) {
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="q-precio">{es ? 'Precio (sin IVA)' : 'Price (before VAT)'}</Label>
-                <Input id="q-precio" className={campo} type="number" min={0} step={100} value={precio} onChange={(e) => setPrecio(Number(e.target.value) || 0)} />
+                <NumberInput id="q-precio" className={campo} value={precio} onValueChange={setPrecio} placeholder="18000" />
               </div>
             </div>
             <div className="space-y-1.5">
@@ -191,7 +192,7 @@ export function QuoteForm({ lang, quote }: { lang: string; quote?: Quote }) {
               {hitos.map((h, i) => (
                 <div key={i} className="grid gap-2 grid-cols-[1fr_90px_40px] items-center">
                   <Input className={campo} value={h.label} onChange={(e) => setHito(i, { label: e.target.value })} placeholder={es ? 'Nombre del hito' : 'Milestone'} />
-                  <div className="relative"><Input className={`${campo} pr-7`} type="number" min={1} max={100} value={h.pct} onChange={(e) => setHito(i, { pct: Number(e.target.value) })} /><span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">%</span></div>
+                  <div className="relative"><NumberInput className={`${campo} pr-7`} value={h.pct} onValueChange={(n) => setHito(i, { pct: n })} aria-label="%" /><span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">%</span></div>
                   <Button type="button" variant="ghost" size="icon" aria-label={es ? 'Quitar hito' : 'Remove milestone'} onClick={() => setHitos((arr) => arr.filter((_, idx) => idx !== i))} disabled={hitos.length === 1}><Trash2 className="size-4" /></Button>
                 </div>
               ))}
@@ -214,9 +215,9 @@ export function QuoteForm({ lang, quote }: { lang: string; quote?: Quote }) {
         <Card>
           <CardHeader><CardTitle className="text-base">{es ? 'Condiciones' : 'Terms'}</CardTitle></CardHeader>
           <CardContent className="grid gap-4 sm:grid-cols-3">
-            <div className="space-y-1.5"><Label htmlFor="q-entrega">{es ? 'Entrega (semanas)' : 'Delivery (weeks)'}</Label><Input id="q-entrega" className={campo} type="number" min={1} value={terms.entrega_semanas} onChange={(e) => setTerms((v) => ({ ...v, entrega_semanas: Number(e.target.value) }))} /></div>
-            <div className="space-y-1.5"><Label htmlFor="q-garantia">{es ? 'Garantía (días)' : 'Warranty (days)'}</Label><Input id="q-garantia" className={campo} type="number" min={0} value={terms.garantia_dias} onChange={(e) => setTerms((v) => ({ ...v, garantia_dias: Number(e.target.value) }))} /></div>
-            <div className="space-y-1.5"><Label htmlFor="q-penal">{es ? 'Penalización por día de retraso del cliente (MXN)' : 'Client delay penalty per day (MXN)'}</Label><Input id="q-penal" className={campo} type="number" min={0} step={100} value={terms.penalizacion_dia} onChange={(e) => setTerms((v) => ({ ...v, penalizacion_dia: Number(e.target.value) }))} /></div>
+            <div className="space-y-1.5"><Label htmlFor="q-entrega">{es ? 'Entrega (semanas)' : 'Delivery (weeks)'}</Label><NumberInput id="q-entrega" className={campo} value={terms.entrega_semanas} onValueChange={(n) => setTerms((v) => ({ ...v, entrega_semanas: n }))} /></div>
+            <div className="space-y-1.5"><Label htmlFor="q-garantia">{es ? 'Garantía (días)' : 'Warranty (days)'}</Label><NumberInput id="q-garantia" className={campo} value={terms.garantia_dias} onValueChange={(n) => setTerms((v) => ({ ...v, garantia_dias: n }))} /></div>
+            <div className="space-y-1.5"><Label htmlFor="q-penal">{es ? 'Penalización por día de retraso del cliente (MXN)' : 'Client delay penalty per day (MXN)'}</Label><NumberInput id="q-penal" className={campo} value={terms.penalizacion_dia} onValueChange={(n) => setTerms((v) => ({ ...v, penalizacion_dia: n }))} /></div>
             <div className="space-y-1.5 sm:col-span-3"><Label htmlFor="q-soporte">{es ? 'Soporte' : 'Support'}</Label><Textarea id="q-soporte" className={campo} rows={2} value={terms.soporte} onChange={(e) => setTerms((v) => ({ ...v, soporte: e.target.value }))} /></div>
             <div className="space-y-1.5 sm:col-span-3"><Label htmlFor="q-propiedad">{es ? 'Propiedad del código' : 'Code ownership'}</Label><Textarea id="q-propiedad" className={campo} rows={2} value={terms.propiedad} onChange={(e) => setTerms((v) => ({ ...v, propiedad: e.target.value }))} /></div>
             <div className="space-y-1.5 sm:col-span-3"><Label htmlFor="q-cambios">{es ? 'Cambios de alcance' : 'Scope changes'}</Label><Textarea id="q-cambios" className={campo} rows={2} value={terms.cambios_alcance} onChange={(e) => setTerms((v) => ({ ...v, cambios_alcance: e.target.value }))} /></div>
