@@ -180,10 +180,7 @@ export function renderDesdeCuerpo(step: Step, d: { subject: string; cuerpo: stri
 <tr><td align="center" style="padding:32px 12px">
 <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:16px">
   <tr><td style="padding:40px 48px 0">
-    <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
-      <td style="padding-right:10px"><img src="${LOGO}" width="34" height="44" alt="" style="display:block;width:34px;height:auto"></td>
-      <td style="font-family:Arial,Helvetica,sans-serif;font-size:26px;font-weight:bold;color:#1e88e5;letter-spacing:-.3px">imSoft</td>
-    </tr></table>
+    <img src="${LOGO}" width="44" height="57" alt="imSoft" style="display:block;width:44px;height:auto">
   </td></tr>
   <tr><td style="padding:36px 48px 0">
     <h1 style="margin:0 0 20px;font-family:Arial,Helvetica,sans-serif;font-size:26px;line-height:1.25;font-weight:bold;color:#111827">${esc(d.subject.trim())}</h1>
