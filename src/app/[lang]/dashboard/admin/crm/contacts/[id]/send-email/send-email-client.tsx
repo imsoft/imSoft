@@ -8,8 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Skeleton } from '@/components/ui/skeleton'
-import { ArrowLeft, Mail, Sparkles, Loader2, FileText, AlertTriangle } from 'lucide-react'
+import { ArrowLeft, Mail, Loader2, FileText, AlertTriangle } from 'lucide-react'
 import {
   Select,
   SelectContent,
@@ -60,41 +59,19 @@ export function SendEmailPageClient({
     toParam && allEmails.includes(toParam) ? toParam : contactEmail
   )
   const [bypassInvalid, setBypassInvalid] = useState(false)
-  // Si la campana ya dejo el correo listo para este contacto, se precarga;
-  // los botones de plantilla y de IA siguen disponibles para reemplazarlo.
-  const [emailSubject, setEmailSubject] = useState(prospectSubject)
-  const [emailBody, setEmailBody] = useState(prospectHtml)
+  // La pantalla abre con el correo ya escrito: el de la campana si existe para este
+  // contacto, y si no, la plantilla de prospeccion con nombre y empresa. "Usar
+  // plantilla" vuelve a la plantilla limpia.
+  const inicial = prospectSubject && prospectHtml
+    ? { subject: prospectSubject, html: prospectHtml }
+    : buildProspectEmail({ nombre: contactFirstName, empresa: contactCompany })
+  const [emailSubject, setEmailSubject] = useState(inicial.subject)
+  const [emailBody, setEmailBody] = useState(inicial.html)
   const [isSending, setIsSending] = useState(false)
-  const [isGeneratingAI, setIsGeneratingAI] = useState(false)
 
   const isSelectedEmailInvalid = invalidEmails.some(
     (e) => e.toLowerCase() === selectedEmail.toLowerCase()
   )
-
-  const generateAIEmail = async () => {
-    setIsGeneratingAI(true)
-    try {
-      const response = await fetch(`/api/crm/contacts/${contactId}/generate-email`, {
-        method: 'POST',
-      })
-
-      if (!response.ok) {
-        throw new Error(lang === 'en' ? 'Failed to generate email' : 'Error al generar email')
-      }
-
-      const data = await response.json()
-      if (data.subject && data.body) {
-        setEmailSubject(data.subject)
-        setEmailBody(data.body)
-        toast.success(lang === 'en' ? 'Email generated successfully' : 'Email generado exitosamente')
-      }
-    } catch (error) {
-      console.error('Error generating email:', error)
-      toast.error(lang === 'en' ? 'Error generating email' : 'Error al generar email')
-    } finally {
-      setIsGeneratingAI(false)
-    }
-  }
 
   const applyProspectTemplate = () => {
     const { subject, html } = buildProspectEmail({
@@ -177,30 +154,9 @@ export function SendEmailPageClient({
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Button
-            onClick={applyProspectTemplate}
-            disabled={isGeneratingAI}
-            variant="outline"
-          >
+          <Button onClick={applyProspectTemplate} variant="outline">
             <FileText className="mr-2 h-4 w-4" />
-            {lang === 'en' ? 'Use template' : 'Usar plantilla'}
-          </Button>
-          <Button
-            onClick={generateAIEmail}
-            disabled={isGeneratingAI}
-            variant="outline"
-          >
-            {isGeneratingAI ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                {lang === 'en' ? 'Generating...' : 'Generando...'}
-              </>
-            ) : (
-              <>
-                <Sparkles className="mr-2 h-4 w-4" />
-                {lang === 'en' ? 'Generate with AI' : 'Generar con IA'}
-              </>
-            )}
+            {lang === 'en' ? 'Reset to template' : 'Volver a la plantilla'}
           </Button>
         </div>
       </div>
@@ -272,16 +228,14 @@ export function SendEmailPageClient({
           {prospectHtml && (
             <div className="rounded-md border border-primary/30 bg-primary/5 px-3 py-2 text-xs text-muted-foreground">
               {lang === 'en'
-                ? 'Prefilled with the campaign email written for this contact. Generating with AI or using the template will replace it.'
-                : 'Precargado con el correo de campaña escrito para este contacto. Si generas con IA o usas la plantilla, lo reemplazas.'}
+                ? 'Prefilled with the campaign email written for this contact. "Reset to template" replaces it.'
+                : 'Precargado con el correo de campaña escrito para este contacto. "Volver a la plantilla" lo reemplaza.'}
             </div>
           )}
 
           <div>
             <Label htmlFor="subject">{lang === 'en' ? 'Subject' : 'Asunto'} *</Label>
-            {isGeneratingAI ? (
-              <Skeleton className="mt-1 h-10 w-full" />
-            ) : (
+            {(
               <Input
                 id="subject"
                 value={emailSubject}
@@ -294,9 +248,7 @@ export function SendEmailPageClient({
 
           <div>
             <Label htmlFor="body">{lang === 'en' ? 'Email Body' : 'Cuerpo del Correo'} *</Label>
-            {isGeneratingAI ? (
-              <Skeleton className="mt-1 h-[400px] w-full" />
-            ) : (
+            {(
               <Tabs defaultValue="preview" className="mt-1">
                 <TabsList>
                   <TabsTrigger value="preview">{lang === 'en' ? 'Preview' : 'Vista Previa'}</TabsTrigger>
