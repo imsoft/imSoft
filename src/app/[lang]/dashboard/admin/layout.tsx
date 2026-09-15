@@ -1,4 +1,5 @@
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
+import { UserMenu } from "@/components/dashboards/user-menu"
 import { AdminSidebar } from "@/components/dashboards/admin-sidebar"
 import { getDictionary, hasLocale } from '../../dictionaries'
 import { notFound } from 'next/navigation'
@@ -38,8 +39,16 @@ export default async function AdminDashboardLayout({
     <SidebarProvider>
       <AdminSidebar dict={dict} lang={lang} user={user} />
       <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+        <header className="flex h-16 shrink-0 items-center justify-between gap-2 border-b px-4">
           <SidebarTrigger className="-ml-1" />
+          <UserMenu
+            lang={lang}
+            email={user.email}
+            name={user.user_metadata?.full_name ?? user.user_metadata?.name ?? null}
+            avatarUrl={user.user_metadata?.avatar_url ?? null}
+            profileHref={`/${lang}/dashboard/admin/profile`}
+            labels={{ profile: dict.dashboard.common.profile, logout: dict.dashboard.common.logout }}
+          />
         </header>
         {/* overflow-x-clip y no -hidden: hidden convierte este div en contenedor de scroll y anula los sticky del contenido. */}
         <div className="flex min-w-0 flex-1 flex-col gap-4 overflow-x-clip p-4">

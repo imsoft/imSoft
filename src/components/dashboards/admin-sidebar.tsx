@@ -3,7 +3,6 @@
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarHeader,
@@ -18,8 +17,6 @@ import {
   Settings,
   BarChart3,
   FileText,
-  LogOut,
-  User,
   Briefcase,
   FolderOpen,
   BookOpen,
@@ -31,16 +28,12 @@ import {
   Mail, Calculator, FileSignature } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { createClient } from "@/lib/supabase/client"
-import { useRouter } from "next/navigation"
 import Image from "@/components/ui/image"
 import { useSidebar } from "@/components/ui/sidebar"
 import type { AdminSidebarProps } from '@/types/dashboard'
 
-export function AdminSidebar({ dict, lang, user }: AdminSidebarProps) {
-  const avatarUrl = user.user_metadata?.avatar_url
+export function AdminSidebar({ dict, lang }: AdminSidebarProps) {
   const pathname = usePathname()
-  const router = useRouter()
   const { state } = useSidebar()
   const isCollapsed = state === 'collapsed'
 
@@ -137,12 +130,6 @@ export function AdminSidebar({ dict, lang, user }: AdminSidebarProps) {
     },
   ]
 
-  const handleLogout = async () => {
-    const supabase = createClient()
-    await supabase.auth.signOut()
-    router.push(`/${lang}/login`)
-    router.refresh()
-  }
 
   // Función para verificar si una ruta está activa
   // Compara si el pathname actual coincide exactamente o comienza con la URL del item
@@ -182,9 +169,6 @@ export function AdminSidebar({ dict, lang, user }: AdminSidebarProps) {
                     className="hidden dark:block object-contain"
                   />
                 </div>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">imSoft</span>
-                </div>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -212,45 +196,6 @@ export function AdminSidebar({ dict, lang, user }: AdminSidebarProps) {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton size="lg" asChild tooltip={dict.dashboard.common.profile}>
-              <Link href={`/${lang}/dashboard/admin/profile`}>
-                {avatarUrl ? (
-                  <div className="flex size-8 shrink-0 items-center justify-center rounded-full overflow-hidden border border-sidebar-border">
-                    <Image
-                      src={avatarUrl}
-                      alt="Profile"
-                      width={32}
-                      height={32}
-                      className="object-cover rounded-full"
-                    />
-                  </div>
-                ) : (
-                  <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-sidebar-primary text-sidebar-primary-foreground">
-                    <User className="size-4" />
-                  </div>
-                )}
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">{dict.dashboard.common.profile}</span>
-                </div>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton 
-              size="lg" 
-              onClick={handleLogout} 
-              tooltip={dict.dashboard.common.logout}
-              className="hover:bg-red-50 dark:hover:bg-red-950/20 hover:text-red-600 dark:hover:text-red-400 justify-center"
-            >
-              <LogOut className="size-4" />
-              <span className="group-data-[collapsible=icon]:hidden">{dict.dashboard.common.logout}</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarFooter>
     </Sidebar>
   )
 }
