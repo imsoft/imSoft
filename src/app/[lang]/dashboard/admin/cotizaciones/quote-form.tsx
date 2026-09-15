@@ -19,6 +19,7 @@ import type { Quote } from '@/types/quotes'
 const campo = 'border-2! border-border!'
 const sw = 'border-2! border-border! data-[state=unchecked]:bg-muted!'
 
+interface ServicioLite { id: string; slug: string; title_es?: string | null; title_en?: string | null; benefits_es?: string[] | null; benefits_en?: string[] | null }
 interface ContactoLite { id: string; first_name: string; last_name: string; email?: string | null; company?: string | null; address_street?: string | null; address_city?: string | null; address_state?: string | null }
 
 export function QuoteForm({ lang, quote }: { lang: string; quote?: Quote }) {
@@ -26,6 +27,8 @@ export function QuoteForm({ lang, quote }: { lang: string; quote?: Quote }) {
   const router = useRouter()
   const [guardando, setGuardando] = useState(false)
   const [contactos, setContactos] = useState<ContactoLite[]>([])
+  const [servicios, setServicios] = useState<ServicioLite[]>([])
+  const [servicioSel, setServicioSel] = useState('')
 
   const [cliente, setCliente] = useState({
     contact_id: quote?.contact_id ?? '',
@@ -59,11 +62,29 @@ export function QuoteForm({ lang, quote }: { lang: string; quote?: Quote }) {
     const supabase = createClient()
     supabase.from('contacts').select('id, first_name, last_name, email, company, address_street, address_city, address_state').order('first_name').limit(500)
       .then(({ data }) => setContactos((data ?? []) as ContactoLite[]))
+    // Las caracteristicas precargadas salen de los beneficios de cada servicio (los mismos
+    // que muestra el sitio): se editan en Admin → Servicios.
+    supabase.from('services').select('id, slug, title_es, title_en, benefits_es, benefits_en').order('title_es')
+      .then(({ data }) => setServicios((data ?? []) as ServicioLite[]))
   }, [])
 
   const t = useMemo(() => totales({ items: itemsDesdePrecio(title, precio), apply_iva: applyIva }), [title, precio, applyIva])
   const errorHitos = hitosValidos(hitos)
   const errorFeatures = featuresValidas(features)
+
+  function precargarServicio(slug: string) {
+    setServicioSel(slug)
+    const sv = servicios.find((x) => x.slug === slug)
+    if (!sv) return
+    const base = (es ? sv.benefits_es : sv.benefits_en) ?? sv.benefits_es ?? []
+    setFeatures((arr) => {
+      const actuales = arr.map((f) => f.trim()).filter(Boolean)
+      const nuevas = base.filter((b) => !actuales.includes(b))
+      const lista = [...actuales, ...nuevas]
+      return lista.length ? lista : ['']
+    })
+    if (!title.trim()) setTitle((es ? sv.title_es : sv.title_en) || sv.title_es || '')
+  }
 
   function elegirContacto(id: string) {
     const c = contactos.find((x) => x.id === id)
@@ -174,7 +195,20 @@ export function QuoteForm({ lang, quote }: { lang: string; quote?: Quote }) {
             </div>
             <div className="space-y-2">
               <Label>{es ? 'Características de la aplicación' : 'Application features'}</Label>
-              <p className="text-xs text-muted-foreground">{es ? 'Una por línea: lo que incluye el proyecto. Van en la cotización y como alcance en el contrato.' : 'One per line: what the project includes. Shown in the quote and as the scope in the contract.'}</p>
+              <div className="flex flex-wrap items-center gap-2">
+                <select
+                  aria-label={es ? 'Precargar características de un servicio' : 'Preload features from a service'}
+                  className="rounded-md border-2 border-border bg-background px-3 py-2 text-sm"
+                  value={servicioSel}
+                  onChange={(e) => precargarServicio(e.target.value)}
+                >
+                  <option value="">{es ? 'Precargar desde un servicio…' : 'Preload from a service…'}</option>
+                  {servicios.map((sv) => <option key={sv.id} value={sv.slug}>{(es ? sv.title_es : sv.title_en) || sv.title_es}</option>)}
+                </select>
+                <p className="text-xs text-muted-foreground">
+                  {es ? 'Agrega las características del servicio (se editan en Admin → Servicios). Luego quita o añade lo que haga falta.' : 'Adds the service features (edited under Admin → Services). Then remove or add what you need.'}
+                </p>
+              </div>
               {features.map((f, i) => (
                 <div key={i} className="flex gap-2 items-center">
                   <Input className={campo} value={f} onChange={(e) => setFeature(i, e.target.value)} placeholder={es ? 'p. ej. Formulario de citas con confirmación por WhatsApp' : 'e.g. Appointment form with WhatsApp confirmation'}
