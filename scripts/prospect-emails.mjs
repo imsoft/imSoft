@@ -19,6 +19,9 @@
  *   --template <ruta>  Plantilla HTML (default: template.html junto al CSV).
  *   --out              Genera correos.md junto al CSV.
  *   --sync-crm         Escribe el correo en `contacts.notes` de cada prospecto.
+ *   --message-column   Usa esa columna del CSV como mensaje ya escrito, en vez de
+ *                      renderizar la plantilla. Para campanas de WhatsApp, donde
+ *                      cada mensaje es distinto y no hay plantilla en comun.
  *   --keep-notes       Con --sync-crm, conserva la nota actual debajo del correo.
  *   --dry-run          No escribe nada: dice que haria.
  */
@@ -59,14 +62,35 @@ if (!args.out && !args['sync-crm']) fail('Elige --out, --sync-crm, o ambos.')
 const dir = dirname(args.list)
 const templatePath = typeof args.template === 'string' ? args.template : join(dir, 'template.html')
 
+const columnaMensaje = typeof args['message-column'] === 'string' ? args['message-column'] : null
+
 let rows, template
 try { rows = parseCsv(readFileSync(args.list, 'utf8')) } catch { fail(`No pude leer ${args.list}`) }
-try { template = readFileSync(templatePath, 'utf8') } catch { fail(`No pude leer ${templatePath}`) }
+if (!columnaMensaje) {
+  try { template = readFileSync(templatePath, 'utf8') } catch { fail(`No pude leer ${templatePath}`) }
+}
 
 if (rows.length === 0) fail('El CSV no tiene filas.')
 
+// El mensaje ya viene escrito por fila: no hay plantilla que renderizar.
+function contenido(row) {
+  if (columnaMensaje) {
+    const texto = (row[columnaMensaje] || '').trim()
+    return { subject: (row.asunto || '').trim(), body: texto, text: texto }
+  }
+  return renderPlainEmail(template, row)
+}
+
+if (columnaMensaje) {
+  const vacias = rows.filter((r) => !(r[columnaMensaje] || '').trim())
+  if (vacias.length > 0) {
+    console.error(`\n  ✖ ${vacias.length} filas sin "${columnaMensaje}": ${vacias.map((r) => r.empresa || r.email).join(', ')}`)
+    fail('Completa el CSV antes de continuar.')
+  }
+}
+
 // Un placeholder sin datos saldria literal en el correo del prospecto.
-const incompletas = rows
+const incompletas = columnaMensaje ? [] : rows
   .map((row) => ({ email: row.email, faltan: missingFields(template, row) }))
   .filter((r) => r.faltan.length > 0)
 
@@ -77,7 +101,7 @@ if (incompletas.length > 0) {
 }
 
 console.log(`\n  Lista:     ${args.list}`)
-console.log(`  Plantilla: ${templatePath}`)
+console.log(columnaMensaje ? `  Mensaje:   columna "${columnaMensaje}" del CSV` : `  Plantilla: ${templatePath}`)
 console.log(`  Prospectos: ${rows.length}`)
 
 if (args.out) {
@@ -92,10 +116,10 @@ if (args.out) {
   ]
 
   rows.forEach((row, i) => {
-    const { subject, body } = renderPlainEmail(template, row)
+    const { subject, body } = contenido(row)
     salida.push(`\n---\n\n## ${i + 1}. ${row.empresa || row.email}\n`)
     salida.push(`**Para:** \`${row.email}\`  `)
-    salida.push(`**Asunto:** ${subject}\n`)
+    if (subject) salida.push(`**Asunto:** ${subject}\n`)
     salida.push('```')
     salida.push(body)
     salida.push('```')
@@ -119,12 +143,20 @@ if (args['sync-crm']) {
   const sinContacto = []
 
   for (const row of rows) {
-    const filtro = `email=eq.${encodeURIComponent(row.email.toLowerCase())}`
+    // Los prospectos de WhatsApp e Instagram no tienen correo: se localizan por
+    // empresa, que es como los dio de alta el importador.
+    const filtro = row.email
+      ? `email=eq.${encodeURIComponent(row.email.toLowerCase())}`
+      : `company=eq.${encodeURIComponent(row.empresa || '')}&email=is.null`
+    const etiqueta = row.email || row.empresa || '(sin identificar)'
+
+    if (!row.email && !row.empresa) { sinContacto.push(etiqueta); continue }
+
     const previos = await (await fetch(`${SUPABASE_URL}/rest/v1/contacts?${filtro}&select=id,notes`, { headers })).json()
 
-    if (!previos[0]) { sinContacto.push(row.email); continue }
+    if (!previos[0]) { sinContacto.push(etiqueta); continue }
 
-    const { text } = renderPlainEmail(template, row)
+    const { text } = contenido(row)
     const notes = args['keep-notes'] && previos[0].notes
       ? `${text}\n\n———\nNotas previas:\n${previos[0].notes}`
       : text
@@ -134,10 +166,11 @@ if (args['sync-crm']) {
     const r = await fetch(`${SUPABASE_URL}/rest/v1/contacts?${filtro}`, {
       method: 'PATCH', headers, body: JSON.stringify({ notes }),
     })
-    if (!r.ok) { console.error(`     ✖ ${row.email}: ${await r.text()}`); continue }
+    if (!r.ok) { console.error(`     ✖ ${etiqueta}: ${await r.text()}`); continue }
 
     // El HTML va aparte para que la pantalla de envio lo precargue con su
     // diseno; Resend manda HTML, no el texto de las notas.
+    if (columnaMensaje) { ok++; continue }
     const campos = [
       { contact_id: previos[0].id, field_name: CAMPO_ASUNTO, field_value: renderPlainEmail(template, row).subject },
       { contact_id: previos[0].id, field_name: CAMPO_HTML, field_value: renderTemplate(template, row) },
