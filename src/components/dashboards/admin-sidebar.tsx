@@ -5,6 +5,7 @@ import {
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -37,99 +38,57 @@ export function AdminSidebar({ dict, lang }: AdminSidebarProps) {
   const { state } = useSidebar()
   const isCollapsed = state === 'collapsed'
 
-  const menuItems = [
+  const base = `/${lang}/dashboard/admin`
+  const nav = dict.dashboard.admin.nav
+  const g = nav.groups
+
+  // Agrupado por flujo de trabajo: vender, atender clientes, mantener el sitio, medir.
+  const grupos: { label: string | null; items: { title: string; url: string; icon: typeof Users }[] }[] = [
     {
-      title: dict.dashboard.admin.nav.overview,
-      url: `/${lang}/dashboard/admin`,
-      icon: LayoutDashboard,
+      label: null,
+      items: [{ title: nav.overview, url: base, icon: LayoutDashboard }],
     },
     {
-      title: dict.dashboard.admin.nav.users,
-      url: `/${lang}/dashboard/admin/users`,
-      icon: Users,
+      label: g.sales,
+      items: [
+        { title: nav.crm, url: `${base}/crm`, icon: UserCog },
+        { title: nav.cotizaciones, url: `${base}/cotizaciones`, icon: FileSignature },
+        { title: nav.simulador, url: `${base}/simulador`, icon: Calculator },
+        { title: nav.contactMessages, url: `${base}/contact-messages`, icon: Mail },
+      ],
     },
     {
-      title: dict.dashboard.admin.nav.companies,
-      url: `/${lang}/dashboard/admin/companies`,
-      icon: Building2,
+      label: g.clients,
+      items: [
+        { title: nav.projects, url: `${base}/projects`, icon: PanelsTopLeft },
+        { title: nav.companies, url: `${base}/companies`, icon: Building2 },
+        { title: nav.users, url: `${base}/users`, icon: Users },
+        { title: nav.feedbacks, url: `${base}/feedbacks`, icon: MessageSquare },
+      ],
     },
     {
-      title: dict.dashboard.admin.nav.projects,
-      url: `/${lang}/dashboard/admin/projects`,
-      icon: PanelsTopLeft,
+      label: g.website,
+      items: [
+        { title: nav.services, url: `${base}/services`, icon: Briefcase },
+        { title: nav.portfolio, url: `${base}/portfolio`, icon: FolderOpen },
+        { title: nav.blog, url: `${base}/blog`, icon: BookOpen },
+        { title: nav.testimonials, url: `${base}/testimonials`, icon: MessageSquare },
+        { title: nav.technologies, url: `${base}/technologies`, icon: Code },
+        { title: nav.contact, url: `${base}/contact`, icon: Contact },
+      ],
     },
     {
-      title: dict.dashboard.admin.nav.services,
-      url: `/${lang}/dashboard/admin/services`,
-      icon: Briefcase,
+      label: g.insights,
+      items: [
+        { title: nav.analytics, url: `${base}/analytics`, icon: BarChart3 },
+        { title: nav.reports, url: `${base}/reports`, icon: FileText },
+      ],
     },
     {
-      title: dict.dashboard.admin.nav.portfolio,
-      url: `/${lang}/dashboard/admin/portfolio`,
-      icon: FolderOpen,
-    },
-    {
-      title: dict.dashboard.admin.nav.blog,
-      url: `/${lang}/dashboard/admin/blog`,
-      icon: BookOpen,
-    },
-    {
-      title: dict.dashboard.admin.nav.testimonials,
-      url: `/${lang}/dashboard/admin/testimonials`,
-      icon: MessageSquare,
-    },
-    {
-      title: dict.dashboard.admin.nav.contact,
-      url: `/${lang}/dashboard/admin/contact`,
-      icon: Contact,
-    },
-    {
-      title: dict.dashboard.admin.nav.contactMessages,
-      url: `/${lang}/dashboard/admin/contact-messages`,
-      icon: Mail,
-    },
-{
-      title: dict.dashboard.admin.nav.feedbacks,
-      url: `/${lang}/dashboard/admin/feedbacks`,
-      icon: MessageSquare,
-    },
-    {
-      title: dict.dashboard.admin.nav.crm,
-      url: `/${lang}/dashboard/admin/crm`,
-      icon: UserCog,
-    },
-    {
-      title: dict.dashboard.admin.nav.technologies,
-      url: `/${lang}/dashboard/admin/technologies`,
-      icon: Code,
-    },
-    {
-      title: dict.dashboard.admin.nav.analytics,
-      url: `/${lang}/dashboard/admin/analytics`,
-      icon: BarChart3,
-    },
-    {
-      title: dict.dashboard.admin.nav.reports,
-      url: `/${lang}/dashboard/admin/reports`,
-      icon: FileText,
-    },
-    {
-      title: dict.dashboard.admin.nav.cotizaciones,
-      url: `/${lang}/dashboard/admin/cotizaciones`,
-      icon: FileSignature,
-    },
-    {
-      title: dict.dashboard.admin.nav.simulador,
-      url: `/${lang}/dashboard/admin/simulador`,
-      icon: Calculator,
-    },
-    {
-      title: dict.dashboard.admin.nav.settings,
-      url: `/${lang}/dashboard/admin/settings`,
-      icon: Settings,
+      label: null,
+      items: [{ title: nav.settings, url: `${base}/settings`, icon: Settings }],
     },
   ]
-
 
   // Función para verificar si una ruta está activa
   // Compara si el pathname actual coincide exactamente o comienza con la URL del item
@@ -175,26 +134,29 @@ export function AdminSidebar({ dict, lang }: AdminSidebarProps) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {menuItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={isRouteActive(item.url)}
-                    tooltip={item.title}
-                  >
-                    <Link href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        {grupos.map((grupo, i) => (
+          <SidebarGroup key={grupo.label ?? i} className={grupo.label ? '' : 'py-1'}>
+            {grupo.label && !isCollapsed && <SidebarGroupLabel>{grupo.label}</SidebarGroupLabel>}
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {grupo.items.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={isRouteActive(item.url)}
+                      tooltip={item.title}
+                    >
+                      <Link href={item.url}>
+                        <item.icon />
+                        <span>{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        ))}
       </SidebarContent>
     </Sidebar>
   )

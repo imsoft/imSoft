@@ -121,6 +121,12 @@
         "analytics": "Analytics",
         "reports": "Reports",
         "simulador": "Pricing simulator",
+        "groups": {
+          "sales": "Sales",
+          "clients": "Clients",
+          "website": "Website",
+          "insights": "Insights"
+        },
         "cotizaciones": "Quotes and contracts"
       },
       "crud": {
