@@ -5,9 +5,8 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Mail, Copy, Check, Send, AlertTriangle, RefreshCw, CheckCircle2 } from 'lucide-react'
+import { Mail, Copy, Check, AlertTriangle, RefreshCw, CheckCircle2 } from 'lucide-react'
 import { toast } from 'sonner'
-import Link from 'next/link'
 import type { Contact } from '@/types/database'
 
 interface ContactEmailsListProps {
@@ -173,25 +172,6 @@ export function ContactEmailsList({ contact, lang }: ContactEmailsListProps) {
                     <Copy className="h-4 w-4" />
                   )}
                 </Button>
-
-                {/* Send Email Button */}
-                {!isInvalid && (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-950/30"
-                    asChild
-                    title={lang === 'en' ? 'Send email' : 'Enviar correo'}
-                  >
-                    <Link
-                      href={`/${lang}/dashboard/admin/crm/contacts/${
-                        contact.id
-                      }/send-email?to=${encodeURIComponent(email)}`}
-                    >
-                      <Send className="h-4 w-4" />
-                    </Link>
-                  </Button>
-                )}
 
                 {/* Toggle Validity Button */}
                 <Button

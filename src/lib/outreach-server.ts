@@ -83,6 +83,26 @@ export async function crearBorradoresPaso1(db: SupabaseClient, limite: number, c
   return { creados: creados.length, errores, sinCandidatos: candidatos.length === 0 }
 }
 
+/**
+ * Borrador del primer correo para un contacto concreto (desde la tabla o la ficha),
+ * sin importar su estado. Si ya tiene uno pendiente lo devuelve; si ya se le escribio, avisa.
+ */
+export async function crearBorradorParaContacto(db: SupabaseClient, contactId: string) {
+  const { data: previos } = await db.from('outreach_emails').select('id, step, status').eq('contact_id', contactId).order('step', { ascending: false })
+  const pendiente = (previos ?? []).find((r) => r.status === 'draft')
+  if (pendiente) return { id: pendiente.id as string, existente: true }
+  if ((previos ?? []).length) throw new Error('A este contacto ya se le escribió; los seguimientos se crean solos desde "Buscar respuestas y seguimientos".')
+  const { data: c } = await db.from('contacts').select(CONTACTO_COLS).eq('id', contactId).maybeSingle()
+  if (!c) throw new Error('Contacto no encontrado')
+  if (!c.email) throw new Error('El contacto no tiene correo')
+  if ((c.tags ?? []).includes('correo-invalido')) throw new Error('El correo de este contacto está marcado como inválido')
+  const gancho = (c.notes ?? '').trim() || (await ganchoConIA(c as ContactoMin))
+  const r = renderOutreach(1, { nombre: nombreDe(c), empresa: c.company ?? '', gancho, segmento: segmentoDe(c.tags) })
+  const { data, error } = await db.from('outreach_emails').insert({ contact_id: c.id, step: 1, status: 'draft', campaign: segmentoDe(c.tags), gancho, subject: r.subject, html: r.html, text: r.text, scheduled_for: hoyLocal() }).select('id').single()
+  if (error) throw new Error(error.message)
+  return { id: data.id as string, existente: false }
+}
+
 /** Envia un borrador por Gmail, lo registra en el CRM y agenda el siguiente paso. */
 export async function enviarBorrador(db: SupabaseClient, userId: string, id: string) {
   const { data: row } = await db.from('outreach_emails').select('*').eq('id', id).maybeSingle()

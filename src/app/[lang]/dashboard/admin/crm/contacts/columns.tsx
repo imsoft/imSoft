@@ -18,6 +18,7 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { prepararCorreo } from '@/components/crm/preparar-correo'
 
 // Local SVG brand icons to avoid compilation issues due to lucide-react versions
 const Instagram = (props: React.HTMLAttributes<SVGElement>) => (
@@ -509,12 +510,10 @@ export function createColumns({ lang, onDelete, isDeleting }: ColumnsProps): Col
                   {lang === 'en' ? 'View' : 'Ver'}
                 </Link>
               </DropdownMenuItem>
-              {contact.email && contact.status !== 'no_contact' && (
-                <DropdownMenuItem asChild>
-                  <Link href={`/${lang}/dashboard/admin/crm/contacts/${contact.id}/send-email`}>
-                    <Mail className="mr-2 h-4 w-4" />
-                    {lang === 'en' ? 'Send Email' : 'Enviar Correo'}
-                  </Link>
+              {contact.email && (
+                <DropdownMenuItem onClick={async () => { const url = await prepararCorreo(contact.id, lang); if (url) window.location.assign(url) }}>
+                  <Mail className="mr-2 h-4 w-4" />
+                  {lang === 'en' ? 'Write email' : 'Escribir correo'}
                 </DropdownMenuItem>
               )}
               <DropdownMenuItem asChild>

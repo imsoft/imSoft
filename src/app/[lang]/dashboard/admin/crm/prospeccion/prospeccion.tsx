@@ -50,6 +50,20 @@ export function Prospeccion({ lang, gmail, gmailConfigurado, campana, filas, sin
   const [cuerpo, setCuerpo] = useState('')
 
   useEffect(() => {
+    const id = sp.get('abrir')
+    const f = id ? filas.find((x) => x.id === id) : null
+    if (!f) return
+    // Diferido: abrir el dialogo tras el render, no dentro del efecto.
+    const t = setTimeout(() => {
+      setAbierto(f)
+      setSubject(f.subject)
+      setCuerpo(cuerpoDe(f.text))
+      router.replace(`/${lang}/dashboard/admin/crm/prospeccion`)
+    }, 0)
+    return () => clearTimeout(t)
+  }, [sp, filas, lang, router])
+
+  useEffect(() => {
     const g = sp.get('gmail')
     if (g === 'ok') toast.success(es ? `Gmail conectado: ${sp.get('email')}` : `Gmail connected: ${sp.get('email')}`)
     if (g === 'error') toast.error(`Gmail: ${sp.get('motivo')}`)

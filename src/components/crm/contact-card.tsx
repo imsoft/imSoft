@@ -10,6 +10,7 @@ import { GripVertical, Mail, Phone, Building2, Loader2, User } from 'lucide-reac
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
+import { prepararCorreo } from '@/components/crm/preparar-correo'
 import type { Contact } from '@/types/database'
 import { contactName } from '@/lib/contact-name'
 
@@ -46,7 +47,8 @@ export function ContactCard({ contact, lang }: ContactCardProps) {
       return
     }
 
-    router.push(`/${lang}/dashboard/admin/crm/contacts/${contact.id}/send-email`)
+    setIsSendingEmail(true)
+    prepararCorreo(contact.id, lang).then((url) => { setIsSendingEmail(false); if (url) router.push(url) })
   }
 
   const getStatusColor = (status: string) => {
@@ -88,17 +90,18 @@ export function ContactCard({ contact, lang }: ContactCardProps) {
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-2 mb-2">
               {(!contact.first_name && !contact.last_name) ? (
-                // Si no hay nombre, mostrar icono que redirige a send-email
+                // Si no hay nombre, mostrar icono que prepara el correo de prospeccion
                 contact.email ? (
-                  <Link
-                    href={`/${lang}/dashboard/admin/crm/contacts/${contact.id}/send-email`}
+                  <button
+                    type="button"
+                    onClick={handleEmailClick}
                     className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary transition-colors group"
                   >
                     <Mail className="h-4 w-4 shrink-0" />
                     <span className="text-xs italic">
-                      {lang === 'en' ? 'No name - Send email' : 'Sin nombre - Enviar correo'}
+                      {lang === 'en' ? 'No name - Write email' : 'Sin nombre - Escribir correo'}
                     </span>
-                  </Link>
+                  </button>
                 ) : (
                   <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
                     <User className="h-4 w-4 shrink-0" />

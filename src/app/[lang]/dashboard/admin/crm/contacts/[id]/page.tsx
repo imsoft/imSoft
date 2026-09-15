@@ -4,12 +4,13 @@ import { createClient } from '@/lib/supabase/server'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { ArrowLeft, Edit, Mail, Phone, MapPin, Briefcase, ExternalLink, Globe, Link as LinkIcon } from 'lucide-react'
+import { ArrowLeft, Edit, Phone, MapPin, Briefcase, ExternalLink, Globe, Link as LinkIcon } from 'lucide-react'
 import Link from 'next/link'
 import { formatPhoneNumber } from '@/lib/utils/format-phone'
 import { SocialLink } from '@/types/database'
 import { ContactEmailsList } from '@/components/crm/contact-emails-list'
 import { contactName } from '@/lib/contact-name'
+import { PrepararCorreoButton } from '@/components/crm/preparar-correo-button'
 
 // Local SVG brand icons to avoid compilation issues due to lucide-react versions
 const Instagram = (props: React.HTMLAttributes<SVGElement>) => (
@@ -140,14 +141,7 @@ export default async function ContactDetailPage({ params }: {
           </div>
         </div>
         <div className="flex gap-2">
-          {contact.email && contact.status !== 'no_contact' && (
-            <Button variant="outline" asChild>
-              <Link href={`/${lang}/dashboard/admin/crm/contacts/${id}/send-email`}>
-                <Mail className="mr-2 h-4 w-4" />
-                {lang === 'en' ? 'Send Email' : 'Enviar Email'}
-              </Link>
-            </Button>
-          )}
+          {contact.email && <PrepararCorreoButton contactId={id} lang={lang} />}
           <Button asChild>
             <Link href={`/${lang}/dashboard/admin/crm/contacts/${id}/edit`}>
               <Edit className="mr-2 h-4 w-4" />
