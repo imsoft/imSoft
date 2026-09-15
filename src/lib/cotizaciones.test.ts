@@ -77,6 +77,7 @@ describe('cotizaciones', () => {
     expect(html).toContain('$500.00 por cada día hábil adicional');
     expect(html).toContain('30 días naturales');
     expect(html).toContain('Guadalajara, Jalisco, México');
+    expect(html).toContain('Col. Parques del Nilo, C.P. 44860');
     expect(html).toContain('propiedad del cliente');
     // Sin penalizacion el texto cambia
     expect(renderContrato({ ...q, terms: { ...q.terms, penalizacion_dia: 0 } }, 'CON-2026-002')).not.toContain('por cada día hábil adicional');
