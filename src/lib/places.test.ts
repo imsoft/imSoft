@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { candidatoDe, dominioDe, enlacesDeContacto, extraerCorreo, extraerInstagram, filaDesdeCandidato, formatoTelefono, giroDe, marcarExistentes, nombreNormalizado, sinRepetidos } from './places'
+import { candidatoDe, dominioDe, enlacesDeContacto, extraerCorreo, extraerInstagram, filaDesdeCandidato, formatoTelefono, giroDe, limpiarNombre, marcarExistentes, nombreNormalizado, sinRepetidos } from './places'
 import { mapRowsToContacts } from './import-contacts'
 
 describe('buscador de prospectos (Places)', () => {
@@ -35,9 +35,21 @@ describe('buscador de prospectos (Places)', () => {
     expect(marcarExistentes(cands, existentes).map((c) => c.enCrm)).toEqual([true, true, true, false])
   })
 
-  it('quita repetidos entre páginas', () => {
+  it('quita repetidos entre páginas y sucursales con el mismo nombre', () => {
     const a = candidatoDe({ id: '1', displayName: { text: 'A' } })
     expect(sinRepetidos([a, { ...a }, candidatoDe({ id: '2', displayName: { text: 'B' } })])).toHaveLength(2)
+    const e1 = candidatoDe({ id: '3', displayName: { text: 'Nucleo Odontologíco Escobar' } })
+    const e2 = candidatoDe({ id: '4', displayName: { text: 'Núcleo odontológico escobar' } })
+    expect(sinRepetidos([e1, e2])).toHaveLength(1)
+  })
+
+  it('limpia nombres con lemas, sucursales y emojis, y descarta correos de relleno', () => {
+    expect(limpiarNombre('MF Dental Center | Dentista Zapopan')).toBe('MF Dental Center')
+    expect(limpiarNombre('Clínica Dental la Zapopana (Sucursal Constitución)')).toBe('Clínica Dental la Zapopana')
+    expect(limpiarNombre('FRIZCO - Bienes Raíces 🏡 | Guadalajara y Zapopan')).toBe('FRIZCO - Bienes Raíces')
+    expect(limpiarNombre('SYD Constructores, la constructora en Guadalajara')).toBe('SYD Constructores')
+    expect(extraerCorreo('escribe a usuario@dominio.com', 'ikal.mx')).toBeNull()
+    expect(extraerCorreo('correo@ejemplo.com o ventas@ikal.mx', 'ikal.mx')).toBe('ventas@ikal.mx')
   })
 
   it('elige el mejor correo de un sitio', () => {

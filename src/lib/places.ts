@@ -105,11 +105,23 @@ export function nombreNormalizado(s: string | null | undefined): string {
     .trim()
 }
 
+/** Nombre limpio: sin lemas tras "|", sin "(Sucursal ...)" ni emojis. */
+export function limpiarNombre(s: string | null | undefined): string {
+  return (s ?? '')
+    .split('|')[0]
+    .replace(/\((sucursal|suc\.?|matriz|plaza|local)[^)]*\)/gi, '')
+    .replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}]/gu, '')
+    .replace(/,\s*(la|el)\s+(constructora|despacho|clínica|clinica|inmobiliaria)\b.*$/i, '')
+    .replace(/\s+/g, ' ')
+    .replace(/[\s\-–—·,]+$/, '')
+    .trim()
+}
+
 export function candidatoDe(p: PlaceResult): Candidato {
   const sitio = p.websiteUri ?? null
   return {
     placeId: p.id,
-    nombre: (p.displayName?.text ?? '').trim(),
+    nombre: limpiarNombre(p.displayName?.text),
     direccion: p.formattedAddress ?? '',
     telefono: formatoTelefono(p.nationalPhoneNumber),
     sitio,
@@ -147,15 +159,16 @@ export function marcarExistentes(candidatos: Candidato[], existentes: ContactoEx
 export function sinRepetidos(candidatos: Candidato[]): Candidato[] {
   const vistos = new Set<string>()
   return candidatos.filter((c) => {
-    const k = c.placeId || c.dominio || nombreNormalizado(c.nombre)
-    if (vistos.has(k)) return false
-    vistos.add(k)
+    // Mismo lugar, mismo dominio o mismo nombre (sucursales): una sola vez.
+    const claves = [c.placeId && `id:${c.placeId}`, c.dominio && `dom:${c.dominio}`, `nom:${nombreNormalizado(c.nombre)}`].filter(Boolean) as string[]
+    if (claves.some((k) => vistos.has(k))) return false
+    claves.forEach((k) => vistos.add(k))
     return true
   })
 }
 
 const EMAIL_RE = /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/gi
-const CORREOS_BASURA = /(noreply|no-reply|donotreply|example|sentry|wixpress|godaddy|squarespace|shopify|wordpress|@2x|\.png$|\.jpg$|\.svg$|\.webp$|\.gif$)/i
+const CORREOS_BASURA = /(noreply|no-reply|donotreply|example|sentry|wixpress|godaddy|squarespace|shopify|wordpress|@2x|\.png$|\.jpg$|\.svg$|\.webp$|\.gif$|^(usuario|correo|email|nombre|tu-?correo|tu-?email|ejemplo|test)@|@(dominio|tudominio|ejemplo|correo|email|test|sitio)\.)/i
 const PREFERIDOS = ['contacto', 'ventas', 'info', 'hola', 'informes', 'atencion', 'admin', 'direccion', 'gerencia']
 
 /** Mejor correo de un HTML: del mismo dominio primero, luego el de prefijo mas util. */
