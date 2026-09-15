@@ -7,8 +7,8 @@ import { EMISOR } from '@/config/emisor'
  */
 export function DocumentHeader({ tipo, folio, extra }: { tipo: string; folio: string; extra?: React.ReactNode }) {
   return (
-    <header className="flex flex-wrap justify-between gap-4 border-b border-neutral-200 pb-6">
-      <div>
+    <header className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 border-b border-neutral-200 pb-6">
+      <div className="max-w-md">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/logos/logo-imsoft-blue.png" alt="imSoft" width={140} height={48} className="h-12 w-auto mb-3" />
         <p className="text-sm text-neutral-600">{EMISOR.nombre}</p>
@@ -16,7 +16,7 @@ export function DocumentHeader({ tipo, folio, extra }: { tipo: string; folio: st
         <p className="text-sm text-neutral-600">{EMISOR.domicilio}, {EMISOR.ciudad}</p>
         <p className="text-sm text-neutral-600">{EMISOR.email} · {EMISOR.telefono} · {EMISOR.sitio.replace('https://', '')}</p>
       </div>
-      <div className="text-right">
+      <div className="sm:text-right shrink-0">
         <p className="text-xs uppercase tracking-widest text-neutral-500">{tipo}</p>
         <p className="text-xl font-semibold font-mono">{folio}</p>
         {extra}
