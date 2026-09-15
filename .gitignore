@@ -69,3 +69,4 @@ scripts/prospects/**/*.csv
 scripts/prospects/**/correos.md
 scripts/prospects/**/preview.html
 scripts/prospects/**/*.json
+scripts/prospects/**/prospectos.md
