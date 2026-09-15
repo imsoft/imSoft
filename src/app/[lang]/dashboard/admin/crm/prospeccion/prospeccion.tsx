@@ -268,7 +268,6 @@ export function Prospeccion({ lang, gmail, gmailConfigurado, campana, filas, sin
                         <Button onClick={() => enviar(abierto)} disabled={ocupado !== null || !puedeEnviar || sucio}><Send className="mr-2 h-4 w-4" />{es ? 'Enviar por Gmail' : 'Send via Gmail'}</Button>
                         <Button variant="ghost" onClick={() => saltar(abierto)} disabled={ocupado !== null}><X className="mr-2 h-4 w-4" />{es ? 'Descartar' : 'Skip'}</Button>
                         {sucio && <p className="text-xs text-muted-foreground">{es ? 'Guarda los cambios para actualizar la vista previa y poder enviar.' : 'Save your changes to refresh the preview and send.'}</p>}
-                        {!sucio && abierto.gancho && <p className="ml-auto max-w-[50%] truncate text-xs text-muted-foreground" title={abierto.gancho}>{es ? 'Gancho: ' : 'Hook: '}{abierto.gancho}</p>}
                       </div>
                     )}
                   </div>
