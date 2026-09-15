@@ -121,6 +121,7 @@
         "analytics": "Analíticas",
         "reports": "Reportes",
         "simulador": "Simulador de cobros",
+        "prospeccion": "Prospección",
         "cotizaciones": "Cotizaciones y contratos"
       },
       "crud": {
