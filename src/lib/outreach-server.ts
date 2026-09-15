@@ -5,7 +5,7 @@ import Anthropic from '@anthropic-ai/sdk'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { enviarRaw, hiloTieneRespuesta, messageIdHeader } from '@/lib/gmail/server'
 import { GANCHO_TOOL, ganchoDesdeNotas, limpiarGancho, promptGancho } from '@/lib/outreach-ai'
-import { conFirma, construirMime, cuerpoDe, fechaSiguientePaso, firmaTexto, renderDesdeCuerpo, renderOutreach, segmentoDe, topeDiario, type Step } from '@/lib/outreach'
+import { construirMime, cuerpoDe, fechaSiguientePaso, renderDesdeCuerpo, renderOutreach, segmentoDe, topeDiario, type Step } from '@/lib/outreach'
 
 const TZ = 'America/Mexico_City'
 
@@ -125,7 +125,7 @@ export async function enviarBorrador(db: SupabaseClient, userId: string, id: str
   }
   const { data: cuenta } = await db.from('gmail_accounts').select('email').eq('user_id', userId).maybeSingle()
   if (!cuenta) throw new Error('No hay una cuenta de Gmail conectada')
-  const raw = construirMime({ from: `Brandon García · imSoft <${cuenta.email}>`, to: c.email, subject: row.subject, text: `${row.text}\n\n${firmaTexto()}`, html: conFirma(row.html), inReplyTo })
+  const raw = construirMime({ from: `Brandon García · imSoft <${cuenta.email}>`, to: c.email, subject: row.subject, text: row.text, html: row.html, inReplyTo })
   const enviado = await enviarRaw(userId, raw, threadId)
   const ahora = new Date()
   await db.from('outreach_emails').update({ status: 'sent', sent_at: ahora.toISOString(), sent_via: 'gmail', gmail_message_id: enviado.id, gmail_thread_id: enviado.threadId, updated_at: ahora.toISOString() }).eq('id', id)

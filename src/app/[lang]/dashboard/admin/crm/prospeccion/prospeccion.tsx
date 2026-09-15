@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Copy, Mail, RefreshCw, Send, Sparkles, X } from 'lucide-react'
-import { cuerpoDe, sinFirma } from '@/lib/outreach'
+import { cuerpoDe } from '@/lib/outreach'
 
 export interface FilaOutreach {
   id: string
@@ -223,7 +223,7 @@ export function Prospeccion({ lang, gmail, gmailConfigurado, campana, filas, sin
               {(() => {
                 const esBorrador = abierto.status === 'draft'
                 const sucio = esBorrador && (subject !== abierto.subject || cuerpo !== cuerpoDe(abierto.text))
-                const htmlPreview = sinFirma(abierto.html)
+                const htmlPreview = abierto.html
                 return (
                   <div className="min-w-0 space-y-4">
                     {/* Fila 1: asunto a lo ancho */}
@@ -241,7 +241,7 @@ export function Prospeccion({ lang, gmail, gmailConfigurado, campana, filas, sin
                     {/* Fila 2: cuerpo y vista previa a la par */}
                     <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
                       <div className="flex min-w-0 flex-col gap-2">
-                        <label className="text-xs font-medium text-muted-foreground">{es ? 'Mensaje (el botón de WhatsApp y la línea legal se agregan solos; la firma la pone tu Gmail)' : 'Message (WhatsApp button and legal line are added automatically; your Gmail adds the signature)'}</label>
+                        <label className="text-xs font-medium text-muted-foreground">{es ? 'Mensaje (el botón de WhatsApp y la línea legal se agregan solos; sin firma)' : 'Message (WhatsApp button and legal line are added automatically; no signature)'}</label>
                         {esBorrador ? (
                           <textarea
                             className="h-[60vh] w-full min-w-0 resize-none rounded-md border-2 border-border/90 bg-transparent px-3 py-2 text-sm leading-relaxed shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"

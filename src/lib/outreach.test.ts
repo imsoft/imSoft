@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { conFirma, construirMime, fechaSiguientePaso, plantillaDe, renderOutreach, segmentoDe, sinFirma, sumarDiasHabiles, topeDiario } from './outreach';
+import { construirMime, fechaSiguientePaso, plantillaDe, renderOutreach, segmentoDe, sumarDiasHabiles, topeDiario } from './outreach';
 
 describe('prospeccion', () => {
   it('rampa de envios diarios', () => {
@@ -35,11 +35,10 @@ describe('prospeccion', () => {
     expect(e.text).toContain('carga refrigerada');
     expect(e.text).toContain('JTP Logistics');
     expect(e.text).toContain('respóndeme "no"');
-    // Sin firma: la pone Gmail al pegar; al enviar por la API se inserta con conFirma()
+    // Sin firma de ningun tipo
     expect(e.text).not.toContain('33 2536 5558');
-    expect(e.html).toContain('{{FIRMA}}');
-    expect(conFirma(e.html)).toContain('isotype-imsoft-blue.png');
-    expect(sinFirma(e.html)).not.toContain('{{FIRMA}}');
+    expect(e.html).not.toContain('Brandon García');
+    expect(e.html).not.toContain('{{');
     expect(e.html).toContain('isotype-imsoft-blue.png');
     expect(e.html).toContain(`<h1`);
     expect(e.html).not.toContain('<script');

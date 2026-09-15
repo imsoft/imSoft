@@ -168,7 +168,7 @@ export function renderOutreach(step: Step, vars: OutreachVars): RenderedEmail {
 export function renderDesdeCuerpo(step: Step, d: { subject: string; cuerpo: string; empresa: string }): RenderedEmail {
   const parrafos = d.cuerpo.split(/\n\s*\n/).map((x) => x.trim()).filter(Boolean);
   const legal = step === 1 ? sustituir(LINEA_LEGAL, { nombre: '', empresa: d.empresa.trim() || 'tu empresa', gancho: '' }) : null;
-  // Sin firma: Brandon la tiene configurada en Gmail. Al enviar por la API se inserta en {{FIRMA}}.
+  // Sin firma: Brandon no la quiere en el correo.
   const text = [...parrafos, '', `${LINEA_WHATSAPP} ${WHATSAPP_URL}`, ...(legal ? ['', legal] : [])].join('\n\n').replace(/\n{3,}/g, '\n\n');
   const [titulo, ...resto] = parrafos;
   const saludo = /^hola\b/i.test(titulo ?? '') ? titulo : null;
@@ -200,22 +200,13 @@ ${cuerpoHtml}
   <tr><td style="padding:20px 48px 0;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.6;color:#6b7280">
     O responde a este correo y lo vemos por aquí. Puedes ver proyectos que hemos hecho en <a href="${SITE}/es/portfolio" style="color:#1e88e5;text-decoration:none;font-weight:bold">imsoft.io</a>.
   </td></tr>
-  <tr><td style="padding:24px 48px 36px">{{FIRMA}}</td></tr>
+  <tr><td style="padding:0 48px 40px;font-size:0;line-height:0">&nbsp;</td></tr>
 </table>
 ${legal ? `<table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%"><tr><td style="padding:18px 12px 0;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.5;color:#9ca3af">${esc(legal)}</td></tr></table>` : ''}
 </td></tr>
 </table>
 </body></html>`;
   return { subject: d.subject.trim(), html, text };
-}
-
-/** Al enviar por la API, Gmail no agrega la firma: se inserta aqui. Al copiar y pegar, la pone Gmail. */
-export function conFirma(html: string): string {
-  return html.replace('{{FIRMA}}', firmaHtml());
-}
-
-export function sinFirma(html: string): string {
-  return html.replace('{{FIRMA}}', '');
 }
 
 /** Cuerpo editable: el texto antes del boton de WhatsApp (o de la firma, en correos viejos). */
