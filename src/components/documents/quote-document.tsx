@@ -43,35 +43,23 @@ export function QuoteDocument({ quote }: { quote: QuoteLike }) {
         </div>
       </section>
 
-      <section className="py-6">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="text-xs uppercase tracking-widest text-neutral-500 border-b border-neutral-200">
-              <th className="text-left py-2 font-semibold">Concepto</th>
-              <th className="text-right py-2 font-semibold w-16">Cant.</th>
-              <th className="text-right py-2 font-semibold w-32">Precio</th>
-              <th className="text-right py-2 font-semibold w-32">Importe</th>
-            </tr>
-          </thead>
-          <tbody>
-            {quote.items.map((i, idx) => (
-              <tr key={idx} className="border-b border-neutral-100 align-top">
-                <td className="py-3">
-                  <p className="font-medium">{i.concepto}</p>
-                  {i.descripcion && <p className="text-neutral-600 whitespace-pre-line">{i.descripcion}</p>}
-                </td>
-                <td className="py-3 text-right tabular-nums">{i.cantidad}</td>
-                <td className="py-3 text-right tabular-nums">{mxn(i.precio, quote.currency)}</td>
-                <td className="py-3 text-right tabular-nums">{mxn(i.cantidad * i.precio, quote.currency)}</td>
-              </tr>
+      {(quote.features ?? []).filter((f) => f.trim()).length > 0 && (
+        <section className="py-6 border-b border-neutral-200">
+          <p className="text-xs uppercase tracking-widest text-neutral-500 mb-3">Qué incluye</p>
+          <ul className="grid gap-2 sm:grid-cols-2 text-sm">
+            {(quote.features ?? []).filter((f) => f.trim()).map((f, i) => (
+              <li key={i} className="flex gap-2"><span className="text-sky-600">✓</span><span>{f}</span></li>
             ))}
-          </tbody>
-          <tfoot>
-            <tr><td colSpan={3} className="pt-4 text-right text-neutral-600">Subtotal</td><td className="pt-4 text-right tabular-nums">{mxn(t.subtotal, quote.currency)}</td></tr>
-            {quote.apply_iva && <tr><td colSpan={3} className="py-1 text-right text-neutral-600">IVA 16 %</td><td className="py-1 text-right tabular-nums">{mxn(t.iva, quote.currency)}</td></tr>}
-            <tr className="text-lg font-bold"><td colSpan={3} className="pt-2 text-right">Total</td><td className="pt-2 text-right tabular-nums">{mxn(t.total, quote.currency)}</td></tr>
-          </tfoot>
-        </table>
+          </ul>
+        </section>
+      )}
+
+      <section className="py-6">
+        <div className="ml-auto max-w-xs text-sm space-y-1">
+          <div className="flex justify-between"><span className="text-neutral-600">Precio del proyecto</span><span className="tabular-nums">{mxn(t.subtotal, quote.currency)}</span></div>
+          {quote.apply_iva && <div className="flex justify-between"><span className="text-neutral-600">IVA 16 %</span><span className="tabular-nums">{mxn(t.iva, quote.currency)}</span></div>}
+          <div className="flex justify-between text-lg font-bold border-t border-neutral-200 pt-2"><span>Total</span><span className="tabular-nums">{mxn(t.total, quote.currency)}</span></div>
+        </div>
       </section>
 
       <section className="grid gap-6 sm:grid-cols-2 py-6 border-t border-neutral-200 text-sm">

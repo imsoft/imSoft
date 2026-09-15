@@ -42,7 +42,10 @@ export interface QuoteLike {
   client_address?: string | null;
   title: string;
   intro?: string | null;
+  /** Precio unico del proyecto: una sola linea en `items`. Ver precioProyecto(). */
   items: QuoteItem[];
+  /** Que incluye la aplicacion, una caracteristica por entrada. */
+  features?: string[] | null;
   currency: string;
   apply_iva: boolean;
   payment: QuotePayment;
@@ -51,6 +54,22 @@ export interface QuoteLike {
   valid_until: string;
   accepted_at?: string | null;
   accepted_name?: string | null;
+}
+
+/** El precio del proyecto sin IVA (la unica linea de `items`). */
+export function precioProyecto(q: Pick<QuoteLike, 'items'>): number {
+  return subtotal(q.items);
+}
+
+/** Como se guarda un precio unico en `items`, para que totales() siga funcionando. */
+export function itemsDesdePrecio(titulo: string, precio: number): QuoteItem[] {
+  return [{ concepto: titulo, cantidad: 1, precio: Number(precio) || 0 }];
+}
+
+export function featuresValidas(features: string[]): string | null {
+  const limpias = features.map((f) => f.trim()).filter(Boolean);
+  if (limpias.length === 0) return 'Agrega al menos una característica de la aplicación.';
+  return null;
 }
 
 export function subtotal(items: QuoteItem[]): number {
@@ -155,7 +174,10 @@ export function renderContrato(q: QuoteLike, folioContrato: string, fecha = new 
   const t = totales(q);
   const hitos = importesHitos(t.total, q.payment.hitos);
   const cliente = [q.client_name, q.client_company ? `en representación de ${q.client_company}` : '', q.client_rfc ? `RFC ${q.client_rfc}` : '', q.client_address].filter(Boolean).map(esc).join(', ');
-  const alcance = q.items.map((i) => `<li><strong>${esc(i.concepto)}</strong>${i.descripcion ? `: ${esc(i.descripcion)}` : ''}${i.cantidad !== 1 ? ` (${i.cantidad})` : ''}</li>`).join('');
+  const features = (q.features ?? []).map((f) => f.trim()).filter(Boolean);
+  const alcance = features.length > 0
+    ? features.map((f) => `<li>${esc(f)}</li>`).join('')
+    : q.items.map((i) => `<li><strong>${esc(i.concepto)}</strong>${i.descripcion ? `: ${esc(i.descripcion)}` : ''}${i.cantidad !== 1 ? ` (${i.cantidad})` : ''}</li>`).join('');
   const pagos = hitos.map((h) => `<li>${esc(h.label)}: ${h.pct}% del total, ${mxn(h.importe, q.currency)}.</li>`).join('');
   const penal = q.terms.penalizacion_dia > 0
     ? `Si el Cliente no entrega los insumos, contenidos, accesos o aprobaciones que le corresponden en las fechas acordadas, el calendario se recorre por el mismo número de días y, a partir del quinto día hábil de retraso, el Cliente pagará al Prestador ${mxn(q.terms.penalizacion_dia, q.currency)} por cada día hábil adicional de retraso.`

@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
-  estaVencida, fechaVigencia, hitosValidos, importesHitos, itemsValidos, motivoNoAceptable,
-  renderContrato, siguienteFolio, textoFormaDePago, totales, type QuoteLike,
+  estaVencida, featuresValidas, fechaVigencia, hitosValidos, importesHitos, itemsDesdePrecio, itemsValidos, motivoNoAceptable,
+  precioProyecto, renderContrato, siguienteFolio, textoFormaDePago, totales, type QuoteLike,
 } from './cotizaciones';
 import { CONDICIONES_DEFAULT } from '@/config/emisor';
 
@@ -37,6 +37,17 @@ describe('cotizaciones', () => {
     expect(itemsValidos([])).toMatch(/al menos/);
     expect(itemsValidos([{ concepto: 'x', cantidad: 0, precio: 1 }])).toMatch(/válidos/);
     expect(itemsValidos(q.items)).toBeNull();
+  });
+
+  it('precio unico y caracteristicas', () => {
+    const items = itemsDesdePrecio('Página web', 18000);
+    expect(items).toEqual([{ concepto: 'Página web', cantidad: 1, precio: 18000 }]);
+    expect(precioProyecto({ items })).toBe(18000);
+    expect(featuresValidas(['', '  '])).toMatch(/al menos/);
+    expect(featuresValidas(['6 secciones'])).toBeNull();
+    const html = renderContrato({ ...q, items, features: ['6 secciones', 'Formulario de citas', '<script>'] }, 'CON-2026-009');
+    expect(html).toContain('<li>6 secciones</li><li>Formulario de citas</li><li>&lt;script&gt;</li>');
+    expect(html).not.toContain('Sesión de fotos');
   });
 
   it('folios consecutivos por ano', () => {

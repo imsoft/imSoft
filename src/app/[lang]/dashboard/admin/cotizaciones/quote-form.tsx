@@ -12,7 +12,7 @@ import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
 import { Trash2, Plus } from 'lucide-react'
 import { CONDICIONES_DEFAULT } from '@/config/emisor'
-import { fechaVigencia, generarToken, hitosValidos, itemsValidos, mxn, siguienteFolio, totales, type Hito, type QuoteItem, type QuoteTerms } from '@/lib/cotizaciones'
+import { featuresValidas, fechaVigencia, generarToken, hitosValidos, itemsDesdePrecio, mxn, precioProyecto, siguienteFolio, totales, type Hito, type QuoteTerms } from '@/lib/cotizaciones'
 import type { Quote } from '@/types/quotes'
 
 const campo = 'border-2! border-border!'
@@ -36,7 +36,8 @@ export function QuoteForm({ lang, quote }: { lang: string; quote?: Quote }) {
   })
   const [title, setTitle] = useState(quote?.title ?? '')
   const [intro, setIntro] = useState(quote?.intro ?? '')
-  const [items, setItems] = useState<QuoteItem[]>(quote?.items?.length ? quote.items : [{ concepto: '', descripcion: '', cantidad: 1, precio: 0 }])
+  const [precio, setPrecio] = useState<number>(quote ? precioProyecto(quote) : 0)
+  const [features, setFeatures] = useState<string[]>(quote?.features?.length ? quote.features : [''])
   const [applyIva, setApplyIva] = useState(quote?.apply_iva ?? true)
   const [hitos, setHitos] = useState<Hito[]>(quote?.payment?.hitos ?? CONDICIONES_DEFAULT.hitos.map((h) => ({ ...h })))
   const [msi, setMsi] = useState(quote?.payment?.msi ?? CONDICIONES_DEFAULT.msi)
@@ -57,9 +58,9 @@ export function QuoteForm({ lang, quote }: { lang: string; quote?: Quote }) {
       .then(({ data }) => setContactos((data ?? []) as ContactoLite[]))
   }, [])
 
-  const t = useMemo(() => totales({ items, apply_iva: applyIva }), [items, applyIva])
+  const t = useMemo(() => totales({ items: itemsDesdePrecio(title, precio), apply_iva: applyIva }), [title, precio, applyIva])
   const errorHitos = hitosValidos(hitos)
-  const errorItems = itemsValidos(items)
+  const errorFeatures = featuresValidas(features)
 
   function elegirContacto(id: string) {
     const c = contactos.find((x) => x.id === id)
@@ -77,7 +78,8 @@ export function QuoteForm({ lang, quote }: { lang: string; quote?: Quote }) {
   async function guardar() {
     if (!cliente.client_name.trim()) return toast.error(es ? 'Falta el nombre del cliente.' : 'Client name is required.')
     if (!title.trim()) return toast.error(es ? 'Falta el nombre del proyecto.' : 'Project title is required.')
-    if (errorItems) return toast.error(errorItems)
+    if (!(precio > 0)) return toast.error(es ? 'Pon el precio del proyecto.' : 'Enter the project price.')
+    if (errorFeatures) return toast.error(errorFeatures)
     if (errorHitos) return toast.error(errorHitos)
     setGuardando(true)
     const supabase = createClient()
@@ -91,7 +93,8 @@ export function QuoteForm({ lang, quote }: { lang: string; quote?: Quote }) {
       client_address: cliente.client_address.trim() || null,
       title: title.trim(),
       intro: intro.trim() || null,
-      items: items.map((i) => ({ ...i, concepto: i.concepto.trim(), descripcion: (i.descripcion ?? '').trim() || undefined, cantidad: Number(i.cantidad), precio: Number(i.precio) })),
+      items: itemsDesdePrecio(title.trim(), precio),
+      features: features.map((f) => f.trim()).filter(Boolean),
       currency: 'MXN',
       apply_iva: applyIva,
       payment: { hitos: hitos.map((h) => ({ label: h.label.trim(), pct: Number(h.pct) })), msi },
@@ -124,7 +127,7 @@ export function QuoteForm({ lang, quote }: { lang: string; quote?: Quote }) {
     }
   }
 
-  const setItem = (i: number, patch: Partial<QuoteItem>) => setItems((arr) => arr.map((x, idx) => (idx === i ? { ...x, ...patch } : x)))
+  const setFeature = (i: number, v: string) => setFeatures((arr) => arr.map((x, idx) => (idx === i ? v : x)))
   const setHito = (i: number, patch: Partial<Hito>) => setHitos((arr) => arr.map((x, idx) => (idx === i ? { ...x, ...patch } : x)))
 
   return (
@@ -150,37 +153,33 @@ export function QuoteForm({ lang, quote }: { lang: string; quote?: Quote }) {
         </Card>
 
         <Card>
-          <CardHeader><CardTitle className="text-base">{es ? 'Proyecto y conceptos' : 'Project and items'}</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-base">{es ? 'Proyecto' : 'Project'}</CardTitle></CardHeader>
           <CardContent className="space-y-4">
-            <div className="space-y-1.5">
-              <Label htmlFor="q-title">{es ? 'Nombre del proyecto' : 'Project title'}</Label>
-              <Input id="q-title" className={campo} value={title} onChange={(e) => setTitle(e.target.value)} placeholder={es ? 'Página web corporativa para Clínica Sonrisa' : 'Corporate website for Sonrisa Clinic'} />
+            <div className="grid gap-4 sm:grid-cols-[1fr_200px]">
+              <div className="space-y-1.5">
+                <Label htmlFor="q-title">{es ? 'Nombre del proyecto' : 'Project title'}</Label>
+                <Input id="q-title" className={campo} value={title} onChange={(e) => setTitle(e.target.value)} placeholder={es ? 'Página web corporativa para Clínica Sonrisa' : 'Corporate website for Sonrisa Clinic'} />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="q-precio">{es ? 'Precio (sin IVA)' : 'Price (before VAT)'}</Label>
+                <Input id="q-precio" className={campo} type="number" min={0} step={100} value={precio} onChange={(e) => setPrecio(Number(e.target.value) || 0)} />
+              </div>
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="q-intro">{es ? 'Resumen (opcional)' : 'Summary (optional)'}</Label>
-              <Textarea id="q-intro" className={campo} rows={2} value={intro} onChange={(e) => setIntro(e.target.value)} placeholder={es ? 'Qué problema resuelve y qué incluye, en dos frases.' : 'What it solves and what it includes, in two sentences.'} />
+              <Textarea id="q-intro" className={campo} rows={2} value={intro} onChange={(e) => setIntro(e.target.value)} placeholder={es ? 'Qué problema resuelve, en dos frases.' : 'What it solves, in two sentences.'} />
             </div>
-            <div className="space-y-3">
-              <div>
-                <p className="text-sm font-medium">{es ? 'Conceptos: lo que cobras' : 'Items: what you charge for'}</p>
-                <p className="text-xs text-muted-foreground">
-                  {es
-                    ? 'Cada línea es un rubro de la cotización, por ejemplo "Diseño y desarrollo del sitio web" o "Sesión de fotos". Cantidad × precio unitario = importe; el total sale de sumar las líneas.'
-                    : 'Each line is one billable item, e.g. "Website design and development" or "Photo session". Quantity × unit price = amount; the total is the sum of the lines.'}
-                </p>
-              </div>
-              {items.map((it, i) => (
-                <div key={i} className="grid gap-2 sm:grid-cols-[1fr_80px_130px_40px] items-start rounded-lg border p-3">
-                  <div className="space-y-2">
-                    <Input className={campo} placeholder={es ? 'Concepto, p. ej. Diseño y desarrollo del sitio web' : 'Item, e.g. Website design and development'} value={it.concepto} onChange={(e) => setItem(i, { concepto: e.target.value })} />
-                    <Textarea className={campo} rows={2} placeholder={es ? 'Qué incluye (opcional): 6 secciones, formulario de citas, SEO básico…' : 'What it includes (optional)'} value={it.descripcion ?? ''} onChange={(e) => setItem(i, { descripcion: e.target.value })} />
-                  </div>
-                  <Input className={campo} type="number" min={1} step={1} aria-label={es ? 'Cantidad' : 'Quantity'} value={it.cantidad} onChange={(e) => setItem(i, { cantidad: Number(e.target.value) })} />
-                  <Input className={campo} type="number" min={0} step={100} aria-label={es ? 'Precio unitario' : 'Unit price'} value={it.precio} onChange={(e) => setItem(i, { precio: Number(e.target.value) })} />
-                  <Button type="button" variant="ghost" size="icon" aria-label={es ? 'Quitar concepto' : 'Remove item'} onClick={() => setItems((arr) => arr.filter((_, idx) => idx !== i))} disabled={items.length === 1}><Trash2 className="size-4" /></Button>
+            <div className="space-y-2">
+              <Label>{es ? 'Características de la aplicación' : 'Application features'}</Label>
+              <p className="text-xs text-muted-foreground">{es ? 'Una por línea: lo que incluye el proyecto. Van en la cotización y como alcance en el contrato.' : 'One per line: what the project includes. Shown in the quote and as the scope in the contract.'}</p>
+              {features.map((f, i) => (
+                <div key={i} className="flex gap-2 items-center">
+                  <Input className={campo} value={f} onChange={(e) => setFeature(i, e.target.value)} placeholder={es ? 'p. ej. Formulario de citas con confirmación por WhatsApp' : 'e.g. Appointment form with WhatsApp confirmation'}
+                    onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); setFeatures((arr) => [...arr.slice(0, i + 1), '', ...arr.slice(i + 1)]) } }} />
+                  <Button type="button" variant="ghost" size="icon" aria-label={es ? 'Quitar' : 'Remove'} onClick={() => setFeatures((arr) => arr.filter((_, idx) => idx !== i))} disabled={features.length === 1}><Trash2 className="size-4" /></Button>
                 </div>
               ))}
-              <Button type="button" variant="outline" size="sm" onClick={() => setItems((arr) => [...arr, { concepto: '', descripcion: '', cantidad: 1, precio: 0 }])}><Plus className="size-4 mr-1" />{es ? 'Agregar concepto' : 'Add item'}</Button>
+              <Button type="button" variant="outline" size="sm" onClick={() => setFeatures((arr) => [...arr, ''])}><Plus className="size-4 mr-1" />{es ? 'Agregar característica' : 'Add feature'}</Button>
             </div>
           </CardContent>
         </Card>
@@ -230,7 +229,7 @@ export function QuoteForm({ lang, quote }: { lang: string; quote?: Quote }) {
       <Card className="lg:sticky lg:top-6">
         <CardHeader><CardTitle className="text-base">{es ? 'Resumen' : 'Summary'}</CardTitle></CardHeader>
         <CardContent className="space-y-3 text-sm">
-          <div className="flex justify-between"><span className="text-muted-foreground">Subtotal</span><span className="font-mono tabular-nums">{mxn(t.subtotal)}</span></div>
+          <div className="flex justify-between"><span className="text-muted-foreground">{es ? 'Precio' : 'Price'}</span><span className="font-mono tabular-nums">{mxn(t.subtotal)}</span></div>
           {applyIva && <div className="flex justify-between"><span className="text-muted-foreground">IVA</span><span className="font-mono tabular-nums">{mxn(t.iva)}</span></div>}
           <div className="flex justify-between text-base font-semibold border-t pt-2"><span>Total</span><span className="font-mono tabular-nums">{mxn(t.total)}</span></div>
           {!errorHitos && hitos.map((h) => <div key={h.label} className="flex justify-between text-muted-foreground"><span>{h.label || '—'}</span><span className="font-mono tabular-nums">{mxn((t.total * h.pct) / 100)}</span></div>)}

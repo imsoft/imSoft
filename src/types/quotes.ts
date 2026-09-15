@@ -15,6 +15,7 @@ export interface Quote {
   title: string
   intro?: string | null
   items: QuoteItem[]
+  features?: string[] | null
   currency: string
   apply_iva: boolean
   payment: QuotePayment
