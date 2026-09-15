@@ -1,0 +1,23 @@
+{
+  "_comentario": "Busquedas que corre scripts/find-prospects.mjs cada lunes (giro de src/lib/places.ts x municipio). Se rotan semana a semana.",
+  "busquedas": [
+    { "giro": "abastos", "municipio": "guadalajara" },
+    { "giro": "abogados", "municipio": "zapopan" },
+    { "giro": "salud", "municipio": "guadalajara" },
+    { "giro": "restaurantes", "municipio": "zapopan" },
+    { "giro": "ecommerce", "municipio": "guadalajara" },
+    { "giro": "contabilidad", "municipio": "guadalajara" },
+    { "giro": "dental", "municipio": "zapopan" },
+    { "giro": "construccion", "municipio": "zmg" },
+    { "giro": "inmobiliaria", "municipio": "zapopan" },
+    { "giro": "logistica", "municipio": "tlaquepaque" },
+    { "giro": "ferreteria", "municipio": "guadalajara" },
+    { "giro": "escuelas", "municipio": "zapopan" },
+    { "giro": "fitness", "municipio": "guadalajara" },
+    { "giro": "talleres", "municipio": "tlaquepaque" },
+    { "giro": "clinicas-estetica", "municipio": "zapopan" },
+    { "giro": "restaurantes", "municipio": "guadalajara" },
+    { "giro": "abogados", "municipio": "guadalajara" },
+    { "giro": "ecommerce", "municipio": "zapopan" }
+  ]
+}

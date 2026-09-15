@@ -1,0 +1,28 @@
+name: Prospectos semanales (Google Places)
+
+on:
+  schedule:
+    # Lunes 13:00 UTC (7:00 AM Guadalajara): deja prospectos nuevos antes de empezar la semana.
+    - cron: "0 13 * * 1"
+  workflow_dispatch:
+
+jobs:
+  find-prospects:
+    name: Buscar y dar de alta prospectos
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4.2.2
+      - uses: pnpm/action-setup@v4.1.0
+      - uses: actions/setup-node@v4.4.0
+        with:
+          node-version: "24"
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Buscar prospectos
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          GOOGLE_PLACES_API_KEY: ${{ secrets.GOOGLE_PLACES_API_KEY }}
+        run: node --experimental-strip-types scripts/find-prospects.mjs --max 40
