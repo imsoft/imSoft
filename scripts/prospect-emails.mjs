@@ -26,7 +26,13 @@
 import { readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { parseCsv } from '../src/lib/import-contacts.ts'
-import { renderPlainEmail, missingFields } from '../src/lib/prospect-email.ts'
+import {
+  renderPlainEmail,
+  missingFields,
+  renderTemplate,
+  CAMPO_ASUNTO,
+  CAMPO_HTML,
+} from '../src/lib/prospect-email.ts'
 
 function parseArgs(argv) {
   const args = {}
@@ -128,8 +134,21 @@ if (args['sync-crm']) {
     const r = await fetch(`${SUPABASE_URL}/rest/v1/contacts?${filtro}`, {
       method: 'PATCH', headers, body: JSON.stringify({ notes }),
     })
-    if (r.ok) ok++
-    else console.error(`     ✖ ${row.email}: ${await r.text()}`)
+    if (!r.ok) { console.error(`     ✖ ${row.email}: ${await r.text()}`); continue }
+
+    // El HTML va aparte para que la pantalla de envio lo precargue con su
+    // diseno; Resend manda HTML, no el texto de las notas.
+    const campos = [
+      { contact_id: previos[0].id, field_name: CAMPO_ASUNTO, field_value: renderPlainEmail(template, row).subject },
+      { contact_id: previos[0].id, field_name: CAMPO_HTML, field_value: renderTemplate(template, row) },
+    ]
+    const c = await fetch(`${SUPABASE_URL}/rest/v1/contact_custom_fields?on_conflict=contact_id,field_name`, {
+      method: 'POST',
+      headers: { ...headers, Prefer: 'resolution=merge-duplicates' },
+      body: JSON.stringify(campos),
+    })
+    if (c.ok) ok++
+    else console.error(`     ✖ ${row.email} (campos): ${await c.text()}`)
   }
 
   console.log(args['dry-run'] ? `\n  🧪 DRY RUN — se actualizarian ${ok} notas` : `\n  ✅ Notas actualizadas: ${ok}`)

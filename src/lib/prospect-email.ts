@@ -61,6 +61,15 @@ function decodeEntities(texto: string): string {
 }
 
 /**
+ * Nombres de los campos de `contact_custom_fields` donde se guarda el correo ya
+ * personalizado, para que la pantalla de envio del CRM lo precargue. El cuerpo
+ * se guarda en HTML porque ese es el formato que se manda por Resend; las notas
+ * del contacto llevan la version en texto, para leerla y copiarla.
+ */
+export const CAMPO_ASUNTO = 'prospect_email_subject'
+export const CAMPO_HTML = 'prospect_email_html'
+
+/**
  * El correo listo para copiar y pegar, con el asunto arriba. Es exactamente lo
  * que se guarda en las notas del contacto.
  */

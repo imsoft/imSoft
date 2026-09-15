@@ -2,6 +2,7 @@ import { hasLocale } from '../../../../../../dictionaries'
 import { notFound, redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { SendEmailPageClient } from './send-email-client'
+import { CAMPO_ASUNTO, CAMPO_HTML } from '@/lib/prospect-email'
 
 export default async function SendEmailPage({ params }: {
   params: Promise<{ lang: string; id: string }>
@@ -38,6 +39,17 @@ export default async function SendEmailPage({ params }: {
     redirect(`/${lang}/dashboard/admin/crm/contacts/${id}`)
   }
 
+  // Correo de prospeccion ya personalizado para este contacto, si la campana lo
+  // dejo listo con `pnpm prospects:emails --sync-crm`.
+  const { data: customFields } = await supabase
+    .from('contact_custom_fields')
+    .select('field_name, field_value')
+    .eq('contact_id', id)
+    .in('field_name', [CAMPO_ASUNTO, CAMPO_HTML])
+
+  const campo = (nombre: string) =>
+    customFields?.find((f) => f.field_name === nombre)?.field_value || ''
+
   const contactName = `${contact.first_name} ${contact.last_name}`
 
   return (
@@ -50,6 +62,8 @@ export default async function SendEmailPage({ params }: {
       invalidEmails={contact.invalid_emails || []}
       contactCompany={contact.company || ''}
       contactStatus={contact.status}
+      prospectSubject={campo(CAMPO_ASUNTO)}
+      prospectHtml={campo(CAMPO_HTML)}
       lang={lang}
     />
   )

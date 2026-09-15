@@ -31,6 +31,9 @@ interface SendEmailPageClientProps {
   invalidEmails: string[]
   contactCompany: string
   contactStatus: ContactStatus
+  /** Correo de prospeccion ya personalizado para este contacto, si existe. */
+  prospectSubject?: string
+  prospectHtml?: string
   lang: string
 }
 
@@ -43,6 +46,8 @@ export function SendEmailPageClient({
   invalidEmails,
   contactCompany,
   contactStatus,
+  prospectSubject = '',
+  prospectHtml = '',
   lang,
 }: SendEmailPageClientProps) {
   const router = useRouter()
@@ -55,8 +60,10 @@ export function SendEmailPageClient({
     toParam && allEmails.includes(toParam) ? toParam : contactEmail
   )
   const [bypassInvalid, setBypassInvalid] = useState(false)
-  const [emailSubject, setEmailSubject] = useState('')
-  const [emailBody, setEmailBody] = useState('')
+  // Si la campana ya dejo el correo listo para este contacto, se precarga;
+  // los botones de plantilla y de IA siguen disponibles para reemplazarlo.
+  const [emailSubject, setEmailSubject] = useState(prospectSubject)
+  const [emailBody, setEmailBody] = useState(prospectHtml)
   const [isSending, setIsSending] = useState(false)
   const [isGeneratingAI, setIsGeneratingAI] = useState(false)
 
@@ -250,6 +257,14 @@ export function SendEmailPageClient({
               </div>
             )}
           </div>
+
+          {prospectHtml && (
+            <div className="rounded-md border border-primary/30 bg-primary/5 px-3 py-2 text-xs text-muted-foreground">
+              {lang === 'en'
+                ? 'Prefilled with the campaign email written for this contact. Generating with AI or using the template will replace it.'
+                : 'Precargado con el correo de campaña escrito para este contacto. Si generas con IA o usas la plantilla, lo reemplazas.'}
+            </div>
+          )}
 
           <div>
             <Label htmlFor="subject">{lang === 'en' ? 'Subject' : 'Asunto'} *</Label>
