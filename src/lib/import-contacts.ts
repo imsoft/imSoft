@@ -17,6 +17,7 @@ export interface CsvRow {
   sitio?: string
   gancho?: string
   segmento?: string
+  instagram?: string
   [key: string]: string | undefined
 }
 
@@ -24,7 +25,8 @@ export interface CsvRow {
 export interface ContactInsert {
   first_name: string | null
   last_name: string | null
-  email: string
+  /** Null para prospectos de WhatsApp o Instagram, que no publican correo. */
+  email: string | null
   phone: string | null
   company: string | null
   job_title: string | null
@@ -33,6 +35,7 @@ export interface ContactInsert {
   source: string | null
   tags: string[] | null
   website_url: string | null
+  instagram_url: string | null
   notes: string | null
 }
 
@@ -47,8 +50,8 @@ export interface MapOptions {
 export interface MapResult {
   contacts: ContactInsert[]
   skipped: {
-    /** Filas sin correo: `contacts.email` es NOT NULL, no se pueden insertar. */
-    noEmail: CsvRow[]
+    /** Filas sin ningun dato de contacto: ni correo, ni telefono, ni Instagram. */
+    noContact: CsvRow[]
     /** Correos con formato invalido. */
     invalidEmail: string[]
     /** Correos repetidos dentro del mismo CSV: `email` es UNIQUE. */
@@ -78,25 +81,30 @@ export function mapRowsToContacts(rows: CsvRow[], options: MapOptions = {}): Map
   } = options
 
   const contacts: ContactInsert[] = []
-  const skipped: MapResult['skipped'] = { noEmail: [], invalidEmail: [], duplicate: [] }
+  const skipped: MapResult['skipped'] = { noContact: [], invalidEmail: [], duplicate: [] }
   const seen = new Set<string>()
 
   for (const row of rows) {
     const email = clean(row.email)?.toLowerCase()
 
-    if (!email) {
-      skipped.noEmail.push(row)
+    const phone = clean(row.telefono)
+    const instagram = clean(row.instagram)
+
+    // Sin correo se puede: los prospectos de WhatsApp e Instagram se localizan
+    // por telefono o por su perfil. Sin ninguno de los tres, el contacto no sirve.
+    if (!email && !phone && !instagram) {
+      skipped.noContact.push(row)
       continue
     }
-    if (!EMAIL_RE.test(email)) {
+    if (email && !EMAIL_RE.test(email)) {
       skipped.invalidEmail.push(email)
       continue
     }
-    if (seen.has(email)) {
+    if (email && seen.has(email)) {
       skipped.duplicate.push(email)
       continue
     }
-    seen.add(email)
+    if (email) seen.add(email)
 
     const segmento = clean(row.segmento)
     const tags = [...baseTags, ...(segmento ? [segmento] : [])]
@@ -104,8 +112,8 @@ export function mapRowsToContacts(rows: CsvRow[], options: MapOptions = {}): Map
     contacts.push({
       first_name: clean(row.nombre),
       last_name: clean(row.apellido),
-      email,
-      phone: clean(row.telefono),
+      email: email ?? null,
+      phone,
       company: clean(row.empresa),
       job_title: clean(row.puesto),
       contact_type: contactType,
@@ -113,6 +121,7 @@ export function mapRowsToContacts(rows: CsvRow[], options: MapOptions = {}): Map
       source,
       tags: tags.length > 0 ? tags : null,
       website_url: clean(row.sitio),
+      instagram_url: instagram,
       notes: clean(row.gancho),
     })
   }

@@ -30,7 +30,7 @@ import { Contact } from '@/types/database'
 const contactSchema = z.object({
   first_name: z.string().min(2, 'First name is required'),
   last_name: z.string().min(2, 'Last name is required'),
-  email: z.string().email('Invalid email address'),
+  email: z.union([z.string().email('Invalid email address'), z.literal('')]).optional(),
   phone: z.string().optional(),
   company: z.string().optional(),
   job_title: z.string().optional(),

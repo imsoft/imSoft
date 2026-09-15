@@ -64,14 +64,23 @@ function EmailCell({
   invalidEmails,
   lang,
 }: {
-  email: string
+  email?: string
   invalidEmails?: string[]
   lang: string
 }) {
   const [copied, setCopied] = useState(false)
-  const isInvalid = Array.isArray(invalidEmails) && invalidEmails.some(
-    (e) => e.toLowerCase() === email.toLowerCase()
+  const isInvalid = Boolean(email) && Array.isArray(invalidEmails) && invalidEmails.some(
+    (e) => e.toLowerCase() === email!.toLowerCase()
   )
+
+  // Contacto de WhatsApp o Instagram: no tiene correo y no es un error.
+  if (!email) {
+    return (
+      <span className="text-sm text-muted-foreground">
+        {lang === 'en' ? 'No email' : 'Sin correo'}
+      </span>
+    )
+  }
 
   const handleCopy = async () => {
     try {

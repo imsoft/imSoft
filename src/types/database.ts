@@ -187,7 +187,8 @@ export interface Contact {
   id: string
   first_name: string
   last_name: string
-  email: string
+  /** Opcional: los prospectos de WhatsApp e Instagram no siempre tienen correo. */
+  email?: string
   additional_emails?: string[]
   invalid_emails?: string[]
   phone?: string

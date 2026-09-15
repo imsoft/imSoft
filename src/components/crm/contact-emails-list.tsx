@@ -26,7 +26,7 @@ export function ContactEmailsList({ contact, lang }: ContactEmailsListProps) {
   )
 
   const emailsList = [
-    { email: contact.email, isPrimary: true },
+    ...(contact.email ? [{ email: contact.email, isPrimary: true }] : []),
     ...(contact.additional_emails || []).map((email) => ({
       email,
       isPrimary: false,

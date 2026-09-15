@@ -60,6 +60,7 @@ describe('mapRowsToContacts', () => {
       source: 'prospeccion-2026',
       tags: ['aduanal'],
       website_url: null,
+      instagram_url: null,
       notes: 'Sin portal de seguimiento',
     })
   })
@@ -74,15 +75,45 @@ describe('mapRowsToContacts', () => {
     expect(contacts[0].status).toBe('no_contact')
   })
 
-  it('descarta filas sin correo porque la columna es NOT NULL', () => {
+  it('acepta contactos sin correo si tienen telefono', () => {
     const { contacts, skipped } = mapRowsToContacts([
       { empresa: 'Gamas', telefono: '33 3695 2526' },
       fila,
     ])
 
+    expect(contacts).toHaveLength(2)
+    expect(skipped.noContact).toHaveLength(0)
+    const gamas = contacts.find((c) => c.company === 'Gamas')!
+    expect(gamas.email).toBeNull()
+    expect(gamas.phone).toBe('33 3695 2526')
+  })
+
+  it('acepta contactos sin correo si tienen Instagram', () => {
+    const { contacts } = mapRowsToContacts([
+      { empresa: 'Brunetta', instagram: 'https://instagram.com/brunettaboutique' },
+    ])
+
     expect(contacts).toHaveLength(1)
-    expect(skipped.noEmail).toHaveLength(1)
-    expect(skipped.noEmail[0].empresa).toBe('Gamas')
+    expect(contacts[0].email).toBeNull()
+    expect(contacts[0].instagram_url).toBe('https://instagram.com/brunettaboutique')
+  })
+
+  it('descarta la fila que no trae ningun dato de contacto', () => {
+    const { contacts, skipped } = mapRowsToContacts([{ empresa: 'Sin datos' }, fila])
+
+    expect(contacts).toHaveLength(1)
+    expect(skipped.noContact).toHaveLength(1)
+    expect(skipped.noContact[0].empresa).toBe('Sin datos')
+  })
+
+  it('no cuenta como duplicados a varios contactos sin correo', () => {
+    const { contacts, skipped } = mapRowsToContacts([
+      { empresa: 'Uno', telefono: '33 1111 1111' },
+      { empresa: 'Dos', telefono: '33 2222 2222' },
+    ])
+
+    expect(contacts).toHaveLength(2)
+    expect(skipped.duplicate).toHaveLength(0)
   })
 
   it('descarta correos con formato invalido', () => {

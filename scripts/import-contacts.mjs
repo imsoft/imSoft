@@ -89,11 +89,10 @@ console.log(`\n  Archivo:      ${args.list}`)
 console.log(`  Filas leidas: ${rows.length}`)
 console.log(`  A importar:   ${contacts.length}`)
 
-if (skipped.noEmail.length) {
-  console.log(`\n  ⚠️  Sin correo (${skipped.noEmail.length}): no se pueden insertar, contacts.email es NOT NULL.`)
-  console.log('     Estos hay que darlos de alta a mano o conseguirles correo:')
-  for (const row of skipped.noEmail) {
-    console.log(`       · ${row.empresa || '(sin empresa)'}${row.telefono ? ` — tel ${row.telefono}` : ''}`)
+if (skipped.noContact.length) {
+  console.log(`\n  ⚠️  Sin ningun dato de contacto (${skipped.noContact.length}): ni correo, ni telefono, ni Instagram.`)
+  for (const row of skipped.noContact) {
+    console.log(`       · ${row.empresa || '(sin empresa)'}`)
   }
 }
 if (skipped.invalidEmail.length) {
@@ -114,31 +113,64 @@ if (args['dry-run']) {
   process.exit(0)
 }
 
+const headers = {
+  apikey: SERVICE_ROLE_KEY,
+  Authorization: `Bearer ${SERVICE_ROLE_KEY}`,
+  'Content-Type': 'application/json',
+}
+
 // `resolution=ignore-duplicates` deja intacto lo que ya existe en el CRM; con
 // --update se pisa con lo del CSV.
 const resolution = args.update ? 'merge-duplicates' : 'ignore-duplicates'
 
-const response = await fetch(`${SUPABASE_URL}/rest/v1/contacts?on_conflict=email`, {
-  method: 'POST',
-  headers: {
-    apikey: SERVICE_ROLE_KEY,
-    Authorization: `Bearer ${SERVICE_ROLE_KEY}`,
-    'Content-Type': 'application/json',
-    Prefer: `resolution=${resolution},return=representation`,
-  },
-  body: JSON.stringify(contacts),
-})
+const conCorreo = contacts.filter((c) => c.email)
+const sinCorreo = contacts.filter((c) => !c.email)
 
-if (!response.ok) {
-  const body = await response.text()
-  fail(`Supabase respondio ${response.status}: ${body}`)
+let insertados = 0
+let yaExistian = 0
+
+// Con correo: el UNIQUE de email hace la carga idempotente.
+if (conCorreo.length > 0) {
+  const r = await fetch(`${SUPABASE_URL}/rest/v1/contacts?on_conflict=email`, {
+    method: 'POST',
+    headers: { ...headers, Prefer: `resolution=${resolution},return=representation` },
+    body: JSON.stringify(conCorreo),
+  })
+  if (!r.ok) fail(`Supabase respondio ${r.status}: ${await r.text()}`)
+  const filas = await r.json()
+  insertados += filas.length
+  yaExistian += conCorreo.length - filas.length
 }
 
-const inserted = await response.json()
-const untouched = contacts.length - inserted.length
+// Sin correo no hay clave unica sobre la cual hacer upsert, asi que se busca por
+// empresa antes de insertar. Es mas lento, pero evita duplicar al reejecutar.
+for (const contacto of sinCorreo) {
+  if (contacto.company) {
+    const filtro = `company=eq.${encodeURIComponent(contacto.company)}&email=is.null`
+    const previo = await (await fetch(`${SUPABASE_URL}/rest/v1/contacts?${filtro}&select=id`, { headers })).json()
+    if (previo[0]) {
+      yaExistian++
+      if (!args.update) continue
+      const u = await fetch(`${SUPABASE_URL}/rest/v1/contacts?id=eq.${previo[0].id}`, {
+        method: 'PATCH', headers, body: JSON.stringify(contacto),
+      })
+      if (!u.ok) console.error(`     ✖ ${contacto.company}: ${await u.text()}`)
+      continue
+    }
+  }
 
-console.log(`\n  ✅ Insertados: ${inserted.length}`)
-if (untouched > 0) {
-  console.log(`  ↩️  Ya existian: ${untouched}${args.update ? ' (actualizados)' : ' (sin tocar)'}`)
+  const r = await fetch(`${SUPABASE_URL}/rest/v1/contacts`, {
+    method: 'POST',
+    headers: { ...headers, Prefer: 'return=representation' },
+    body: JSON.stringify([contacto]),
+  })
+  if (r.ok) insertados++
+  else console.error(`     ✖ ${contacto.company || '(sin empresa)'}: ${await r.text()}`)
+}
+
+console.log(`\n  ✅ Insertados: ${insertados}`)
+if (sinCorreo.length > 0) console.log(`     (${sinCorreo.length} sin correo, identificados por empresa)`)
+if (yaExistian > 0) {
+  console.log(`  ↩️  Ya existian: ${yaExistian}${args.update ? ' (actualizados)' : ' (sin tocar)'}`)
 }
 console.log('\n  Revisalos en /dashboard/admin/crm/contacts\n')

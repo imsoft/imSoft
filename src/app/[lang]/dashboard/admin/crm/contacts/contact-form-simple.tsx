@@ -35,7 +35,7 @@ const emailSchema = z.string().email('Correo inválido')
 const contactSchema = z.object({
   first_name: z.string().optional(),
   last_name: z.string().optional(),
-  email: z.string().email('Correo inválido'),
+  email: z.union([z.string().email('Correo inválido'), z.literal('')]).optional(),
   phone: z.string().optional(),
   company: z.string().optional(),
   instagram_url: z.string().optional(),
@@ -167,7 +167,9 @@ export function ContactFormSimple({ contact, lang, userId }: ContactFormProps) {
       const instagramLink = filteredSocialLinks.find(l => l.platform === 'instagram')
       const instagramVal = instagramLink ? instagramLink.url : null
 
-      const allCurrentEmails = [values.email, ...additionalEmails].map((e) => e.trim().toLowerCase())
+      const allCurrentEmails = [values.email, ...additionalEmails]
+        .filter((e): e is string => Boolean(e))
+        .map((e) => e.trim().toLowerCase())
       const updatedInvalidEmails = (contact?.invalid_emails || []).filter((e) =>
         allCurrentEmails.includes(e.toLowerCase())
       )
@@ -175,7 +177,7 @@ export function ContactFormSimple({ contact, lang, userId }: ContactFormProps) {
       const contactData = {
         first_name: values.first_name || null,
         last_name: values.last_name || null,
-        email: values.email,
+        email: values.email?.trim() || null,
         additional_emails: additionalEmails.length > 0 ? additionalEmails : null,
         invalid_emails: updatedInvalidEmails,
         phone: values.phone || null,
