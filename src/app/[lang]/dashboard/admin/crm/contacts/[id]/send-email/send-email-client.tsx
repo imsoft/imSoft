@@ -131,7 +131,18 @@ export function SendEmailPageClient({
         throw new Error(errorData.error || (lang === 'en' ? 'Failed to send email' : 'Error al enviar email'))
       }
 
-      toast.success(lang === 'en' ? 'Email sent successfully' : 'Correo enviado exitosamente')
+      const { newStatus } = await response.json()
+      toast.success(
+        lang === 'en' ? 'Email sent successfully' : 'Correo enviado exitosamente',
+        newStatus === 'qualification'
+          ? {
+              description:
+                lang === 'en'
+                  ? 'The contact moved to Prospecting.'
+                  : 'El contacto pasó a Prospección.',
+            }
+          : undefined
+      )
       router.push(`/${lang}/dashboard/admin/crm/contacts/${contactId}`)
       router.refresh()
     } catch (error) {

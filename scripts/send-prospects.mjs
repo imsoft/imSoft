@@ -57,6 +57,53 @@ function parseArgs(argv) {
 
 const args = parseArgs(process.argv.slice(2));
 
+// ---------- Sincronizacion con el CRM ----------
+// Un prospecto al que ya le escribimos deja de estar "Sin contacto". Solo se
+// mueve desde ahi: si ya iba en negociacion, un correo mas no lo regresa.
+const CRM_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const CRM_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const CRM_ON = Boolean(CRM_URL && CRM_KEY) && !args['no-crm'];
+
+async function crmRegistrarEnvio(email, subject, html) {
+  if (!CRM_ON) return null;
+  const headers = {
+    apikey: CRM_KEY,
+    Authorization: `Bearer ${CRM_KEY}`,
+    'Content-Type': 'application/json',
+  };
+  try {
+    const filtro = `email=eq.${encodeURIComponent(email.toLowerCase())}`;
+    const r = await fetch(`${CRM_URL}/rest/v1/contacts?${filtro}&select=id,status`, { headers });
+    const [contacto] = await r.json();
+    if (!contacto) return 'sin-contacto';
+
+    await fetch(`${CRM_URL}/rest/v1/contact_emails`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({
+        contact_id: contacto.id,
+        status: contacto.status,
+        subject,
+        body: html,
+      }),
+    });
+
+    if (contacto.status !== 'no_contact') return 'sin-cambio';
+
+    const u = await fetch(`${CRM_URL}/rest/v1/contacts?${filtro}`, {
+      method: 'PATCH',
+      headers,
+      body: JSON.stringify({ status: 'qualification' }),
+    });
+    return u.ok ? 'a-prospeccion' : 'error';
+  } catch (e) {
+    console.log(`     ⚠️  CRM: ${e.message}`);
+    return 'error';
+  }
+}
+
+
+
 const LIST = args.list;
 const TEMPLATE = args.template || 'scripts/prospects/template.html';
 const SUBJECT = args.subject || 'Una idea para potenciar el software de {{empresa}}';
@@ -249,7 +296,12 @@ async function main() {
         logRow(LOG, p.email, 'error', msg.replace(/\s+/g, ' ').slice(0, 120));
       } else {
         ok++;
-        console.log(`  ✓ ${label} — id ${data?.id ?? ''}`);
+        const crm = await crmRegistrarEnvio(p.email, subject, html);
+        const nota = crm === 'a-prospeccion' ? ' · CRM: → Prospección'
+          : crm === 'sin-contacto' ? ' · no está en el CRM'
+          : crm === 'sin-cambio' ? ' · CRM: estado sin cambio'
+          : '';
+        console.log(`  ✓ ${label} — id ${data?.id ?? ''}${nota}`);
         logRow(LOG, p.email, 'sent', data?.id ?? '');
       }
     } catch (e) {

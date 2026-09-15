@@ -132,7 +132,21 @@ export async function POST(
       console.warn('Could not log email to database:', dbError)
     }
 
-    return NextResponse.json({ success: true, data })
+    // Un prospecto al que ya le escribimos deja de estar "Sin contacto". Solo se
+    // mueve desde ahi: si ya iba en negociacion o cerrado, un correo mas no lo
+    // regresa a prospeccion.
+    let newStatus: string | null = null
+    if (contact.status === 'no_contact') {
+      const { error: statusError } = await supabase
+        .from('contacts')
+        .update({ status: 'qualification' })
+        .eq('id', id)
+
+      if (statusError) console.warn('Could not advance contact status:', statusError)
+      else newStatus = 'qualification'
+    }
+
+    return NextResponse.json({ success: true, data, newStatus })
   } catch (error) {
     console.error('Error in send email route:', error)
     const errorMessage = error instanceof Error
