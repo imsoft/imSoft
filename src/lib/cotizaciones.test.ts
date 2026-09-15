@@ -46,7 +46,8 @@ describe('cotizaciones', () => {
     expect(featuresValidas(['', '  '])).toMatch(/al menos/);
     expect(featuresValidas(['6 secciones'])).toBeNull();
     const html = renderContrato({ ...q, items, features: ['6 secciones', 'Formulario de citas', '<script>'] }, 'CON-2026-009');
-    expect(html).toContain('<li>6 secciones</li><li>Formulario de citas</li><li>&lt;script&gt;</li>');
+    expect(html).toContain('las siguientes 3 características');
+    expect(html).toContain('<ol><li>6 secciones</li><li>Formulario de citas</li><li>&lt;script&gt;</li></ol>');
     expect(html).not.toContain('Sesión de fotos');
   });
 

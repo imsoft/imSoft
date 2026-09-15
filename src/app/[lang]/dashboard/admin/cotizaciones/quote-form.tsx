@@ -211,12 +211,18 @@ export function QuoteForm({ lang, quote }: { lang: string; quote?: Quote }) {
               </div>
               {features.map((f, i) => (
                 <div key={i} className="flex gap-2 items-center">
+                  <span className="w-7 shrink-0 text-right text-sm tabular-nums text-muted-foreground" aria-hidden="true">{i + 1}.</span>
                   <Input className={campo} value={f} onChange={(e) => setFeature(i, e.target.value)} placeholder={es ? 'p. ej. Formulario de citas con confirmación por WhatsApp' : 'e.g. Appointment form with WhatsApp confirmation'}
                     onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); setFeatures((arr) => [...arr.slice(0, i + 1), '', ...arr.slice(i + 1)]) } }} />
                   <Button type="button" variant="ghost" size="icon" aria-label={es ? 'Quitar' : 'Remove'} onClick={() => setFeatures((arr) => arr.filter((_, idx) => idx !== i))} disabled={features.length === 1}><Trash2 className="size-4" /></Button>
                 </div>
               ))}
-              <Button type="button" variant="outline" size="sm" onClick={() => setFeatures((arr) => [...arr, ''])}><Plus className="size-4 mr-1" />{es ? 'Agregar característica' : 'Add feature'}</Button>
+              <div className="flex items-center justify-between gap-3">
+                <Button type="button" variant="outline" size="sm" onClick={() => setFeatures((arr) => [...arr, ''])}><Plus className="size-4 mr-1" />{es ? 'Agregar característica' : 'Add feature'}</Button>
+                <span className="text-sm text-muted-foreground tabular-nums">
+                  {(() => { const n = features.filter((x) => x.trim()).length; return es ? `${n} ${n === 1 ? 'característica' : 'características'}` : `${n} ${n === 1 ? 'feature' : 'features'}` })()}
+                </span>
+              </div>
             </div>
           </CardContent>
         </Card>

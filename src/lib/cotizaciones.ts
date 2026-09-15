@@ -208,6 +208,7 @@ export function renderContrato(q: QuoteLike & { created_at?: string | null }, fo
   const alcance = features.length > 0
     ? features.map((f) => `<li>${esc(f)}</li>`).join('')
     : q.items.map((i) => `<li><strong>${esc(i.concepto)}</strong>${i.descripcion ? `: ${esc(i.descripcion)}` : ''}${i.cantidad !== 1 ? ` (${i.cantidad})` : ''}</li>`).join('');
+  const listaAlcance = features.length > 0 ? 'ol' : 'ul';
   const pagos = hitos.map((h) => `<li>${esc(h.label)}: ${h.pct}% del total, ${mxn(h.importe, q.currency)}.</li>`).join('');
   const penal = q.terms.penalizacion_dia > 0
     ? `Si el Cliente no entrega los insumos, contenidos, accesos o aprobaciones que le corresponden en las fechas acordadas, el calendario se recorre por el mismo número de días y, a partir del quinto día hábil de retraso, el Cliente pagará al Prestador ${mxn(q.terms.penalizacion_dia, q.currency)} por cada día hábil adicional de retraso.`
@@ -221,8 +222,8 @@ export function renderContrato(q: QuoteLike & { created_at?: string | null }, fo
 <p>Contrato que celebran, por una parte, <strong>${esc(EMISOR.nombre)}</strong>, persona física con RFC ${esc(EMISOR.rfc)}, inscrita en el ${esc(EMISOR.regimen)}, con domicilio en ${esc(EMISOR.domicilio)}, ${esc(EMISOR.ciudad)}, quien opera bajo la marca ${esc(EMISOR.marca)}, en adelante <strong>el Prestador</strong>; y por la otra, <strong>${cliente}</strong>, en adelante <strong>el Cliente</strong>. Ambas partes se reconocen capacidad para obligarse y acuerdan las siguientes cláusulas.</p>
 
 <h2>Primera. Objeto</h2>
-<p>El Prestador desarrollará y entregará al Cliente el proyecto <strong>${esc(q.title)}</strong>, conforme a la cotización ${esc(q.folio)} aceptada por el Cliente, que forma parte de este contrato y comprende:</p>
-<ul>${alcance}</ul>
+<p>El Prestador desarrollará y entregará al Cliente el proyecto <strong>${esc(q.title)}</strong>, conforme a la cotización ${esc(q.folio)} aceptada por el Cliente, que forma parte de este contrato y comprende${features.length > 0 ? ` las siguientes ${features.length} características` : ''}:</p>
+<${listaAlcance}>${alcance}</${listaAlcance}>
 ${q.intro ? `<p>${esc(q.intro)}</p>` : ''}
 
 <h2>Segunda. Precio y forma de pago</h2>
