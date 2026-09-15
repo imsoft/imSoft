@@ -13,7 +13,7 @@ import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
 import { Trash2, Plus } from 'lucide-react'
 import { CONDICIONES_DEFAULT } from '@/config/emisor'
-import { featuresValidas, fechaVigencia, generarToken, hitosValidos, itemsDesdePrecio, mxn, precioProyecto, siguienteFolio, totales, type Hito, type QuoteTerms } from '@/lib/cotizaciones'
+import { featuresValidas, fechaVigencia, generarToken, hitosValidos, itemsDesdePrecio, mxn, plazoEntrega, precioProyecto, siguienteFolio, totales, type Hito, type QuoteTerms } from '@/lib/cotizaciones'
 import type { Quote } from '@/types/quotes'
 
 const campo = 'border-2! border-border!'
@@ -49,7 +49,9 @@ export function QuoteForm({ lang, quote }: { lang: string; quote?: Quote }) {
     cambios_alcance: CONDICIONES_DEFAULT.cambios_alcance,
     penalizacion_dia: CONDICIONES_DEFAULT.penalizacion_dia,
     entrega_semanas: CONDICIONES_DEFAULT.entrega_semanas,
+    fecha_limite: fechaVigencia(CONDICIONES_DEFAULT.entrega_semanas * 7),
   })
+  const plazo = plazoEntrega({ terms, created_at: quote?.created_at ?? null })
   const [validUntil, setValidUntil] = useState(quote?.valid_until ?? fechaVigencia(CONDICIONES_DEFAULT.vigencia_dias))
   const [notes, setNotes] = useState(quote?.notes ?? '')
 
@@ -99,7 +101,7 @@ export function QuoteForm({ lang, quote }: { lang: string; quote?: Quote }) {
       currency: 'MXN',
       apply_iva: applyIva,
       payment: { hitos: hitos.map((h) => ({ label: h.label.trim(), pct: Number(h.pct) })), msi },
-      terms: { ...terms, garantia_dias: Number(terms.garantia_dias), penalizacion_dia: Number(terms.penalizacion_dia), entrega_semanas: Number(terms.entrega_semanas) },
+      terms: { ...terms, garantia_dias: Number(terms.garantia_dias), penalizacion_dia: Number(terms.penalizacion_dia), entrega_semanas: plazo.semanas, fecha_limite: terms.fecha_limite || plazo.fechaLimite },
       notes: notes.trim() || null,
       valid_until: validUntil,
       updated_at: new Date().toISOString(),
@@ -215,7 +217,11 @@ export function QuoteForm({ lang, quote }: { lang: string; quote?: Quote }) {
         <Card>
           <CardHeader><CardTitle className="text-base">{es ? 'Condiciones' : 'Terms'}</CardTitle></CardHeader>
           <CardContent className="grid gap-4 sm:grid-cols-3">
-            <div className="space-y-1.5"><Label htmlFor="q-entrega">{es ? 'Entrega (semanas)' : 'Delivery (weeks)'}</Label><NumberInput id="q-entrega" className={campo} value={terms.entrega_semanas} onValueChange={(n) => setTerms((v) => ({ ...v, entrega_semanas: n }))} /></div>
+            <div className="space-y-1.5">
+              <Label htmlFor="q-limite">{es ? 'Fecha límite del proyecto' : 'Project deadline'}</Label>
+              <Input id="q-limite" className={campo} type="date" value={terms.fecha_limite ?? ''} onChange={(e) => setTerms((v) => ({ ...v, fecha_limite: e.target.value || null }))} />
+              <p className="text-xs text-muted-foreground">{es ? `${plazo.semanas} ${plazo.semanas === 1 ? 'semana' : 'semanas'} (${plazo.dias} días) desde ${quote ? 'la creación de la cotización' : 'hoy'}.` : `${plazo.semanas} weeks (${plazo.dias} days) from ${quote ? 'the quote date' : 'today'}.`}</p>
+            </div>
             <div className="space-y-1.5"><Label htmlFor="q-garantia">{es ? 'Garantía (días)' : 'Warranty (days)'}</Label><NumberInput id="q-garantia" className={campo} value={terms.garantia_dias} onValueChange={(n) => setTerms((v) => ({ ...v, garantia_dias: n }))} /></div>
             <div className="space-y-1.5"><Label htmlFor="q-penal">{es ? 'Penalización por día de retraso del cliente (MXN)' : 'Client delay penalty per day (MXN)'}</Label><NumberInput id="q-penal" className={campo} value={terms.penalizacion_dia} onValueChange={(n) => setTerms((v) => ({ ...v, penalizacion_dia: n }))} /></div>
             <div className="space-y-1.5 sm:col-span-3"><Label htmlFor="q-soporte">{es ? 'Soporte' : 'Support'}</Label><Textarea id="q-soporte" className={campo} rows={2} value={terms.soporte} onChange={(e) => setTerms((v) => ({ ...v, soporte: e.target.value }))} /></div>

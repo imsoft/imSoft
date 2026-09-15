@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   estaVencida, featuresValidas, fechaVigencia, hitosValidos, importesHitos, itemsDesdePrecio, itemsValidos, motivoNoAceptable,
-  precioProyecto, renderContrato, siguienteFolio, textoFormaDePago, totales, type QuoteLike,
+  plazoEntrega, precioProyecto, renderContrato, siguienteFolio, textoFormaDePago, totales, type QuoteLike,
 } from './cotizaciones';
 import { CONDICIONES_DEFAULT } from '@/config/emisor';
 
@@ -48,6 +48,21 @@ describe('cotizaciones', () => {
     const html = renderContrato({ ...q, items, features: ['6 secciones', 'Formulario de citas', '<script>'] }, 'CON-2026-009');
     expect(html).toContain('<li>6 secciones</li><li>Formulario de citas</li><li>&lt;script&gt;</li>');
     expect(html).not.toContain('Sesión de fotos');
+  });
+
+  it('el plazo de entrega se calcula desde la cotizacion hasta la fecha limite', () => {
+    const conFecha = { terms: { ...q.terms, fecha_limite: '2026-10-12' }, created_at: '2026-09-14T18:00:00Z' };
+    const p = plazoEntrega(conFecha);
+    expect(p).toMatchObject({ fechaLimite: '2026-10-12', dias: 28, semanas: 4 });
+    expect(p.texto).toBe('12 de octubre de 2026 (4 semanas a partir de la cotización)');
+    // 30 dias redondean a 5 semanas; un plazo minimo es 1 semana
+    expect(plazoEntrega({ terms: { ...q.terms, fecha_limite: '2026-10-14' }, created_at: '2026-09-14' }).semanas).toBe(5);
+    expect(plazoEntrega({ terms: { ...q.terms, fecha_limite: '2026-09-15' }, created_at: '2026-09-14' }).semanas).toBe(1);
+    // Sin fecha limite (cotizaciones viejas) se usa entrega_semanas desde la creacion
+    const sin = plazoEntrega({ terms: { ...q.terms, fecha_limite: null, entrega_semanas: 4 }, created_at: '2026-09-14T18:00:00Z' });
+    expect(sin.fechaLimite).toBe('2026-10-12');
+    const html = renderContrato({ ...q, ...conFecha }, 'CON-2026-010');
+    expect(html).toContain('a más tardar el <strong>12 de octubre de 2026</strong>, es decir, en un plazo de 4 semanas');
   });
 
   it('folios consecutivos por ano', () => {

@@ -27,6 +27,9 @@ export interface QuoteTerms {
   cambios_alcance: string;
   /** MXN por dia habil de retraso del cliente en entregar insumos. 0 = sin penalizacion. */
   penalizacion_dia: number;
+  /** Fecha limite del proyecto (ISO). El plazo en semanas se calcula desde la cotizacion. */
+  fecha_limite?: string | null;
+  /** Solo de respaldo para cotizaciones viejas sin fecha_limite. */
   entrega_semanas: number;
 }
 export type QuoteStatus = 'draft' | 'sent' | 'accepted' | 'rejected' | 'expired';
@@ -70,6 +73,32 @@ export function featuresValidas(features: string[]): string | null {
   const limpias = features.map((f) => f.trim()).filter(Boolean);
   if (limpias.length === 0) return 'Agrega al menos una característica de la aplicación.';
   return null;
+}
+
+export interface PlazoEntrega {
+  fechaLimite: string;
+  dias: number;
+  semanas: number;
+  texto: string;
+}
+
+/**
+ * Plazo de entrega a partir de la fecha limite: dias naturales y semanas (redondeadas
+ * hacia arriba) contados desde que se creo la cotizacion. Si no hay fecha limite, se usa
+ * entrega_semanas como antes.
+ */
+export function plazoEntrega(q: Pick<QuoteLike, 'terms'> & { created_at?: string | null }, hoy = new Date()): PlazoEntrega {
+  const desde = q.created_at ? q.created_at.slice(0, 10) : hoy.toISOString().slice(0, 10);
+  let fechaLimite = q.terms.fecha_limite?.slice(0, 10) || null;
+  if (!fechaLimite) {
+    const d = new Date(`${desde}T00:00:00Z`);
+    d.setUTCDate(d.getUTCDate() + (q.terms.entrega_semanas || 0) * 7);
+    fechaLimite = d.toISOString().slice(0, 10);
+  }
+  const dias = Math.max(0, Math.round((Date.parse(`${fechaLimite}T00:00:00Z`) - Date.parse(`${desde}T00:00:00Z`)) / 86400000));
+  const semanas = Math.max(1, Math.ceil(dias / 7));
+  const texto = `${fechaLarga(fechaLimite)} (${semanas} ${semanas === 1 ? 'semana' : 'semanas'} a partir de la cotización)`;
+  return { fechaLimite, dias, semanas, texto };
 }
 
 export function subtotal(items: QuoteItem[]): number {
@@ -170,8 +199,9 @@ function esc(s: string | null | undefined): string {
  * de enviarlo. Es un borrador de trabajo: un abogado deberia revisarlo antes de usarlo
  * como contrato definitivo.
  */
-export function renderContrato(q: QuoteLike, folioContrato: string, fecha = new Date()): string {
+export function renderContrato(q: QuoteLike & { created_at?: string | null }, folioContrato: string, fecha = new Date()): string {
   const t = totales(q);
+  const plazo = plazoEntrega(q, fecha);
   const hitos = importesHitos(t.total, q.payment.hitos);
   const cliente = [q.client_name, q.client_company ? `en representación de ${q.client_company}` : '', q.client_rfc ? `RFC ${q.client_rfc}` : '', q.client_address].filter(Boolean).map(esc).join(', ');
   const features = (q.features ?? []).map((f) => f.trim()).filter(Boolean);
@@ -201,7 +231,7 @@ ${q.intro ? `<p>${esc(q.intro)}</p>` : ''}
 <p>Los pagos se realizan por transferencia bancaria o mediante enlace de pago con tarjeta${q.payment.msi ? ', incluidos meses sin intereses cuando el banco emisor lo permita' : ''}. El Prestador emite CFDI por cada pago recibido. Ningún entregable se pone en producción ni se transfiere hasta recibir el pago del hito correspondiente.</p>
 
 <h2>Tercera. Plazo de entrega</h2>
-<p>El Prestador entregará el proyecto en un plazo estimado de ${q.terms.entrega_semanas} semanas contadas a partir de la recepción del anticipo y de los insumos iniciales del Cliente. El plazo se ajustará de común acuerdo si el alcance cambia o si el Cliente retrasa la entrega de insumos, conforme a las cláusulas Quinta y Sexta.</p>
+<p>El Prestador entregará el proyecto a más tardar el <strong>${esc(fechaLarga(plazo.fechaLimite))}</strong>, es decir, en un plazo de ${plazo.semanas} ${plazo.semanas === 1 ? 'semana' : 'semanas'} contado desde la cotización, siempre que el Cliente entregue el anticipo y los insumos iniciales oportunamente. El plazo se ajustará de común acuerdo si el alcance cambia o si el Cliente retrasa la entrega de insumos, conforme a las cláusulas Quinta y Sexta.</p>
 
 <h2>Cuarta. Propiedad de los entregables</h2>
 <p>${esc(q.terms.propiedad)} El Prestador conserva el derecho de mencionar el proyecto en su portafolio, salvo que el Cliente indique lo contrario por escrito. Las herramientas, librerías y componentes de terceros conservan sus propias licencias.</p>

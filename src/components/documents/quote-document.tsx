@@ -1,5 +1,5 @@
 import { EMISOR } from '@/config/emisor'
-import { fechaLarga, importesHitos, mxn, textoFormaDePago, totales, type QuoteLike } from '@/lib/cotizaciones'
+import { fechaLarga, importesHitos, mxn, plazoEntrega, textoFormaDePago, totales, type QuoteLike } from '@/lib/cotizaciones'
 import { FIRMA_PRESTADOR, SignatureBlock } from './signature-block'
 
 /**
@@ -7,8 +7,9 @@ import { FIRMA_PRESTADOR, SignatureBlock } from './signature-block'
  * publica de aceptacion y al imprimir a PDF. Sin interactividad; el boton de aceptar
  * vive fuera de este componente.
  */
-export function QuoteDocument({ quote }: { quote: QuoteLike }) {
+export function QuoteDocument({ quote }: { quote: QuoteLike & { created_at?: string | null } }) {
   const t = totales(quote)
+  const plazo = plazoEntrega(quote)
   const hitos = importesHitos(t.total, quote.payment.hitos)
   const formaPago = textoFormaDePago(quote)
   return (
@@ -74,7 +75,7 @@ export function QuoteDocument({ quote }: { quote: QuoteLike }) {
         <div>
           <p className="text-xs uppercase tracking-widest text-neutral-500 mb-2">Condiciones</p>
           <ul className="space-y-1 text-neutral-700">
-            <li>Entrega estimada: {quote.terms.entrega_semanas} semanas desde el anticipo y los insumos iniciales.</li>
+            <li>Entrega: a más tardar el {plazo.texto}.</li>
             <li>Garantía de {quote.terms.garantia_dias} días naturales tras la entrega.</li>
             <li>{quote.terms.soporte}</li>
             <li>{quote.terms.propiedad}</li>
