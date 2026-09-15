@@ -235,6 +235,7 @@ export function Prospeccion({ lang, gmail, gmailConfigurado, campana, filas, sin
                         <p className="min-w-0 flex-1 text-sm">{abierto.subject}</p>
                       )}
                       <Button size="sm" variant="outline" onClick={() => copiar(esBorrador ? subject : abierto.subject, es ? 'Asunto copiado' : 'Subject copied')}><Copy className="mr-1 h-3.5 w-3.5" />{es ? 'Copiar asunto' : 'Copy subject'}</Button>
+                      <Button size="sm" variant="outline" onClick={() => copiarConFormato(htmlPreview, abierto.text)}><Copy className="mr-1 h-3.5 w-3.5" />{es ? 'Copiar para pegar en Gmail' : 'Copy for Gmail'}</Button>
                     </div>
 
                     {/* Fila 2: cuerpo y vista previa a la par */}
@@ -254,10 +255,7 @@ export function Prospeccion({ lang, gmail, gmailConfigurado, campana, filas, sin
                         {!esBorrador && <p className="text-xs text-muted-foreground">{es ? 'Enviado: ' : 'Sent: '}{abierto.sent_at ? new Date(abierto.sent_at).toLocaleString(es ? 'es-MX' : 'en-US') : '—'} ({abierto.sent_via})</p>}
                       </div>
                       <div className="flex min-w-0 flex-col gap-2">
-                        <div className="flex flex-wrap items-center gap-1">
-                          <p className="mr-auto text-xs font-medium text-muted-foreground">{es ? 'Vista previa' : 'Preview'}</p>
-                          <Button size="sm" variant="outline" onClick={() => copiarConFormato(htmlPreview, abierto.text)}><Copy className="mr-1 h-3.5 w-3.5" />{es ? 'Copiar para pegar en Gmail' : 'Copy for Gmail'}</Button>
-                        </div>
+                        <label className="text-xs font-medium text-muted-foreground">{es ? 'Vista previa' : 'Preview'}</label>
                         <iframe title="preview" className="h-[60vh] w-full min-w-0 rounded-md border bg-white" sandbox="" srcDoc={htmlPreview} />
                       </div>
                     </div>
