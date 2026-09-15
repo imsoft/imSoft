@@ -12,7 +12,8 @@ interface WhatsAppButtonProps {
 export function WhatsAppButton({ lang }: WhatsAppButtonProps) {
   const pathname = usePathname()
 
-  if (pathname.includes('/dashboard')) return null
+  // Ni en el panel ni en los documentos que ve un cliente (cotizacion / contrato).
+  if (/\/(dashboard|cotizacion|contrato)\//.test(pathname) || pathname.includes('/dashboard')) return null
 
   // El mensaje lleva el contexto de la pagina: asi cada conversacion llega sabiendo
   // de donde venia el interes, sin depender de analitica.

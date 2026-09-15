@@ -1,5 +1,6 @@
 import { EMISOR } from '@/config/emisor'
 import { fechaLarga, importesHitos, mxn, textoFormaDePago, totales, type QuoteLike } from '@/lib/cotizaciones'
+import { FIRMA_PRESTADOR, SignatureBlock } from './signature-block'
 
 /**
  * La cotizacion tal como la ve el cliente: en el panel (vista previa), en la pagina
@@ -88,11 +89,20 @@ export function QuoteDocument({ quote }: { quote: QuoteLike }) {
         <section className="py-4 border-t border-neutral-200 text-sm text-neutral-700 whitespace-pre-line">{quote.notes}</section>
       )}
 
-      {quote.accepted_at && (
-        <footer className="mt-6 rounded-lg bg-emerald-50 border border-emerald-200 p-4 text-sm text-emerald-900 print:bg-white">
-          Aceptada por <strong>{quote.accepted_name}</strong> el {new Date(quote.accepted_at).toLocaleString('es-MX', { timeZone: 'America/Mexico_City' })}.
-        </footer>
-      )}
+      <SignatureBlock
+        leyenda="Aceptación de la cotización. Al firmar, o al aceptar en línea, el cliente acepta el alcance, el precio, la forma de pago y las condiciones descritas."
+        firmas={[
+          FIRMA_PRESTADOR,
+          {
+            titulo: 'El Cliente',
+            nombre: quote.client_name,
+            detalle: quote.client_company ?? null,
+            aceptado: quote.accepted_at
+              ? `Aceptada en línea por ${quote.accepted_name} el ${new Date(quote.accepted_at).toLocaleString('es-MX', { timeZone: 'America/Mexico_City' })}`
+              : null,
+          },
+        ]}
+      />
     </article>
   )
 }

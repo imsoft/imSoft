@@ -60,7 +60,7 @@ export function ContractEditor({ lang, quote, contract, publicUrl }: { lang: str
       {editando ? (
         <Textarea className="border-2! border-border! font-mono text-xs min-h-[480px]" value={html} onChange={(e) => setHtml(e.target.value)} />
       ) : (
-        <ContractDocument contract={{ ...contract, body_html: html }} clientName={quote.client_name} />
+        <ContractDocument contract={{ ...contract, body_html: html }} clientName={quote.client_name} clientCompany={quote.client_company} />
       )}
     </div>
   )

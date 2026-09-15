@@ -3,6 +3,7 @@
 import { useCookieStore } from '@/stores/cookie-store';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 interface CookieBannerProps {
   lang: 'es' | 'en';
@@ -18,7 +19,9 @@ interface CookieBannerProps {
  */
 export function CookieBanner({ lang, dict }: CookieBannerProps) {
   const { hasConsent, acceptAll, openPreferences } = useCookieStore();
-  if (hasConsent) return null;
+  const pathname = usePathname();
+  // En una cotizacion o contrato el cliente no tiene que lidiar con cookies.
+  if (hasConsent || /\/(cotizacion|contrato)\//.test(pathname)) return null;
 
   const b = dict.cookies?.banner ?? {};
   const isEs = lang === 'es';

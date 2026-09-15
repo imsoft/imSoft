@@ -13,15 +13,15 @@ export const metadata: Metadata = { title: 'Contrato · imSoft', robots: { index
 export default async function ContratoPublico({ params }: { params: Promise<{ lang: string; token: string }> }) {
   const { lang, token } = await params
   if (!hasLocale(lang)) notFound()
-  const { data } = await serviceClient().from('contracts').select('*, quotes(client_name)').eq('token', token).maybeSingle()
+  const { data } = await serviceClient().from('contracts').select('*, quotes(client_name, client_company)').eq('token', token).maybeSingle()
   if (!data) notFound()
-  const c = data as Contract & { quotes: { client_name: string } | null }
+  const c = data as Contract & { quotes: { client_name: string; client_company?: string | null } | null }
   const motivo = c.status === 'signed' ? null : c.status === 'sent' ? null : (lang === 'en' ? 'This contract has not been sent yet.' : 'Este contrato todavía no se ha enviado.')
   return (
     <main className="min-h-screen bg-neutral-100 px-4 py-8 print:bg-white print:p-0">
       <div className="mx-auto max-w-3xl space-y-6">
         <div className="no-print flex justify-end"><PrintButton lang={lang} /></div>
-        <ContractDocument contract={c} clientName={c.quotes?.client_name ?? ''} />
+        <ContractDocument contract={c} clientName={c.quotes?.client_name ?? ''} clientCompany={c.quotes?.client_company} />
         {c.status === 'signed' ? null : motivo ? (
           <p className="no-print mx-auto max-w-3xl rounded-xl border bg-white p-4 text-sm text-neutral-700">{motivo}</p>
         ) : (

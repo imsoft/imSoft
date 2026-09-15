@@ -292,6 +292,8 @@
 @media print {
   body { background: white !important; }
   .no-print { display: none !important; }
+  /* Aviso de cookies, WhatsApp flotante y cualquier otro elemento fijo no van al PDF. */
+  .fixed { display: none !important; }
   .doc { color: black; }
   @page { margin: 18mm; }
 }
