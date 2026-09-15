@@ -15,6 +15,8 @@ import { Trash2, Plus } from 'lucide-react'
 import { CONDICIONES_DEFAULT } from '@/config/emisor'
 import { featuresValidas, fechaVigencia, generarToken, hitosValidos, itemsDesdePrecio, mxn, plazoEntrega, precioProyecto, siguienteFolio, totales, type Hito, type QuoteTerms } from '@/lib/cotizaciones'
 import type { Quote } from '@/types/quotes'
+import type { AssistOutput } from '@/lib/quote-assist'
+import { Sparkles, Loader2 } from 'lucide-react'
 
 const campo = 'border-2! border-border!'
 const sw = 'border-2! border-border! data-[state=unchecked]:bg-muted!'
@@ -29,6 +31,8 @@ export function QuoteForm({ lang, quote }: { lang: string; quote?: Quote }) {
   const [contactos, setContactos] = useState<ContactoLite[]>([])
   const [servicios, setServicios] = useState<ServicioLite[]>([])
   const [servicioSel, setServicioSel] = useState('')
+  const [asistente, setAsistente] = useState<AssistOutput | null>(null)
+  const [pensando, setPensando] = useState(false)
 
   const [cliente, setCliente] = useState({
     contact_id: quote?.contact_id ?? '',
@@ -71,6 +75,35 @@ export function QuoteForm({ lang, quote }: { lang: string; quote?: Quote }) {
   const t = useMemo(() => totales({ items: itemsDesdePrecio(title, precio), apply_iva: applyIva }), [title, precio, applyIva])
   const errorHitos = hitosValidos(hitos)
   const errorFeatures = featuresValidas(features)
+
+  async function pedirRecomendaciones() {
+    if (!title.trim()) return toast.error(es ? 'Pon primero el nombre del proyecto.' : 'Enter the project title first.')
+    setPensando(true)
+    try {
+      const sv = servicios.find((x) => x.slug === servicioSel)
+      const r = await fetch('/api/quotes/assist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, intro, features: features.filter((f) => f.trim()), precio, clientCompany: cliente.client_company, servicio: sv?.title_es ?? null }),
+      })
+      const j = await r.json().catch(() => ({}))
+      if (!r.ok) throw new Error(j.error || r.statusText)
+      setAsistente(j as AssistOutput)
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : String(err))
+    } finally {
+      setPensando(false)
+    }
+  }
+
+  function agregarCaracteristica(texto: string) {
+    setFeatures((arr) => {
+      const limpias = arr.map((f) => f.trim()).filter(Boolean)
+      if (limpias.some((f) => f.toLowerCase() === texto.toLowerCase())) return arr
+      return [...limpias, texto]
+    })
+    setAsistente((a) => (a ? { ...a, caracteristicas: a.caracteristicas.filter((c) => c.texto !== texto) } : a))
+  }
 
   function precargarServicio(slug: string) {
     setServicioSel(slug)
@@ -284,6 +317,47 @@ export function QuoteForm({ lang, quote }: { lang: string; quote?: Quote }) {
             {guardando ? (es ? 'Guardando…' : 'Saving…') : quote ? (es ? 'Guardar cambios' : 'Save changes') : (es ? 'Crear cotización' : 'Create quote')}
           </Button>
           <p className="text-xs text-muted-foreground">{es ? 'Se crea como borrador. Desde el detalle la envías y generas el contrato.' : 'Created as a draft. Send it and generate the contract from the detail page.'}</p>
+
+          <div className="border-t pt-4 space-y-3">
+            <Button type="button" variant="outline" className="w-full" onClick={pedirRecomendaciones} disabled={pensando}>
+              {pensando ? <Loader2 className="size-4 mr-1 animate-spin" /> : <Sparkles className="size-4 mr-1" />}
+              {pensando ? (es ? 'Revisando el proyecto…' : 'Reviewing the project…') : (es ? 'Pedir recomendaciones a la IA' : 'Ask AI for recommendations')}
+            </Button>
+            <p className="text-xs text-muted-foreground">{es ? 'Revisa precio, características que suelen faltar, preguntas para el cliente y riesgos. Es una segunda opinión; tú decides.' : 'Reviews price, commonly missing features, questions for the client and risks. A second opinion; you decide.'}</p>
+            {asistente && (
+              <div className="space-y-4 text-sm">
+                <p>{asistente.resumen}</p>
+                <div className="rounded-lg border bg-muted/40 p-3 space-y-2">
+                  <p className="font-semibold">{es ? 'Precio sugerido' : 'Suggested price'}: <span className="font-mono tabular-nums">{mxn(asistente.precio.min)} – {mxn(asistente.precio.max)}</span></p>
+                  <p className="text-muted-foreground">{asistente.precio.comentario}</p>
+                  <div className="flex flex-wrap gap-2">
+                    {[asistente.precio.min, Math.round((asistente.precio.min + asistente.precio.max) / 2 / 100) * 100, asistente.precio.max].map((v, i) => (
+                      <Button key={i} type="button" size="sm" variant={precio === v ? 'default' : 'outline'} onClick={() => setPrecio(v)}>{es ? ['Usar mínimo', 'Usar medio', 'Usar máximo'][i] : ['Use min', 'Use mid', 'Use max'][i]}</Button>
+                    ))}
+                  </div>
+                </div>
+                {asistente.caracteristicas.length > 0 && (
+                  <div className="space-y-2">
+                    <p className="font-semibold">{es ? 'Características que suelen faltar' : 'Features often missing'}</p>
+                    <ul className="space-y-2">
+                      {asistente.caracteristicas.map((c) => (
+                        <li key={c.texto} className="flex items-start justify-between gap-2 rounded-lg border p-2">
+                          <div><p>{c.texto}</p><p className="text-xs text-muted-foreground">{c.motivo}</p></div>
+                          <Button type="button" size="sm" variant="outline" onClick={() => agregarCaracteristica(c.texto)}><Plus className="size-4" /></Button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {asistente.preguntas.length > 0 && (
+                  <div><p className="font-semibold mb-1">{es ? 'Pregúntale al cliente' : 'Ask the client'}</p><ul className="list-disc pl-5 space-y-1 text-muted-foreground">{asistente.preguntas.map((q) => <li key={q}>{q}</li>)}</ul></div>
+                )}
+                {asistente.riesgos.length > 0 && (
+                  <div><p className="font-semibold mb-1">{es ? 'Deja por escrito' : 'Put in writing'}</p><ul className="list-disc pl-5 space-y-1 text-muted-foreground">{asistente.riesgos.map((q) => <li key={q}>{q}</li>)}</ul></div>
+                )}
+              </div>
+            )}
+          </div>
         </CardContent>
       </Card>
     </div>
