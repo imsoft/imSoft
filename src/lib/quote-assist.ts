@@ -14,11 +14,15 @@ export interface AssistInput {
   precio: number;
   clientCompany?: string | null;
   servicio?: string | null;
+  /** Ya existe como contacto en el CRM (cliente o prospecto trabajado). */
+  clienteRecurrente?: boolean;
+  descuentoActual?: { motivo: string; tipo: 'pct' | 'monto'; valor: number } | null;
 }
 
 export interface AssistOutput {
   resumen: string;
   precio: { min: number; max: number; comentario: string };
+  descuento: { conviene: boolean; pct: number; motivo: string; comentario: string } | null;
   caracteristicas: Array<{ texto: string; motivo: string }>;
   preguntas: string[];
   riesgos: string[];
@@ -46,6 +50,8 @@ export function validarInput(body: unknown): { ok: true; input: AssistInput } | 
       precio: Number(b.precio) || 0,
       clientCompany: typeof b.clientCompany === 'string' ? b.clientCompany.trim() || null : null,
       servicio: typeof b.servicio === 'string' ? b.servicio.trim() || null : null,
+      clienteRecurrente: Boolean(b.clienteRecurrente),
+      descuentoActual: b.descuentoActual && typeof b.descuentoActual === 'object' ? (b.descuentoActual as AssistInput['descuentoActual']) : null,
     },
   };
 }
@@ -57,6 +63,8 @@ export function buildPrompt(i: AssistInput): string {
 ## Proyecto
 Título: ${i.title}
 ${i.clientCompany ? `Cliente: ${i.clientCompany}\n` : ''}${i.servicio ? `Servicio base: ${i.servicio}\n` : ''}${i.intro ? `Resumen: ${i.intro}\n` : ''}Precio tentativo (sin IVA): ${i.precio > 0 ? `$${i.precio.toLocaleString('es-MX')} MXN` : 'sin definir'}
+Cliente recurrente o ya en el CRM: ${i.clienteRecurrente ? 'sí' : 'no'}
+Descuento ya capturado: ${i.descuentoActual ? `${i.descuentoActual.tipo === 'pct' ? `${i.descuentoActual.valor} %` : `$${i.descuentoActual.valor}`} por "${i.descuentoActual.motivo}"` : 'ninguno'}
 
 ## Características ya incluidas (${i.features.length})
 ${i.features.length ? i.features.map((f, n) => `${n + 1}. ${f}`).join('\n') : '(ninguna todavía)'}
@@ -69,6 +77,7 @@ ${ref}
 2. Características que suelen faltar en un proyecto así y que el cliente va a dar por hechas (por ejemplo: SEO técnico, formulario con notificaciones, panel de administración, respaldos, capacitación, analítica). Solo las que apliquen; máximo 8; sin repetir las ya incluidas.
 3. Preguntas concretas que conviene hacerle al cliente antes de cerrar el precio (máximo 6).
 4. Riesgos o supuestos que conviene dejar por escrito en la cotización (máximo 5).
+5. Si conviene ofrecer un descuento y de cuánto (porcentaje entero, máximo 20 %), con un motivo corto que el cliente pueda leer ("Cliente recurrente", "Promoción de lanzamiento", "Referido"). Regla: el descuento solo tiene sentido si ayuda a cerrar (cliente recurrente, referido, temporada, proyecto que abre un nicho); si el precio ya va bajo o el cliente es nuevo sin razón especial, di que no conviene. Recuerda que imSoft paga 3.6 % + $3 por cobro con tarjeta y ISR de RESICO.
 
 Sé concreto y breve. No inventes datos del cliente. Todo en español de México.`;
 }
@@ -93,6 +102,17 @@ export const ASSIST_TOOL: Anthropic.Tool = {
         },
         required: ['min', 'max', 'comentario'],
       },
+      descuento: {
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+          conviene: { type: 'boolean' },
+          pct: { type: 'number', description: 'Porcentaje entero 0-20; 0 si no conviene' },
+          motivo: { type: 'string', description: 'Motivo corto visible para el cliente; vacío si no conviene' },
+          comentario: { type: 'string', description: 'Una o dos frases de por qué' },
+        },
+        required: ['conviene', 'pct', 'motivo', 'comentario'],
+      },
       caracteristicas: {
         type: 'array',
         items: {
@@ -105,7 +125,7 @@ export const ASSIST_TOOL: Anthropic.Tool = {
       preguntas: { type: 'array', items: { type: 'string' } },
       riesgos: { type: 'array', items: { type: 'string' } },
     },
-    required: ['resumen', 'precio', 'caracteristicas', 'preguntas', 'riesgos'],
+    required: ['resumen', 'precio', 'descuento', 'caracteristicas', 'preguntas', 'riesgos'],
   },
 };
 
@@ -121,9 +141,13 @@ export function normalizarOutput(raw: unknown, yaIncluidas: string[] = []): Assi
     .map((c) => ({ texto: String((c as Record<string, unknown>)?.texto ?? '').trim(), motivo: String((c as Record<string, unknown>)?.motivo ?? '').trim() }))
     .filter((c) => c.texto && !incluidas.has(c.texto.toLowerCase()))
     .slice(0, 8);
+  const d = r.descuento && typeof r.descuento === 'object' ? (r.descuento as Record<string, unknown>) : null;
+  const pct = Math.min(20, Math.max(0, Math.round(Number(d?.pct) || 0)));
+  const descuento = d ? { conviene: Boolean(d.conviene) && pct > 0, pct: Boolean(d.conviene) ? pct : 0, motivo: String(d.motivo ?? '').trim(), comentario: String(d.comentario ?? '').trim() } : null;
   return {
     resumen: String(r.resumen ?? '').trim(),
     precio: { min, max, comentario: String(p.comentario ?? '').trim() },
+    descuento,
     caracteristicas,
     preguntas: lista(r.preguntas, 6),
     riesgos: lista(r.riesgos, 5),

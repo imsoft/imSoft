@@ -5,7 +5,7 @@ describe('asistente de cotizacion', () => {
   it('valida y limpia la entrada', () => {
     expect(validarInput({})).toEqual({ ok: false, error: 'Pon primero el nombre del proyecto.' });
     const r = validarInput({ title: ' Web ', features: [' a ', '', 3, 'b'], precio: '18000', intro: '', clientCompany: 'ACME' });
-    expect(r.ok && r.input).toEqual({ title: 'Web', intro: null, features: ['a', 'b'], precio: 18000, clientCompany: 'ACME', servicio: null });
+    expect(r.ok && r.input).toEqual({ title: 'Web', intro: null, features: ['a', 'b'], precio: 18000, clientCompany: 'ACME', servicio: null, clienteRecurrente: false, descuentoActual: null });
   });
 
   it('el prompt lleva el proyecto, las caracteristicas numeradas y la referencia de precios', () => {
@@ -21,7 +21,7 @@ describe('asistente de cotizacion', () => {
     expect(ASSIST_TOOL.strict).toBe(true);
     const schema = ASSIST_TOOL.input_schema as { additionalProperties?: boolean; required?: string[] };
     expect(schema.additionalProperties).toBe(false);
-    expect(schema.required).toEqual(['resumen', 'precio', 'caracteristicas', 'preguntas', 'riesgos']);
+    expect(schema.required).toEqual(['resumen', 'precio', 'descuento', 'caracteristicas', 'preguntas', 'riesgos']);
   });
 
   it('normaliza la salida: centenas, listas recortadas y sin repetir lo incluido', () => {
@@ -38,5 +38,13 @@ describe('asistente de cotizacion', () => {
     expect(o.preguntas).toEqual(['¿Tienen dominio?']);
     expect(o.riesgos).toHaveLength(5);
     expect(normalizarOutput(null).precio).toEqual({ min: 0, max: 0, comentario: '' });
+  });
+
+  it('el descuento sugerido se limita a 20 % y se apaga si no conviene', () => {
+    const si = normalizarOutput({ resumen: 'x', precio: { min: 1, max: 2, comentario: 'c' }, descuento: { conviene: true, pct: 35, motivo: 'Cliente recurrente', comentario: 'ok' }, caracteristicas: [], preguntas: [], riesgos: [] });
+    expect(si.descuento).toEqual({ conviene: true, pct: 20, motivo: 'Cliente recurrente', comentario: 'ok' });
+    const no = normalizarOutput({ resumen: 'x', precio: { min: 1, max: 2, comentario: 'c' }, descuento: { conviene: false, pct: 10, motivo: '', comentario: 'va bajo' }, caracteristicas: [], preguntas: [], riesgos: [] });
+    expect(no.descuento).toEqual({ conviene: false, pct: 0, motivo: '', comentario: 'va bajo' });
+    expect(buildPrompt({ title: 'Web', features: [], precio: 0, clienteRecurrente: true, descuentoActual: { motivo: 'Referido', tipo: 'pct', valor: 5 } })).toContain('5 % por "Referido"');
   });
 });

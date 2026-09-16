@@ -49,9 +49,18 @@ export function QuoteDocument({ quote }: { quote: QuoteLike & { created_at?: str
 
       <section className="py-6">
         <div className="ml-auto max-w-xs text-sm space-y-1">
-          <div className="flex justify-between"><span className="text-neutral-600">Precio del proyecto</span><span className="tabular-nums">{mxn(t.subtotal, quote.currency)}</span></div>
+          {t.descuento > 0 ? (
+            <>
+              <div className="flex justify-between"><span className="text-neutral-600">Precio de lista</span><span className="tabular-nums line-through text-neutral-500">{mxn(t.lista, quote.currency)}</span></div>
+              <div className="flex justify-between gap-3 text-emerald-700"><span>Descuento · {quote.discount?.motivo}{quote.discount?.tipo === 'pct' ? ` (−${quote.discount.valor} %)` : ''}</span><span className="tabular-nums shrink-0">−{mxn(t.descuento, quote.currency)}</span></div>
+              <div className="flex justify-between"><span className="text-neutral-600">Precio con descuento</span><span className="tabular-nums">{mxn(t.subtotal, quote.currency)}</span></div>
+            </>
+          ) : (
+            <div className="flex justify-between"><span className="text-neutral-600">Precio del proyecto</span><span className="tabular-nums">{mxn(t.subtotal, quote.currency)}</span></div>
+          )}
           {quote.apply_iva && <div className="flex justify-between"><span className="text-neutral-600">IVA 16 %</span><span className="tabular-nums">{mxn(t.iva, quote.currency)}</span></div>}
           <div className="flex justify-between text-lg font-bold border-t border-neutral-200 pt-2"><span>Total</span><span className="tabular-nums">{mxn(t.total, quote.currency)}</span></div>
+          {t.descuento > 0 && <p className="text-xs text-neutral-500 pt-1">Descuento válido si la cotización se acepta a más tardar el {fechaLarga(quote.valid_until)}.</p>}
         </div>
       </section>
 

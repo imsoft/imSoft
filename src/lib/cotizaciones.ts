@@ -34,6 +34,26 @@ export interface QuoteTerms {
 }
 export type QuoteStatus = 'draft' | 'sent' | 'accepted' | 'rejected' | 'expired';
 
+/** Descuento o promocion de la cotizacion. Siempre con motivo: el cliente lo ve. */
+export interface QuoteDiscount {
+  /** Texto que ve el cliente, p. ej. "Cliente desde 2023". */
+  motivo: string;
+  tipo: 'pct' | 'monto';
+  /** Porcentaje (0-100) o monto en la moneda de la cotizacion, segun `tipo`. */
+  valor: number;
+}
+
+/** Promociones con nombre, para no inventar el texto cada vez. */
+export const PROMOCIONES: Array<{ clave: string; motivo: string; tipo: QuoteDiscount['tipo']; valor: number }> = [
+  { clave: 'primeros', motivo: 'Promoción de lanzamiento: primeros clientes de imSoft', tipo: 'pct', valor: 10 },
+  { clave: 'recurrente', motivo: 'Cliente recurrente de imSoft', tipo: 'pct', valor: 10 },
+  { clave: 'referido', motivo: 'Cliente referido', tipo: 'pct', valor: 5 },
+  { clave: 'temporada', motivo: 'Promoción de temporada', tipo: 'pct', valor: 10 },
+];
+
+/** Arriba de este porcentaje el margen (Stripe + ISR) se adelgaza mas de lo que parece. */
+export const DESCUENTO_MAXIMO_RECOMENDADO_PCT = 20;
+
 export interface QuoteLike {
   folio: string;
   status: QuoteStatus;
@@ -51,6 +71,8 @@ export interface QuoteLike {
   features?: string[] | null;
   currency: string;
   apply_iva: boolean;
+  /** Descuento opcional; se aplica al precio de lista antes del IVA. */
+  discount?: QuoteDiscount | null;
   payment: QuotePayment;
   terms: QuoteTerms;
   notes?: string | null;
@@ -105,10 +127,39 @@ export function subtotal(items: QuoteItem[]): number {
   return round2(items.reduce((s, i) => s + (Number(i.cantidad) || 0) * (Number(i.precio) || 0), 0));
 }
 
-export function totales(q: Pick<QuoteLike, 'items' | 'apply_iva'>) {
-  const sub = subtotal(q.items);
+/** Importe del descuento sobre el precio de lista (nunca mayor que el precio). */
+export function importeDescuento(lista: number, d?: QuoteDiscount | null): number {
+  if (!d || !(d.valor > 0)) return 0;
+  const bruto = d.tipo === 'pct' ? (lista * d.valor) / 100 : d.valor;
+  return round2(Math.min(lista, Math.max(0, bruto)));
+}
+
+/** Porcentaje efectivo del descuento, para avisos. */
+export function porcentajeDescuento(q: Pick<QuoteLike, 'items' | 'discount'>): number {
+  const lista = subtotal(q.items);
+  if (!(lista > 0)) return 0;
+  return round2((importeDescuento(lista, q.discount) / lista) * 100);
+}
+
+/** Descuento valido: con motivo y con valor positivo dentro de rango. */
+export function descuentoValido(d: QuoteDiscount | null | undefined): string | null {
+  if (!d) return null;
+  if (!d.motivo?.trim()) return 'El descuento necesita un motivo; el cliente lo va a ver.';
+  if (!(d.valor > 0)) return 'El descuento debe ser mayor que cero.';
+  if (d.tipo === 'pct' && d.valor >= 100) return 'El descuento no puede ser del 100 %.';
+  return null;
+}
+
+/**
+ * Totales: `lista` es el precio sin descuento, `subtotal` el precio ya con descuento
+ * (base del IVA y de los hitos), `iva` y `total`.
+ */
+export function totales(q: Pick<QuoteLike, 'items' | 'apply_iva'> & { discount?: QuoteDiscount | null }) {
+  const lista = subtotal(q.items);
+  const descuento = importeDescuento(lista, q.discount);
+  const sub = round2(lista - descuento);
   const iva = q.apply_iva ? round2(sub * IVA) : 0;
-  return { subtotal: sub, iva, total: round2(sub + iva) };
+  return { lista, descuento, subtotal: sub, iva, total: round2(sub + iva) };
 }
 
 /** Importe de cada hito sobre el total con IVA; el ultimo absorbe el redondeo. */
@@ -178,7 +229,7 @@ export function fechaLarga(iso: string): string {
 }
 
 /** Texto de forma de pago para cotizacion y contrato. */
-export function textoFormaDePago(q: Pick<QuoteLike, 'items' | 'apply_iva' | 'payment' | 'currency'>): string[] {
+export function textoFormaDePago(q: Pick<QuoteLike, 'items' | 'apply_iva' | 'payment' | 'currency' | 'discount'>): string[] {
   const { total } = totales(q);
   const lineas = importesHitos(total, q.payment.hitos).map((h) => `${h.label}: ${h.pct}% (${mxn(h.importe, q.currency)})`);
   if (q.payment.msi && q.currency === 'MXN' && total >= MSI_MINIMO_MXN) {
@@ -227,7 +278,8 @@ export function renderContrato(q: QuoteLike & { created_at?: string | null }, fo
 ${q.intro ? `<p>${esc(q.intro)}</p>` : ''}
 
 <h2>Segunda. Precio y forma de pago</h2>
-<p>El precio total es de <strong>${mxn(t.total, q.currency)}</strong> (${mxn(t.subtotal, q.currency)}${q.apply_iva ? ` más ${mxn(t.iva, q.currency)} de IVA` : ', sin IVA'}), pagadero así:</p>
+<p>El precio total es de <strong>${mxn(t.total, q.currency)}</strong> (${t.descuento > 0 ? `precio de lista de ${mxn(t.lista, q.currency)} menos un descuento de ${mxn(t.descuento, q.currency)} por concepto de "${esc(q.discount?.motivo ?? '')}", es decir, ${mxn(t.subtotal, q.currency)}` : mxn(t.subtotal, q.currency)}${q.apply_iva ? ` más ${mxn(t.iva, q.currency)} de IVA` : ', sin IVA'}), pagadero así:</p>${t.descuento > 0 ? `
+<p>El descuento aplica únicamente a este contrato y no constituye un precio de referencia para trabajos futuros.</p>` : ''}
 <ul>${pagos}</ul>
 <p>Los pagos se realizan por transferencia bancaria o mediante enlace de pago con tarjeta${q.payment.msi ? ', incluidos meses sin intereses cuando el banco emisor lo permita' : ''}. El Prestador emite CFDI por cada pago recibido; los asuntos de facturación se atienden en ${esc(EMISOR.emailFacturacion)}. Ningún entregable se pone en producción ni se transfiere hasta recibir el pago del hito correspondiente.</p>
 

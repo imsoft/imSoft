@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
-  estaVencida, featuresValidas, fechaVigencia, hitosValidos, importesHitos, itemsDesdePrecio, itemsValidos, motivoNoAceptable,
-  plazoEntrega, precioProyecto, renderContrato, siguienteFolio, textoFormaDePago, totales, type QuoteLike,
+  PROMOCIONES, descuentoValido, estaVencida, featuresValidas, fechaVigencia, hitosValidos, importesHitos, itemsDesdePrecio, itemsValidos, motivoNoAceptable,
+  plazoEntrega, porcentajeDescuento, precioProyecto, renderContrato, siguienteFolio, textoFormaDePago, totales, type QuoteLike,
 } from './cotizaciones';
 import { CONDICIONES_DEFAULT } from '@/config/emisor';
 
@@ -18,8 +18,34 @@ const q: QuoteLike = {
 
 describe('cotizaciones', () => {
   it('calcula subtotal, IVA y total', () => {
-    expect(totales(q)).toEqual({ subtotal: 18000, iva: 2880, total: 20880 });
+    expect(totales(q)).toEqual({ lista: 18000, descuento: 0, subtotal: 18000, iva: 2880, total: 20880 });
     expect(totales({ ...q, apply_iva: false }).total).toBe(18000);
+  });
+
+  it('el descuento baja el precio antes del IVA y se reparte en los hitos', () => {
+    const conPct = { ...q, discount: { motivo: 'Cliente desde 2023', tipo: 'pct' as const, valor: 10 } };
+    expect(totales(conPct)).toEqual({ lista: 18000, descuento: 1800, subtotal: 16200, iva: 2592, total: 18792 });
+    expect(porcentajeDescuento(conPct)).toBe(10);
+    const conMonto = { ...q, discount: { motivo: 'Promoción', tipo: 'monto' as const, valor: 3000 } };
+    expect(totales(conMonto).subtotal).toBe(15000);
+    expect(porcentajeDescuento(conMonto)).toBeCloseTo(16.67, 2);
+    // Nunca mas que el precio, nunca negativo
+    expect(totales({ ...q, discount: { motivo: 'x', tipo: 'monto', valor: 99999 } }).subtotal).toBe(0);
+    expect(totales({ ...q, discount: { motivo: 'x', tipo: 'pct', valor: -5 } }).descuento).toBe(0);
+    // Los hitos se calculan sobre el total con descuento
+    const h = importesHitos(totales(conPct).total, q.payment.hitos);
+    expect(h.reduce((s, x) => s + x.importe, 0)).toBe(18792);
+    // Validacion: motivo obligatorio
+    expect(descuentoValido({ motivo: '', tipo: 'pct', valor: 10 })).toMatch(/motivo/);
+    expect(descuentoValido({ motivo: 'Referido', tipo: 'pct', valor: 100 })).toMatch(/100/);
+    expect(descuentoValido({ motivo: 'Referido', tipo: 'pct', valor: 5 })).toBeNull();
+    expect(descuentoValido(null)).toBeNull();
+    expect(PROMOCIONES.every((p) => p.motivo && p.valor > 0)).toBe(true);
+    // El contrato explica el descuento
+    const html = renderContrato({ ...conPct, status: 'accepted', accepted_at: '2026-09-16T00:00:00Z', accepted_name: 'Ana Pérez' }, 'CON-2026-001');
+    expect(html).toContain('precio de lista de $18,000.00');
+    expect(html).toContain('Cliente desde 2023');
+    expect(html).toContain('$18,792.00');
   });
 
   it('reparte los hitos y el ultimo absorbe el redondeo', () => {

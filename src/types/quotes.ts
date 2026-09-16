@@ -1,4 +1,4 @@
-import type { QuoteItem, QuotePayment, QuoteStatus, QuoteTerms } from '@/lib/cotizaciones'
+import type { QuoteDiscount, QuoteItem, QuotePayment, QuoteStatus, QuoteTerms } from '@/lib/cotizaciones'
 
 export interface Quote {
   id: string
@@ -18,6 +18,7 @@ export interface Quote {
   features?: string[] | null
   currency: string
   apply_iva: boolean
+  discount?: QuoteDiscount | null
   payment: QuotePayment
   terms: QuoteTerms
   notes?: string | null

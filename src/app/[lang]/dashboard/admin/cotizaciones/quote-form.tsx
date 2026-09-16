@@ -13,7 +13,7 @@ import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
 import { Trash2, Plus } from 'lucide-react'
 import { CONDICIONES_DEFAULT } from '@/config/emisor'
-import { featuresValidas, fechaVigencia, generarToken, hitosValidos, itemsDesdePrecio, mxn, plazoEntrega, precioProyecto, siguienteFolio, totales, type Hito, type QuoteTerms } from '@/lib/cotizaciones'
+import { DESCUENTO_MAXIMO_RECOMENDADO_PCT, PROMOCIONES, descuentoValido, featuresValidas, fechaVigencia, generarToken, hitosValidos, itemsDesdePrecio, mxn, plazoEntrega, porcentajeDescuento, precioProyecto, siguienteFolio, totales, type Hito, type QuoteDiscount, type QuoteTerms } from '@/lib/cotizaciones'
 import type { Quote } from '@/types/quotes'
 import type { AssistOutput } from '@/lib/quote-assist'
 import { Sparkles, Loader2 } from 'lucide-react'
@@ -47,6 +47,8 @@ export function QuoteForm({ lang, quote }: { lang: string; quote?: Quote }) {
   const [precio, setPrecio] = useState<number>(quote ? precioProyecto(quote) : 0)
   const [features, setFeatures] = useState<string[]>(quote?.features?.length ? quote.features : [''])
   const [applyIva, setApplyIva] = useState(quote?.apply_iva ?? true)
+  const [conDescuento, setConDescuento] = useState(Boolean(quote?.discount))
+  const [descuento, setDescuento] = useState<QuoteDiscount>(quote?.discount ?? { motivo: '', tipo: 'pct', valor: 10 })
   const [hitos, setHitos] = useState<Hito[]>(quote?.payment?.hitos ?? CONDICIONES_DEFAULT.hitos.map((h) => ({ ...h })))
   const [msi, setMsi] = useState(quote?.payment?.msi ?? CONDICIONES_DEFAULT.msi)
   const [terms, setTerms] = useState<QuoteTerms>(quote?.terms ?? {
@@ -72,7 +74,10 @@ export function QuoteForm({ lang, quote }: { lang: string; quote?: Quote }) {
       .then(({ data }) => setServicios((data ?? []) as ServicioLite[]))
   }, [])
 
-  const t = useMemo(() => totales({ items: itemsDesdePrecio(title, precio), apply_iva: applyIva }), [title, precio, applyIva])
+  const discountActivo = conDescuento ? descuento : null
+  const t = useMemo(() => totales({ items: itemsDesdePrecio(title, precio), apply_iva: applyIva, discount: discountActivo }), [title, precio, applyIva, discountActivo])
+  const pctDescuento = useMemo(() => porcentajeDescuento({ items: itemsDesdePrecio(title, precio), discount: discountActivo }), [title, precio, discountActivo])
+  const errorDescuento = conDescuento ? descuentoValido(descuento) : null
   const errorHitos = hitosValidos(hitos)
   const errorFeatures = featuresValidas(features)
 
@@ -84,7 +89,7 @@ export function QuoteForm({ lang, quote }: { lang: string; quote?: Quote }) {
       const r = await fetch('/api/quotes/assist', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, intro, features: features.filter((f) => f.trim()), precio, clientCompany: cliente.client_company, servicio: sv?.title_es ?? null }),
+        body: JSON.stringify({ title, intro, features: features.filter((f) => f.trim()), precio, clientCompany: cliente.client_company, servicio: sv?.title_es ?? null, clienteRecurrente: Boolean(cliente.contact_id), descuentoActual: conDescuento ? descuento : null }),
       })
       const j = await r.json().catch(() => ({}))
       if (!r.ok) throw new Error(j.error || r.statusText)
@@ -138,6 +143,7 @@ export function QuoteForm({ lang, quote }: { lang: string; quote?: Quote }) {
     if (!(precio > 0)) return toast.error(es ? 'Pon el precio del proyecto.' : 'Enter the project price.')
     if (errorFeatures) return toast.error(errorFeatures)
     if (errorHitos) return toast.error(errorHitos)
+    if (errorDescuento) return toast.error(errorDescuento)
     setGuardando(true)
     const supabase = createClient()
     const datos = {
@@ -154,6 +160,7 @@ export function QuoteForm({ lang, quote }: { lang: string; quote?: Quote }) {
       features: features.map((f) => f.trim()).filter(Boolean),
       currency: 'MXN',
       apply_iva: applyIva,
+      discount: conDescuento ? { motivo: descuento.motivo.trim(), tipo: descuento.tipo, valor: Number(descuento.valor) } : null,
       payment: { hitos: hitos.map((h) => ({ label: h.label.trim(), pct: Number(h.pct) })), msi },
       terms: { ...terms, garantia_dias: Number(terms.garantia_dias), penalizacion_dia: Number(terms.penalizacion_dia), entrega_semanas: plazo.semanas, fecha_limite: terms.fecha_limite || plazo.fechaLimite },
       notes: notes.trim() || null,
@@ -225,6 +232,49 @@ export function QuoteForm({ lang, quote }: { lang: string; quote?: Quote }) {
             <div className="space-y-1.5">
               <Label htmlFor="q-intro">{es ? 'Resumen (opcional)' : 'Summary (optional)'}</Label>
               <Textarea id="q-intro" className={campo} rows={2} value={intro} onChange={(e) => setIntro(e.target.value)} placeholder={es ? 'Qué problema resuelve, en dos frases.' : 'What it solves, in two sentences.'} />
+            </div>
+
+            <div className="space-y-3 rounded-lg border p-3">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <Label htmlFor="q-desc">{es ? 'Descuento o promoción' : 'Discount or promotion'}</Label>
+                  <p className="text-xs text-muted-foreground">{es ? 'Siempre con motivo: el cliente lo ve en la cotización y en el contrato.' : 'Always with a reason: the client sees it on the quote and the contract.'}</p>
+                </div>
+                <Switch id="q-desc" checked={conDescuento} onCheckedChange={setConDescuento} />
+              </div>
+              {conDescuento && (
+                <div className="space-y-3">
+                  <div className="flex flex-wrap gap-2">
+                    {PROMOCIONES.map((p) => (
+                      <Button key={p.clave} type="button" size="sm" variant={descuento.motivo === p.motivo ? 'default' : 'outline'} onClick={() => setDescuento({ motivo: p.motivo, tipo: p.tipo, valor: p.valor })}>{p.motivo.split(':')[0]}</Button>
+                    ))}
+                  </div>
+                  <div className="grid gap-3 sm:grid-cols-[1fr_130px_140px]">
+                    <div className="space-y-1.5">
+                      <Label htmlFor="q-desc-motivo">{es ? 'Motivo (lo ve el cliente)' : 'Reason (client sees it)'}</Label>
+                      <Input id="q-desc-motivo" className={campo} value={descuento.motivo} onChange={(e) => setDescuento((d) => ({ ...d, motivo: e.target.value }))} placeholder={es ? 'Cliente desde 2023' : 'Client since 2023'} />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="q-desc-tipo">{es ? 'Tipo' : 'Type'}</Label>
+                      <select id="q-desc-tipo" className="h-10 w-full rounded-md border-2 border-border bg-background px-3 text-sm" value={descuento.tipo} onChange={(e) => setDescuento((d) => ({ ...d, tipo: e.target.value as QuoteDiscount['tipo'] }))}>
+                        <option value="pct">{es ? 'Porcentaje' : 'Percent'}</option>
+                        <option value="monto">{es ? 'Monto fijo' : 'Fixed amount'}</option>
+                      </select>
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="q-desc-valor">{descuento.tipo === 'pct' ? '%' : 'MXN'}</Label>
+                      <NumberInput id="q-desc-valor" className={campo} value={descuento.valor} onValueChange={(v) => setDescuento((d) => ({ ...d, valor: v }))} placeholder={descuento.tipo === 'pct' ? '10' : '2000'} />
+                    </div>
+                  </div>
+                  {errorDescuento && <p className="text-xs text-destructive">{errorDescuento}</p>}
+                  {!errorDescuento && precio > 0 && (
+                    <p className={`text-xs ${pctDescuento > DESCUENTO_MAXIMO_RECOMENDADO_PCT ? 'text-amber-600 font-medium' : 'text-muted-foreground'}`}>
+                      {es ? `Descuento de ${mxn(t.descuento)} (${pctDescuento} %). Precio con descuento: ${mxn(t.subtotal)} sin IVA.` : `Discount of ${mxn(t.descuento)} (${pctDescuento}%). Discounted price: ${mxn(t.subtotal)} before VAT.`}
+                      {pctDescuento > DESCUENTO_MAXIMO_RECOMENDADO_PCT && (es ? ` Pasa del ${DESCUENTO_MAXIMO_RECOMENDADO_PCT} %: con la comisión de Stripe y el ISR, el margen queda más chico de lo que parece. Revísalo en el simulador.` : ` Above ${DESCUENTO_MAXIMO_RECOMENDADO_PCT}%: after Stripe fees and income tax the margin is thinner than it looks.`)}
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
             <div className="space-y-2">
               <Label>{es ? 'Características de la aplicación' : 'Application features'}</Label>
@@ -336,6 +386,15 @@ export function QuoteForm({ lang, quote }: { lang: string; quote?: Quote }) {
                     ))}
                   </div>
                 </div>
+                {asistente.descuento && (
+                  <div className="rounded-lg border p-3 space-y-2">
+                    <p className="font-semibold">{es ? 'Descuento' : 'Discount'}: {asistente.descuento.conviene ? `${asistente.descuento.pct} %` : es ? 'no conviene' : 'not advised'}</p>
+                    <p className="text-muted-foreground">{asistente.descuento.comentario}</p>
+                    {asistente.descuento.conviene && asistente.descuento.pct > 0 && (
+                      <Button type="button" size="sm" variant="outline" onClick={() => { setConDescuento(true); setDescuento({ motivo: asistente.descuento!.motivo, tipo: 'pct', valor: asistente.descuento!.pct }) }}>{es ? 'Aplicar este descuento' : 'Apply this discount'}</Button>
+                    )}
+                  </div>
+                )}
                 {asistente.caracteristicas.length > 0 && (
                   <div className="space-y-2">
                     <p className="font-semibold">{es ? 'Características que suelen faltar' : 'Features often missing'}</p>
