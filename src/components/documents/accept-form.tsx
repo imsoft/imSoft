@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { lanzar } from './confetti'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -23,6 +24,7 @@ export function AcceptForm({ endpoint, tipo, lang }: { endpoint: string; tipo: '
       const j = await r.json().catch(() => ({}))
       if (!r.ok) throw new Error(j.error || (es ? 'No se pudo registrar la aceptación.' : 'Could not record acceptance.'))
       setHecho(true)
+      import('canvas-confetti').then((m) => lanzar(m.default)).catch(() => {})
       router.refresh()
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err))
