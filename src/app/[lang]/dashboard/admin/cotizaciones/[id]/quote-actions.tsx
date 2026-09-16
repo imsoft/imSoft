@@ -8,6 +8,7 @@ import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Copy, ExternalLink, FileSignature, FolderPlus, Mail, Pencil, Printer, Send } from 'lucide-react'
 import type { Contract, Quote } from '@/types/quotes'
+import { DeleteQuoteButton } from '@/components/documents/delete-quote-button'
 
 export function QuoteActions({ lang, quote, contract, publicUrl }: { lang: string; quote: Quote; contract: Contract | null; publicUrl: string }) {
   const es = lang !== 'en'
@@ -77,6 +78,9 @@ export function QuoteActions({ lang, quote, contract, publicUrl }: { lang: strin
         )}
         {quote.project_id && (
           <Button size="sm" variant="outline" asChild><Link href={`/${lang}/dashboard/admin/projects/${quote.project_id}`}>{es ? 'Ver proyecto' : 'View project'}</Link></Button>
+        )}
+        {!quote.project_id && contract?.status !== 'signed' && (
+          <span className="ml-auto"><DeleteQuoteButton id={quote.id} folio={quote.folio} lang={lang} redirectTo={`/${lang}/dashboard/admin/cotizaciones`} /></span>
         )}
       </div>
       {quote.status === 'draft' && <p className="text-xs text-muted-foreground">{es ? 'Mientras sea borrador, el enlace muestra la cotización pero no permite aceptarla.' : 'While it is a draft, the link shows the quote but does not allow acceptance.'}</p>}

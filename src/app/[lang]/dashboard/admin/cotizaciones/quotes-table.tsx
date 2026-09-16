@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { Badge } from '@/components/ui/badge'
 import { estaVencida, mxn, totales } from '@/lib/cotizaciones'
 import type { Quote } from '@/types/quotes'
+import { DeleteQuoteButton } from '@/components/documents/delete-quote-button'
 
 const ESTADOS: Record<string, { es: string; en: string; variant: 'default' | 'secondary' | 'outline' | 'destructive' }> = {
   draft: { es: 'Borrador', en: 'Draft', variant: 'outline' },
@@ -37,6 +38,7 @@ export function QuotesTable({ quotes, lang }: { quotes: Quote[]; lang: string })
             <th className="text-right p-3">Total</th>
             <th className="text-left p-3">{lang === 'en' ? 'Valid until' : 'Vigencia'}</th>
             <th className="text-left p-3">{lang === 'en' ? 'Status' : 'Estado'}</th>
+            <th className="p-3"></th>
           </tr>
         </thead>
         <tbody>
@@ -48,6 +50,7 @@ export function QuotesTable({ quotes, lang }: { quotes: Quote[]; lang: string })
               <td className="p-3 text-right font-mono tabular-nums">{mxn(totales(q).total, q.currency)}</td>
               <td className="p-3">{q.valid_until}</td>
               <td className="p-3"><EstadoBadge quote={q} lang={lang} /></td>
+              <td className="p-3 text-right"><DeleteQuoteButton id={q.id} folio={q.folio} lang={lang} compact /></td>
             </tr>
           ))}
         </tbody>
