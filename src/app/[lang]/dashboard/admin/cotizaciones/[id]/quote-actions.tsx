@@ -1,5 +1,7 @@
 'use client'
 
+import { imprimir } from '@/lib/print'
+
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -50,7 +52,7 @@ export function QuoteActions({ lang, quote, contract, publicUrl }: { lang: strin
         <code className="text-xs bg-background border rounded px-2 py-1 break-all">{publicUrl}</code>
         <Button size="sm" variant="outline" onClick={copiar}><Copy className="size-4 mr-1" />{es ? 'Copiar enlace' : 'Copy link'}</Button>
         <Button size="sm" variant="outline" asChild><a href={publicUrl} target="_blank" rel="noopener noreferrer"><ExternalLink className="size-4 mr-1" />{es ? 'Ver como cliente' : 'View as client'}</a></Button>
-        <Button size="sm" variant="outline" onClick={() => window.print()}><Printer className="size-4 mr-1" />PDF</Button>
+        <Button size="sm" variant="outline" onClick={imprimir}><Printer className="size-4 mr-1" />PDF</Button>
       </div>
       <div className="flex items-center gap-2 flex-wrap">
         {quote.status === 'draft' && (
