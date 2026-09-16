@@ -359,7 +359,15 @@ export function QuoteForm({ lang, quote }: { lang: string; quote?: Quote }) {
       <Card className="lg:sticky lg:top-6">
         <CardHeader><CardTitle className="text-base">{es ? 'Resumen' : 'Summary'}</CardTitle></CardHeader>
         <CardContent className="space-y-3 text-sm">
-          <div className="flex justify-between"><span className="text-muted-foreground">{es ? 'Precio' : 'Price'}</span><span className="font-mono tabular-nums">{mxn(t.subtotal)}</span></div>
+          {t.descuento > 0 ? (
+            <>
+              <div className="flex justify-between"><span className="text-muted-foreground">{es ? 'Precio de lista' : 'List price'}</span><span className="font-mono tabular-nums line-through text-muted-foreground">{mxn(t.lista)}</span></div>
+              <div className="flex justify-between gap-2 text-emerald-700"><span className="truncate">{es ? 'Descuento' : 'Discount'} ({pctDescuento} %)</span><span className="font-mono tabular-nums shrink-0">−{mxn(t.descuento)}</span></div>
+              <div className="flex justify-between"><span className="text-muted-foreground">{es ? 'Precio con descuento' : 'Discounted price'}</span><span className="font-mono tabular-nums">{mxn(t.subtotal)}</span></div>
+            </>
+          ) : (
+            <div className="flex justify-between"><span className="text-muted-foreground">{es ? 'Precio' : 'Price'}</span><span className="font-mono tabular-nums">{mxn(t.subtotal)}</span></div>
+          )}
           {applyIva && <div className="flex justify-between"><span className="text-muted-foreground">IVA</span><span className="font-mono tabular-nums">{mxn(t.iva)}</span></div>}
           <div className="flex justify-between text-base font-semibold border-t pt-2"><span>Total</span><span className="font-mono tabular-nums">{mxn(t.total)}</span></div>
           {!errorHitos && hitos.map((h) => <div key={h.label} className="flex justify-between text-muted-foreground"><span>{h.label || '—'}</span><span className="font-mono tabular-nums">{mxn((t.total * h.pct) / 100)}</span></div>)}
