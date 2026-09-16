@@ -45,7 +45,8 @@ export interface QuoteDiscount {
 
 /** Promociones con nombre, para no inventar el texto cada vez. */
 export const PROMOCIONES: Array<{ clave: string; motivo: string; tipo: QuoteDiscount['tipo']; valor: number }> = [
-  { clave: 'primeros', motivo: 'Promoción de lanzamiento: primeros clientes de imSoft', tipo: 'pct', valor: 10 },
+  { clave: 'primeros', motivo: 'Promoción de lanzamiento: primer proyecto con imSoft', tipo: 'pct', valor: 10 },
+  { clave: 'primer-proyecto', motivo: 'Primer proyecto con imSoft', tipo: 'pct', valor: 10 },
   { clave: 'recurrente', motivo: 'Cliente recurrente de imSoft', tipo: 'pct', valor: 10 },
   { clave: 'referido', motivo: 'Cliente referido', tipo: 'pct', valor: 5 },
   { clave: 'temporada', motivo: 'Promoción de temporada', tipo: 'pct', valor: 10 },
