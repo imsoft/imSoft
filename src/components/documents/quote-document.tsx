@@ -1,5 +1,5 @@
 import { DocumentHeader } from './document-header'
-import { fechaLarga, importesHitos, mxn, plazoEntrega, textoFormaDePago, totales, type QuoteLike } from '@/lib/cotizaciones'
+import { fechaLarga, importesHitos, mxn, plazoEntrega, textoFormaDePago, textoMensualidades, totales, type QuoteLike } from '@/lib/cotizaciones'
 import { FIRMA_PRESTADOR, SignatureBlock } from './signature-block'
 
 /**
@@ -68,7 +68,10 @@ export function QuoteDocument({ quote }: { quote: QuoteLike & { created_at?: str
         <div>
           <p className="text-xs uppercase tracking-widest text-neutral-500 mb-2">Forma de pago</p>
           <ul className="space-y-1">
-            {hitos.map((h) => <li key={h.label}><span className="font-medium">{h.label}:</span> {h.pct} % · {mxn(h.importe, quote.currency)}</li>)}
+            {hitos.map((h) => {
+              const m = textoMensualidades(h.importe, h, quote.currency)
+              return <li key={h.label}><span className="font-medium">{h.label}:</span> {h.pct} % · {mxn(h.importe, quote.currency)}{m && <span className="block text-neutral-600">{m}, por transferencia</span>}</li>
+            })}
             {formaPago.slice(hitos.length).map((l, i) => <li key={i} className="text-neutral-600">{l}</li>)}
           </ul>
         </div>

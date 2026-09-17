@@ -13,7 +13,7 @@ import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
 import { Trash2, Plus } from 'lucide-react'
 import { CONDICIONES_DEFAULT } from '@/config/emisor'
-import { DESCUENTO_MAXIMO_RECOMENDADO_PCT, PROMOCIONES, descuentoValido, featuresValidas, fechaVigencia, generarToken, hitosValidos, itemsDesdePrecio, mxn, plazoEntrega, porcentajeDescuento, precioProyecto, siguienteFolio, totales, type Hito, type QuoteDiscount, type QuoteTerms } from '@/lib/cotizaciones'
+import { DESCUENTO_MAXIMO_RECOMENDADO_PCT, PROMOCIONES, descuentoValido, numMensualidades, textoMensualidades, featuresValidas, fechaVigencia, generarToken, hitosValidos, itemsDesdePrecio, mxn, plazoEntrega, porcentajeDescuento, precioProyecto, siguienteFolio, totales, type Hito, type QuoteDiscount, type QuoteTerms } from '@/lib/cotizaciones'
 import type { Quote } from '@/types/quotes'
 import type { AssistOutput } from '@/lib/quote-assist'
 import { Sparkles, Loader2 } from 'lucide-react'
@@ -161,7 +161,7 @@ export function QuoteForm({ lang, quote }: { lang: string; quote?: Quote }) {
       currency: 'MXN',
       apply_iva: applyIva,
       discount: conDescuento ? { motivo: descuento.motivo.trim(), tipo: descuento.tipo, valor: Number(descuento.valor) } : null,
-      payment: { hitos: hitos.map((h) => ({ label: h.label.trim(), pct: Number(h.pct) })), msi },
+      payment: { hitos: hitos.map((h) => ({ label: h.label.trim(), pct: Number(h.pct), ...(numMensualidades(h) > 1 ? { mensualidades: numMensualidades(h) } : {}) })), msi },
       terms: { ...terms, garantia_dias: Number(terms.garantia_dias), penalizacion_dia: Number(terms.penalizacion_dia), entrega_semanas: plazo.semanas, fecha_limite: terms.fecha_limite || plazo.fechaLimite },
       notes: notes.trim() || null,
       valid_until: validUntil,
@@ -315,12 +315,14 @@ export function QuoteForm({ lang, quote }: { lang: string; quote?: Quote }) {
           <CardContent className="space-y-4">
             <div className="space-y-2">
               {hitos.map((h, i) => (
-                <div key={i} className="grid gap-2 grid-cols-[1fr_90px_40px] items-center">
+                <div key={i} className="grid gap-2 grid-cols-[1fr_90px_120px_40px] items-center">
                   <Input className={campo} value={h.label} onChange={(e) => setHito(i, { label: e.target.value })} placeholder={es ? 'Nombre del hito' : 'Milestone'} />
                   <div className="relative"><NumberInput className={`${campo} pr-7`} value={h.pct} onValueChange={(n) => setHito(i, { pct: n })} aria-label="%" /><span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">%</span></div>
+                  <div className="relative"><NumberInput className={`${campo} pr-14`} value={numMensualidades(h)} onValueChange={(n) => setHito(i, { mensualidades: Math.max(1, Math.round(n) || 1) })} aria-label={es ? 'Mensualidades' : 'Monthly payments'} /><span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">{es ? 'pagos' : 'pmts'}</span></div>
                   <Button type="button" variant="ghost" size="icon" aria-label={es ? 'Quitar hito' : 'Remove milestone'} onClick={() => setHitos((arr) => arr.filter((_, idx) => idx !== i))} disabled={hitos.length === 1}><Trash2 className="size-4" /></Button>
                 </div>
               ))}
+              <p className="text-xs text-muted-foreground">{es ? 'Pagos: en cuántas mensualidades por transferencia se cubre el hito (1 = un solo pago). Es un acuerdo directo con el cliente, sin Stripe ni meses sin intereses.' : 'Payments: how many monthly bank transfers cover the milestone (1 = single payment). No Stripe or card installments involved.'}</p>
               <div className="flex items-center justify-between">
                 <Button type="button" variant="outline" size="sm" onClick={() => setHitos((arr) => [...arr, { label: '', pct: 0 }])}><Plus className="size-4 mr-1" />{es ? 'Agregar hito' : 'Add milestone'}</Button>
                 {errorHitos && <p className="text-xs text-destructive">{errorHitos}</p>}
@@ -373,7 +375,16 @@ export function QuoteForm({ lang, quote }: { lang: string; quote?: Quote }) {
           )}
           {applyIva && <div className="flex justify-between"><span className="text-muted-foreground">IVA</span><span className="font-mono tabular-nums">{mxn(t.iva)}</span></div>}
           <div className="flex justify-between text-base font-semibold border-t pt-2"><span>Total</span><span className="font-mono tabular-nums">{mxn(t.total)}</span></div>
-          {!errorHitos && hitos.map((h) => <div key={h.label} className="flex justify-between text-muted-foreground"><span>{h.label || '—'}</span><span className="font-mono tabular-nums">{mxn((t.total * h.pct) / 100)}</span></div>)}
+          {!errorHitos && hitos.map((h) => {
+            const importe = (t.total * h.pct) / 100
+            const m = textoMensualidades(importe, h)
+            return (
+              <div key={h.label} className="text-muted-foreground">
+                <div className="flex justify-between"><span>{h.label || '—'}</span><span className="font-mono tabular-nums">{mxn(importe)}</span></div>
+                {m && <p className="text-xs">{m}</p>}
+              </div>
+            )
+          })}
           <Button className="w-full mt-2" onClick={guardar} disabled={guardando}>
             {guardando ? (es ? 'Guardando…' : 'Saving…') : quote ? (es ? 'Guardar cambios' : 'Save changes') : (es ? 'Crear cotización' : 'Create quote')}
           </Button>

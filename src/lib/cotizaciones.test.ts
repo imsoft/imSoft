@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import {
-  PROMOCIONES, descuentoValido, estaVencida, featuresValidas, fechaVigencia, hitosValidos, importesHitos, itemsDesdePrecio, itemsValidos, motivoNoAceptable,
+  PROMOCIONES, descuentoValido, estaVencida, importesMensualidades, numMensualidades, textoMensualidades, featuresValidas, fechaVigencia, hitosValidos, importesHitos, itemsDesdePrecio, itemsValidos, motivoNoAceptable,
   plazoEntrega, porcentajeDescuento, precioProyecto, renderContrato, siguienteFolio, textoFormaDePago, totales, type QuoteLike,
 } from './cotizaciones';
 import { CONDICIONES_DEFAULT } from '@/config/emisor';
@@ -46,6 +46,29 @@ describe('cotizaciones', () => {
     expect(html).toContain('precio de lista de $18,000.00');
     expect(html).toContain('Cliente desde 2023');
     expect(html).toContain('$18,792.00');
+  });
+
+  it('un hito se puede pagar en mensualidades por transferencia', () => {
+    expect(importesMensualidades(10440, 3)).toEqual([3480, 3480, 3480]);
+    const impar = importesMensualidades(100, 3);
+    expect(impar).toEqual([33.33, 33.33, 33.34]);
+    expect(impar.reduce((a, b) => a + b, 0)).toBeCloseTo(100, 2);
+    expect(numMensualidades({})).toBe(1);
+    expect(numMensualidades({ mensualidades: 3 })).toBe(3);
+    expect(textoMensualidades(10440, { mensualidades: 1 })).toBe('');
+    expect(textoMensualidades(10440, { mensualidades: 3 })).toBe('en 3 mensualidades de $3,480.00');
+    expect(textoMensualidades(100, { mensualidades: 3 })).toContain('una última de $33.34');
+    const conPlan = { ...q, payment: { msi: false, hitos: [{ label: 'Anticipo', pct: 50, mensualidades: 3 }, { label: 'Liquidación', pct: 50, mensualidades: 3 }] } };
+    const lineas = textoFormaDePago(conPlan);
+    expect(lineas[0]).toBe('Anticipo: 50% ($10,440.00), en 3 mensualidades de $3,480.00 por transferencia');
+    expect(lineas.join(' ')).toContain('sin intereses');
+    expect(lineas.join(' ')).not.toContain('meses sin intereses con bancos');
+    expect(hitosValidos([{ label: 'A', pct: 100, mensualidades: 30 }])).toMatch(/1 a 24/);
+    expect(hitosValidos(conPlan.payment.hitos)).toBeNull();
+    const html = renderContrato({ ...conPlan, status: 'accepted', accepted_at: '2026-09-17T00:00:00Z', accepted_name: 'Ana Pérez' }, 'CON-2026-002');
+    expect(html).toContain('pagadero en 3 mensualidades de $3,480.00 por transferencia bancaria');
+    expect(html).toContain('suspender el servicio');
+    expect(html).not.toContain('Ningún entregable se pone en producción ni se transfiere hasta recibir el pago del hito');
   });
 
   it('reparte los hitos y el ultimo absorbe el redondeo', () => {

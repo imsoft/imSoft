@@ -15,6 +15,11 @@ export interface QuoteItem {
 export interface Hito {
   label: string;
   pct: number;
+  /**
+   * En cuantos pagos mensuales por transferencia se cubre este hito (1 = un solo pago).
+   * Es un acuerdo directo con el cliente: no tiene que ver con Stripe ni con los MSI.
+   */
+  mensualidades?: number;
 }
 export interface QuotePayment {
   hitos: Hito[];
@@ -179,7 +184,32 @@ export function hitosValidos(hitos: Hito[]): string | null {
   const suma = hitos.reduce((s, h) => s + (Number(h.pct) || 0), 0);
   if (Math.abs(suma - 100) > 0.01) return `Los hitos suman ${suma}%; deben sumar 100%.`;
   if (hitos.some((h) => !h.label.trim())) return 'Cada hito necesita un nombre.';
+  if (hitos.some((h) => h.mensualidades !== undefined && (!Number.isInteger(Number(h.mensualidades)) || Number(h.mensualidades) < 1 || Number(h.mensualidades) > 24))) return 'Las mensualidades de un hito van de 1 a 24.';
   return null;
+}
+
+/** Numero de mensualidades de un hito (1 si se paga de una vez). */
+export function numMensualidades(h: Pick<Hito, 'mensualidades'>): number {
+  const n = Math.round(Number(h.mensualidades) || 1);
+  return n >= 1 ? n : 1;
+}
+
+/** Reparte el importe de un hito en pagos mensuales; el ultimo absorbe el redondeo. */
+export function importesMensualidades(importe: number, n: number): number[] {
+  const k = Math.max(1, Math.round(n));
+  const base = round2(importe / k);
+  return Array.from({ length: k }, (_, i) => (i === k - 1 ? round2(importe - base * (k - 1)) : base));
+}
+
+/** "en 3 mensualidades de $X" o '' si es un solo pago. */
+export function textoMensualidades(importe: number, h: Pick<Hito, 'mensualidades'>, currency = 'MXN'): string {
+  const n = numMensualidades(h);
+  if (n <= 1) return '';
+  const partes = importesMensualidades(importe, n);
+  const iguales = partes.every((x) => x === partes[0]);
+  return iguales
+    ? `en ${n} mensualidades de ${mxn(partes[0], currency)}`
+    : `en ${n} mensualidades: ${n - 1} de ${mxn(partes[0], currency)} y una última de ${mxn(partes[n - 1], currency)}`;
 }
 
 export function itemsValidos(items: QuoteItem[]): string | null {
@@ -232,7 +262,9 @@ export function fechaLarga(iso: string): string {
 /** Texto de forma de pago para cotizacion y contrato. */
 export function textoFormaDePago(q: Pick<QuoteLike, 'items' | 'apply_iva' | 'payment' | 'currency' | 'discount'>): string[] {
   const { total } = totales(q);
-  const lineas = importesHitos(total, q.payment.hitos).map((h) => `${h.label}: ${h.pct}% (${mxn(h.importe, q.currency)})`);
+  const hitos = importesHitos(total, q.payment.hitos);
+  const lineas = hitos.map((h) => { const m = textoMensualidades(h.importe, h, q.currency); return `${h.label}: ${h.pct}% (${mxn(h.importe, q.currency)})${m ? `, ${m} por transferencia` : ''}`; });
+  if (hitos.some((h) => numMensualidades(h) > 1)) lineas.push('Las mensualidades son pagos por transferencia bancaria, sin intereses: la primera vence al cumplirse el hito y las siguientes cada mes.');
   if (q.payment.msi && q.currency === 'MXN' && total >= MSI_MINIMO_MXN) {
     const seis = msiEtiqueta(total, 6);
     lineas.push(`Cada hito puede pagarse con tarjeta de crédito a 3, 6 o 12 meses sin intereses con bancos participantes${seis ? `; a 6 meses, el total equivale a ${seis.replace(/^o /, '')}` : ''}.`);
@@ -261,7 +293,8 @@ export function renderContrato(q: QuoteLike & { created_at?: string | null }, fo
     ? features.map((f) => `<li>${esc(f)}</li>`).join('')
     : q.items.map((i) => `<li><strong>${esc(i.concepto)}</strong>${i.descripcion ? `: ${esc(i.descripcion)}` : ''}${i.cantidad !== 1 ? ` (${i.cantidad})` : ''}</li>`).join('');
   const listaAlcance = features.length > 0 ? 'ol' : 'ul';
-  const pagos = hitos.map((h) => `<li>${esc(h.label)}: ${h.pct}% del total, ${mxn(h.importe, q.currency)}.</li>`).join('');
+  const pagos = hitos.map((h) => { const m = textoMensualidades(h.importe, h, q.currency); return `<li>${esc(h.label)}: ${h.pct}% del total, ${mxn(h.importe, q.currency)}${m ? `, pagadero ${m} por transferencia bancaria; la primera vence al cumplirse el hito y las siguientes el mismo día de cada mes` : ''}.</li>`; }).join('');
+  const hayMensualidades = hitos.some((h) => numMensualidades(h) > 1);
   const penal = q.terms.penalizacion_dia > 0
     ? `Si el Cliente no entrega los insumos, contenidos, accesos o aprobaciones que le corresponden en las fechas acordadas, el calendario se recorre por el mismo número de días y, a partir del quinto día hábil de retraso, el Cliente pagará al Prestador ${mxn(q.terms.penalizacion_dia, q.currency)} por cada día hábil adicional de retraso.`
     : 'Si el Cliente no entrega los insumos, contenidos, accesos o aprobaciones que le corresponden en las fechas acordadas, el calendario de entrega se recorre por el mismo número de días de retraso.';
@@ -282,7 +315,7 @@ ${q.intro ? `<p>${esc(q.intro)}</p>` : ''}
 <p>El precio total es de <strong>${mxn(t.total, q.currency)}</strong> (${t.descuento > 0 ? `precio de lista de ${mxn(t.lista, q.currency)} menos un descuento de ${mxn(t.descuento, q.currency)} por concepto de "${esc(q.discount?.motivo ?? '')}", es decir, ${mxn(t.subtotal, q.currency)}` : mxn(t.subtotal, q.currency)}${q.apply_iva ? ` más ${mxn(t.iva, q.currency)} de IVA` : ', sin IVA'}), pagadero así:</p>${t.descuento > 0 ? `
 <p>El descuento aplica únicamente a este contrato y no constituye un precio de referencia para trabajos futuros.</p>` : ''}
 <ul>${pagos}</ul>
-<p>Los pagos se realizan por transferencia bancaria o mediante enlace de pago con tarjeta${q.payment.msi ? ', incluidos meses sin intereses cuando el banco emisor lo permita' : ''}. El Prestador emite CFDI por cada pago recibido; los asuntos de facturación se atienden en ${esc(EMISOR.emailFacturacion)}. Ningún entregable se pone en producción ni se transfiere hasta recibir el pago del hito correspondiente.</p>
+<p>Los pagos se realizan por transferencia bancaria o mediante enlace de pago con tarjeta${q.payment.msi ? ', incluidos meses sin intereses cuando el banco emisor lo permita' : ''}. El Prestador emite CFDI por cada pago recibido; los asuntos de facturación se atienden en ${esc(EMISOR.emailFacturacion)}. ${hayMensualidades ? 'Las mensualidades pactadas son un pago diferido sin intereses. Los entregables se ponen en producción al cubrirse la primera mensualidad del hito correspondiente; la propiedad se transfiere conforme a la cláusula Cuarta, al quedar pagado el total. El atraso en cualquier mensualidad faculta al Prestador a suspender el servicio, los accesos y el soporte hasta que el pago se regularice, sin que ello modifique las fechas de las mensualidades restantes.' : 'Ningún entregable se pone en producción ni se transfiere hasta recibir el pago del hito correspondiente.'}</p>
 
 <h2>Tercera. Plazo de entrega</h2>
 <p>El Prestador entregará el proyecto a más tardar el <strong>${esc(fechaLarga(plazo.fechaLimite))}</strong>, es decir, en un plazo de ${plazo.semanas} ${plazo.semanas === 1 ? 'semana' : 'semanas'} contado desde la cotización, siempre que el Cliente entregue el anticipo y los insumos iniciales oportunamente. El plazo se ajustará de común acuerdo si el alcance cambia o si el Cliente retrasa la entrega de insumos, conforme a las cláusulas Quinta y Sexta.</p>
