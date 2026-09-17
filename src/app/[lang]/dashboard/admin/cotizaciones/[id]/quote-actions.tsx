@@ -11,6 +11,8 @@ import { Button } from '@/components/ui/button'
 import { Copy, ExternalLink, FileSignature, FolderPlus, Mail, MessageCircle, Pencil, Printer, Send } from 'lucide-react'
 import type { Contract, Quote } from '@/types/quotes'
 import { DeleteQuoteButton } from '@/components/documents/delete-quote-button'
+import { CardPaymentDialog } from '@/components/documents/card-payment-dialog'
+import { importesHitos, totales } from '@/lib/cotizaciones'
 
 export function QuoteActions({ lang, quote, contract, publicUrl }: { lang: string; quote: Quote; contract: Contract | null; publicUrl: string }) {
   const es = lang !== 'en'
@@ -81,6 +83,7 @@ export function QuoteActions({ lang, quote, contract, publicUrl }: { lang: strin
             <Button size="sm" variant="outline" className={btn} disabled={!quote.client_email || ocupado !== null} onClick={() => llamar(`/api/quotes/${quote.id}/send`, 'mail', es ? 'Correo enviado al cliente' : 'Email sent to the client')}><Mail className="size-4 mr-1.5" />{es ? 'Correo' : 'Email'}</Button>
           </div>
         )}
+        <CardPaymentDialog quoteId={quote.id} folio={quote.folio} clientName={quote.client_name} lang={lang} msiDefault={Boolean(quote.payment?.msi)} montoSugerido={importesHitos(totales(quote).total, quote.payment?.hitos ?? [])[0]?.importe ?? 0} />
         {contract && (
           <Button size="sm" variant="outline" className={btn} asChild><Link href={`/${lang}/dashboard/admin/cotizaciones/${quote.id}/contrato`}><FileSignature className="size-4 mr-1.5" />{es ? 'Contrato' : 'Contract'} · {contract.folio}</Link></Button>
         )}
