@@ -9,7 +9,21 @@ import { Confetti } from '@/components/documents/confetti'
 import type { Contract } from '@/types/quotes'
 
 export const dynamic = 'force-dynamic'
-export const metadata: Metadata = { title: 'Contrato · imSoft', robots: { index: false, follow: false } }
+export async function generateMetadata({ params }: { params: Promise<{ lang: string; token: string }> }): Promise<Metadata> {
+  const { lang, token } = await params
+  const { data } = await serviceClient().from('contracts').select('folio, status, quotes(title, client_name, client_company)').eq('token', token).maybeSingle()
+  const q = (data as { quotes?: { title?: string; client_name?: string; client_company?: string | null } } | null)?.quotes
+  if (!data) return { title: 'Contrato · imSoft', robots: { index: false, follow: false } }
+  const title = `Contrato ${data.folio} · ${q?.title ?? ''} · imSoft`.replace(' ·  ·', ' ·')
+  const description = `Para ${String(q?.client_company || q?.client_name || 'el cliente').replace(/\.$/, '')}. ${data.status === 'signed' ? 'Firmado en línea.' : 'Revísalo y fírmalo en línea.'}`
+  return {
+    title,
+    description,
+    robots: { index: false, follow: false },
+    openGraph: { title, description, type: 'article', siteName: 'imSoft', locale: lang === 'en' ? 'en_US' : 'es_MX' },
+    twitter: { card: 'summary_large_image', title, description },
+  }
+}
 
 export default async function ContratoPublico({ params }: { params: Promise<{ lang: string; token: string }> }) {
   const { lang, token } = await params
