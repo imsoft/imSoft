@@ -61,7 +61,7 @@ export function QuoteActions({ lang, quote, contract, publicUrl }: { lang: strin
     <div className="no-print rounded-xl border bg-card p-4 space-y-4">
       {/* Fila 1: enlace publico con acciones de vista */}
       <div className="flex flex-col gap-2 lg:flex-row lg:items-center">
-        <div className="flex min-w-0 flex-1 items-stretch overflow-hidden rounded-md border bg-background">
+        <div className="flex h-9 min-w-0 flex-1 items-stretch overflow-hidden rounded-md border bg-background">
           <span className="flex items-center border-r bg-muted/60 px-2.5 text-xs font-medium text-muted-foreground">{es ? 'Enlace' : 'Link'}</span>
           <input readOnly value={publicUrl} onFocus={(e) => e.currentTarget.select()} className="min-w-0 flex-1 bg-transparent px-3 font-mono text-xs outline-none" />
           <button type="button" onClick={copiar} title={es ? 'Copiar enlace' : 'Copy link'} className="flex items-center gap-1.5 border-l px-3 text-xs font-medium text-primary hover:bg-accent"><Copy className="size-3.5" />{es ? 'Copiar' : 'Copy'}</button>
