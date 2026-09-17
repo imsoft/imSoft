@@ -45,7 +45,7 @@ export function DeleteQuoteButton({ id, folio, lang, compact = false, redirectTo
       {compact ? (
         <Button size="icon" variant="ghost" className="h-8 w-8 text-muted-foreground hover:text-destructive" title={es ? 'Eliminar' : 'Delete'} onClick={() => setAbierto(true)}><Trash2 className="size-4" /></Button>
       ) : (
-        <Button size="sm" variant="outline" className="text-destructive hover:text-destructive" onClick={() => setAbierto(true)}><Trash2 className="size-4 mr-1" />{es ? 'Eliminar' : 'Delete'}</Button>
+        <Button size="sm" variant="ghost" className="h-9 text-destructive hover:bg-destructive/10 hover:text-destructive" onClick={() => setAbierto(true)}><Trash2 className="size-4 mr-1" />{es ? 'Eliminar' : 'Delete'}</Button>
       )}
       <AlertDialog open={abierto} onOpenChange={setAbierto}>
         <AlertDialogContent>
