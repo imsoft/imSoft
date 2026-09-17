@@ -88,7 +88,7 @@ export function QuoteActions({ lang, quote, contract, publicUrl }: { lang: strin
           <Button size="sm" variant="outline" className={btn} asChild><Link href={`/${lang}/dashboard/admin/projects/${quote.project_id}`}><FolderPlus className="size-4 mr-1.5" />{es ? 'Ver proyecto' : 'View project'}</Link></Button>
         )}
         <div className="ml-auto flex items-center gap-2">
-          {quote.status === 'draft' && (
+          {quote.status !== 'accepted' && (
             <Button size="sm" variant="ghost" className={btn} asChild><Link href={`/${lang}/dashboard/admin/cotizaciones/${quote.id}/edit`}><Pencil className="size-4 mr-1.5" />{es ? 'Editar' : 'Edit'}</Link></Button>
           )}
           {!quote.project_id && contract?.status !== 'signed' && (
@@ -96,6 +96,7 @@ export function QuoteActions({ lang, quote, contract, publicUrl }: { lang: strin
           )}
         </div>
       </div>
+      {quote.status === 'sent' && <p className="text-xs text-muted-foreground">{es ? 'Ya está enviada: si la editas, el cliente ve los cambios al instante en el mismo enlace. Una vez aceptada ya no se puede editar.' : 'Already sent: if you edit it, the client sees the changes instantly on the same link. Once accepted it can no longer be edited.'}</p>}
       {quote.status === 'draft' && <p className="text-xs text-muted-foreground">{es ? 'Mientras sea borrador, el enlace muestra la cotización pero no permite aceptarla.' : 'While it is a draft, the link shows the quote but does not allow acceptance.'}</p>}
       {quote.accepted_at && <p className="text-xs text-muted-foreground">{es ? 'Evidencia de aceptación' : 'Acceptance evidence'}: {quote.accepted_name} · {new Date(quote.accepted_at).toLocaleString('es-MX')} · IP {quote.accepted_ip}</p>}
     </div>
