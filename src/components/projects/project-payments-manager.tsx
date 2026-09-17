@@ -127,10 +127,11 @@ export function ProjectPaymentsManager({ projectId, projectCurrency = 'MXN', pro
       const response = await fetch(`/api/projects/${projectId}/stripe-payment-link`)
       if (response.ok) {
         const data = await response.json()
+        // Lo que dijo la cotizacion (o el ultimo enlace generado) es el valor inicial.
+        setEnableInstallments(Boolean(data.enableInstallments))
+        setInstallmentOptions(data.installmentOptions || [])
         if (data.paymentLinkUrl) {
           setStripePaymentLink({ id: data.paymentLinkId, url: data.paymentLinkUrl })
-          setEnableInstallments(data.enableInstallments || false)
-          setInstallmentOptions(data.installmentOptions || [])
         }
       }
     } catch (error) {

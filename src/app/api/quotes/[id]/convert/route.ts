@@ -27,6 +27,9 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
       start_date: new Date().toISOString().slice(0, 10),
       total_price: t.total,
       currency: q.currency,
+      // La cotizacion decide si el proyecto se puede pagar a meses sin intereses.
+      stripe_enable_installments: Boolean(q.payment?.msi),
+      stripe_installment_options: q.payment?.msi ? JSON.stringify([3, 6, 12]) : null,
     })
     .select('id')
     .single()

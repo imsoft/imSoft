@@ -331,7 +331,10 @@ export function QuoteForm({ lang, quote }: { lang: string; quote?: Quote }) {
               <Switch id="q-iva" className={sw} checked={applyIva} onCheckedChange={setApplyIva} />
             </div>
             <div className="flex items-center justify-between gap-3">
-              <Label htmlFor="q-msi">{es ? 'Ofrecer meses sin intereses con tarjeta' : 'Offer interest-free installments'}</Label>
+              <div>
+                <Label htmlFor="q-msi">{es ? 'Ofrecer meses sin intereses con tarjeta' : 'Offer interest-free installments'}</Label>
+                <p className="text-xs text-muted-foreground">{es ? 'Apagado: la cotización y el contrato no mencionan meses, y los enlaces de pago del proyecto salen sin esa opción.' : 'Off: the quote and contract do not mention installments, and the project payment links are created without them.'}</p>
+              </div>
               <Switch id="q-msi" className={sw} checked={msi} onCheckedChange={setMsi} />
             </div>
           </CardContent>
