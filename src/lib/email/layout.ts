@@ -7,7 +7,7 @@
  */
 
 export const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io'
-const LOGO = 'https://www.imsoft.io/logos/isotype-imsoft-email.png'
+const LOGO = 'https://www.imsoft.io/logos/imsoft-isotipo-correo-v2.png'
 
 export const COLOR = {
   marca: '#1e88e5',

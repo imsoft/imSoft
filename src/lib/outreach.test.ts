@@ -39,7 +39,7 @@ describe('prospeccion', () => {
     expect(e.text).not.toContain('33 2536 5558');
     expect(e.html).not.toContain('Brandon García');
     expect(e.html).not.toContain('{{');
-    expect(e.html).toContain('isotype-imsoft-email.png');
+    expect(e.html).toContain('imsoft-isotipo-correo-v2.png');
     expect(e.html).toContain(`<h1`);
     expect(e.html).not.toContain('<script');
     // Diseño de correo: boton de WhatsApp con mensaje prellenado y tablas (compatibles con Gmail/Outlook)

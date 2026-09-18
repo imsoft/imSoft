@@ -4,7 +4,7 @@ import { barraProgreso, boton, datos, destacado, emailLayout, esc, textoLibre, u
 describe('plantilla de correos de imSoft', () => {
   it('arma el correo con logo, etiqueta, título, cuerpo y pie', () => {
     const html = emailLayout({ preheader: 'Vista previa', etiqueta: 'Cotización aceptada', titulo: 'Álvaro aceptó', cuerpo: '<p>hola</p>', pie: ['Motivo del correo'] })
-    expect(html).toContain('isotype-imsoft-email.png')
+    expect(html).toContain('imsoft-isotipo-correo-v2.png')
     expect(html).toContain('Cotización aceptada')
     expect(html).toContain('Álvaro aceptó')
     expect(html).toContain('<p>hola</p>')
