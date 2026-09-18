@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { ADMIN_EMAIL, SITE_URL, enviarCorreo, esc, requireAdmin, serviceClient } from '@/lib/quotes/server'
+import { ADMIN_EMAIL, SITE_URL, enviarCorreo, requireAdmin, serviceClient } from '@/lib/quotes/server'
+import { correoCotizacionAlCliente } from '@/lib/email/plantillas'
 import { fechaLarga, mxn, totales } from '@/lib/cotizaciones'
 
 /** Manda la cotizacion al cliente por correo con el enlace de aceptacion, y la marca como enviada. */
@@ -14,16 +15,19 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
 
   const url = `${SITE_URL}/${q.lang}/cotizacion/${q.token}`
   const t = totales(q)
-  const html = `
-    <div style="font-family:system-ui,-apple-system,sans-serif;max-width:560px;margin:0 auto;color:#111">
-      <p>Hola ${esc(q.client_name)},</p>
-      <p>Te comparto la cotización <strong>${esc(q.folio)}</strong> para <strong>${esc(q.title)}</strong>: ${mxn(t.total, q.currency)}${q.apply_iva ? ' IVA incluido' : ''}, vigente hasta el ${fechaLarga(q.valid_until)}.</p>
-      <p>La puedes revisar y aceptar en línea aquí:</p>
-      <p><a href="${url}" style="display:inline-block;background:#1e88e5;color:#fff;padding:10px 18px;border-radius:8px;text-decoration:none">Ver cotización</a></p>
-      <p style="color:#555;font-size:13px">Si tienes dudas, responde a este correo o escríbeme por WhatsApp al +52 33 2536 5558.</p>
-      <p>Brandon García · imSoft</p>
-    </div>`
-  await enviarCorreo({ to: q.client_email, replyTo: ADMIN_EMAIL, subject: `Cotización ${q.folio} · ${q.title} · imSoft`, html })
+  const whatsapp = `https://wa.me/523325365558?text=${encodeURIComponent(`Hola Brandon, tengo una duda sobre la cotización ${q.folio}.`)}`
+  const correo = correoCotizacionAlCliente({
+    cliente: q.client_name,
+    folio: q.folio,
+    titulo: q.title,
+    total: mxn(t.total, q.currency),
+    ivaIncluido: Boolean(q.apply_iva),
+    vigencia: fechaLarga(q.valid_until),
+    enlace: url,
+    whatsapp,
+    descuento: t.descuento > 0 ? `${mxn(t.descuento, q.currency)} · ${q.discount?.motivo ?? ''}` : null,
+  })
+  await enviarCorreo({ to: q.client_email, replyTo: ADMIN_EMAIL, ...correo })
   if (q.status === 'draft') await db.from('quotes').update({ status: 'sent', sent_at: new Date().toISOString() }).eq('id', id)
   return NextResponse.json({ ok: true })
 }

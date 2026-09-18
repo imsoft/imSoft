@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { ADMIN_EMAIL, SITE_URL, clientIp, enviarCorreo, esc, serviceClient } from '@/lib/quotes/server'
+import { ADMIN_EMAIL, clientIp, enviarCorreo, serviceClient } from '@/lib/quotes/server'
+import { correoCotizacionAceptada } from '@/lib/email/plantillas'
 import { motivoNoAceptable, mxn, totales } from '@/lib/cotizaciones'
 
 /** El cliente acepta la cotizacion desde el enlace publico. Guarda nombre, fecha, IP y navegador. */
@@ -25,11 +26,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ tok
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
   try {
-    await enviarCorreo({
-      to: ADMIN_EMAIL,
-      subject: `✓ Cotización aceptada: ${q.folio} · ${q.title}`,
-      html: `<p><strong>${esc(nombre)}</strong> aceptó la cotización <strong>${esc(q.folio)}</strong> (${esc(q.title)}) por ${mxn(totales(q).total, q.currency)}.</p><p><a href="${SITE_URL}/es/dashboard/admin/cotizaciones/${q.id}">Abrir en el panel</a> para generar el contrato y el enlace de pago.</p>`,
-    })
+    const correo = correoCotizacionAceptada({ nombre, folio: q.folio, titulo: q.title, cliente: q.client_name, empresa: q.client_company, total: mxn(totales(q).total, q.currency), quoteId: q.id, fecha: new Date(ahora) })
+    await enviarCorreo({ to: ADMIN_EMAIL, ...correo })
   } catch (e) {
     console.error('[quotes] aviso de aceptación no enviado:', e)
   }

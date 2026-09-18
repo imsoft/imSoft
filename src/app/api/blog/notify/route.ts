@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getResend } from '@/lib/email/resend-client';
+import { getResend } from '@/lib/email/resend-client'
+import { correoFalloBlog } from '@/lib/email/plantillas';
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { buildBlogNotificationHtml } from '@/lib/email/blog-notification-template'
@@ -198,16 +199,7 @@ async function notifyAdminOfError(postTitle: string, message: string) {
     await getResend().emails.send({
       from: `imSoft <${fromEmail}>`,
       to: [adminEmail],
-      subject: `⚠️ Falló el envío del aviso de blog${postTitle ? `: ${postTitle}` : ''}`,
-      html: `
-        <div style="font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;max-width:560px;margin:0 auto;">
-          <h2 style="color:#b91c1c;">No se enviaron las notificaciones del blog</h2>
-          <p style="color:#374151;">Ningún usuario recibió correo. Detalle del error:</p>
-          <pre style="background:#f3f4f6;padding:16px;border-radius:6px;color:#111827;font-size:13px;white-space:pre-wrap;word-break:break-word;">${message}</pre>
-          ${postTitle ? `<p style="color:#6b7280;font-size:14px;">Artículo: <strong>${postTitle}</strong></p>` : ''}
-          <p style="color:#9ca3af;font-size:12px;">Corrige el problema y vuelve a publicar/guardar el artículo para reintentar el envío.</p>
-        </div>
-      `,
+      ...correoFalloBlog({ titulo: postTitle, error: message }),
     })
   } catch (e) {
     console.error('[blog/notify] No se pudo avisar al admin del error:', e)

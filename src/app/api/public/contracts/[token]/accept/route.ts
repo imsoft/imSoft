@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { ADMIN_EMAIL, SITE_URL, clientIp, enviarCorreo, esc, serviceClient } from '@/lib/quotes/server'
+import { ADMIN_EMAIL, clientIp, enviarCorreo, serviceClient } from '@/lib/quotes/server'
+import { correoContratoFirmado } from '@/lib/email/plantillas'
 
 /** El cliente acepta el contrato desde el enlace publico. Misma evidencia que la cotizacion. */
 export async function POST(req: NextRequest, { params }: { params: Promise<{ token: string }> }) {
@@ -25,11 +26,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ tok
 
   try {
     const q = c.quotes as { id: string; folio: string; title: string } | null
-    await enviarCorreo({
-      to: ADMIN_EMAIL,
-      subject: `✓ Contrato aceptado: ${c.folio}${q ? ` · ${q.title}` : ''}`,
-      html: `<p><strong>${esc(nombre)}</strong> aceptó el contrato <strong>${esc(c.folio)}</strong>.</p>${q ? `<p><a href="${SITE_URL}/es/dashboard/admin/cotizaciones/${q.id}">Abrir en el panel</a>.</p>` : ''}`,
-    })
+    await enviarCorreo({ to: ADMIN_EMAIL, ...correoContratoFirmado({ nombre, folio: c.folio, titulo: q?.title, cotizacionFolio: q?.folio, quoteId: q?.id, fecha: new Date(ahora) }) })
   } catch (e) {
     console.error('[contracts] aviso no enviado:', e)
   }

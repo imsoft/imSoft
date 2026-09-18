@@ -47,7 +47,7 @@ export function fechaSiguientePaso(sentAt: Date, siguiente: 2 | 3): string {
 }
 
 const SITE = 'https://www.imsoft.io';
-const LOGO = `${SITE}/logos/isotype-imsoft-blue.png`;
+const LOGO = `${SITE}/logos/isotype-imsoft-email.png`;
 export const LINEA_WHATSAPP = 'Agendar 15 minutos por WhatsApp:';
 /** Boton principal del correo: WhatsApp con mensaje prellenado. */
 export const WHATSAPP_URL = `https://wa.me/523325365558?text=${encodeURIComponent('Hola Brandon, me llegó tu correo de imSoft y me gustaría platicarlo.')}`;
