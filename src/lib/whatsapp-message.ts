@@ -1,3 +1,4 @@
+import { cityServiceContent, cityServiceTitle, type CityKey, type CityServiceSlug } from '@/config/city-services';
 import {
   CITY_LABELS,
   INDUSTRY_LABELS,
@@ -56,6 +57,15 @@ export function whatsAppMessage(pathname: string, lang: string): string {
   if (partes[0] === 'services' && partes[1]) {
     const servicio = SERVICIOS[partes[1]];
     if (servicio) return interesa(l, servicio[l]);
+  }
+
+  // /<ciudad>/<servicio> ("paginas web guadalajara"...)
+  const cs = cityServiceContent(partes[0] ?? '', partes[1] ?? '');
+  if (cs) {
+    const que = cityServiceTitle(partes[0] as CityKey, partes[1] as CityServiceSlug).toLowerCase();
+    return l === 'es'
+      ? `Hola imSoft, vi su página de ${que} y me interesa. ¿Podemos platicar?`
+      : `Hi imSoft, I saw your page about ${que} and I am interested. Can we talk?`;
   }
 
   // /zapopan/paginas-web

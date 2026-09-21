@@ -112,3 +112,29 @@ export const ZAPOPAN_WEB = {
     buttonText: 'Agenda una llamada',
   },
 } as const;
+
+/**
+ * Preguntas frecuentes propias de Zapopan. Van aparte de ZAPOPAN_WEB para no tocar
+ * las pruebas del texto original; la pagina las une al renderizar.
+ */
+export const ZAPOPAN_FAQ: { title: string; items: Array<{ question: string; answer: string }> } = {
+  title: 'Preguntas frecuentes',
+  items: [
+    {
+      question: '¿Atienden en Zapopan en persona?',
+      answer: 'Sí. Estamos en la zona metropolitana y podemos vernos en tus oficinas, por ejemplo en Andares o Puerta de Hierro, para arrancar el proyecto. El seguimiento va por videollamada y WhatsApp.',
+    },
+    {
+      question: '¿Cuánto cuesta una página web en Zapopan?',
+      answer: 'Lo mismo que en el resto de la ZMG: una landing page desde $5,000 MXN y un sitio corporativo desde $15,000 MXN, a precio fijo. El precio cerrado depende de las secciones y funciones; te lo damos en 48 horas.',
+    },
+    {
+      question: '¿Cuánto tardan?',
+      answer: 'Una landing page, una semana. Un sitio corporativo, entre dos y tres semanas desde que tenemos tus textos y fotos.',
+    },
+    {
+      question: '¿El sitio queda a mi nombre?',
+      answer: 'Sí. Código, diseño y dominio son tuyos desde que el proyecto está pagado. No cobramos renta por usar tu propio sitio.',
+    },
+  ],
+};

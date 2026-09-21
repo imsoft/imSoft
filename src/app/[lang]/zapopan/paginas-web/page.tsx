@@ -1,14 +1,14 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { HeroHeader } from '@/components/blocks/hero-section';
 import { FooterSection } from '@/components/blocks/footer-section';
-import { BreadcrumbNav } from '@/components/seo/breadcrumb-nav';
+import { CityServiceLanding } from '@/components/landing/city-service-landing';
+import type { CityServiceContent } from '@/config/city-services';
 import { StructuredData } from '@/components/seo/structured-data';
 import { getDictionary, hasLocale } from '@/app/[lang]/dictionaries';
 import { createClient } from '@/lib/supabase/server';
 import { generateStructuredData } from '@/lib/seo';
-import { ZAPOPAN_WEB } from '@/config/zapopan-web';
+import { ZAPOPAN_FAQ, ZAPOPAN_WEB } from '@/config/zapopan-web';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io';
 const ES_URL = `${SITE_URL}/es/zapopan/paginas-web`;
@@ -100,103 +100,12 @@ export default async function ZapopanWebPage({
       <StructuredData data={breadcrumbSchema} id="zapopan-breadcrumb-schema" />
       <HeroHeader dict={dict} lang={lang} />
 
-      <main className="pt-24">
-        <section className="mx-auto max-w-4xl px-6 py-16 md:py-24">
-          <BreadcrumbNav
-            className="mb-6"
-            items={[
-              { name: 'Inicio', href: `/${lang}` },
-              { name: 'Servicios', href: `/${lang}/services` },
-              { name: 'Páginas web en Zapopan' },
-            ]}
-          />
-          <h1 className="text-4xl md:text-6xl font-bold mb-6 text-balance">{ZAPOPAN_WEB.h1}</h1>
-          <p className="text-lg text-muted-foreground max-w-3xl">{ZAPOPAN_WEB.heroSubtitle}</p>
-        </section>
-
-        <section className="border-t">
-          <div className="mx-auto max-w-4xl px-6 py-16">
-            <h2 className="text-3xl font-bold mb-10">{ZAPOPAN_WEB.audience.title}</h2>
-            <div className="grid gap-8 md:grid-cols-2">
-              {ZAPOPAN_WEB.audience.items.map((item) => (
-                <div key={item.title}>
-                  <h3 className="text-xl font-semibold mb-3">{item.title}</h3>
-                  <p className="text-muted-foreground">{item.description}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section className="border-t bg-muted/30">
-          <div className="mx-auto max-w-4xl px-6 py-16">
-            <h2 className="text-3xl font-bold mb-8">{ZAPOPAN_WEB.problems.title}</h2>
-            <ul className="space-y-3">
-              {ZAPOPAN_WEB.problems.items.map((item) => (
-                <li key={item} className="flex gap-3 text-muted-foreground">
-                  <span aria-hidden className="text-primary mt-1">—</span>
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
-
-        <section className="border-t">
-          <div className="mx-auto max-w-4xl px-6 py-16">
-            <h2 className="text-3xl font-bold mb-10">{ZAPOPAN_WEB.solutions.title}</h2>
-            <div className="grid gap-8 md:grid-cols-2">
-              {ZAPOPAN_WEB.solutions.items.map((item) => (
-                <div key={item.title}>
-                  <h3 className="text-xl font-semibold mb-3">{item.title}</h3>
-                  <p className="text-muted-foreground">{item.description}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section className="border-t bg-muted/30">
-          <div className="mx-auto max-w-4xl px-6 py-16">
-            <h2 className="text-3xl font-bold mb-3">{ZAPOPAN_WEB.proof.title}</h2>
-            <p className="text-muted-foreground mb-10 max-w-2xl">{ZAPOPAN_WEB.proof.description}</p>
-            <div className="grid gap-6 sm:grid-cols-2">
-              {ZAPOPAN_WEB.proof.items.map((item) => (
-                <div key={item.name} className="rounded-lg border bg-background p-5">
-                  <h3 className="font-semibold mb-1">{item.name}</h3>
-                  <p className="text-sm text-muted-foreground">{item.description}</p>
-                </div>
-              ))}
-            </div>
-            <Link
-              href={`/${lang}/portfolio`}
-              className="inline-block mt-8 text-primary hover:underline"
-            >
-              Ver el portafolio completo
-            </Link>
-          </div>
-        </section>
-
-        <section className="border-t">
-          <div className="mx-auto max-w-3xl px-6 py-20 text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">{ZAPOPAN_WEB.cta.title}</h2>
-            <p className="text-muted-foreground mb-8">{ZAPOPAN_WEB.cta.description}</p>
-            <Link
-              href={`/${lang}/contact`}
-              className="inline-flex items-center rounded-lg bg-primary px-6 py-3 font-medium text-primary-foreground hover:opacity-90"
-            >
-              {ZAPOPAN_WEB.cta.buttonText}
-            </Link>
-            <p className="mt-10 text-sm text-muted-foreground">
-              ¿Buscas lo mismo en otra parte de la ZMG?{' '}
-              <Link href={`/${lang}/services/web-pages`} className="text-primary hover:underline">
-                Desarrollo de páginas web en Guadalajara
-              </Link>
-              .
-            </p>
-          </div>
-        </section>
-      </main>
+      <CityServiceLanding
+        lang={lang}
+        content={{ ...(ZAPOPAN_WEB as unknown as Omit<CityServiceContent, 'faq'>), faq: ZAPOPAN_FAQ }}
+        breadcrumb={[{ name: 'Inicio', href: `/${lang}` }, { name: 'Servicios', href: `/${lang}/services` }, { name: 'Páginas web en Zapopan' }]}
+        related={[{ name: 'Páginas web en Guadalajara', href: `/${lang}/guadalajara/paginas-web` }]}
+      />
 
       <FooterSection dict={dict} lang={lang} contactData={contactData || undefined} />
     </div>

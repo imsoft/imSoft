@@ -7,6 +7,7 @@ import {
   landingHref,
   landingLinkText,
 } from '@/config/landing-pages-index';
+import { cityServiceHref, cityServicePages, cityServiceTitle } from '@/config/city-services';
 
 /**
  * Indice de las landings ciudad + industria.
@@ -30,17 +31,23 @@ export function IndustryLinksSection({ lang }: { lang: string }) {
         </p>
 
         {l === 'es' && (
-          <p className="text-muted-foreground max-w-3xl mb-10">
-            ¿Buscas solo un sitio web?{' '}
-            <Link href="/es/zapopan/paginas-web" className="text-foreground underline underline-offset-4">
-              Páginas web en Zapopan
-            </Link>{' '}
-            y{' '}
-            <Link href="/es/services/web-pages" className="text-foreground underline underline-offset-4">
-              en Guadalajara
-            </Link>
-            .
-          </p>
+          <div className="mb-12">
+            <h3 className="font-semibold text-lg mb-4">Por servicio en Guadalajara y Zapopan</h3>
+            <ul className="flex flex-wrap gap-x-6 gap-y-2">
+              {cityServicePages().map(({ city, slug }) => (
+                <li key={`${city}-${slug}`}>
+                  <Link href={cityServiceHref('es', city, slug)} className="text-muted-foreground hover:text-foreground transition-colors">
+                    {cityServiceTitle(city, slug)}
+                  </Link>
+                </li>
+              ))}
+              <li>
+                <Link href="/es/zapopan/paginas-web" className="text-muted-foreground hover:text-foreground transition-colors">
+                  Páginas web en Zapopan
+                </Link>
+              </li>
+            </ul>
+          </div>
         )}
 
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">

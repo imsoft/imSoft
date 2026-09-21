@@ -22,6 +22,8 @@ describe('whatsAppMessage', () => {
 
   it('reconoce la landing de Zapopan', () => {
     expect(whatsAppMessage('/es/zapopan/paginas-web', 'es')).toContain('Zapopan');
+    expect(whatsAppMessage('/es/guadalajara/paginas-web', 'es')).toContain('páginas web en guadalajara');
+    expect(whatsAppMessage('/es/guadalajara/desarrollo-de-apps', 'es')).toContain('desarrollo de apps en guadalajara');
   });
 
   it('distingue portafolio y blog', () => {

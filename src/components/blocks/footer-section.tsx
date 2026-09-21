@@ -13,6 +13,7 @@ import {
   landingHref,
   landingLinkText,
 } from '@/config/landing-pages-index'
+import { cityServiceHref, cityServicePages, cityServiceTitle } from '@/config/city-services'
 
 // Iconos para redes sociales
 const FacebookIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -142,7 +143,10 @@ export function FooterSection({ dict, lang, contactData }: FooterSectionProps) {
       { id: 'commerce', name: dict.footer.solutions.items.commerce, href: `/${lang}/services` },
       { id: 'insights', name: dict.footer.solutions.items.insights, href: `/${lang}/portfolio` },
       ...(lang === 'es'
-        ? [{ id: 'zapopan', name: 'Páginas web en Zapopan', href: '/es/zapopan/paginas-web' }]
+        ? [
+            ...cityServicePages().map(({ city, slug }) => ({ id: `${city}-${slug}`, name: cityServiceTitle(city, slug), href: cityServiceHref('es', city, slug) })),
+            { id: 'zapopan', name: 'Páginas web en Zapopan', href: '/es/zapopan/paginas-web' },
+          ]
         : []),
     ],
     support: [

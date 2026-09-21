@@ -12,6 +12,12 @@ import { getDictionary } from '@/app/[lang]/dictionaries';
 import { createClient } from '@/lib/supabase/server';
 import { generateStructuredData } from '@/lib/seo';
 import { StructuredData } from '@/components/seo/structured-data';
+import { HeroHeader } from '@/components/blocks/hero-section';
+import { CityServiceLanding } from '@/components/landing/city-service-landing';
+import { CITY_SERVICE_LABELS, cityServiceContent, cityServiceHref, cityServicePages, cityServiceTitle, type CityKey, type CityServiceSlug } from '@/config/city-services';
+import { fetchPublishedPosts } from '@/lib/city-service-posts';
+
+const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io';
 
 interface PageProps {
   params: Promise<{
@@ -36,7 +42,7 @@ export async function generateStaticParams() {
     'software-para-logistica',
   ];
 
-  const params = langs.flatMap((lang) =>
+  const params: Array<{ lang: string; city: string; service: string }> = langs.flatMap((lang) =>
     cities.flatMap((city) =>
       services.map((service) => ({
         lang,
@@ -46,14 +52,33 @@ export async function generateStaticParams() {
     )
   );
 
+  // Landings de ciudad + servicio ("paginas web guadalajara"...). Solo en español; la
+  // version /en existe para canonicalizar a /es y no dar 404.
+  for (const { city, slug } of cityServicePages()) {
+    for (const lang of langs) params.push({ lang, city, service: slug });
+  }
+
   return params;
 }
+
 
 /**
  * Genera metadata dinámica para SEO
  */
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { lang, city, service } = await params;
+
+  const cs = cityServiceContent(city, service);
+  if (cs) {
+    const esUrl = `${SITE}/es/${city}/${service}`;
+    return {
+      title: cs.seoTitle,
+      description: cs.seoDescription,
+      alternates: { canonical: esUrl },
+      robots: { index: true, follow: true },
+      openGraph: { title: cs.seoTitle, description: cs.seoDescription, url: esUrl, siteName: 'imSoft', locale: 'es_MX', type: 'website' },
+    };
+  }
 
   // Validar que la combinación exista
   if (
@@ -67,7 +92,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const resolved = resolveLandingContent(lang, city as City, service as Industry)!;
   const pageData = resolved.data;
-  const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io';
   const esUrl = `${SITE}/es/${city}/${service}`;
 
   // Si se pidio /en y aun no hay traduccion, se sirve el contenido en español: la
@@ -132,6 +156,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
  */
 export default async function LandingPage({ params }: PageProps) {
   const { lang, city, service } = await params;
+
+  const cs = cityServiceContent(city, service);
+  if (cs) return <CityServicePage lang={lang} city={city as CityKey} slug={service as CityServiceSlug} />;
 
   // Validar que la combinación ciudad + servicio exista
   if (
@@ -227,5 +254,54 @@ export default async function LandingPage({ params }: PageProps) {
         <FooterSection dict={dict} lang={lang as 'es' | 'en'} contactData={contactData || undefined} />
       </div>
     </>
+  );
+}
+
+/** Landing de ciudad + servicio: texto propio por pagina (ver src/config/city-services.ts). */
+async function CityServicePage({ lang, city, slug }: { lang: string; city: CityKey; slug: CityServiceSlug }) {
+  const content = cityServiceContent(city, slug)!;
+  const dict = await getDictionary(lang as 'es' | 'en');
+  const supabase = await createClient();
+  const { data: contactData } = await supabase.from('contact').select('*').limit(1).maybeSingle();
+  const url = `${SITE}/es/${city}/${slug}`;
+  const posts = await fetchPublishedPosts(content.relatedPosts ?? []);
+
+  const serviceSchema = generateStructuredData({
+    type: 'Service',
+    data: { name: content.h1, serviceType: CITY_SERVICE_LABELS[slug], description: content.seoDescription, url },
+  });
+  const faqSchema = generateStructuredData({ type: 'FAQPage', data: { questions: content.faq.items } });
+  const breadcrumbSchema = generateStructuredData({
+    type: 'BreadcrumbList',
+    data: {
+      items: [
+        { name: 'Inicio', url: `${SITE}/${lang}` },
+        { name: 'Servicios', url: `${SITE}/${lang}/services` },
+        { name: content.h1, url },
+      ],
+    },
+  });
+
+  // Las otras landings de la misma ciudad, para que Google y el visitante las encuentren.
+  const related = cityServicePages()
+    .filter((p) => p.city === city && p.slug !== slug)
+    .map((p) => ({ name: cityServiceTitle(p.city, p.slug), href: cityServiceHref(lang, p.city, p.slug) }));
+  if (city === 'guadalajara' && slug === 'paginas-web') related.unshift({ name: 'Páginas web en Zapopan', href: `/${lang}/zapopan/paginas-web` });
+
+  return (
+    <div>
+      <StructuredData data={serviceSchema} id="city-service-schema" />
+      <StructuredData data={faqSchema} id="city-service-faq-schema" />
+      <StructuredData data={breadcrumbSchema} id="city-service-breadcrumb-schema" />
+      <HeroHeader dict={dict} lang={lang as 'es' | 'en'} />
+      <CityServiceLanding
+        lang={lang}
+        content={content}
+        breadcrumb={[{ name: 'Inicio', href: `/${lang}` }, { name: 'Servicios', href: `/${lang}/services` }, { name: content.h1 }]}
+        related={related}
+        posts={posts.map((p) => ({ title: p.title, href: `/${lang}/blog/${p.slug}` }))}
+      />
+      <FooterSection dict={dict} lang={lang as 'es' | 'en'} contactData={contactData || undefined} />
+    </div>
   );
 }
