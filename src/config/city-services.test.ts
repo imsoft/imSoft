@@ -20,12 +20,13 @@ const bloques = (c: (typeof paginas)[number]['c']) =>
   ].map((t) => t.toLowerCase().trim());
 
 describe('landings de ciudad + servicio', () => {
-  it('existen las cuatro de Guadalajara y Monterrey, tres de CDMX, y se resuelven por ruta', () => {
+  it('existen las cuatro de Guadalajara, Monterrey, Queretaro y Puebla, tres de CDMX, y se resuelven por ruta', () => {
     expect(paginas.filter((p) => p.city === 'guadalajara').map((p) => p.slug).sort()).toEqual([...CITY_SERVICE_SLUGS].sort());
     expect(paginas.filter((p) => p.city === 'monterrey').map((p) => p.slug).sort()).toEqual([...CITY_SERVICE_SLUGS].sort());
     // En CDMX el autocompletado no sugiere "desarrollo de apps cdmx": esa pagina no se hace.
     expect(paginas.filter((p) => p.city === 'cdmx').map((p) => p.slug).sort()).toEqual(['empresas-de-software', 'paginas-web', 'tiendas-en-linea']);
     expect(cityServiceContent('cdmx', 'desarrollo-de-apps')).toBeNull();
+    for (const city of ['queretaro', 'puebla'] as const) expect(paginas.filter((p) => p.city === city).map((p) => p.slug).sort()).toEqual([...CITY_SERVICE_SLUGS].sort());
     expect(cityServiceContent('guadalajara', 'paginas-web')?.h1).toBe('Páginas Web en Guadalajara');
     expect(cityServiceContent('guadalajara', 'software-para-clinicas')).toBeNull();
     expect(cityServiceContent('monterrey', 'paginas-web')?.h1).toBe('Páginas Web en Monterrey');
@@ -82,7 +83,7 @@ describe('landings de ciudad + servicio', () => {
       const texto = JSON.stringify(c).toLowerCase();
       expect(texto, `${city}/${c.h1}`).toMatch(/a distancia|videollamada/);
       expect(texto, `${city}/${c.h1}`).toContain('guadalajara');
-      expect(texto).not.toMatch(/nuestra oficina en (monterrey|cdmx|la ciudad de méxico)/);
+      expect(texto).not.toMatch(/nuestra oficina en (monterrey|cdmx|la ciudad de méxico|querétaro|puebla)/);
     }
   });
 
@@ -93,7 +94,7 @@ describe('landings de ciudad + servicio', () => {
       expect(c.proof.items.length).toBeGreaterThanOrEqual(3);
       for (const item of c.proof.items) {
         expect(reales.has(item.slug ?? ''), `slug ${item.slug} no existe en el portafolio`).toBe(true);
-        expect(item.description.toLowerCase()).not.toMatch(/en guadalajara|de guadalajara|en zapopan|en monterrey|en cdmx|ciudad de méxico/);
+        expect(item.description.toLowerCase()).not.toMatch(/en guadalajara|de guadalajara|en zapopan|en monterrey|en cdmx|ciudad de méxico|en querétaro|en puebla/);
       }
     }
   });

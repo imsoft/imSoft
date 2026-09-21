@@ -41,12 +41,14 @@ export interface CityServiceContent {
   cta: { title: string; description: string; buttonText: string };
 }
 
-export type CityKey = 'guadalajara' | 'monterrey' | 'cdmx';
+export type CityKey = 'guadalajara' | 'monterrey' | 'cdmx' | 'queretaro' | 'puebla';
 
 export const CITY_SERVICE_CITY_LABELS: Record<CityKey, string> = {
   guadalajara: 'Guadalajara',
   monterrey: 'Monterrey',
   cdmx: 'CDMX',
+  queretaro: 'Querétaro',
+  puebla: 'Puebla',
 };
 
 export const CITY_SERVICE_LABELS: Record<CityServiceSlug, string> = {
@@ -1281,10 +1283,884 @@ const CDMX: Partial<Record<CityServiceSlug, CityServiceContent>> = {
   },
 };
 
+const QUERETARO: Record<CityServiceSlug, CityServiceContent> = {
+  'paginas-web': {
+    seoTitle: 'Páginas web en Querétaro para empresas | imSoft',
+    seoDescription:
+      'Páginas web para empresas de Querétaro: proveedores industriales, servicios y negocios de Juriquilla o El Marqués. SEO local y precio fijo desde $15,000.',
+    h1: 'Páginas Web en Querétaro',
+    heroSubtitle:
+      'Desarrollamos páginas web para empresas de Querétaro que crecen con la industria y los corporativos que llegan a la ciudad: proveedores de los parques industriales, servicios profesionales en Juriquilla y Centro Sur, y negocios que atienden a una población que no deja de crecer. Precio fijo y el sitio a tu nombre.',
+    audience: {
+      title: 'Qué sitios hacemos para empresas de Querétaro',
+      items: [
+        {
+          title: 'Proveedores de la industria aeroespacial y automotriz',
+          description:
+            'Talleres de maquinado, tratamientos, logística y servicios que quieren entrar como proveedores de las plantas de El Marqués, Bernardo Quintana o el aeropuerto. El sitio tiene que mostrar certificaciones, procesos y capacidad con la seriedad que exige un comprador de ese sector.',
+        },
+        {
+          title: 'Servicios profesionales para los que llegan a la ciudad',
+          description:
+            'Inmobiliarias, despachos, escuelas y clínicas que reciben a familias y empresas recién llegadas a Querétaro. Esa gente busca en Google antes de conocer a nadie: el sitio es la primera impresión y tiene que responder rápido y en celular.',
+        },
+        {
+          title: 'Negocios locales con sitio de plantilla',
+          description:
+            'Sitios hechos con un constructor genérico que no aparecen en búsquedas de Querétaro y nadie puede editar. Revisamos, conservamos lo útil y rehacemos lo que estorba.',
+        },
+      ],
+    },
+    problems: {
+      title: 'Lo que nos dicen desde Querétaro',
+      items: [
+        'Querétaro se llenó de competencia nueva y ya no aparecemos como antes',
+        'Un comprador de planta pidió nuestro sitio y no estaba a la altura',
+        'El sitio no dice en qué zona atendemos ni cómo cotizar',
+        'Cambiar una foto o un precio depende de alguien que ya no está',
+        'Carga lento en celular, que es desde donde nos buscan',
+        'No sabemos si el sitio nos trae clientes o solo existe',
+      ],
+    },
+    solutions: {
+      title: 'Cómo hacemos un sitio que compita en Querétaro',
+      items: [
+        {
+          title: 'Páginas por servicio y por zona',
+          description:
+            'Si atiendes Juriquilla, El Refugio, Corregidora o los parques industriales, cada zona y cada servicio tienen su lugar en la estructura. Es lo que Google necesita para mostrarte en búsquedas locales concretas.',
+        },
+        {
+          title: 'Confianza para el comprador industrial',
+          description:
+            'Certificaciones, procesos, clientes atendidos y una solicitud de cotización clara. Si vendes a plantas, el sitio se diseña para pasar su primer filtro.',
+        },
+        {
+          title: 'Velocidad medida y SEO técnico desde el código',
+          description:
+            'Next.js, Core Web Vitals revisados antes de entregar, datos estructurados de negocio local y perfil de Google conectado. Nada que agregar después.',
+        },
+        {
+          title: 'Tú lo administras',
+          description:
+            'Panel para editar textos, fotos y servicios. Dominio, hosting y SSL incluidos el primer año; el sitio es tuyo desde que queda pagado.',
+        },
+      ],
+    },
+    pricing: {
+      title: 'Cuánto cuesta una página web en Querétaro',
+      description: 'Precio fijo, acordado antes de empezar. Trabajamos a distancia desde Guadalajara, a dos horas y media de Querétaro.',
+      items: [
+        { name: 'Landing page', price: 'Desde $5,000 MXN', includes: 'Una página con formulario, lista en una semana. Para un servicio o una campaña.' },
+        { name: 'Sitio web corporativo', price: 'Desde $15,000 MXN', includes: 'Secciones por servicio y zona, diseño responsive, SEO técnico, dominio, hosting y SSL. Entrega en 2 a 3 semanas.' },
+      ],
+      note: 'Versión en inglés, catálogo o integración con tu CRM se cotizan como módulos. Precio cerrado en 48 horas.',
+    },
+    proof: {
+      title: 'Sitios nuestros que puedes revisar',
+      description: 'Proyectos reales del portafolio. Somos de Guadalajara y no publicamos la ubicación de cada cliente.',
+      items: [
+        { name: 'Construcción Inteligente', description: 'Web corporativa con diseño orientado a posicionamiento.', slug: 'intelligent-construction' },
+        { name: 'Profibra', description: 'Sitio industrial con catálogo de productos.', slug: 'profibra' },
+        { name: 'JTP Logistics', description: 'Sitio para captar clientes de una empresa de logística.', slug: 'jtp-logistics' },
+        { name: 'Bemästra Dental', description: 'Sitio de clínica dental pensado para atraer pacientes.', slug: 'bemastra-dental' },
+      ],
+    },
+    faq: {
+      title: 'Preguntas frecuentes',
+      items: [
+        {
+          question: '¿Están en Querétaro?',
+          answer: 'No, estamos en Guadalajara, a unas dos horas y media por carretera. El proceso completo se hace a distancia por videollamada y WhatsApp; si el proyecto pide una reunión presencial, lo acordamos al cotizar.',
+        },
+        {
+          question: '¿Cuánto tarda el sitio?',
+          answer: 'Una landing page, una semana. Un sitio corporativo, de dos a tres semanas desde que tenemos tus textos y fotos. Si hay que redactarlos, lo hacemos y se suma al calendario.',
+        },
+        {
+          question: '¿Incluye versión en inglés?',
+          answer: 'Se cotiza como módulo adicional. En Querétaro la piden proveedores de plantas extranjeras y negocios que atienden a expatriados; se construye con URL y etiquetas correctas para que Google la muestre a quien busca en inglés.',
+        },
+        {
+          question: '¿Cómo se paga?',
+          answer: '50 % al iniciar y 50 % contra entrega, por transferencia o tarjeta con enlace de pago. CFDI en cada pago con tus datos fiscales.',
+        },
+      ],
+    },
+    relatedPosts: ['cuanto-cuesta-una-pagina-web-en-mexico'],
+    cta: {
+      title: '¿Revisamos tu sitio?',
+      description: `Mándanos tu sitio actual o cuéntanos qué necesitas. En 48 horas te decimos qué haríamos, cuánto costaría y cuándo estaría. ${HORARIO}`,
+      buttonText: 'Pedir cotización',
+    },
+  },
+
+  'empresas-de-software': {
+    seoTitle: 'Empresa de desarrollo de software para Querétaro | imSoft',
+    seoDescription:
+      'Software a la medida para empresas de Querétaro: sistemas de operación, portales de clientes y proveedores y plataformas en la nube. Precio fijo, a distancia.',
+    h1: 'Desarrollo de Software a la Medida para Empresas de Querétaro',
+    heroSubtitle:
+      'Construimos software a la medida para empresas de Querétaro que crecen más rápido que sus procesos: proveedores industriales que necesitan trazabilidad, empresas de servicios con varias sedes y negocios que quieren dejar de operar en hojas de cálculo. Precio fijo, entregas por fases y el código a tu nombre.',
+    audience: {
+      title: 'Proyectos que cotizamos con frecuencia para Querétaro',
+      items: [
+        {
+          title: 'Trazabilidad y calidad para proveedores industriales',
+          description:
+            'Registro de lotes, inspecciones, no conformidades y certificados por pieza, como exigen las plantas aeroespaciales y automotrices a sus proveedores. Sistemas que sustituyen las carpetas de Excel que se llenan antes de cada auditoría.',
+        },
+        {
+          title: 'Empresas de servicios en expansión',
+          description:
+            'Logística del Bajío, mantenimiento, seguridad y limpieza con contratos en varios parques industriales: cotizar, programar, ejecutar con evidencia y cobrar desde un solo sistema.',
+        },
+        {
+          title: 'Inmobiliarias, escuelas y clínicas que crecieron con la ciudad',
+          description:
+            'Negocios con cientos de clientes nuevos al año que necesitan seguimiento, expedientes y portales de consulta para dejar de atender por WhatsApp lo que el cliente puede ver solo.',
+        },
+      ],
+    },
+    problems: {
+      title: 'Señales de que el crecimiento rebasó tus herramientas',
+      items: [
+        'Cada auditoría de cliente implica semanas armando evidencia a mano',
+        'Tienes operación en varios parques y nadie ve el conjunto',
+        'El sistema que compraste sirve para facturar, no para operar',
+        'Los clientes preguntan por WhatsApp lo que podrían consultar en un portal',
+        'Contratar más gente para administrar es la única forma de crecer',
+        'La información vive en el Excel de una sola persona',
+      ],
+    },
+    solutions: {
+      title: 'Cómo trabajamos con empresas de Querétaro',
+      items: [
+        {
+          title: 'Descubrimiento con quien opera, no solo con dirección',
+          description:
+            'Dos o tres sesiones por videollamada con supervisores y administrativos. De ahí sale el alcance por escrito, los módulos y un precio fijo.',
+        },
+        {
+          title: 'La primera fase entra a producción',
+          description:
+            'Empezamos por el proceso más caro: trazabilidad, portal o control de operación. Se usa en tu planta o tu oficina desde la primera entrega, y cada pago va ligado a una fase.',
+        },
+        {
+          title: 'Integración con ERP y facturación',
+          description:
+            'Conectamos con lo que ya usas cuando hay API o exportación, para no capturar doble. Base PostgreSQL, nube, sin licencias por usuario.',
+        },
+        {
+          title: 'Sistema documentado y a tu nombre',
+          description:
+            'El código es tuyo desde que queda pagado. Primer mes de soporte incluido y documentación para que lo mantenga tu equipo o quien elijas.',
+        },
+      ],
+    },
+    pricing: {
+      title: 'Cuánto cuesta un desarrollo a la medida para Querétaro',
+      description: 'Referencia publicada; el precio cerrado sale del alcance definido en el descubrimiento.',
+      items: [
+        { name: 'Primer sistema o MVP', price: 'Desde $60,000 MXN', includes: 'Un proceso completo en producción en 6 a 8 semanas, con usuarios, roles y panel de administración.' },
+        { name: 'Plataforma a la medida', price: 'Desde $150,000 MXN', includes: 'Varios módulos, integraciones con ERP o calidad, varias sedes y roadmap por fases.' },
+      ],
+      note: 'Un sistema de trazabilidad para un proveedor mediano o un portal de clientes suele quedar en el primer rango.',
+    },
+    proof: {
+      title: 'Sistemas nuestros en operación',
+      description: 'Del portafolio, para que veas el tipo de trabajo. Somos de Guadalajara y no publicamos la ubicación de cada cliente.',
+      items: [
+        { name: 'Aduvanta', description: 'SaaS de gestión aduanera que sustituye trece aplicaciones de escritorio.', slug: 'aduvanta' },
+        { name: 'Starfilters · Reportes', description: 'Generación de reportes dinámicos para clientes industriales.', slug: 'starfilters-report-generator' },
+        { name: 'JTP Logistics · Inventario', description: 'Control de inventario interno de una empresa de logística.', slug: 'jtp-logistics-inventory' },
+        { name: 'The PodStore', description: 'Aplicación web para procesos internos de una empresa de servicios.', slug: 'the-podstore' },
+      ],
+    },
+    faq: {
+      title: 'Preguntas frecuentes',
+      items: [
+        {
+          question: '¿Trabajan con empresas de Querétaro a distancia?',
+          answer: 'Sí. Estamos en Guadalajara y el proceso es remoto: levantamiento por videollamada con pantalla compartida y pruebas en tu operación real desde la primera fase. Si hace falta una visita al arranque, lo acordamos al cotizar.',
+        },
+        {
+          question: '¿Pueden cubrir lo que pide una auditoría de calidad?',
+          answer: 'Sí, si lo definimos desde el alcance: qué registros, qué evidencia y qué reportes pide tu cliente. El sistema se diseña para producir esa evidencia como parte del trabajo diario, no como esfuerzo aparte antes de la auditoría.',
+        },
+        {
+          question: '¿Y si el alcance cambia a la mitad?',
+          answer: 'Lo que amplía el alcance se cotiza por separado antes de hacerse, y no mueve precio ni fechas de lo ya contratado. Está por escrito en la cotización y en el contrato.',
+        },
+        {
+          question: '¿Cómo son los pagos?',
+          answer: 'Por hitos ligados a entregas: 50 % al iniciar y 50 % contra entrega en proyectos cortos, o tres hitos en los largos. Transferencia o tarjeta con enlace de pago, y CFDI en cada pago.',
+        },
+      ],
+    },
+    relatedPosts: ['cuanto-cuesta-desarrollar-una-app-en-mexico'],
+    cta: {
+      title: '¿Vemos tu operación?',
+      description: `Una videollamada de 15 minutos para entender qué llevas hoy en Excel y decirte si un sistema a la medida tiene sentido y en qué rango de precio queda. ${HORARIO}`,
+      buttonText: 'Agendar videollamada',
+    },
+  },
+
+  'tiendas-en-linea': {
+    seoTitle: 'Tiendas en línea en Querétaro: ecommerce propio | imSoft',
+    seoDescription:
+      'Tiendas en línea para negocios de Querétaro: catálogo, pagos con tarjeta y SPEI, envíos y facturación. Tienda propia, sin comisión por venta ni renta mensual.',
+    h1: 'Tiendas en Línea en Querétaro',
+    heroSubtitle:
+      'Desarrollamos tiendas en línea para negocios de Querétaro: marcas locales que quieren vender a todo el Bajío y al país, distribuidores que atienden a la industria y comercios que hoy cierran cada venta por WhatsApp. Catálogo propio, pagos, envíos y facturación integrados, sin comisión por venta.',
+    audience: {
+      title: 'Para quién hacemos tiendas en línea en Querétaro',
+      items: [
+        {
+          title: 'Marcas locales con clientes en todo el Bajío',
+          description:
+            'Alimentos, productos artesanales, ropa y artículos que salen de Querétaro a Guanajuato, San Luis y el resto del país. Envíos con paqueterías nacionales y pagos con meses sin intereses.',
+        },
+        {
+          title: 'Distribuidores de insumos industriales y de construcción',
+          description:
+            'Refacciones, herramienta, consumibles y materiales para las empresas de los parques. Precios por cliente, pedidos recurrentes y crédito, con un portal donde el comprador repite su pedido sin llamar.',
+        },
+        {
+          title: 'Comercios que venden por redes',
+          description:
+            'Negocios que hoy cotizan y cobran en el chat y pierden ventas fuera de horario. La tienda toma el pedido, cobra y confirma el envío sola.',
+        },
+      ],
+    },
+    problems: {
+      title: 'Cuándo la plataforma de renta deja de convenir',
+      items: [
+        'Pagas mensualidad más comisión y la tienda no es tuya',
+        'Vendes a empresas con precios distintos y la plataforma tiene uno solo',
+        'Cada venta se factura a mano en otro sistema',
+        'El inventario de la tienda física y el de la web no coinciden',
+        'Cada envío a otro estado se cotiza a mano con la paquetería',
+        'No puedes conectar tu punto de venta ni tu sistema de inventario',
+      ],
+    },
+    solutions: {
+      title: 'Qué incluye una tienda propia con imSoft',
+      items: [
+        {
+          title: 'Catálogo hecho para lo que vendes',
+          description:
+            'Variantes, fichas técnicas, precios por cliente y carga masiva de productos. La estructura se diseña para tu inventario, no al revés.',
+        },
+        {
+          title: 'Pagos y CFDI integrados',
+          description:
+            'Tarjeta con meses sin intereses, SPEI y efectivo mediante Stripe o Mercado Pago. Facturación automática o a solicitud del cliente con sus datos guardados.',
+        },
+        {
+          title: 'Envíos nacionales y entrega local',
+          description:
+            'Guías con paqueterías nacionales, reglas por peso y zona, y entrega local en Querétaro y Corregidora si la haces con tu propio equipo.',
+        },
+        {
+          title: 'Sin comisiones y con tus datos',
+          description:
+            'Pagas el desarrollo una vez. La tienda, los clientes y las ventas son tuyos, y solo pagas los costos reales de hosting y pasarela.',
+        },
+      ],
+    },
+    proof: {
+      title: 'Tiendas en línea que ya venden',
+      description: 'Ecommerce del portafolio que puedes abrir. Somos de Guadalajara y no publicamos la ubicación de cada cliente.',
+      items: [
+        { name: 'Starfilters', description: 'Ecommerce de filtros y soluciones industriales con catálogo técnico.', slug: 'starfilters' },
+        { name: 'LC Suplements', description: 'Tienda de suplementos deportivos con catálogo de proteínas y vitaminas.', slug: 'lc-suplements' },
+        { name: 'Oro Nacional', description: 'Ecommerce de joyería enfocado en mostrar producto y aumentar ventas.', slug: 'national-gold' },
+      ],
+    },
+    faq: {
+      title: 'Preguntas frecuentes',
+      items: [
+        {
+          question: '¿Cuánto cuesta una tienda en línea en Querétaro?',
+          answer: 'Con catálogo, pagos y envíos se cotiza como un sitio corporativo con módulos adicionales; con precios por cliente, inventario sincronizado y facturación automática se acerca a un sistema a la medida. Precio cerrado en 48 horas.',
+        },
+        {
+          question: '¿Conviene tienda propia o Shopify?',
+          answer: 'Si vendes pocos productos simples, una plataforma sirve. La tienda propia conviene con variantes, precios por cliente, integración con inventario o cuando comisiones y mensualidad ya superan el costo de tenerla. Te lo decimos con números.',
+        },
+        {
+          question: '¿Trabajan con negocios de Querétaro sin estar ahí?',
+          answer: 'Sí. Estamos en Guadalajara y todo el proceso es a distancia: videollamadas, panel en línea y pruebas desde tu navegador antes de salir a producción.',
+        },
+        {
+          question: '¿Pueden migrar mi tienda actual?',
+          answer: 'Sí. Exportamos catálogo, clientes y pedidos de Shopify, WooCommerce o Tiendanube, los cargamos en la tienda nueva y redirigimos las URL para no perder posicionamiento.',
+        },
+      ],
+    },
+    relatedPosts: ['cuanto-cuesta-una-pagina-web-en-mexico'],
+    cta: {
+      title: '¿Vemos tu catálogo?',
+      description: `Cuéntanos qué vendes, a quién y cómo cobras hoy. Te decimos si conviene tienda propia y cuánto costaría. ${HORARIO}`,
+      buttonText: 'Pedir cotización',
+    },
+  },
+
+  'desarrollo-de-apps': {
+    seoTitle: 'Desarrollo de apps para empresas de Querétaro | imSoft',
+    seoDescription:
+      'Desarrollo de apps para empresas de Querétaro: apps para planta y campo, portales móviles para clientes y productos digitales. Precio fijo, a distancia.',
+    h1: 'Desarrollo de Apps para Empresas de Querétaro',
+    heroSubtitle:
+      'Desarrollamos aplicaciones para empresas de Querétaro: apps para personal de planta y de campo, portales móviles para clientes y productos digitales que quieres lanzar. Te decimos con criterio cuándo conviene una app nativa y cuándo una aplicación web resuelve lo mismo por menos.',
+    audience: {
+      title: 'Apps que cotizamos con frecuencia para Querétaro',
+      items: [
+        {
+          title: 'Inspecciones y calidad en planta',
+          description:
+            'Checklists, inspecciones con foto, registro de lotes y no conformidades desde el teléfono, con modo sin conexión para naves donde la señal falla. Evidencia lista para auditorías.',
+        },
+        {
+          title: 'Equipos en campo por el Bajío',
+          description:
+            'Técnicos, vendedores de ruta y choferes que cubren Querétaro, Guanajuato y San Luis. Formularios, evidencia con ubicación y sincronización cuando vuelve la señal.',
+        },
+        {
+          title: 'Productos digitales y MVP',
+          description:
+            'Empresas y emprendedores que quieren validar una app con usuarios reales antes de invertir a fondo. Primera versión funcional en seis a ocho semanas.',
+        },
+      ],
+    },
+    problems: {
+      title: 'Lo que suele pasar antes de tener app propia',
+      items: [
+        'La evidencia de calidad se toma en papel y se pasa a Excel al final del turno',
+        'Cotizaron una app nativa carísima cuando una web app resolvía lo mismo',
+        'El proveedor anterior entregó la app y ya no da soporte',
+        'El equipo en campo reporta por WhatsApp y la información se pierde',
+        'Queremos lanzar un producto y no sabemos cuánto invertir',
+        'Los clientes quieren consultar su información desde el celular y no hay cómo',
+      ],
+    },
+    solutions: {
+      title: 'Cómo decidimos y construimos tu app',
+      items: [
+        {
+          title: 'Web app o nativa, según lo que necesitas',
+          description:
+            'Cámara y GPS intensivos, trabajo sin señal o distribución en tiendas: nativa. Para lo demás, una aplicación web instalable cuesta menos y se actualiza sin pasar por App Store ni Google Play.',
+        },
+        {
+          title: 'MVP funcional en 6 a 8 semanas',
+          description:
+            'Acceso de usuarios, la operación principal y panel de administración desde la primera versión. Lo demás se agrega con datos de uso real.',
+        },
+        {
+          title: 'Un solo código para web y móvil',
+          description:
+            'Con React y Next.js la misma lógica sirve para la web y para la app. Mantenimiento más barato y mejoras que llegan a todos los dispositivos.',
+        },
+        {
+          title: 'Publicación, soporte y propiedad',
+          description:
+            'Publicamos en las tiendas con cuentas a tu nombre. Primer mes de soporte incluido y el código es tuyo desde que queda pagado.',
+        },
+      ],
+    },
+    pricing: {
+      title: 'Cuánto cuesta desarrollar una app para Querétaro',
+      description: 'Referencia publicada; el precio cerrado sale al definir el alcance por videollamada.',
+      items: [
+        { name: 'MVP o app de operación', price: 'Desde $60,000 MXN', includes: 'Aplicación funcional en 6 a 8 semanas con usuarios, roles, panel y pagos si aplica.' },
+        { name: 'Plataforma o producto completo', price: 'Desde $150,000 MXN', includes: 'Varios roles, integraciones, modo sin conexión y roadmap de versiones.' },
+      ],
+      note: 'Una app nativa para iOS y Android cuesta más que una web app equivalente. Lo primero que revisamos es cuál necesitas de verdad.',
+    },
+    proof: {
+      title: 'Aplicaciones nuestras en uso',
+      description: 'Aplicaciones web del portafolio que se usan desde el teléfono. Somos de Guadalajara y no publicamos la ubicación de cada cliente.',
+      items: [
+        { name: 'JTP Logistics · Inventario', description: 'Control de inventario interno para una empresa de logística.', slug: 'jtp-logistics-inventory' },
+        { name: 'Steridental · Pedidos', description: 'Aplicación con la que los clientes de un laboratorio dental generan pedidos.', slug: 'steridantal-order-generator' },
+        { name: 'Cursumi', description: 'Plataforma de venta de cursos y gestión de contenido educativo.', slug: 'cursumi' },
+        { name: 'Wellpoint', description: 'Plataforma para administrar servicios de salud y centros wellness.', slug: 'wellpoint' },
+      ],
+    },
+    faq: {
+      title: 'Preguntas frecuentes',
+      items: [
+        {
+          question: '¿Desarrollan la app sin estar en Querétaro?',
+          answer: 'Sí. El levantamiento se hace por videollamada con quienes van a usarla y las pruebas las hace tu equipo en su operación real desde la primera fase. Estamos en Guadalajara y trabajamos así con varias ciudades.',
+        },
+        {
+          question: '¿Funciona sin señal en la planta?',
+          answer: 'Puede. El modo sin conexión guarda la captura en el teléfono y sincroniza cuando hay red. Se define en el alcance porque influye en si la app va nativa o web instalable.',
+        },
+        {
+          question: '¿Cuánto tarda?',
+          answer: 'Un MVP, seis a ocho semanas. Una app de operación con varios roles e integraciones, dos a cuatro meses, entregada por fases que se usan desde que salen.',
+        },
+        {
+          question: '¿Quién la mantiene después?',
+          answer: 'El primer mes va incluido. Después puedes contratar mantenimiento mensual con nosotros o dárselo a tu equipo: código, cuentas de las tiendas y datos son tuyos.',
+        },
+      ],
+    },
+    relatedPosts: ['cuanto-cuesta-desarrollar-una-app-en-mexico'],
+    cta: {
+      title: '¿Platicamos de tu app?',
+      description: `Cuéntanos qué debe hacer y quién la usará. En 15 minutos por videollamada te decimos si va web o nativa y en qué rango de precio queda. ${HORARIO}`,
+      buttonText: 'Agendar videollamada',
+    },
+  },
+};
+
+const PUEBLA: Record<CityServiceSlug, CityServiceContent> = {
+  'paginas-web': {
+    seoTitle: 'Páginas web en Puebla para empresas y negocios | imSoft',
+    seoDescription:
+      'Páginas web para empresas de Puebla: proveedores automotrices, negocios de Angelópolis y Cholula, escuelas y clínicas. SEO local y precio fijo desde $15,000.',
+    h1: 'Páginas Web en Puebla',
+    heroSubtitle:
+      'Desarrollamos páginas web para empresas y negocios de Puebla: proveedores del clúster automotriz, comercios y restaurantes del centro y de Cholula, escuelas, clínicas y servicios profesionales de Angelópolis. Sitios rápidos, que aparecen en Google y llevan al contacto. Precio fijo y el sitio a tu nombre.',
+    audience: {
+      title: 'Qué sitios hacemos para empresas de Puebla',
+      items: [
+        {
+          title: 'Proveedores del clúster automotriz y textil',
+          description:
+            'Talleres, maquilas, logística y servicios que atienden a las plantas de la región y necesitan un sitio que muestre capacidad y certificaciones con seriedad. El comprador de una armadora revisa tu sitio antes de darte de alta.',
+        },
+        {
+          title: 'Escuelas, clínicas y servicios en Angelópolis',
+          description:
+            'Puebla es ciudad universitaria y de servicios de salud: colegios, universidades privadas, clínicas y consultorios compiten por familias que buscan en Google. El sitio tiene que responder rápido, en celular, y agendar una visita o cita.',
+        },
+        {
+          title: 'Restaurantes, hoteles y comercio del centro y Cholula',
+          description:
+            'Negocios que viven del turismo y del consumo local, con menú, reservaciones o catálogo que hoy solo está en redes. Un sitio propio los hace aparecer cuando alguien busca "cerca de mí".',
+        },
+      ],
+    },
+    problems: {
+      title: 'Lo que nos dicen desde Puebla',
+      items: [
+        'Solo nos encuentran por Facebook y ahí no aparecemos en Google',
+        'Un comprador de planta pidió el sitio y no teníamos qué mostrar',
+        'El sitio no muestra menú, horarios ni cómo reservar',
+        'Cambiar cualquier cosa depende de quien lo hizo',
+        'Carga lento en celular y la gente no espera',
+        'No sabemos si el sitio trae clientes o solo existe',
+      ],
+    },
+    solutions: {
+      title: 'Cómo hacemos un sitio que trabaje para tu negocio en Puebla',
+      items: [
+        {
+          title: 'Estructura para búsquedas locales',
+          description:
+            'Páginas por servicio y, si aplica, por zona: Angelópolis, Centro, Cholula, La Paz. Datos estructurados de negocio local y perfil de Google conectado para las búsquedas "cerca de mí".',
+        },
+        {
+          title: 'Lo que pide cada tipo de negocio',
+          description:
+            'Menú y reservación para restaurantes, agenda para clínicas, admisiones para escuelas, capacidades y certificaciones para proveedores. Cada sitio se diseña para su conversión, no para verse bonito.',
+        },
+        {
+          title: 'Rápido y bien hecho técnicamente',
+          description:
+            'Next.js y Core Web Vitals medidos antes de entregar. Un sitio que carga rápido en celular retiene la visita y Google lo premia.',
+        },
+        {
+          title: 'Tú lo controlas',
+          description:
+            'Menú, horarios, precios y fotos se cambian desde un panel sin llamar a nadie. Dominio, hosting y SSL van incluidos el primer año y el sitio es tuyo desde que queda pagado.',
+        },
+      ],
+    },
+    pricing: {
+      title: 'Cuánto cuesta una página web en Puebla',
+      description: 'Precio fijo, acordado antes de empezar. Trabajamos a distancia desde Guadalajara con clientes de todo el país.',
+      items: [
+        { name: 'Landing page', price: 'Desde $5,000 MXN', includes: 'Una página con formulario, lista en una semana. Para una campaña o un servicio.' },
+        { name: 'Sitio web corporativo', price: 'Desde $15,000 MXN', includes: 'Secciones por servicio, diseño responsive, SEO técnico, dominio, hosting y SSL. Entrega en 2 a 3 semanas.' },
+      ],
+      note: 'Reservaciones, agenda de citas, catálogo o versión en inglés se cotizan como módulos. Precio cerrado en 48 horas.',
+    },
+    proof: {
+      title: 'Sitios nuestros que puedes revisar',
+      description: 'Proyectos reales del portafolio. Somos de Guadalajara y no publicamos la ubicación de cada cliente.',
+      items: [
+        { name: 'Bemästra Dental', description: 'Sitio de clínica dental pensado para atraer pacientes y facilitar la cita.', slug: 'bemastra-dental' },
+        { name: 'Ferreacabados Jalisco', description: 'Página para presentar productos de ferretería y atraer clientes locales.', slug: 'ferreacabados-jalisco' },
+        { name: 'RM Constructora', description: 'Web corporativa orientada a marca y credibilidad.', slug: 'rm-construction' },
+        { name: 'Tuxcacuesco', description: 'Sitio institucional de un gobierno municipal enfocado en información y servicios.', slug: 'tuxcacuesco' },
+      ],
+    },
+    faq: {
+      title: 'Preguntas frecuentes',
+      items: [
+        {
+          question: '¿Están en Puebla?',
+          answer: 'No, estamos en Guadalajara. Todo el proceso se hace a distancia por videollamada y WhatsApp, con entregas que revisas en línea. Si el proyecto pide una reunión presencial, lo acordamos al cotizar.',
+        },
+        {
+          question: '¿Pueden incluir reservaciones o agenda de citas?',
+          answer: 'Sí, como módulo: reservación de mesa, cita médica o solicitud de admisión, con confirmación por correo o WhatsApp. Se cotiza según lo que necesites y se integra al sitio.',
+        },
+        {
+          question: '¿Cuánto tarda?',
+          answer: 'Una landing page, una semana. Un sitio corporativo, dos a tres semanas desde que tenemos textos y fotos. Si hay que redactar, se suma al plazo.',
+        },
+        {
+          question: '¿Cómo se paga?',
+          answer: '50 % al iniciar y 50 % contra entrega, por transferencia o tarjeta con enlace de pago. CFDI en cada pago.',
+        },
+      ],
+    },
+    relatedPosts: ['cuanto-cuesta-una-pagina-web-en-mexico'],
+    cta: {
+      title: '¿Revisamos tu sitio o tu página de Facebook?',
+      description: `Cuéntanos qué tienes hoy y qué quieres que haga tu sitio. En 48 horas te decimos precio y tiempo, sin compromiso. ${HORARIO}`,
+      buttonText: 'Pedir cotización',
+    },
+  },
+
+  'empresas-de-software': {
+    seoTitle: 'Empresa de desarrollo de software para Puebla | imSoft',
+    seoDescription:
+      'Software a la medida para empresas de Puebla: sistemas para proveedores automotrices, escuelas, clínicas y empresas de servicios. Precio fijo, a distancia.',
+    h1: 'Desarrollo de Software a la Medida para Empresas de Puebla',
+    heroSubtitle:
+      'Construimos software a la medida para empresas de Puebla que operan con procesos a mano: proveedores del sector automotriz y textil, escuelas con cientos de alumnos, clínicas con varias sedes y empresas de servicios. Precio fijo, entregas por fases y el código a tu nombre.',
+    audience: {
+      title: 'Proyectos que cotizamos con frecuencia para Puebla',
+      items: [
+        {
+          title: 'Proveedores automotrices y textiles',
+          description:
+            'Control de producción, calidad y entregas justo a tiempo para las plantas de la región. Sistemas que registran lotes, inspecciones y embarques y producen la evidencia que pide el cliente.',
+        },
+        {
+          title: 'Escuelas y universidades privadas',
+          description:
+            'Admisiones, control escolar, cobranza de colegiaturas y comunicación con padres. Puebla concentra instituciones educativas y muchas siguen operando con hojas de cálculo y grupos de WhatsApp.',
+        },
+        {
+          title: 'Clínicas y empresas de servicios con varias sedes',
+          description:
+            'Expedientes, agenda, inventario y facturación en un solo sistema, con reportes por sede. Para dejar de consolidar a mano cada semana.',
+        },
+      ],
+    },
+    problems: {
+      title: 'Cuándo un sistema propio sale más barato que seguir así',
+      items: [
+        'Cada sede lleva su control aparte y consolidar tarda días',
+        'La cobranza y los recordatorios se hacen a mano cada mes',
+        'La evidencia para el cliente o la auditoría se arma en la última semana',
+        'Pagan varias herramientas que no se comunican',
+        'Los padres, pacientes o clientes preguntan por WhatsApp lo que podrían consultar solos',
+        'Crecer implica contratar administrativos, no vender más',
+      ],
+    },
+    solutions: {
+      title: 'Cómo llevamos un proyecto con empresas de Puebla',
+      items: [
+        {
+          title: 'Alcance por escrito antes de programar',
+          description:
+            'Sesiones de descubrimiento por videollamada con quien opera: administrativos, coordinadores, supervisores. De ahí salen módulos, reglas y un precio fijo.',
+        },
+        {
+          title: 'Fases que se usan desde la primera',
+          description:
+            'Empezamos por el proceso más costoso, entra a producción y se paga por hito ligado a entrega. Sin esperar meses para ver resultados.',
+        },
+        {
+          title: 'Integrado con lo que ya tienes',
+          description:
+            'Facturación, pasarelas de pago, ERP o plataforma escolar cuando ofrecen API o exportación. PostgreSQL y nube, sin licencias por usuario.',
+        },
+        {
+          title: 'Propiedad y soporte claros',
+          description:
+            'El código es tuyo desde que queda pagado, documentado para que lo mantenga quien decidas. Primer mes de soporte incluido.',
+        },
+      ],
+    },
+    pricing: {
+      title: 'Cuánto cuesta un desarrollo a la medida para Puebla',
+      description: 'Referencia publicada; el precio cerrado sale del alcance definido.',
+      items: [
+        { name: 'Primer sistema o MVP', price: 'Desde $60,000 MXN', includes: 'Un proceso completo en producción en 6 a 8 semanas, con usuarios, roles y panel de administración.' },
+        { name: 'Plataforma a la medida', price: 'Desde $150,000 MXN', includes: 'Varios módulos, integraciones, varias sedes y roadmap por fases.' },
+      ],
+      note: 'Un control escolar básico o un portal de clientes suele quedar en el primer rango; una plataforma multi-sede con cobranza e integraciones, en el segundo.',
+    },
+    proof: {
+      title: 'Sistemas nuestros en operación',
+      description: 'Del portafolio, para que veas el tipo de trabajo. Somos de Guadalajara y no publicamos la ubicación de cada cliente.',
+      items: [
+        { name: 'Cursumi', description: 'Plataforma de venta de cursos y gestión de contenido educativo.', slug: 'cursumi' },
+        { name: 'Wellpoint', description: 'SaaS para centralizar servicios de salud, profesionales y centros wellness.', slug: 'wellpoint' },
+        { name: 'Aduvanta', description: 'SaaS de gestión aduanera que reemplaza trece aplicaciones de escritorio.', slug: 'aduvanta' },
+        { name: 'La Casa del Paste', description: 'Aplicación para la gestión interna de una empresa de alimentos.', slug: 'the-paste-house' },
+      ],
+    },
+    faq: {
+      title: 'Preguntas frecuentes',
+      items: [
+        {
+          question: '¿Trabajan con empresas de Puebla sin estar ahí?',
+          answer: 'Sí. Estamos en Guadalajara y el proceso es remoto: levantamiento por videollamada con pantalla compartida, entregas que pruebas en línea y soporte por WhatsApp. Si hace falta una visita al arranque, lo acordamos al cotizar.',
+        },
+        {
+          question: '¿Hacen sistemas para escuelas?',
+          answer: 'Sí: admisiones, control escolar, cobranza con recordatorios y portal para padres. Se define en el descubrimiento qué módulos necesitas primero y se entrega por fases para que el ciclo escolar no se interrumpa.',
+        },
+        {
+          question: '¿Qué pasa si cambia el alcance?',
+          answer: 'Lo que amplía el alcance se cotiza por separado antes de hacerse y no mueve precio ni fechas de lo contratado. Está en la cotización y en el contrato que firmas en línea.',
+        },
+        {
+          question: '¿Cómo son los pagos?',
+          answer: 'Por hitos ligados a entregas, normalmente 50 % al iniciar y 50 % contra entrega, o tres hitos en proyectos largos. Transferencia o tarjeta con enlace de pago y CFDI en cada pago.',
+        },
+      ],
+    },
+    relatedPosts: ['cuanto-cuesta-desarrollar-una-app-en-mexico'],
+    cta: {
+      title: '¿Platicamos de tu operación?',
+      description: `Una videollamada de 15 minutos para entender qué llevas hoy a mano y decirte si un sistema a la medida tiene sentido y en qué rango de precio queda. ${HORARIO}`,
+      buttonText: 'Agendar videollamada',
+    },
+  },
+
+  'tiendas-en-linea': {
+    seoTitle: 'Tiendas en línea en Puebla: ecommerce propio | imSoft',
+    seoDescription:
+      'Tiendas en línea para negocios de Puebla: catálogo, pagos con tarjeta y SPEI, envíos y facturación. Tienda propia, sin comisión por venta ni renta mensual.',
+    h1: 'Tiendas en Línea en Puebla',
+    heroSubtitle:
+      'Desarrollamos tiendas en línea para negocios de Puebla: marcas de alimentos y artesanía que venden a todo el país, comercios de ropa y calzado que hoy cierran ventas por Instagram, y distribuidores que atienden a otras empresas. Catálogo propio, pagos, envíos y facturación, sin comisión por venta.',
+    audience: {
+      title: 'Para quién hacemos tiendas en línea en Puebla',
+      items: [
+        {
+          title: 'Alimentos, dulces y artesanía con envío nacional',
+          description:
+            'Productos típicos de Puebla y Cholula que se venden a todo México y a paisanos en Estados Unidos. Aquí importan el empaque de envío, las paqueterías y los pagos con tarjeta internacional.',
+        },
+        {
+          title: 'Ropa, calzado y textil con venta al menudeo y mayoreo',
+          description:
+            'Fabricantes y tiendas que venden en redes y también a otros comercios. Un catálogo con precio de menudeo y mayoreo, tallas y colores, y pedidos mínimos para el mayorista.',
+        },
+        {
+          title: 'Distribuidores que venden a empresas',
+          description:
+            'Insumos, refacciones y materiales para negocios e industria con precios por cliente, crédito y pedidos recurrentes desde un portal.',
+        },
+      ],
+    },
+    problems: {
+      title: 'Por qué la plantilla de renta deja de servir',
+      items: [
+        'Pagas mensualidad más comisión por una tienda que no es tuya',
+        'Vendes menudeo y mayoreo y la plataforma solo tiene un precio',
+        'Facturar cada venta es un trámite aparte',
+        'El inventario del local y el de la web no coinciden',
+        'Los envíos al extranjero o a provincia se cotizan a mano',
+        'No puedes conectar tu punto de venta',
+      ],
+    },
+    solutions: {
+      title: 'Qué incluye una tienda propia con imSoft',
+      items: [
+        {
+          title: 'Catálogo con menudeo y mayoreo',
+          description:
+            'Precios por tipo de cliente, tallas, colores y pedidos mínimos. Carga masiva de productos y estructura pensada para lo que vendes.',
+        },
+        {
+          title: 'Pagos nacionales e internacionales',
+          description:
+            'Tarjeta con meses sin intereses, SPEI y efectivo mediante Stripe o Mercado Pago, y tarjetas extranjeras si vendes fuera de México. CFDI automático o a solicitud.',
+        },
+        {
+          title: 'Envíos y entrega local',
+          description:
+            'Guías con paqueterías nacionales, reglas por peso y destino, y entrega local en Puebla y Cholula si la haces con tu propio equipo.',
+        },
+        {
+          title: 'Sin comisiones y con tus datos',
+          description:
+            'Pagas el desarrollo una vez. Tienda, clientes y ventas son tuyos; solo pagas hosting y pasarela, que son costos públicos.',
+        },
+      ],
+    },
+    proof: {
+      title: 'Tiendas en línea que ya venden',
+      description: 'Ecommerce del portafolio que puedes abrir. Somos de Guadalajara y no publicamos la ubicación de cada cliente.',
+      items: [
+        { name: 'Oro Nacional', description: 'Ecommerce de joyería enfocado en mostrar producto y aumentar ventas.', slug: 'national-gold' },
+        { name: 'LC Suplements', description: 'Tienda de suplementos deportivos con catálogo de proteínas y vitaminas.', slug: 'lc-suplements' },
+        { name: 'Starfilters', description: 'Ecommerce de filtros y soluciones industriales con catálogo técnico.', slug: 'starfilters' },
+      ],
+    },
+    faq: {
+      title: 'Preguntas frecuentes',
+      items: [
+        {
+          question: '¿Puedo vender a Estados Unidos desde Puebla?',
+          answer: 'Sí. La tienda acepta tarjetas internacionales y se configuran envíos al extranjero con las paqueterías que lo permiten. Los impuestos y aduanas del destino los paga el comprador y se aclara en la tienda.',
+        },
+        {
+          question: '¿Cuánto cuesta una tienda en línea en Puebla?',
+          answer: 'Con catálogo, pagos y envíos se cotiza como un sitio corporativo con módulos adicionales; con menudeo y mayoreo, inventario sincronizado y facturación automática se acerca a un sistema a la medida. Precio cerrado en 48 horas.',
+        },
+        {
+          question: '¿Trabajan a distancia con negocios de Puebla?',
+          answer: 'Sí. Estamos en Guadalajara y todo el proceso se hace por videollamada y en línea; la tienda se prueba desde tu navegador antes de salir a producción.',
+        },
+        {
+          question: '¿Y si ya vendo en Mercado Libre?',
+          answer: 'Sigue vendiendo ahí: trae tráfico que no tienes. La tienda propia recupera margen y te da los datos del cliente para venderle de nuevo sin comisión. Muchas marcas usan ambos.',
+        },
+      ],
+    },
+    relatedPosts: ['cuanto-cuesta-una-pagina-web-en-mexico'],
+    cta: {
+      title: '¿Vemos tu catálogo?',
+      description: `Cuéntanos qué vendes, dónde vendes hoy y a quién. Te decimos si conviene tienda propia y cuánto costaría. ${HORARIO}`,
+      buttonText: 'Pedir cotización',
+    },
+  },
+
+  'desarrollo-de-apps': {
+    seoTitle: 'Desarrollo de apps para empresas de Puebla | imSoft',
+    seoDescription:
+      'Desarrollo de apps para empresas de Puebla: apps para equipos en campo, portales para clientes o pacientes y productos digitales. Precio fijo, a distancia.',
+    h1: 'Desarrollo de Apps para Empresas de Puebla',
+    heroSubtitle:
+      'Desarrollamos aplicaciones para empresas de Puebla: apps para equipos en planta y en campo, portales móviles para clientes, padres de familia o pacientes, y productos digitales que quieres lanzar. Te decimos con criterio cuándo conviene una app nativa y cuándo una aplicación web resuelve lo mismo por menos.',
+    audience: {
+      title: 'Apps que cotizamos con frecuencia para Puebla',
+      items: [
+        {
+          title: 'Portales para padres, alumnos y pacientes',
+          description:
+            'Escuelas y clínicas que quieren que la familia o el paciente consulte calificaciones, pagos, citas y avisos desde el teléfono, en lugar de recibir todo por grupos de WhatsApp.',
+        },
+        {
+          title: 'Equipos en planta y en campo',
+          description:
+            'Inspecciones, checklists y reportes con foto para proveedores automotrices, y formularios con ubicación para técnicos y vendedores de ruta. Con modo sin conexión donde la señal falla.',
+        },
+        {
+          title: 'Productos digitales y MVP',
+          description:
+            'Emprendedores y empresas que quieren validar una app con usuarios reales antes de invertir a fondo. Primera versión funcional en seis a ocho semanas.',
+        },
+      ],
+    },
+    problems: {
+      title: 'Lo que suele pasar antes de tener app propia',
+      items: [
+        'La comunicación con padres o pacientes va por grupos de WhatsApp y se pierde',
+        'Nos cotizaron una app de tienda cuando bastaba una que se abre desde el navegador',
+        'La app que ya tenemos no se actualiza porque nadie la mantiene',
+        'La evidencia de planta se toma en papel y se captura después',
+        'Tenemos la idea de la app en papel desde hace meses y no sabemos por dónde arrancar',
+        'Cada área usa una app distinta y ninguna se comunica',
+      ],
+    },
+    solutions: {
+      title: 'Cómo decidimos y construimos tu app',
+      items: [
+        {
+          title: 'Web app o nativa, con criterio',
+          description:
+            'Cámara y GPS intensivos, trabajo sin señal o distribución en tiendas de apps: nativa. Para consultas, avisos y trámites, una aplicación web instalable cuesta menos y se actualiza sin pasar por las tiendas.',
+        },
+        {
+          title: 'Primera versión en 6 a 8 semanas',
+          description:
+            'Acceso de usuarios, la función principal, avisos y panel de administración. Lo demás se agrega con datos de uso real.',
+        },
+        {
+          title: 'Un solo código para web y móvil',
+          description:
+            'Con React y Next.js la misma lógica sirve para web y app. Mantenimiento más barato y mejoras que llegan a todos a la vez.',
+        },
+        {
+          title: 'Publicación, soporte y propiedad',
+          description:
+            'Publicamos en App Store y Google Play con cuentas a tu nombre. Primer mes de soporte incluido y el código es tuyo desde que queda pagado.',
+        },
+      ],
+    },
+    pricing: {
+      title: 'Cuánto cuesta desarrollar una app para Puebla',
+      description: 'Referencia publicada; el precio cerrado sale al definir el alcance por videollamada.',
+      items: [
+        { name: 'MVP o app de operación', price: 'Desde $60,000 MXN', includes: 'Aplicación funcional en 6 a 8 semanas con usuarios, roles, panel y pagos si aplica.' },
+        { name: 'Plataforma o producto completo', price: 'Desde $150,000 MXN', includes: 'Varios roles, integraciones, notificaciones, modo sin conexión y roadmap.' },
+      ],
+      note: 'Un portal para padres o pacientes suele resolverse con una web app en el primer rango. Una app nativa para iOS y Android cuesta más que su equivalente web.',
+    },
+    proof: {
+      title: 'Aplicaciones nuestras en uso',
+      description: 'Aplicaciones web del portafolio que se usan desde el teléfono. Somos de Guadalajara y no publicamos la ubicación de cada cliente.',
+      items: [
+        { name: 'Cursumi', description: 'Plataforma de venta de cursos y gestión de contenido educativo.', slug: 'cursumi' },
+        { name: 'Wellpoint', description: 'Plataforma para administrar servicios de salud y centros wellness.', slug: 'wellpoint' },
+        { name: 'Steridental · Pedidos', description: 'Aplicación con la que los clientes de un laboratorio dental generan pedidos.', slug: 'steridantal-order-generator' },
+        { name: 'La Casa del Paste', description: 'Aplicación para la gestión interna de una empresa de alimentos.', slug: 'the-paste-house' },
+      ],
+    },
+    faq: {
+      title: 'Preguntas frecuentes',
+      items: [
+        {
+          question: '¿Desarrollan la app sin estar en Puebla?',
+          answer: 'Sí. Estamos en Guadalajara; el levantamiento se hace por videollamada con quienes van a usar la app y las pruebas las hace tu equipo desde la primera fase.',
+        },
+        {
+          question: '¿Sirve para avisar a padres o pacientes?',
+          answer: 'Sí. Notificaciones en el teléfono, avisos por correo o WhatsApp y consulta de calificaciones, pagos o citas. Se define en el alcance qué canales usas y quién puede enviar avisos.',
+        },
+        {
+          question: '¿Cuánto tarda?',
+          answer: 'Un MVP, seis a ocho semanas. Una app con varios roles e integraciones, dos a cuatro meses, por fases que se usan desde que salen.',
+        },
+        {
+          question: '¿Quién la mantiene después?',
+          answer: 'Incluimos el primer mes de soporte. Luego eliges: iguala mensual con nosotros o tu propio equipo, porque el código, las cuentas de App Store y Google Play y los datos quedan a tu nombre.',
+        },
+      ],
+    },
+    relatedPosts: ['cuanto-cuesta-desarrollar-una-app-en-mexico'],
+    cta: {
+      title: '¿Platicamos de tu app?',
+      description: `Cuéntanos qué debe hacer y quién la usará. En 15 minutos por videollamada te decimos si va web o nativa y en qué rango de precio. ${HORARIO}`,
+      buttonText: 'Agendar videollamada',
+    },
+  },
+};
+
 export const CITY_SERVICES: Record<CityKey, Partial<Record<CityServiceSlug, CityServiceContent>>> = {
   guadalajara: GUADALAJARA,
   monterrey: MONTERREY,
   cdmx: CDMX,
+  queretaro: QUERETARO,
+  puebla: PUEBLA,
 };
 
 export const CITY_SERVICE_CITIES = Object.keys(CITY_SERVICES) as CityKey[];
