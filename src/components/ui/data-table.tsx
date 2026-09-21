@@ -10,7 +10,8 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  useReactTable
+  useReactTable,
+  type PaginationState,
 } from "@tanstack/react-table"
 import { ChevronDown } from "lucide-react"
 
@@ -43,7 +44,11 @@ export function DataTable<TData, TValue>({
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
-  const [pageSize, setPageSize] = React.useState(10)
+  // pageIndex tambien vive en estado: si se fija en 0, "Siguiente" cambia de pagina y la
+  // tabla vuelve a la primera en el mismo render.
+  const [pagination, setPagination] = React.useState<PaginationState>({ pageIndex: 0, pageSize: 10 })
+  const pageSize = pagination.pageSize
+  const setPageSize = (size: number) => setPagination({ pageIndex: 0, pageSize: size })
 
   const table = useReactTable({
     data,
@@ -55,20 +60,15 @@ export function DataTable<TData, TValue>({
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
+    onPaginationChange: setPagination,
+    autoResetPageIndex: false,
     state: {
       sorting,
       columnFilters,
       columnVisibility,
-      pagination: {
-        pageSize,
-        pageIndex: 0,
-      },
+      pagination,
     },
   })
-
-  React.useEffect(() => {
-    table.setPageSize(pageSize)
-  }, [pageSize, table])
 
   return (
     <div className="w-full">
@@ -191,6 +191,9 @@ export function DataTable<TData, TValue>({
       <div className="flex items-center justify-end space-x-2 py-4">
         <div className="flex-1 text-sm text-muted-foreground">
           {table.getFilteredRowModel().rows.length} {table.getFilteredRowModel().rows.length === 1 ? dict.dashboard.table.row : dict.dashboard.table.rows}
+          {table.getPageCount() > 1 && (
+            <span className="ml-3 tabular-nums">{lang === 'en' ? 'Page' : 'Página'} {table.getState().pagination.pageIndex + 1} {lang === 'en' ? 'of' : 'de'} {table.getPageCount()}</span>
+          )}
         </div>
         <div className="space-x-2">
           <Button

@@ -12,6 +12,7 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
+  type PaginationState,
 } from '@tanstack/react-table'
 import { ChevronDown, SearchX } from 'lucide-react'
 import {
@@ -62,7 +63,10 @@ export function DataTable<TData, TValue>({
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
-  const [pageSize, setPageSize] = React.useState(10)
+  // pageIndex en estado: con el indice fijo en 0, "Siguiente" no avanzaba.
+  const [pagination, setPagination] = React.useState<PaginationState>({ pageIndex: 0, pageSize: 10 })
+  const pageSize = pagination.pageSize
+  const setPageSize = (size: number) => setPagination({ pageIndex: 0, pageSize: size })
 
   // Etiquetas legibles y localizadas para el menú de "Columnas".
   const columnLabels: Record<string, { en: string; es: string }> = {
@@ -88,21 +92,21 @@ export function DataTable<TData, TValue>({
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
+    onPaginationChange: setPagination,
+    autoResetPageIndex: false,
     state: {
       sorting,
       columnFilters,
       columnVisibility,
       rowSelection,
-      pagination: {
-        pageSize,
-        pageIndex: 0,
-      },
+      pagination,
     },
   })
 
+  // Al filtrar o buscar, volver a la primera pagina para no quedar en una vacia.
   React.useEffect(() => {
-    table.setPageSize(pageSize)
-  }, [pageSize, table])
+    setPagination((p) => (p.pageIndex === 0 ? p : { ...p, pageIndex: 0 }))
+  }, [columnFilters])
 
   return (
     <div className="w-full min-w-0 max-w-full">
@@ -313,6 +317,7 @@ export function DataTable<TData, TValue>({
               table.getFilteredRowModel().rows.length
             )}{' '}
             {lang === 'en' ? 'of' : 'de'} {table.getFilteredRowModel().rows.length}
+            {table.getPageCount() > 1 && <span className="ml-3 tabular-nums">· {lang === 'en' ? 'Page' : 'Página'} {table.getState().pagination.pageIndex + 1} {lang === 'en' ? 'of' : 'de'} {table.getPageCount()}</span>}
           </div>
           <div className="space-x-2">
             <Button
