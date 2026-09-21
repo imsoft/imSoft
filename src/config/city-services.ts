@@ -41,10 +41,12 @@ export interface CityServiceContent {
   cta: { title: string; description: string; buttonText: string };
 }
 
-export type CityKey = 'guadalajara';
+export type CityKey = 'guadalajara' | 'monterrey' | 'cdmx';
 
 export const CITY_SERVICE_CITY_LABELS: Record<CityKey, string> = {
   guadalajara: 'Guadalajara',
+  monterrey: 'Monterrey',
+  cdmx: 'CDMX',
 };
 
 export const CITY_SERVICE_LABELS: Record<CityServiceSlug, string> = {
@@ -513,8 +515,776 @@ const GUADALAJARA: Record<CityServiceSlug, CityServiceContent> = {
   },
 };
 
-export const CITY_SERVICES: Record<CityKey, Record<CityServiceSlug, CityServiceContent>> = {
+/**
+ * Monterrey y CDMX: se atienden a distancia desde Guadalajara. Ninguna pagina afirma
+ * oficina ni clientes en la ciudad; lo que si es propio de cada una es el tipo de
+ * empresa, las zonas y los problemas que se cotizan desde ahi.
+ */
+const MONTERREY: Record<CityServiceSlug, CityServiceContent> = {
+  'paginas-web': {
+    seoTitle: 'Páginas web en Monterrey para empresas | imSoft',
+    seoDescription:
+      'Páginas web para empresas de Monterrey: sitios corporativos que dan confianza a compradores industriales y captan clientes. Precio fijo desde $15,000 MXN.',
+    h1: 'Páginas Web en Monterrey',
+    heroSubtitle:
+      'Desarrollamos páginas web para empresas de Monterrey y su área metropolitana que venden a otras empresas: proveedores industriales, servicios corporativos y negocios de San Pedro, Apodaca o Santa Catarina que necesitan un sitio serio, rápido y que aparezca cuando un comprador los busca. Precio fijo y el sitio a tu nombre.',
+    audience: {
+      title: 'Qué sitios hacemos para empresas de Monterrey',
+      items: [
+        {
+          title: 'Proveedores industriales y de manufactura',
+          description:
+            'Maquilados, metalmecánica, refacciones y servicios para las plantas de Apodaca, Escobedo y Santa Catarina. El comprador de una planta revisa tu sitio antes de darte de alta como proveedor: necesita ver certificaciones, capacidad instalada y una forma clara de pedir cotización.',
+        },
+        {
+          title: 'Servicios corporativos en San Pedro y Valle Oriente',
+          description:
+            'Despachos, consultoras, inmobiliarias y firmas que compiten por clientes empresariales. Aquí el sitio es carta de presentación: casos, equipo, especialidades y un contacto que llegue a la persona correcta, no a un buzón genérico.',
+        },
+        {
+          title: 'Negocios con sitio viejo que ya no vende',
+          description:
+            'Sitios hechos hace años con un constructor de plantillas, que cargan lento y no aparecen en Google. Revisamos lo que tienes, conservamos lo que funciona y rehacemos lo que no.',
+        },
+      ],
+    },
+    problems: {
+      title: 'Lo que nos dicen desde Monterrey',
+      items: [
+        'Un comprador de planta nos pidió el sitio y nos dio pena mandarlo',
+        'Aparecemos en Google por el nombre de la empresa, no por lo que vendemos',
+        'El sitio no muestra certificaciones ni capacidad y eso lo piden siempre',
+        'Cada cotización empieza con un correo porque el sitio no tiene formulario útil',
+        'Lo hizo un proveedor que ya no contesta y nadie sabe cómo cambiarlo',
+        'Pagamos hosting y mantenimiento de algo que no genera nada',
+      ],
+    },
+    solutions: {
+      title: 'Cómo hacemos un sitio que sirva para vender a empresas',
+      items: [
+        {
+          title: 'Estructura pensada para el comprador industrial',
+          description:
+            'Capacidades, certificaciones, industrias atendidas y catálogo o líneas de producto donde el comprador las busca. Una solicitud de cotización que pide lo necesario y llega al área correcta.',
+        },
+        {
+          title: 'Posicionamiento para búsquedas de Monterrey y Nuevo León',
+          description:
+            'Títulos y contenidos orientados a cómo buscan tus clientes en la región, datos estructurados de empresa y perfil de Google conectado. Lo técnico del SEO queda resuelto desde el primer día.',
+        },
+        {
+          title: 'Rápido y estable, sin plantillas pesadas',
+          description:
+            'Sitios hechos con Next.js, medidos con Core Web Vitals antes de entregar. Cargan rápido en celular y en la red de una planta, y no dependen de plugins que se rompen.',
+        },
+        {
+          title: 'Administración en tus manos',
+          description:
+            'Panel para actualizar productos, certificaciones y noticias sin programar. Dominio, hosting y SSL incluidos el primer año; el código es tuyo desde que queda pagado.',
+        },
+      ],
+    },
+    pricing: {
+      title: 'Cuánto cuesta una página web en Monterrey',
+      description: 'Precio fijo, acordado antes de empezar. Trabajamos a distancia con empresas de todo México.',
+      items: [
+        { name: 'Landing page', price: 'Desde $5,000 MXN', includes: 'Una sola página con formulario, lista en una semana. Útil para una línea de producto o una campaña.' },
+        { name: 'Sitio web corporativo', price: 'Desde $15,000 MXN', includes: 'Secciones de empresa, capacidades y contacto, SEO técnico, dominio, hosting y SSL. Entrega en 2 a 3 semanas.' },
+      ],
+      note: 'Catálogos extensos, versión en inglés para clientes de Estados Unidos o integraciones con tu CRM se cotizan aparte. Te damos el precio cerrado en 48 horas.',
+    },
+    proof: {
+      title: 'Sitios corporativos que puedes revisar',
+      description: 'Proyectos reales del portafolio. Somos de Guadalajara y no publicamos la ubicación de cada cliente.',
+      items: [
+        { name: 'Profibra', description: 'Sitio industrial con catálogo de productos.', slug: 'profibra' },
+        { name: 'Infinito Empresarial y Aduanero', description: 'Sitio corporativo para una empresa de servicios aduanales.', slug: 'business-and-customs-infinity' },
+        { name: 'RM Constructora', description: 'Web corporativa de constructora, orientada a marca y credibilidad.', slug: 'rm-construction' },
+        { name: 'Ortiz y Cía', description: 'Página diseñada para generar confianza y captar clientes nuevos.', slug: 'ortiz-and-co' },
+      ],
+    },
+    faq: {
+      title: 'Preguntas frecuentes',
+      items: [
+        {
+          question: '¿Tienen oficina en Monterrey?',
+          answer: 'No, estamos en Guadalajara. Todo el proceso se hace a distancia con videollamadas y WhatsApp, y así trabajamos con empresas de varias ciudades. Si el proyecto pide una reunión presencial, lo acordamos al cotizar.',
+        },
+        {
+          question: '¿Pueden hacer el sitio en inglés para clientes de Estados Unidos?',
+          answer: 'Sí. Muchas empresas de Monterrey venden a plantas del sur de Texas y necesitan versión en inglés. Se cotiza como sección adicional y se construye con las URL y etiquetas correctas para que Google la muestre a quien busca en inglés.',
+        },
+        {
+          question: '¿Cuánto tarda un sitio corporativo?',
+          answer: 'Entre dos y tres semanas a partir de que tenemos textos, fotos y certificaciones. Si hace falta redactar o adaptar contenido, lo hacemos y se suma al calendario.',
+        },
+        {
+          question: '¿Cómo se paga?',
+          answer: '50 % al iniciar y 50 % contra entrega, por transferencia o con tarjeta mediante enlace de pago. Emitimos CFDI por cada pago; somos persona física con actividad empresarial en Jalisco.',
+        },
+      ],
+    },
+    relatedPosts: ['cuanto-cuesta-una-pagina-web-en-mexico'],
+    cta: {
+      title: '¿Revisamos tu sitio actual?',
+      description: `Mándanos la dirección de tu sitio o cuéntanos qué necesitas. En 48 horas te decimos qué haríamos, cuánto costaría y cuándo estaría. ${HORARIO}`,
+      buttonText: 'Pedir cotización',
+    },
+  },
+
+  'empresas-de-software': {
+    seoTitle: 'Empresa de desarrollo de software para Monterrey | imSoft',
+    seoDescription:
+      'Software a la medida para empresas de Monterrey: sistemas de operación, portales de proveedores y plataformas en la nube, a precio fijo y a distancia.',
+    h1: 'Desarrollo de Software a la Medida para Empresas de Monterrey',
+    heroSubtitle:
+      'Construimos software a la medida para empresas de Monterrey que ya rebasaron el Excel: control de producción y mantenimiento, portales de proveedores y clientes, y plataformas para operar varias sucursales o plantas. Precio fijo, entregas por fases y el código a tu nombre.',
+    audience: {
+      title: 'Sistemas que cotizamos con frecuencia para Monterrey',
+      items: [
+        {
+          title: 'Operación de planta y mantenimiento',
+          description:
+            'Órdenes de trabajo, mantenimiento preventivo, control de refacciones y reportes de producción por turno. Sistemas que sustituyen las bitácoras en papel y las hojas de cálculo que cada supervisor llena a su manera.',
+        },
+        {
+          title: 'Portales de proveedores y clientes industriales',
+          description:
+            'Que el proveedor cargue sus facturas y consulte pagos, y que el cliente vea el estado de su pedido o su embarque sin llamar a compras o a tráfico. Es donde más horas de atención se recuperan.',
+        },
+        {
+          title: 'Grupos con varias sucursales o unidades',
+          description:
+            'Empresas de servicios, comercio o salud con sedes en el área metropolitana que necesitan ver la operación completa en un solo lugar: inventarios, ventas, personal y cumplimiento.',
+        },
+      ],
+    },
+    problems: {
+      title: 'Cuándo un sistema a la medida sale más barato que seguir así',
+      items: [
+        'Cada planta o sucursal lleva su control aparte y consolidar tarda días',
+        'El ERP que compraron cubre finanzas, pero la operación diaria sigue en Excel',
+        'Compras recibe facturas por correo y las captura una por una',
+        'Los clientes llaman a preguntar por pedidos que podrían consultar solos',
+        'Los reportes para dirección se arman a mano cada semana',
+        'Pagan licencias por usuario de un software que usan a medias',
+      ],
+    },
+    solutions: {
+      title: 'Cómo llevamos un proyecto a distancia sin que se sienta a distancia',
+      items: [
+        {
+          title: 'Descubrimiento corto y alcance cerrado',
+          description:
+            'Dos o tres sesiones por videollamada con las personas que operan, no solo con dirección. De ahí sale un documento de alcance con módulos, reglas y precio fijo.',
+        },
+        {
+          title: 'Fases que se usan en producción',
+          description:
+            'La primera entrega ya resuelve el proceso más doloroso y se usa en tu operación real. Cada hito de pago está ligado a una entrega, no a fechas en el aire.',
+        },
+        {
+          title: 'Integración con lo que ya tienes',
+          description:
+            'Conectamos con tu ERP, tu facturación o tus básculas y lectores cuando aplica, en lugar de duplicar información. Base de datos PostgreSQL y nube, sin licencias por usuario.',
+        },
+        {
+          title: 'Documentación y código a tu nombre',
+          description:
+            'Al terminar, el sistema es tuyo y está documentado para que tu equipo de sistemas o cualquier proveedor lo mantenga. El primer mes de soporte va incluido.',
+        },
+      ],
+    },
+    pricing: {
+      title: 'Cuánto cuesta un desarrollo a la medida para Monterrey',
+      description: 'Referencia publicada. El precio cerrado sale del alcance que definimos juntos.',
+      items: [
+        { name: 'Primer sistema o MVP', price: 'Desde $60,000 MXN', includes: 'Un proceso completo funcionando en 6 a 8 semanas, con usuarios, roles y panel de administración.' },
+        { name: 'Plataforma a la medida', price: 'Desde $150,000 MXN', includes: 'Varios módulos, integraciones con ERP o facturación, múltiples sedes y roadmap por fases.' },
+      ],
+      note: 'Un portal de proveedores o un control de mantenimiento suelen quedar en el primer rango; una plataforma multi-planta con integraciones, en el segundo.',
+    },
+    proof: {
+      title: 'Sistemas nuestros que ya operan',
+      description: 'Del portafolio, para que veas el tipo de sistema. Somos de Guadalajara y no publicamos la ubicación de cada cliente.',
+      items: [
+        { name: 'Aduvanta', description: 'SaaS de gestión aduanera que sustituye trece aplicaciones de escritorio.', slug: 'aduvanta' },
+        { name: 'Starfilters · Reportes', description: 'Reportes dinámicos para clientes de una empresa de filtros industriales.', slug: 'starfilters-report-generator' },
+        { name: 'The PodStore', description: 'Aplicación web para procesos internos de una empresa de servicios.', slug: 'the-podstore' },
+        { name: 'JTP Logistics · Inventario', description: 'Control de inventario interno para una empresa de logística.', slug: 'jtp-logistics-inventory' },
+      ],
+    },
+    faq: {
+      title: 'Preguntas frecuentes',
+      items: [
+        {
+          question: '¿Funciona desarrollar un sistema con un equipo que no está en Monterrey?',
+          answer: 'Sí, siempre que el levantamiento se haga bien. Por eso las sesiones de descubrimiento son con quien opera el proceso, por videollamada y con pantalla compartida, y cada fase se prueba en tu operación antes de seguir. Si hace falta estar presentes en el arranque, lo acordamos al cotizar.',
+        },
+        {
+          question: '¿Se integra con nuestro ERP?',
+          answer: 'Depende del ERP y de qué acceso ofrezca. La mayoría de los sistemas modernos tienen API o exportación programada, y con eso conectamos sin duplicar capturas. Lo revisamos en el descubrimiento antes de cerrar precio.',
+        },
+        {
+          question: '¿Quién es dueño del código?',
+          answer: 'Tu empresa, desde que el proyecto está pagado. Sin licencias por usuario, sin renta por usar tu propio sistema, y con documentación para que lo mantenga quien decidas.',
+        },
+        {
+          question: '¿Cómo son los pagos?',
+          answer: 'Por hitos ligados a entregas, normalmente 50 % al iniciar y 50 % contra entrega en proyectos cortos, o tres hitos en proyectos largos. Transferencia o tarjeta con enlace de pago, y CFDI en cada pago.',
+        },
+      ],
+    },
+    relatedPosts: ['cuanto-cuesta-desarrollar-una-app-en-mexico'],
+    cta: {
+      title: '¿Vemos tu operación?',
+      description: `Una videollamada de 15 minutos para entender qué controlas hoy en Excel y decirte si un sistema a la medida tiene sentido y en qué rango de precio. ${HORARIO}`,
+      buttonText: 'Agendar videollamada',
+    },
+  },
+
+  'tiendas-en-linea': {
+    seoTitle: 'Tiendas en línea en Monterrey: ecommerce B2B y B2C | imSoft',
+    seoDescription:
+      'Tiendas en línea para empresas de Monterrey: catálogo industrial, precios por cliente, pagos y facturación. Tienda propia, sin comisiones por venta.',
+    h1: 'Tiendas en Línea en Monterrey',
+    heroSubtitle:
+      'Desarrollamos tiendas en línea para empresas de Monterrey que venden a otras empresas o al consumidor final: catálogos industriales con precios por cliente, marcas regias que venden a todo México y distribuidores que quieren dejar de tomar pedidos por teléfono. Tienda propia, sin comisión por venta.',
+    audience: {
+      title: 'Tres tiendas en línea distintas que hacemos para Monterrey',
+      items: [
+        {
+          title: 'Catálogo industrial con venta a empresas',
+          description:
+            'Refacciones, herramienta, consumibles y equipo con precios por cliente, crédito y pedidos recurrentes. El cliente industrial ve su lista de precios, repite su pedido del mes y descarga su factura, y tu equipo de ventas deja de capturar.',
+        },
+        {
+          title: 'Marcas de consumo que venden a todo el país',
+          description:
+            'Alimentos, ropa, artículos del hogar y productos regionales que salen de Monterrey a todo México. Aquí importan la velocidad, los envíos con paqueterías nacionales y los pagos con meses sin intereses.',
+        },
+        {
+          title: 'Distribuidores que ya venden por WhatsApp',
+          description:
+            'Negocios que cierran cada pedido en el chat y pierden ventas fuera de horario. La tienda toma el pedido, cobra y confirma el envío sola; WhatsApp queda para las dudas.',
+        },
+      ],
+    },
+    problems: {
+      title: 'Por qué las plataformas de renta se quedan cortas',
+      items: [
+        'Vendes a empresas con precios distintos por cliente y la plataforma solo tiene un precio',
+        'Facturas cada venta a mano porque la tienda no emite CFDI',
+        'La comisión por venta ya suma más que lo que costaría una tienda propia',
+        'El inventario de la tienda y el del almacén no coinciden',
+        'Los envíos foráneos se cotizan uno por uno',
+        'Quieres conectar tu ERP o tu punto de venta y no hay forma',
+      ],
+    },
+    solutions: {
+      title: 'Qué incluye una tienda en línea con nosotros',
+      items: [
+        {
+          title: 'Precios por cliente, crédito y pedidos recurrentes',
+          description:
+            'Listas de precio por segmento, límites de crédito, aprobación de pedidos y repetición del pedido anterior. Lo que una tienda de plantilla no maneja y una venta a empresas exige.',
+        },
+        {
+          title: 'Pagos y facturación como en México',
+          description:
+            'Tarjeta con meses sin intereses, SPEI y efectivo mediante Stripe o Mercado Pago, y CFDI automático o a solicitud. El dinero llega a tu cuenta, no a una plataforma.',
+        },
+        {
+          title: 'Envíos a todo el país',
+          description:
+            'Guías con paqueterías nacionales, reglas por peso y zona, y entrega local en el área metropolitana de Monterrey si la manejas con tu flota.',
+        },
+        {
+          title: 'Tuya, sin comisiones ni renta',
+          description:
+            'Pagas el desarrollo una vez. Después, solo los costos reales de hosting y pasarela, que son públicos y no los cobramos nosotros. Código, diseño y datos son de tu empresa.',
+        },
+      ],
+    },
+    proof: {
+      title: 'Tiendas en línea que ya venden',
+      description: 'Tres ecommerce del portafolio que puedes abrir. Somos de Guadalajara y no publicamos la ubicación de cada cliente.',
+      items: [
+        { name: 'Starfilters', description: 'Ecommerce de filtros y soluciones industriales con catálogo técnico.', slug: 'starfilters' },
+        { name: 'LC Suplements', description: 'Tienda de suplementos deportivos con catálogo de proteínas, creatinas y vitaminas.', slug: 'lc-suplements' },
+        { name: 'Oro Nacional', description: 'Ecommerce de joyería enfocado en mostrar producto y aumentar ventas.', slug: 'national-gold' },
+      ],
+    },
+    faq: {
+      title: 'Preguntas frecuentes',
+      items: [
+        {
+          question: '¿Sirve para vender a empresas y no solo al público?',
+          answer: 'Sí, es donde más sentido tiene una tienda a la medida. Precios por cliente, crédito, aprobación de pedidos, facturación con los datos fiscales de cada cuenta y un portal donde tu cliente repite pedidos y descarga facturas.',
+        },
+        {
+          question: '¿Cuánto cuesta una tienda en línea para Monterrey?',
+          answer: 'Una tienda con catálogo, pagos y envíos se cotiza en el rango de un sitio corporativo con módulos adicionales; una con precios por cliente, crédito, inventario sincronizado y facturación automática se acerca a un sistema a la medida. El precio cerrado te lo damos en 48 horas.',
+        },
+        {
+          question: '¿Se puede conectar con nuestro sistema de inventario?',
+          answer: 'Sí, cuando el sistema ofrece API o exportación. Así el inventario de la tienda refleja el del almacén y no vendes lo que ya no hay. Lo revisamos antes de cerrar el alcance.',
+        },
+        {
+          question: '¿Y si ya tenemos tienda en Shopify?',
+          answer: 'Si te funciona, quédate ahí. Migrar a una tienda propia conviene cuando las comisiones y la mensualidad ya superan el costo de tenerla, o cuando necesitas funciones que la plataforma no permite. Te decimos con números cuál es tu caso.',
+        },
+      ],
+    },
+    relatedPosts: ['cuanto-cuesta-una-pagina-web-en-mexico'],
+    cta: {
+      title: '¿Vemos tu catálogo y cómo cobras?',
+      description: `Cuéntanos qué vendes, a quién y cómo tomas pedidos hoy. Todo a distancia, por videollamada, desde Guadalajara. Te decimos si conviene tienda propia o plataforma, y cuánto costaría. ${HORARIO}`,
+      buttonText: 'Pedir cotización',
+    },
+  },
+
+  'desarrollo-de-apps': {
+    seoTitle: 'Desarrollo de apps para empresas de Monterrey | imSoft',
+    seoDescription:
+      'Desarrollo de apps para empresas de Monterrey: apps para equipos en planta y en campo, portales para clientes y productos digitales. Precio fijo, a distancia.',
+    h1: 'Desarrollo de Apps para Empresas de Monterrey',
+    heroSubtitle:
+      'Desarrollamos aplicaciones para empresas de Monterrey: apps para el personal de planta y de campo, portales móviles para clientes y productos digitales que quieres lanzar. Te decimos con números cuándo conviene una app nativa y cuándo una aplicación web resuelve lo mismo por menos.',
+    audience: {
+      title: 'Apps que cotizamos con frecuencia desde Monterrey',
+      items: [
+        {
+          title: 'Personal de planta y mantenimiento',
+          description:
+            'Registro de inspecciones, checklists de seguridad, reporte de fallas con foto y órdenes de trabajo en el teléfono, con modo sin conexión para naves donde la señal no llega.',
+        },
+        {
+          title: 'Equipos en campo y flotas',
+          description:
+            'Técnicos, vendedores de ruta y choferes que hoy reportan por WhatsApp. Una app con formularios, evidencia con ubicación y sincronización cuando vuelve la señal.',
+        },
+        {
+          title: 'Productos digitales y MVP',
+          description:
+            'Empresas y emprendedores de Monterrey que quieren validar una app con usuarios reales antes de invertir a fondo. Primera versión funcional en seis a ocho semanas.',
+        },
+      ],
+    },
+    problems: {
+      title: 'Lo que suele pasar antes de tener una app propia',
+      items: [
+        'La información de planta se captura en papel y se pasa a Excel al final del turno',
+        'Nos cotizaron una app nativa sin explicar por qué no bastaba una web app',
+        'El proveedor anterior entregó la app y desapareció',
+        'Cada área usa una app distinta y ninguna se comunica con las demás',
+        'Queremos lanzar un producto, pero no sabemos cuánto invertir ni por dónde empezar',
+        'Los clientes piden consultar su información desde el celular y no hay cómo',
+      ],
+    },
+    solutions: {
+      title: 'Cómo decidimos y construimos',
+      items: [
+        {
+          title: 'Web app o nativa, con criterio',
+          description:
+            'Si necesitas cámara y GPS de forma intensiva, trabajo sin señal o distribución en tiendas de apps, va nativa. Para la mayoría de los casos, una aplicación web instalable en el teléfono cuesta menos y se actualiza sin pasar por las tiendas.',
+        },
+        {
+          title: 'Primera versión en 6 a 8 semanas',
+          description:
+            'Con lo esencial funcionando: acceso de usuarios, la operación principal y panel de administración. Lo demás se agrega con datos de uso real.',
+        },
+        {
+          title: 'Un solo código para web y móvil',
+          description:
+            'Con React y Next.js la misma lógica sirve para la web y para la app. Menos costo de mantenimiento y mejoras que llegan a todos a la vez.',
+        },
+        {
+          title: 'Publicación, soporte y propiedad',
+          description:
+            'Publicamos en App Store y Google Play con cuentas a tu nombre. Primer mes de soporte incluido, y el código es tuyo desde que queda pagado.',
+        },
+      ],
+    },
+    pricing: {
+      title: 'Cuánto cuesta desarrollar una app para Monterrey',
+      description: 'Referencia publicada; el precio cerrado sale después de definir el alcance por videollamada.',
+      items: [
+        { name: 'MVP o app de operación', price: 'Desde $60,000 MXN', includes: 'Aplicación funcional en 6 a 8 semanas con usuarios, roles, panel y, si aplica, pagos.' },
+        { name: 'Plataforma o producto completo', price: 'Desde $150,000 MXN', includes: 'Varios roles, integraciones con tus sistemas, modo sin conexión y roadmap de versiones.' },
+      ],
+      note: 'Una app nativa para iOS y Android cuesta más que una web app con las mismas funciones. Por eso lo primero que revisamos es cuál necesitas de verdad.',
+    },
+    proof: {
+      title: 'Aplicaciones nuestras en uso',
+      description: 'Aplicaciones web del portafolio que equipos y clientes usan desde el teléfono. Somos de Guadalajara y no publicamos la ubicación de cada cliente.',
+      items: [
+        { name: 'Steridental · Pedidos', description: 'Aplicación con la que los clientes de un laboratorio dental generan pedidos.', slug: 'steridantal-order-generator' },
+        { name: 'La Casa del Paste', description: 'Aplicación para la gestión interna de una empresa de alimentos.', slug: 'the-paste-house' },
+        { name: 'Wellpoint', description: 'Plataforma para administrar servicios de salud, profesionales y centros wellness.', slug: 'wellpoint' },
+        { name: 'Cursumi', description: 'Plataforma de venta de cursos y gestión de contenido educativo.', slug: 'cursumi' },
+      ],
+    },
+    faq: {
+      title: 'Preguntas frecuentes',
+      items: [
+        {
+          question: '¿Pueden desarrollar la app sin estar en Monterrey?',
+          answer: 'Sí. El levantamiento se hace por videollamada con quienes van a usar la app, y las pruebas las hace tu equipo en su operación real desde la primera fase. Trabajamos así con empresas de varias ciudades.',
+        },
+        {
+          question: '¿La app funciona sin señal dentro de la planta?',
+          answer: 'Puede. El modo sin conexión guarda la captura en el teléfono y sincroniza cuando hay red. Es una de las razones para elegir app nativa o una web app instalable con almacenamiento local, y se define en el alcance.',
+        },
+        {
+          question: '¿Cuánto tarda?',
+          answer: 'Un MVP, entre seis y ocho semanas. Una app de operación con varios roles e integraciones, de dos a cuatro meses, entregada por fases que se usan desde que salen.',
+        },
+        {
+          question: '¿Quién mantiene la app después?',
+          answer: 'El primer mes va incluido. Después puedes contratar mantenimiento mensual con nosotros o dárselo a tu equipo de sistemas: el código, las cuentas de las tiendas y los datos son tuyos.',
+        },
+      ],
+    },
+    relatedPosts: ['cuanto-cuesta-desarrollar-una-app-en-mexico'],
+    cta: {
+      title: '¿Platicamos de tu app?',
+      description: `Cuéntanos qué debe hacer y quién la usará. En una videollamada de 15 minutos te decimos si va web o nativa y en qué rango de precio queda. ${HORARIO}`,
+      buttonText: 'Agendar videollamada',
+    },
+  },
+};
+
+const CDMX: Partial<Record<CityServiceSlug, CityServiceContent>> = {
+  'paginas-web': {
+    seoTitle: 'Páginas web en CDMX para empresas y despachos | imSoft',
+    seoDescription:
+      'Páginas web para empresas, despachos y negocios de la Ciudad de México: sitios rápidos que posicionan en Google y convierten. Precio fijo desde $15,000 MXN.',
+    h1: 'Páginas Web en CDMX',
+    heroSubtitle:
+      'Desarrollamos páginas web para empresas de la Ciudad de México que compiten en el mercado más saturado del país: despachos, consultoras, agencias, clínicas y negocios de Polanco, Santa Fe, Roma o Insurgentes que necesitan destacar en Google y convertir la visita en contacto. Precio fijo y el sitio a tu nombre.',
+    audience: {
+      title: 'Qué sitios hacemos para la Ciudad de México',
+      items: [
+        {
+          title: 'Despachos y firmas de servicios profesionales',
+          description:
+            'Abogados, contadores, consultoras y agencias que compiten con cientos de firmas por las mismas búsquedas. El sitio tiene que decir en qué eres distinto, mostrar casos y equipo, y llevar a una cita sin fricción.',
+        },
+        {
+          title: 'Clínicas y consultorios con varias sedes',
+          description:
+            'Especialistas y clínicas con consultorios en distintas colonias que necesitan que cada sede aparezca en su zona y que la cita se agende desde el celular.',
+        },
+        {
+          title: 'Empresas que ya invirtieron en un sitio que no rinde',
+          description:
+            'Agencias que cobraron mucho por un sitio bonito que no aparece ni convierte. Revisamos qué pasa, conservamos la marca y arreglamos estructura, velocidad y contenido.',
+        },
+      ],
+    },
+    problems: {
+      title: 'Lo que nos cuentan desde la Ciudad de México',
+      items: [
+        'Hay tanta competencia que no aparecemos ni buscando nuestra especialidad',
+        'Pagamos una agencia cara y el sitio se ve bien pero no trae clientes',
+        'El sitio tarda en cargar y en celular es peor',
+        'Las citas y contactos se pierden entre correos y redes',
+        'Cambiar algo del sitio implica pedirlo y esperar semanas',
+        'No sabemos cuántos clientes vienen del sitio y cuántos de recomendación',
+      ],
+    },
+    solutions: {
+      title: 'Cómo competimos en un mercado saturado',
+      items: [
+        {
+          title: 'Enfoque: una especialidad, una zona, una promesa',
+          description:
+            'En CDMX no se rankea por "abogados" ni por "clínica", sino por especialidad y zona. Estructuramos el sitio para esas búsquedas concretas, con páginas por servicio y por sede cuando hace falta.',
+        },
+        {
+          title: 'Velocidad y técnica sin excusas',
+          description:
+            'Next.js, Core Web Vitals medidos, datos estructurados de negocio y de preguntas frecuentes. Lo que Google evalúa queda resuelto desde el código.',
+        },
+        {
+          title: 'Camino claro al contacto',
+          description:
+            'Cita en línea, WhatsApp o formulario que llega a la persona correcta, con medición para saber qué página y qué canal trajo cada contacto.',
+        },
+        {
+          title: 'Independencia de la agencia',
+          description:
+            'Panel para editar contenido sin depender de nadie. Dominio, hosting y SSL incluidos el primer año; el sitio es tuyo desde que queda pagado.',
+        },
+      ],
+    },
+    pricing: {
+      title: 'Cuánto cuesta una página web en CDMX',
+      description: 'Precio fijo, acordado antes de empezar. Trabajamos a distancia desde Guadalajara con clientes de todo el país.',
+      items: [
+        { name: 'Landing page', price: 'Desde $5,000 MXN', includes: 'Una página con formulario, lista en una semana. Para una campaña o un servicio específico.' },
+        { name: 'Sitio web corporativo', price: 'Desde $15,000 MXN', includes: 'Secciones por servicio, diseño responsive, SEO técnico, dominio, hosting y SSL. Entrega en 2 a 3 semanas.' },
+      ],
+      note: 'Sitios con varias sedes, agenda de citas en línea o blog se cotizan con módulos adicionales. Precio cerrado en 48 horas.',
+    },
+    proof: {
+      title: 'Sitios que puedes revisar',
+      description: 'Proyectos reales del portafolio. Somos de Guadalajara y no publicamos la ubicación de cada cliente.',
+      items: [
+        { name: 'Bemästra Dental', description: 'Sitio de clínica dental pensado para atraer pacientes y facilitar la cita.', slug: 'bemastra-dental' },
+        { name: 'Ortiz y Cía', description: 'Página diseñada para generar confianza y captar clientes nuevos.', slug: 'ortiz-and-co' },
+        { name: 'Construcción Inteligente', description: 'Web corporativa con diseño orientado a posicionamiento.', slug: 'intelligent-construction' },
+        { name: 'Infinito Empresarial y Aduanero', description: 'Sitio corporativo para una empresa de servicios aduanales.', slug: 'business-and-customs-infinity' },
+      ],
+    },
+    faq: {
+      title: 'Preguntas frecuentes',
+      items: [
+        {
+          question: '¿Están en la Ciudad de México?',
+          answer: 'No, estamos en Guadalajara y trabajamos a distancia con clientes de todo el país. Videollamadas, WhatsApp y entregas revisables en línea; el proceso no requiere reuniones presenciales.',
+        },
+        {
+          question: '¿Por qué contratar a una empresa de otra ciudad?',
+          answer: 'Porque el resultado no depende de la ciudad sino del proceso: precio fijo, entrega en semanas, sitio a tu nombre y SEO técnico hecho. Y porque nuestros costos de operación en Guadalajara se reflejan en el precio.',
+        },
+        {
+          question: '¿Cuánto tarda?',
+          answer: 'Una landing, una semana. Un sitio corporativo, dos a tres semanas desde que tenemos textos y fotos. Si necesitas redacción, la hacemos y se suma al plazo.',
+        },
+        {
+          question: '¿Cómo se paga y facturan?',
+          answer: '50 % al iniciar y 50 % contra entrega, por transferencia o tarjeta con enlace de pago. Emitimos CFDI por cada pago con tus datos fiscales.',
+        },
+      ],
+    },
+    relatedPosts: ['cuanto-cuesta-una-pagina-web-en-mexico'],
+    cta: {
+      title: '¿Revisamos tu sitio?',
+      description: `Mándanos tu sitio actual o cuéntanos qué necesitas. En 48 horas te decimos qué haríamos, cuánto costaría y cuándo estaría. ${HORARIO}`,
+      buttonText: 'Pedir cotización',
+    },
+  },
+
+  'empresas-de-software': {
+    seoTitle: 'Empresa de desarrollo de software para CDMX | imSoft',
+    seoDescription:
+      'Software a la medida para empresas de la Ciudad de México: sistemas internos, portales de clientes y plataformas SaaS, a precio fijo y a distancia.',
+    h1: 'Desarrollo de Software a la Medida para Empresas de CDMX',
+    heroSubtitle:
+      'Construimos software a la medida para empresas de la Ciudad de México que necesitan un sistema propio sin pagar tarifas de agencia grande: sistemas de operación, portales para clientes, automatización de procesos y plataformas SaaS. Precio fijo, entregas por fases y el código a tu nombre.',
+    audience: {
+      title: 'Proyectos que cotizamos con frecuencia para CDMX',
+      items: [
+        {
+          title: 'Despachos y firmas con muchos expedientes',
+          description:
+            'Legales, contables, inmobiliarias y de gestoría que llevan cientos de asuntos en carpetas compartidas. Un sistema de expedientes con seguimiento, vencimientos y portal donde el cliente consulta su caso.',
+        },
+        {
+          title: 'Empresas de servicios con operación repetitiva',
+          description:
+            'Mantenimiento, limpieza, seguridad, logística de última milla: cotizar, programar, ejecutar y cobrar, hoy repartido entre WhatsApp, Excel y un sistema de facturación que no se habla con nada.',
+        },
+        {
+          title: 'Emprendedores y empresas que lanzan un SaaS',
+          description:
+            'Producto digital con suscripción, varios roles y pagos recurrentes. Primera versión en seis a ocho semanas para validar con clientes de pago antes de escalar.',
+        },
+      ],
+    },
+    problems: {
+      title: 'Señales de que ya toca un sistema propio',
+      items: [
+        'La operación vive en Excel y solo una persona lo entiende',
+        'Los clientes llaman para preguntar por trámites que podrían consultar solos',
+        'Pagan varias herramientas que no se comunican y capturan doble',
+        'Las agencias grandes cotizan cifras que no tienen relación con el problema',
+        'El producto que quieren lanzar lleva meses en presentaciones y cero en código',
+        'Crecer implica contratar más personas para administrar, no para vender',
+      ],
+    },
+    solutions: {
+      title: 'Cómo trabajamos con empresas de la Ciudad de México',
+      items: [
+        {
+          title: 'Alcance cerrado en dos semanas de descubrimiento',
+          description:
+            'Sesiones por videollamada con quien opera el proceso. Salen módulos, reglas, integraciones y un precio fijo que no se mueve salvo que cambie el alcance, y eso se cotiza aparte por escrito.',
+        },
+        {
+          title: 'Entregas cortas que se usan de inmediato',
+          description:
+            'La primera fase resuelve el proceso más caro y entra a producción. Cada pago va ligado a una entrega que puedes probar.',
+        },
+        {
+          title: 'Stack moderno, sin licencias',
+          description:
+            'Next.js, PostgreSQL y nube. Sin cobro por usuario, sin renta por usar tu sistema. Integración con facturación, pasarelas de pago y las herramientas que ya usas.',
+        },
+        {
+          title: 'IA aplicada a lo que consume horas',
+          description:
+            'Extraer datos de documentos, clasificar solicitudes o redactar reportes. La usamos donde ahorra tiempo real, con revisión humana en lo que importa.',
+        },
+      ],
+    },
+    pricing: {
+      title: 'Cuánto cuesta un desarrollo a la medida para CDMX',
+      description: 'Referencia publicada. El precio cerrado sale del alcance definido.',
+      items: [
+        { name: 'Primer sistema o MVP', price: 'Desde $60,000 MXN', includes: 'Un proceso completo en producción en 6 a 8 semanas, con usuarios, roles, pagos si aplica y panel de administración.' },
+        { name: 'Plataforma o SaaS', price: 'Desde $150,000 MXN', includes: 'Varios módulos, suscripciones, integraciones y roadmap por fases.' },
+      ],
+      note: 'Un sistema de expedientes o un portal de clientes suele quedar en el primer rango; un SaaS con suscripciones y varios roles, en el segundo.',
+    },
+    proof: {
+      title: 'Sistemas nuestros que ya operan',
+      description: 'Del portafolio, para que veas el tipo de trabajo. Somos de Guadalajara y no publicamos la ubicación de cada cliente.',
+      items: [
+        { name: 'Aduvanta', description: 'SaaS de gestión aduanera en la nube que reemplaza trece aplicaciones de escritorio.', slug: 'aduvanta' },
+        { name: 'Omnitria', description: 'Plataforma inmobiliaria para publicar, gestionar y encontrar propiedades.', slug: 'omnitria' },
+        { name: 'Wellpoint', description: 'SaaS para centralizar servicios de salud, profesionales y centros wellness.', slug: 'wellpoint' },
+        { name: 'The PodStore', description: 'Aplicación web para procesos internos de una empresa de servicios.', slug: 'the-podstore' },
+      ],
+    },
+    faq: {
+      title: 'Preguntas frecuentes',
+      items: [
+        {
+          question: '¿Trabajan con empresas de la Ciudad de México sin estar ahí?',
+          answer: 'Sí, todo el proceso es remoto: descubrimiento por videollamada con pantalla compartida, entregas que pruebas en línea y soporte por WhatsApp. Es como trabajamos con clientes fuera de Guadalajara.',
+        },
+        {
+          question: '¿Por qué su precio es menor que el de agencias de CDMX?',
+          answer: 'Porque somos un equipo pequeño con costos de Guadalajara y sin capas de gestión. El precio fijo y el alcance por escrito hacen que no haya sorpresas ni horas facturadas de más.',
+        },
+        {
+          question: '¿Qué pasa si cambiamos de idea a la mitad?',
+          answer: 'Los cambios que amplían el alcance se cotizan por separado antes de hacerse y no mueven lo ya contratado. Está en la cotización y en el contrato que firmas en línea.',
+        },
+        {
+          question: '¿Quién es dueño del código y quién lo mantiene?',
+          answer: 'Tu empresa es dueña desde que el proyecto está pagado. El primer mes de soporte va incluido; después decides si sigues con nosotros por iguala mensual o con otro equipo.',
+        },
+      ],
+    },
+    relatedPosts: ['cuanto-cuesta-desarrollar-una-app-en-mexico'],
+    cta: {
+      title: '¿Platicamos de tu proyecto?',
+      description: `Una videollamada de 15 minutos para entender qué quieres resolver y decirte si tiene sentido, cómo lo haríamos y en qué rango de precio. ${HORARIO}`,
+      buttonText: 'Agendar videollamada',
+    },
+  },
+
+  'tiendas-en-linea': {
+    seoTitle: 'Tiendas en línea en CDMX sin comisiones por venta | imSoft',
+    seoDescription:
+      'Desarrollo de tiendas en línea para negocios de la Ciudad de México: catálogo, pagos, envíos y facturación integrados. Tienda propia, sin comisión por venta.',
+    h1: 'Tiendas en Línea en CDMX',
+    heroSubtitle:
+      'Desarrollamos tiendas en línea para marcas y negocios de la Ciudad de México que quieren vender a todo el país sin depender de marketplaces ni pagar comisión por cada venta: catálogo propio, pagos con tarjeta y SPEI, envíos y facturación, con un panel para administrarlo todo.',
+    audience: {
+      title: 'Para quién hacemos tiendas en línea en la Ciudad de México',
+      items: [
+        {
+          title: 'Marcas que hoy dependen de marketplaces',
+          description:
+            'Venden en Mercado Libre o Amazon, pagan comisiones altas y no tienen los datos de sus clientes. Una tienda propia recupera margen y te permite volver a venderle a quien ya compró.',
+        },
+        {
+          title: 'Negocios de nicho con catálogo amplio',
+          description:
+            'Refacciones, materiales, productos especializados o importados con cientos de variantes. La estructura del catálogo, los filtros y la búsqueda se diseñan para lo que vendes.',
+        },
+        {
+          title: 'Mayoristas que venden a tiendas y negocios',
+          description:
+            'Con precios por cliente, pedidos mínimos y crédito. Un portal donde el cliente repite su pedido, ve su saldo y descarga facturas sin llamar a tu vendedor.',
+        },
+      ],
+    },
+    problems: {
+      title: 'Lo que cuesta vender solo por marketplace o plantilla',
+      items: [
+        'La comisión del marketplace se lleva el margen y el cliente es de ellos, no tuyo',
+        'La plataforma de renta no maneja precios por cliente ni pedidos al mayoreo',
+        'Facturar cada venta es un proceso manual aparte',
+        'El inventario de la tienda y del almacén no coinciden',
+        'Los envíos a provincia se cotizan uno por uno',
+        'No puedes conectar tu sistema de inventario ni tu punto de venta',
+      ],
+    },
+    solutions: {
+      title: 'Qué incluye una tienda propia con imSoft',
+      items: [
+        {
+          title: 'Catálogo diseñado para tus productos',
+          description:
+            'Variantes, filtros, búsqueda y fichas pensadas para tu nicho, no una plantilla genérica. Carga masiva de productos desde el panel.',
+        },
+        {
+          title: 'Pagos y facturación integrados',
+          description:
+            'Tarjeta con meses sin intereses, SPEI y efectivo mediante Stripe o Mercado Pago. CFDI automático o a solicitud del cliente, con sus datos fiscales guardados.',
+        },
+        {
+          title: 'Envíos a todo México y entrega en la ciudad',
+          description:
+            'Guías con paqueterías nacionales, reglas por zona y opción de entrega el mismo día dentro de la ciudad si la manejas con tu propio equipo.',
+        },
+        {
+          title: 'Sin comisiones y con tus datos',
+          description:
+            'Pagas el desarrollo una vez y la tienda, los clientes y las ventas son tuyos. Solo pagas los costos reales de hosting y pasarela, que son públicos.',
+        },
+      ],
+    },
+    proof: {
+      title: 'Ecommerce que ya venden',
+      description: 'Tiendas del portafolio que puedes abrir. Somos de Guadalajara y no publicamos la ubicación de cada cliente.',
+      items: [
+        { name: 'Oro Nacional', description: 'Ecommerce de joyería enfocado en mostrar producto y aumentar ventas.', slug: 'national-gold' },
+        { name: 'LC Suplements', description: 'Tienda de suplementos deportivos con catálogo de proteínas, creatinas y vitaminas.', slug: 'lc-suplements' },
+        { name: 'Starfilters', description: 'Ecommerce de filtros y soluciones industriales con catálogo técnico.', slug: 'starfilters' },
+      ],
+    },
+    faq: {
+      title: 'Preguntas frecuentes',
+      items: [
+        {
+          question: '¿Conviene salir del marketplace?',
+          answer: 'No salir: complementar. El marketplace trae tráfico que no tienes; la tienda propia recupera margen, te da los datos del cliente y te permite vender de nuevo sin comisión. Muchas marcas usan ambos y mueven a los clientes recurrentes a su tienda.',
+        },
+        {
+          question: '¿Cuánto cuesta una tienda en línea en CDMX?',
+          answer: 'Una tienda con catálogo, pagos y envíos se cotiza como un sitio corporativo con módulos adicionales; una con precios por cliente, inventario sincronizado y facturación automática se acerca a un sistema a la medida. El precio cerrado te lo damos en 48 horas.',
+        },
+        {
+          question: '¿Pueden migrar los productos de mi tienda actual?',
+          answer: 'Sí. Exportamos catálogo, clientes y pedidos de Shopify, WooCommerce o Tiendanube y los cargamos en la tienda nueva. Las URL de producto se redirigen para no perder el posicionamiento que ya tienes.',
+        },
+        {
+          question: '¿Trabajan con negocios de la Ciudad de México a distancia?',
+          answer: 'Sí. Estamos en Guadalajara y trabajamos a distancia con clientes de todo el país. Todo el proceso se hace por videollamada y en línea, y la tienda se prueba desde tu navegador antes de salir.',
+        },
+      ],
+    },
+    relatedPosts: ['cuanto-cuesta-una-pagina-web-en-mexico'],
+    cta: {
+      title: '¿Vemos tu catálogo?',
+      description: `Cuéntanos qué vendes, dónde vendes hoy y qué te frena. Te decimos si conviene tienda propia y cuánto costaría. ${HORARIO}`,
+      buttonText: 'Pedir cotización',
+    },
+  },
+};
+
+export const CITY_SERVICES: Record<CityKey, Partial<Record<CityServiceSlug, CityServiceContent>>> = {
   guadalajara: GUADALAJARA,
+  monterrey: MONTERREY,
+  cdmx: CDMX,
 };
 
 export const CITY_SERVICE_CITIES = Object.keys(CITY_SERVICES) as CityKey[];

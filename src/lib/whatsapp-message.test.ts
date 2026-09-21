@@ -15,9 +15,10 @@ describe('whatsAppMessage', () => {
     expect(m).toContain('Guadalajara');
     expect(m).toContain('inmobiliarias');
 
-    const cdmx = whatsAppMessage('/es/cdmx/software-para-restaurantes', 'es');
-    expect(cdmx).toContain('Ciudad de México');
-    expect(cdmx).toContain('restaurantes');
+    // Las landings de industria de CDMX y Monterrey ya no existen (redirigen a las de
+    // ciudad + servicio): el mensaje de esas rutas es el de la landing nueva.
+    const cdmx = whatsAppMessage('/es/cdmx/empresas-de-software', 'es');
+    expect(cdmx).toContain('desarrollo de software en cdmx');
   });
 
   it('reconoce la landing de Zapopan', () => {

@@ -83,6 +83,13 @@ export function legacyRedirects(): Redirect[] {
       statusCode: 301 as const,
     },
 
+    // --- Landings de industria de Monterrey y CDMX (ene-2026 → sep-2026) ---
+    // Eran la plantilla de Guadalajara con otra ciudad: 0 clics en 90 dias. Van a la
+    // landing de desarrollo de software de su ciudad, que ahora tiene texto propio.
+    ...(['monterrey', 'cdmx'] as const).flatMap((city) => [
+      { source: `/:lang(es|en)/${city}/software-para-:industria`, destination: `/es/${city}/empresas-de-software`, statusCode: 301 as const },
+    ]),
+
     // --- Rutas sueltas del sitio viejo ---
     { source: '/portafolio', destination: '/es/portfolio', statusCode: 301 as const },
     { source: '/historia', destination: '/es/about', statusCode: 301 as const },

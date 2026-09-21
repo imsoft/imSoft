@@ -9,7 +9,11 @@ import type { City, Industry } from '@/types/landing-pages';
  * de este tipo debe quedar enlazada desde aqui.
  */
 
-export const LANDING_CITIES: City[] = ['guadalajara', 'cdmx', 'monterrey'];
+/**
+ * Solo Guadalajara. Las de Monterrey y CDMX (misma plantilla, 0 clics en 90 dias) se
+ * redirigen a las landings de ciudad + servicio con texto propio (city-services.ts).
+ */
+export const LANDING_CITIES: City[] = ['guadalajara'];
 
 export const LANDING_INDUSTRIES: Industry[] = [
   'software-para-inmobiliarias',

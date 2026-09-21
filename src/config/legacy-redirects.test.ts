@@ -34,3 +34,17 @@ describe('legacyRedirects', () => {
     }
   });
 });
+
+describe('landings de industria de Monterrey y CDMX', () => {
+  it('redirigen con 301 a la landing de desarrollo de software de su ciudad', () => {
+    const rs = legacyRedirects();
+    for (const city of ['monterrey', 'cdmx']) {
+      const r = rs.find((x) => x.source === `/:lang(es|en)/${city}/software-para-:industria`);
+      expect(r, city).toBeDefined();
+      expect(r!.destination).toBe(`/es/${city}/empresas-de-software`);
+      expect(r!.statusCode).toBe(301);
+    }
+    // Guadalajara conserva sus landings de industria.
+    expect(rs.some((x) => x.source.includes('/guadalajara/software-para-'))).toBe(false);
+  });
+});

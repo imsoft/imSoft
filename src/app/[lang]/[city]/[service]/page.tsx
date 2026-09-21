@@ -6,6 +6,7 @@ import { SolutionsSection } from '@/components/landing/solutions-section';
 import { ServicesSection } from '@/components/blocks/services-section';
 import { FooterSection } from '@/components/blocks/footer-section';
 import { landingPagesData } from '@/config/landing-pages-data';
+import { LANDING_CITIES, LANDING_INDUSTRIES } from '@/config/landing-pages-index';
 import { resolveLandingContent } from '@/config/landing-pages-i18n';
 import type { City, Industry } from '@/types/landing-pages';
 import { getDictionary } from '@/app/[lang]/dictionaries';
@@ -33,14 +34,8 @@ interface PageProps {
  */
 export async function generateStaticParams() {
   const langs = ['es', 'en'];
-  const cities: City[] = ['guadalajara', 'cdmx', 'monterrey'];
-  const services: Industry[] = [
-    'software-para-inmobiliarias',
-    'software-para-constructoras',
-    'software-para-restaurantes',
-    'software-para-clinicas',
-    'software-para-logistica',
-  ];
+  const cities: City[] = LANDING_CITIES;
+  const services: Industry[] = LANDING_INDUSTRIES;
 
   const params: Array<{ lang: string; city: string; service: string }> = langs.flatMap((lang) =>
     cities.flatMap((city) =>
@@ -82,6 +77,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   // Validar que la combinación exista
   if (
+    !LANDING_CITIES.includes(city as City) ||
     !landingPagesData[city as City] ||
     !landingPagesData[city as City][service as Industry]
   ) {
@@ -162,6 +158,7 @@ export default async function LandingPage({ params }: PageProps) {
 
   // Validar que la combinación ciudad + servicio exista
   if (
+    !LANDING_CITIES.includes(city as City) ||
     !landingPagesData[city as City] ||
     !landingPagesData[city as City][service as Industry]
   ) {
