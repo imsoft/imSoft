@@ -11,6 +11,8 @@ import { SocialLink } from '@/types/database'
 import { ContactEmailsList } from '@/components/crm/contact-emails-list'
 import { contactName } from '@/lib/contact-name'
 import { PrepararCorreoButton } from '@/components/crm/preparar-correo-button'
+import { MensajeRedButton } from '@/components/crm/mensaje-red-button'
+import { canalesDe } from '@/lib/mensaje-red'
 
 // Local SVG brand icons to avoid compilation issues due to lucide-react versions
 const Instagram = (props: React.HTMLAttributes<SVGElement>) => (
@@ -142,6 +144,7 @@ export default async function ContactDetailPage({ params }: {
         </div>
         <div className="flex gap-2">
           {contact.email && <PrepararCorreoButton contactId={id} lang={lang} />}
+          {canalesDe(contact).length > 0 && <MensajeRedButton contacto={{ id, nombre: contactName(contact) || contact.company || '', social_links: contact.social_links, instagram_url: contact.instagram_url, phone: contact.phone }} lang={lang} />}
           <Button asChild>
             <Link href={`/${lang}/dashboard/admin/crm/contacts/${id}/edit`}>
               <Edit className="mr-2 h-4 w-4" />

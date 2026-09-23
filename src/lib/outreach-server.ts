@@ -5,6 +5,7 @@ import Anthropic from '@anthropic-ai/sdk'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { enviarRaw, hiloTieneRespuesta, messageIdHeader } from '@/lib/gmail/server'
 import { GANCHO_TOOL, ganchoDesdeNotas, limpiarGancho, promptGancho } from '@/lib/outreach-ai'
+import { renderMensajeRed, type Canal } from '@/lib/mensaje-red'
 import { construirMime, cuerpoDe, fechaSiguientePaso, renderDesdeCuerpo, renderOutreach, segmentoDe, topeDiario, type Step } from '@/lib/outreach'
 
 const TZ = 'America/Mexico_City'
@@ -24,9 +25,10 @@ export interface ContactoMin {
   website_url: string | null
   notes: string | null
   tags: string[] | null
+  phone?: string | null
 }
 
-export const CONTACTO_COLS = 'id, first_name, last_name, email, company, job_title, website_url, notes, tags'
+export const CONTACTO_COLS = 'id, first_name, last_name, email, phone, company, job_title, website_url, notes, tags'
 
 export function nombreDe(c: Pick<ContactoMin, 'first_name'>): string {
   return (c.first_name ?? '').trim().split(/\s+/)[0] ?? ''
@@ -147,6 +149,27 @@ export async function marcarEnviadoAMano(db: SupabaseClient, userId: string, id:
   await db.from('contact_emails').insert({ contact_id: row.contact_id, status: 'sent', subject: row.subject, body: row.html, sent_at: ahora.toISOString(), sent_by: userId })
   await db.from('contacts').update({ status: 'qualification', updated_at: ahora.toISOString() }).eq('id', row.contact_id).eq('status', 'no_contact')
   return { siguiente: row.step < 3 ? fechaSiguientePaso(ahora, (row.step + 1) as 2 | 3) : null }
+}
+
+/**
+ * Mensaje de prospeccion para una red social. El gancho es el mismo del correo: si ya
+ * hay uno guardado en outreach_emails se reutiliza; si no, notas del CRM o la IA.
+ */
+export async function mensajeParaRed(db: SupabaseClient, contactId: string, canal: Canal) {
+  const { data: c } = await db.from('contacts').select(CONTACTO_COLS).eq('id', contactId).maybeSingle()
+  if (!c) throw new Error('Contacto no encontrado')
+  const { data: previo } = await db.from('outreach_emails').select('gancho').eq('contact_id', contactId).eq('step', 1).not('gancho', 'is', null).maybeSingle()
+  const gancho = (previo?.gancho as string | null) || ganchoDesdeNotas(c.notes) || (await ganchoConIA(c as ContactoMin))
+  return { texto: renderMensajeRed(canal, { nombre: nombreDe(c), empresa: c.company ?? '', gancho, segmento: segmentoDe(c.tags) }), gancho }
+}
+
+/** El mensaje ya se mando por la red: queda en el historial y el prospecto pasa a calificacion. */
+export async function registrarMensajeRed(db: SupabaseClient, userId: string, contactId: string, canal: Canal, texto: string, etiqueta: string) {
+  const ahora = new Date().toISOString()
+  const { error } = await db.from('activities').insert({ contact_id: contactId, activity_type: 'note', subject: `Mensaje por ${etiqueta}`, description: texto, status: 'completed', completed_at: ahora, created_by: userId })
+  if (error) throw new Error(error.message)
+  await db.from('contacts').update({ status: 'qualification', updated_at: ahora }).eq('id', contactId).eq('status', 'no_contact')
+  return { ok: true }
 }
 
 /** Reconstruye asunto, texto y html a partir del cuerpo editado. */

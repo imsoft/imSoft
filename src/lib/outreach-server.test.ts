@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from 'vitest'
 vi.mock('@/lib/gmail/server', () => ({ enviarRaw: vi.fn(), hiloTieneRespuesta: vi.fn(), messageIdHeader: vi.fn() }))
 vi.mock('@anthropic-ai/sdk', () => ({ default: class {} }))
 
-import { marcarEnviadoAMano } from './outreach-server'
+import { marcarEnviadoAMano, registrarMensajeRed } from './outreach-server'
 
 /**
  * Supabase falso: guarda que se actualizo/inserto en cada tabla y devuelve el borrador
@@ -61,5 +61,16 @@ describe('marcarEnviadoAMano', () => {
     await expect(marcarEnviadoAMano(enviado.db, 'u1', 'b1')).rejects.toThrow('ya no es un borrador')
     expect(enviado.updates).toEqual([])
     expect(enviado.inserts).toEqual([])
+  })
+})
+
+describe('registrarMensajeRed', () => {
+  it('deja el mensaje en el historial del contacto y lo pasa a calificacion', async () => {
+    const { db, updates, inserts } = dbFalso(null)
+    await registrarMensajeRed(db, 'u1', 'c1', 'instagram', 'Hola, soy Brandon…', 'Instagram')
+    expect(inserts).toEqual([{ tabla: 'activities', valores: expect.objectContaining({ contact_id: 'c1', activity_type: 'note', subject: 'Mensaje por Instagram', description: 'Hola, soy Brandon…', status: 'completed', created_by: 'u1' }) }])
+    const contacto = updates.find((u) => u.tabla === 'contacts')!
+    expect(contacto.valores).toMatchObject({ status: 'qualification' })
+    expect(contacto.filtros).toEqual({ id: 'c1', status: 'no_contact' })
   })
 })

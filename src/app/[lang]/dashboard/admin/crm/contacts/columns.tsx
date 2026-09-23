@@ -1,7 +1,7 @@
 'use client'
 
 import { ColumnDef } from '@tanstack/react-table'
-import { ArrowUpDown, MoreHorizontal, Eye, Edit, Trash2, Mail, Copy, Check, Globe, Phone, Link as LinkIcon, AlertTriangle, ChevronDown } from 'lucide-react'
+import { ArrowUpDown, MessageCircle, MoreHorizontal, Eye, Edit, Trash2, Mail, Copy, Check, Globe, Phone, Link as LinkIcon, AlertTriangle, ChevronDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -20,6 +20,9 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { prepararCorreo } from '@/components/crm/preparar-correo'
 import { pasaFiltroRedes, redesDe } from '@/lib/contact-socials'
+import { canalesDe } from '@/lib/mensaje-red'
+import { MensajeRedDialog } from '@/components/crm/mensaje-red-dialog'
+import { contactName } from '@/lib/contact-name'
 
 // Local SVG brand icons to avoid compilation issues due to lucide-react versions
 const Instagram = (props: React.HTMLAttributes<SVGElement>) => (
@@ -482,10 +485,19 @@ export function createColumns({ lang, onDelete, isDeleting }: ColumnsProps): Col
     {
       id: 'actions',
       enableHiding: false,
-      cell: ({ row }) => {
-        const contact = row.original
+      cell: ({ row }) => <AccionesCell contact={row.original} lang={lang} onDelete={onDelete} isDeleting={isDeleting ?? null} />,
+    },
+  ]
+}
 
-        return (
+function AccionesCell({ contact, lang, onDelete, isDeleting }: { contact: Contact; lang: string; onDelete: (id: string) => void; isDeleting: string | null }) {
+  const [mensajeAbierto, setMensajeAbierto] = useState(false)
+  const puedeMensaje = canalesDe(contact).length > 0
+  return (
+    <>
+      {puedeMensaje && (
+        <MensajeRedDialog contacto={{ id: contact.id, nombre: contactName(contact) || contact.company || contact.email || '', social_links: contact.social_links, instagram_url: contact.instagram_url, phone: contact.phone }} lang={lang} abierto={mensajeAbierto} onClose={() => setMensajeAbierto(false)} />
+      )}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="h-8 w-8 p-0">
@@ -508,6 +520,12 @@ export function createColumns({ lang, onDelete, isDeleting }: ColumnsProps): Col
                   {lang === 'en' ? 'Write email' : 'Escribir correo'}
                 </DropdownMenuItem>
               )}
+              {puedeMensaje && (
+                <DropdownMenuItem onClick={() => setMensajeAbierto(true)}>
+                  <MessageCircle className="mr-2 h-4 w-4" />
+                  {lang === 'en' ? 'Social media message' : 'Mensaje para redes'}
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem asChild>
                 <Link href={`/${lang}/dashboard/admin/crm/contacts/${contact.id}/edit`}>
                   <Edit className="mr-2 h-4 w-4" />
@@ -525,8 +543,6 @@ export function createColumns({ lang, onDelete, isDeleting }: ColumnsProps): Col
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-        )
-      },
-    },
-  ]
+    </>
+  )
 }
