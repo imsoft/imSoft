@@ -47,7 +47,7 @@ export function fechaSiguientePaso(sentAt: Date, siguiente: 2 | 3): string {
 }
 
 const SITE = 'https://www.imsoft.io';
-const LOGO = `${SITE}/logos/imsoft-isotipo-correo-v2.png`;
+const LOGO = `${SITE}/logos/imsoft-isotipo-correo-v3.png`;
 export const LINEA_WHATSAPP = 'Agendar 15 minutos por WhatsApp:';
 /** Boton principal del correo: WhatsApp con mensaje prellenado. */
 export const WHATSAPP_URL = `https://wa.me/523325365558?text=${encodeURIComponent('Hola Brandon, me llegó tu correo de imSoft y me gustaría platicarlo.')}`;
@@ -57,7 +57,7 @@ export function firmaHtml(): string {
   return `
 <table cellpadding="0" cellspacing="0" border="0" style="margin-top:24px;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#111827">
   <tr>
-    <td style="padding-right:12px;vertical-align:top"><img src="${LOGO}" width="36" height="36" alt="imSoft" style="display:block;border-radius:8px"></td>
+    <td style="padding-right:12px;vertical-align:top"><img src="${LOGO}" width="36" height="47" alt="imSoft" style="display:block;width:36px;height:auto"></td>
     <td style="vertical-align:top;line-height:1.45">
       <strong>Brandon García</strong><br>
       <span style="color:#4b5563">imSoft · Software a la medida, Guadalajara</span><br>
@@ -180,7 +180,7 @@ export function renderDesdeCuerpo(step: Step, d: { subject: string; cuerpo: stri
 <tr><td align="center" style="padding:32px 12px">
 <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:16px">
   <tr><td style="padding:40px 48px 0">
-    <img src="${LOGO}" width="44" height="57" alt="imSoft" style="display:block;width:44px;height:auto">
+    <img src="${LOGO}" width="56" height="73" alt="imSoft" style="display:block;width:56px;height:auto">
   </td></tr>
   <tr><td style="padding:36px 48px 0">
     <h1 style="margin:0 0 20px;font-family:Arial,Helvetica,sans-serif;font-size:26px;line-height:1.25;font-weight:bold;color:#111827">${esc(d.subject.trim())}</h1>
@@ -214,11 +214,27 @@ export function cuerpoDe(text: string): string {
 }
 
 /** Mensaje MIME (multipart/alternative) en base64url, como lo pide la API de Gmail. */
+/** Cabecera con acentos en formato RFC 2047 (base64), como exige el correo. */
+export function codificarCabecera(texto: string): string {
+  return /^[\x20-\x7e]*$/.test(texto) ? texto : `=?UTF-8?B?${Buffer.from(texto, 'utf8').toString('base64')}?=`;
+}
+
+/**
+ * "Nombre <correo>": el nombre se codifica si trae acentos o simbolos; el correo va tal cual.
+ * Sin esto Gmail mostraba "Brandon GarcÃƒÂ­a Ã‚Â· imSoft" como remitente.
+ */
+export function codificarRemitente(from: string): string {
+  const m = from.match(/^(.*?)\s*<([^>]+)>$/);
+  if (!m) return from;
+  const nombre = m[1].trim().replace(/^"|"$/g, '');
+  return nombre ? `${codificarCabecera(nombre)} <${m[2]}>` : `<${m[2]}>`;
+}
+
 export function construirMime(m: { from: string; to: string; subject: string; text: string; html: string; inReplyTo?: string | null; references?: string | null }): string {
   const boundary = `b_${Math.random().toString(36).slice(2)}`;
-  const subject = `=?UTF-8?B?${Buffer.from(m.subject, 'utf8').toString('base64')}?=`;
+  const subject = codificarCabecera(m.subject);
   const cab = [
-    `From: ${m.from}`,
+    `From: ${codificarRemitente(m.from)}`,
     `To: ${m.to}`,
     `Subject: ${subject}`,
     'MIME-Version: 1.0',

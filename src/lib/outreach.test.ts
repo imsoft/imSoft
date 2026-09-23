@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { construirMime, fechaSiguientePaso, plantillaDe, renderOutreach, segmentoDe, sumarDiasHabiles, topeDiario } from './outreach';
+import { codificarRemitente, construirMime, fechaSiguientePaso, plantillaDe, renderOutreach, segmentoDe, sumarDiasHabiles, topeDiario } from './outreach';
 
 describe('prospeccion', () => {
   it('rampa de envios diarios', () => {
@@ -39,7 +39,7 @@ describe('prospeccion', () => {
     expect(e.text).not.toContain('33 2536 5558');
     expect(e.html).not.toContain('Brandon García');
     expect(e.html).not.toContain('{{');
-    expect(e.html).toContain('imsoft-isotipo-correo-v2.png');
+    expect(e.html).toContain('imsoft-isotipo-correo-v3.png');
     expect(e.html).toContain(`<h1`);
     expect(e.html).not.toContain('<script');
     // Diseño de correo: boton de WhatsApp con mensaje prellenado y tablas (compatibles con Gmail/Outlook)
@@ -73,6 +73,19 @@ describe('prospeccion', () => {
     expect(mime).toContain('In-Reply-To: <abc@mail.gmail.com>');
     expect(mime).toContain('multipart/alternative');
     expect(mime).toContain('text/html');
+  });
+
+  it('codifica el nombre del remitente cuando trae acentos, y deja el correo legible', () => {
+    // Gmail mostraba "Brandon GarcÃƒÂ­a Ã‚Â· imSoft" porque el nombre iba en UTF-8 crudo.
+    const from = 'Brandon García · imSoft <contacto@imsoft.io>';
+    expect(codificarRemitente(from)).toBe(`=?UTF-8?B?${Buffer.from('Brandon García · imSoft').toString('base64')}?= <contacto@imsoft.io>`);
+    expect(codificarRemitente('Brandon <contacto@imsoft.io>')).toBe('Brandon <contacto@imsoft.io>');
+    expect(codificarRemitente('contacto@imsoft.io')).toBe('contacto@imsoft.io');
+    const raw = construirMime({ from, to: 'x@y.mx', subject: 'Hola', text: 'hola', html: '<p>hola</p>' });
+    const mime = Buffer.from(raw.replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString('utf8');
+    expect(mime).toContain('From: =?UTF-8?B?');
+    expect(mime).not.toContain('From: Brandon García');
+    expect(mime).toContain('Subject: Hola\r\n');
   });
 });
 

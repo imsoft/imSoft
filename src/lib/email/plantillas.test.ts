@@ -15,7 +15,7 @@ describe('correos de la plataforma', () => {
   it('todos usan la plantilla de imSoft y ninguno los colores viejos', () => {
     for (const c of todos()) {
       expect(c.subject.length).toBeGreaterThan(3)
-      expect(c.html).toContain('imsoft-isotipo-correo-v2.png')
+      expect(c.html).toContain('imsoft-isotipo-correo-v3.png')
       expect(c.html).toContain('#1e88e5')
       expect(c.html).not.toMatch(/#667eea|#764ba2|#6366f1|#a5b4fc/i)
     }

@@ -7,7 +7,7 @@
  */
 
 export const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io'
-const LOGO = 'https://www.imsoft.io/logos/imsoft-isotipo-correo-v2.png'
+const LOGO = 'https://www.imsoft.io/logos/imsoft-isotipo-correo-v3.png'
 
 export const COLOR = {
   marca: '#1e88e5',
@@ -138,7 +138,7 @@ export function emailLayout(o: LayoutOpts): string {
 <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:16px;border:1px solid ${COLOR.borde}">
   ${o.portada ? `<tr><td style="padding:0">${imagen(o.portada.src, o.portada.alt)}</td></tr>` : ''}
   <tr><td style="padding:36px 40px 0">
-    <a href="${SITE}" style="text-decoration:none"><img src="${LOGO}" width="36" height="46" alt="imSoft" style="display:block;width:36px;height:auto;border:0"></a>
+    <a href="${SITE}" style="text-decoration:none"><img src="${LOGO}" width="48" height="63" alt="imSoft" style="display:block;width:48px;height:auto;border:0"></a>
   </td></tr>
   <tr><td style="padding:28px 40px 8px">
     ${o.etiqueta ? `<p style="margin:0 0 8px;font-family:${FUENTE};font-size:12px;font-weight:bold;letter-spacing:1.5px;text-transform:uppercase;color:${COLOR.marca}">${esc(o.etiqueta)}</p>` : ''}
