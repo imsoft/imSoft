@@ -134,6 +134,21 @@ export async function enviarBorrador(db: SupabaseClient, userId: string, id: str
   return { id: enviado.id, threadId: enviado.threadId, siguiente: row.step < 3 ? fechaSiguientePaso(ahora, (row.step + 1) as 2 | 3) : null }
 }
 
+/**
+ * El borrador se mando fuera del sistema (copiado a Gmail, WhatsApp...): se registra como
+ * enviado a mano con el mismo efecto que el envio por Gmail, salvo el hilo (no lo hay).
+ */
+export async function marcarEnviadoAMano(db: SupabaseClient, userId: string, id: string) {
+  const { data: row } = await db.from('outreach_emails').select('*').eq('id', id).maybeSingle()
+  if (!row) throw new Error('Borrador no encontrado')
+  if (row.status !== 'draft') throw new Error('Este correo ya no es un borrador')
+  const ahora = new Date()
+  await db.from('outreach_emails').update({ status: 'sent', sent_at: ahora.toISOString(), sent_via: 'manual', updated_at: ahora.toISOString() }).eq('id', id)
+  await db.from('contact_emails').insert({ contact_id: row.contact_id, status: 'sent', subject: row.subject, body: row.html, sent_at: ahora.toISOString(), sent_by: userId })
+  await db.from('contacts').update({ status: 'qualification', updated_at: ahora.toISOString() }).eq('id', row.contact_id).eq('status', 'no_contact')
+  return { siguiente: row.step < 3 ? fechaSiguientePaso(ahora, (row.step + 1) as 2 | 3) : null }
+}
+
 /** Reconstruye asunto, texto y html a partir del cuerpo editado. */
 export async function editarBorrador(db: SupabaseClient, id: string, cambios: { subject?: string; cuerpo?: string; scheduled_for?: string }) {
   const { data: row } = await db.from('outreach_emails').select('id, step, status, subject, text, contact_id').eq('id', id).maybeSingle()

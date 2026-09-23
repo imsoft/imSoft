@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Copy, Mail, RefreshCw, Send, Sparkles, X } from 'lucide-react'
+import { Check, Copy, Mail, RefreshCw, Send, Sparkles, X } from 'lucide-react'
 import { cuerpoDe } from '@/lib/outreach'
 
 export interface FilaOutreach {
@@ -109,6 +109,13 @@ export function Prospeccion({ lang, gmail, gmailConfigurado, campana, filas, sin
   async function enviar(f: FilaOutreach) {
     const j = await llamar(`/api/outreach/${f.id}/send`, `send-${f.id}`, {})
     if (j) toast.success(es ? `Enviado a ${f.empresa || f.email}${j.siguiente ? ` · seguimiento el ${j.siguiente}` : ''}` : `Sent to ${f.empresa || f.email}`)
+    if (abierto?.id === f.id) setAbierto(null)
+  }
+
+  /** El correo salio por otro camino (copiado a Gmail, WhatsApp...). */
+  async function yaEnviado(f: FilaOutreach) {
+    const j = await llamar(`/api/outreach/${f.id}/manual`, `manual-${f.id}`, {})
+    if (j) toast.success(es ? `Registrado como enviado · ${f.empresa || f.email} pasa a calificación${j.siguiente ? ` · seguimiento el ${j.siguiente}` : ''}` : `Marked as sent · ${f.empresa || f.email} moved to qualification`)
     if (abierto?.id === f.id) setAbierto(null)
   }
 
@@ -264,8 +271,10 @@ export function Prospeccion({ lang, gmail, gmailConfigurado, campana, filas, sin
                       <div className="flex flex-wrap items-center gap-2">
                         <Button variant="outline" onClick={guardar} disabled={ocupado !== null}>{ocupado === 'save' ? (es ? 'Guardando…' : 'Saving…') : es ? 'Guardar cambios' : 'Save changes'}</Button>
                         <Button onClick={() => enviar(abierto)} disabled={ocupado !== null || !puedeEnviar || sucio}><Send className="mr-2 h-4 w-4" />{es ? 'Enviar por Gmail' : 'Send via Gmail'}</Button>
+                        <Button variant="outline" onClick={() => yaEnviado(abierto)} disabled={ocupado !== null || sucio} title={es ? 'Si lo copiaste y lo mandaste tú desde Gmail o WhatsApp' : 'If you copied it and sent it yourself'}><Check className="mr-2 h-4 w-4" />{es ? 'Ya lo envié' : 'Already sent'}</Button>
                         <Button variant="ghost" onClick={() => saltar(abierto)} disabled={ocupado !== null}><X className="mr-2 h-4 w-4" />{es ? 'Descartar' : 'Skip'}</Button>
                         {sucio && <p className="text-xs text-muted-foreground">{es ? 'Guarda los cambios para actualizar la vista previa y poder enviar.' : 'Save your changes to refresh the preview and send.'}</p>}
+                        {!sucio && <p className="w-full text-xs text-muted-foreground">{es ? 'Enviar por Gmail o "Ya lo envié" registran el correo en el CRM, pasan al prospecto a calificación y agendan el seguimiento.' : 'Both buttons log the email in the CRM, move the prospect to qualification and schedule the follow-up.'}</p>}
                       </div>
                     )}
                   </div>
