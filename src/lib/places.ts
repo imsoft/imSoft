@@ -68,6 +68,15 @@ export interface Candidato {
   instagram?: string | null
 }
 
+/**
+ * Un candidato entra al CRM solo si hay por donde escribirle: correo o Instagram.
+ * El telefono solo no basta (decision de Brandon, 23-sep-2026): los de puro telefono
+ * se quedaban sin contactar y se borraron 49 el mismo dia.
+ */
+export function sePuedeEscribir(c: Pick<Candidato, 'correo' | 'instagram'>): boolean {
+  return Boolean((c.correo ?? '').trim() || (c.instagram ?? '').trim())
+}
+
 const DOMINIOS_GENERICOS = ['facebook.com', 'instagram.com', 'wa.me', 'whatsapp.com', 'linktr.ee', 'google.com', 'goo.gl', 'business.site', 'negocio.site', 'tiktok.com', 'youtube.com', 'x.com', 'twitter.com']
 
 /** Dominio sin www ni ruta; null para redes sociales y perfiles de Google. */

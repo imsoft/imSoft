@@ -4,7 +4,7 @@
  */
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { mapRowsToContacts } from './import-contacts.ts'
-import { MUNICIPIOS, candidatoDe, enlacesDeContacto, extraerCorreo, extraerInstagram, filaDesdeCandidato, giroDe, marcarExistentes, sinRepetidos, type Candidato, type ContactoExistente, type PlaceResult } from './places.ts'
+import { MUNICIPIOS, candidatoDe, enlacesDeContacto, extraerCorreo, extraerInstagram, filaDesdeCandidato, giroDe, marcarExistentes, sePuedeEscribir, sinRepetidos, type Candidato, type ContactoExistente, type PlaceResult } from './places.ts'
 
 const FIELD_MASK = 'places.id,places.displayName,places.formattedAddress,places.websiteUri,places.nationalPhoneNumber,places.rating,places.userRatingCount,places.primaryTypeDisplayName,places.googleMapsUri,nextPageToken'
 
@@ -109,7 +109,8 @@ export async function buscarProspectos(db: SupabaseClient, giroClave: string, mu
 
 /** Da de alta los candidatos elegidos como prospectos sin contactar. */
 export async function importarCandidatos(db: SupabaseClient, candidatos: Candidato[], segmento: string, source: string, tagsExtra: string[] = []) {
-  const filas = candidatos.filter((c) => !c.enCrm).map((c) => filaDesdeCandidato(c, segmento))
+  const sinContacto = candidatos.filter((c) => !c.enCrm && !sePuedeEscribir(c)).length
+  const filas = candidatos.filter((c) => !c.enCrm && sePuedeEscribir(c)).map((c) => filaDesdeCandidato(c, segmento))
   const { contacts, skipped } = mapRowsToContacts(filas, { source, contactType: 'prospect', status: 'no_contact', tags: ['google-places', ...tagsExtra] })
   let insertados = 0
   const conCorreo = contacts.filter((c) => c.email)
@@ -124,5 +125,5 @@ export async function importarCandidatos(db: SupabaseClient, candidatos: Candida
     if (error) throw new Error(error.message)
     insertados += data?.length ?? 0
   }
-  return { insertados, omitidos: skipped.noContact.length + skipped.invalidEmail.length + skipped.duplicate.length }
+  return { insertados, omitidos: sinContacto + skipped.noContact.length + skipped.invalidEmail.length + skipped.duplicate.length }
 }

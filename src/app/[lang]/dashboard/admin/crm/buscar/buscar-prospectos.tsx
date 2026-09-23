@@ -9,7 +9,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { ExternalLink, Search, UserPlus } from 'lucide-react'
-import { GIROS, MUNICIPIOS, type Candidato } from '@/lib/places'
+import { GIROS, MUNICIPIOS, sePuedeEscribir, type Candidato } from '@/lib/places'
 
 export function BuscarProspectos({ lang, configurado }: { lang: string; configurado: boolean }) {
   const es = lang !== 'en'
@@ -32,7 +32,7 @@ export function BuscarProspectos({ lang, configurado }: { lang: string; configur
       const j = await r.json().catch(() => ({}))
       if (!r.ok) throw new Error(j.error || r.statusText)
       setResultado(j)
-      setMarcados(new Set((j.candidatos as Candidato[]).filter((c) => !c.enCrm && (c.correo || c.telefono || c.instagram)).map((c) => c.placeId)))
+      setMarcados(new Set((j.candidatos as Candidato[]).filter((c) => !c.enCrm && sePuedeEscribir(c)).map((c) => c.placeId)))
       toast.success(es ? `${j.candidatos.length} negocios, ${j.nuevos} nuevos para el CRM` : `${j.candidatos.length} businesses, ${j.nuevos} new`)
     } catch (err) {
       toast.error(err instanceof Error ? err.message : String(err))
@@ -111,7 +111,7 @@ export function BuscarProspectos({ lang, configurado }: { lang: string; configur
               {resultado.candidatos.length} {es ? 'encontrados' : 'found'} · <strong>{nuevos.length}</strong> {es ? 'nuevos' : 'new'} · {nuevos.filter((c) => c.correo).length} {es ? 'con correo' : 'with email'} · {marcados.size} {es ? 'marcados' : 'selected'}
             </p>
             <div className="ml-auto flex gap-2">
-              <Button variant="outline" size="sm" onClick={() => setMarcados(new Set(nuevos.filter((c) => c.correo || c.telefono || c.instagram).map((c) => c.placeId)))}>{es ? 'Marcar todos los nuevos' : 'Select all new'}</Button>
+              <Button variant="outline" size="sm" onClick={() => setMarcados(new Set(nuevos.filter(sePuedeEscribir).map((c) => c.placeId)))}>{es ? 'Marcar todos los nuevos' : 'Select all new'}</Button>
               <Button size="sm" onClick={importar} disabled={ocupado !== null || marcados.size === 0}><UserPlus className="mr-2 h-4 w-4" />{ocupado === 'importar' ? (es ? 'Agregando…' : 'Adding…') : es ? `Agregar ${marcados.size} al CRM` : `Add ${marcados.size} to CRM`}</Button>
             </div>
           </div>
@@ -130,14 +130,14 @@ export function BuscarProspectos({ lang, configurado }: { lang: string; configur
               <tbody>
                 {resultado.candidatos.map((c) => (
                   <tr key={c.placeId} className={`border-t ${c.enCrm ? 'opacity-50' : 'hover:bg-muted/30'}`}>
-                    <td className="p-3 align-top"><Checkbox checked={marcados.has(c.placeId)} disabled={c.enCrm} onCheckedChange={() => alternar(c.placeId)} /></td>
+                    <td className="p-3 align-top"><Checkbox checked={marcados.has(c.placeId)} disabled={c.enCrm || !sePuedeEscribir(c)} onCheckedChange={() => alternar(c.placeId)} /></td>
                     <td className="p-3 align-top">
                       <p className="font-medium">{c.nombre}</p>
                       <p className="text-xs text-muted-foreground">{c.direccion}</p>
                       {c.tipo && <p className="text-xs text-muted-foreground">{c.tipo}</p>}
                     </td>
                     <td className="p-3 align-top whitespace-nowrap">
-                      {c.correo ? <p>{c.correo}</p> : <p className="text-muted-foreground">{es ? 'sin correo' : 'no email'}</p>}
+                      {c.correo ? <p>{c.correo}</p> : <p className="text-muted-foreground">{sePuedeEscribir(c) ? (es ? 'sin correo' : 'no email') : es ? 'sin correo ni Instagram: no se agrega' : 'no email or Instagram: not added'}</p>}
                       {c.telefono && <p className="text-xs text-muted-foreground">{c.telefono}</p>}
                       {c.instagram && <a className="text-xs text-primary underline-offset-4 hover:underline" href={c.instagram} target="_blank" rel="noreferrer">Instagram</a>}
                     </td>

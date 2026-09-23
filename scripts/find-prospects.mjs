@@ -15,6 +15,7 @@
 import { readFileSync } from 'node:fs'
 import { createClient } from '@supabase/supabase-js'
 import { buscarProspectos, importarCandidatos } from '../src/lib/places-server.ts'
+import { sePuedeEscribir } from '../src/lib/places.ts'
 
 const args = Object.fromEntries(process.argv.slice(2).map((a, i, all) => (a.startsWith('--') ? [a.slice(2), all[i + 1]?.startsWith('--') || all[i + 1] === undefined ? true : all[i + 1]] : [])).filter((x) => x.length))
 const MAX = Number(args.max) || 40
@@ -39,8 +40,8 @@ let total = 0
 for (const b of busquedas) {
   if (total >= MAX) break
   const { candidatos, segmento, nuevos } = await buscarProspectos(db, b.giro, b.municipio, { max: 20, correos: true })
-  const elegibles = candidatos.filter((c) => !c.enCrm && (c.correo || c.telefono || c.instagram)).slice(0, MAX - total)
-  console.log(`${b.giro} / ${b.municipio}: ${candidatos.length} encontrados, ${nuevos} nuevos, ${elegibles.length} con contacto`)
+  const elegibles = candidatos.filter((c) => !c.enCrm && sePuedeEscribir(c)).slice(0, MAX - total)
+  console.log(`${b.giro} / ${b.municipio}: ${candidatos.length} encontrados, ${nuevos} nuevos, ${elegibles.length} con correo o Instagram`)
   if (dryRun) {
     total += elegibles.length
     continue

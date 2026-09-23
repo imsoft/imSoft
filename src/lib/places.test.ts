@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { candidatoDe, dominioDe, enlacesDeContacto, extraerCorreo, extraerInstagram, filaDesdeCandidato, formatoTelefono, giroDe, limpiarNombre, marcarExistentes, nombreNormalizado, sinRepetidos } from './places'
+import { candidatoDe, dominioDe, enlacesDeContacto, extraerCorreo, extraerInstagram, filaDesdeCandidato, formatoTelefono, giroDe, limpiarNombre, marcarExistentes, nombreNormalizado, sePuedeEscribir, sinRepetidos } from './places'
 import { mapRowsToContacts } from './import-contacts'
 
 describe('buscador de prospectos (Places)', () => {
@@ -74,5 +74,12 @@ describe('buscador de prospectos (Places)', () => {
     expect(contacts[0]).toMatchObject({ company: 'ES Contable', email: 'ventas@escontable.com', phone: '33 1973 2676', website_url: 'https://escontable.com', tags: ['auto', 'contabilidad'], status: 'no_contact', contact_type: 'prospect' })
     expect(giroDe('contabilidad')?.segmento).toBe('contabilidad')
     expect(giroDe('nada')).toBeNull()
+  })
+
+  it('solo entra al CRM quien tiene correo o Instagram; el telefono solo no basta', () => {
+    expect(sePuedeEscribir({ correo: 'a@b.mx', instagram: null })).toBe(true)
+    expect(sePuedeEscribir({ correo: null, instagram: 'ferreteria' })).toBe(true)
+    expect(sePuedeEscribir({ correo: ' ', instagram: '' })).toBe(false)
+    expect(sePuedeEscribir({})).toBe(false)
   })
 })
