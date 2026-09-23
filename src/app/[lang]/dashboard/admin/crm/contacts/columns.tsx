@@ -19,6 +19,7 @@ import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { prepararCorreo } from '@/components/crm/preparar-correo'
+import { pasaFiltroRedes, redesDe } from '@/lib/contact-socials'
 
 // Local SVG brand icons to avoid compilation issues due to lucide-react versions
 const Instagram = (props: React.HTMLAttributes<SVGElement>) => (
@@ -190,17 +191,7 @@ function SocialsCell({ socials, instagram, lang }: { socials: SocialLink[] | nul
     return labels[platform] || platform
   }
 
-  const allSocials: SocialLink[] = []
-
-  if (Array.isArray(socials)) {
-    allSocials.push(...socials)
-  }
-
-  const hasPlatform = (platform: SocialLink['platform']) => allSocials.some(s => s.platform === platform)
-
-  if (instagram && !hasPlatform('instagram')) {
-    allSocials.push({ platform: 'instagram', url: instagram })
-  }
+  const allSocials = redesDe({ social_links: socials ?? undefined, instagram_url: instagram ?? undefined })
 
   if (allSocials.length === 0) {
     return <span className="text-sm text-muted-foreground">-</span>
@@ -466,6 +457,7 @@ export function createColumns({ lang, onDelete, isDeleting }: ColumnsProps): Col
     {
       id: 'socials',
       header: lang === 'en' ? 'Social Media' : 'Redes Sociales',
+      filterFn: (row, _id, value) => pasaFiltroRedes(row.original, value),
       cell: ({ row }) => {
         return (
           <SocialsCell

@@ -31,6 +31,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
+import { ETIQUETA_PLATAFORMA, PLATAFORMAS } from '@/lib/contact-socials'
 import {
   Select,
   SelectContent,
@@ -74,7 +75,7 @@ export function DataTable<TData, TValue>({
     email: { en: 'Email', es: 'Correo' },
     company: { en: 'Company', es: 'Empresa' },
     notes: { en: 'Notes', es: 'Notas' },
-    instagram_url: { en: 'Instagram', es: 'Instagram' },
+    socials: { en: 'Social media', es: 'Redes sociales' },
     status: { en: 'Status', es: 'Estado' },
     actions: { en: 'Actions', es: 'Acciones' },
   }
@@ -176,7 +177,7 @@ export function DataTable<TData, TValue>({
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Filtro por Tipo */}
           <div className="space-y-2">
             <Label htmlFor="type-filter">{lang === 'en' ? 'Type' : 'Tipo'}</Label>
@@ -195,6 +196,29 @@ export function DataTable<TData, TValue>({
                 <SelectItem value="prospect">{lang === 'en' ? 'Prospect' : 'Prospecto'}</SelectItem>
                 <SelectItem value="customer">{lang === 'en' ? 'Customer' : 'Cliente'}</SelectItem>
                 <SelectItem value="partner">{lang === 'en' ? 'Partner' : 'Socio'}</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Filtro por redes sociales: con alguna, sin ninguna o una plataforma concreta */}
+          <div className="space-y-2">
+            <Label htmlFor="socials-filter">{lang === 'en' ? 'Social media' : 'Redes sociales'}</Label>
+            <Select
+              value={(table.getColumn('socials')?.getFilterValue() as string) ?? 'all'}
+              onValueChange={(value) =>
+                table.getColumn('socials')?.setFilterValue(value === 'all' ? '' : value)
+              }
+            >
+              <SelectTrigger id="socials-filter" className="w-full border-[0.5px] border-gray-500 dark:border-gray-400">
+                <SelectValue placeholder={lang === 'en' ? 'All contacts' : 'Todos'} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{lang === 'en' ? 'All contacts' : 'Todos'}</SelectItem>
+                <SelectItem value="any">{lang === 'en' ? 'With any social media' : 'Con alguna red'}</SelectItem>
+                <SelectItem value="none">{lang === 'en' ? 'Without social media' : 'Sin redes'}</SelectItem>
+                {PLATAFORMAS.map((p) => (
+                  <SelectItem key={p} value={p}>{p === 'website' && lang === 'en' ? 'Website' : ETIQUETA_PLATAFORMA[p]}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
