@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { candidatoDe, dominioDe, enlacesDeContacto, extraerCorreo, extraerInstagram, filaDesdeCandidato, formatoTelefono, giroDe, limpiarNombre, marcarExistentes, nombreNormalizado, sePuedeEscribir, sinRepetidos } from './places'
+import { candidatoDe, dominioDe, enlacesDeContacto, extraerCorreo, extraerInstagram, filaDesdeCandidato, formatoTelefono, giroDe, limpiarNombre, marcarExistentes, nombreNormalizado, sePuedeEscribir, sinRepetidos, numeroDeCorrida, tramoDeBusquedas } from './places'
 import { mapRowsToContacts } from './import-contacts'
 
 describe('buscador de prospectos (Places)', () => {
@@ -81,5 +81,27 @@ describe('buscador de prospectos (Places)', () => {
     expect(sePuedeEscribir({ correo: null, instagram: 'ferreteria' })).toBe(true)
     expect(sePuedeEscribir({ correo: ' ', instagram: '' })).toBe(false)
     expect(sePuedeEscribir({})).toBe(false)
+  })
+
+  it('cada corrida toma el tramo siguiente y entre varias recorren la lista completa', () => {
+    const lista = Array.from({ length: 7 }, (_, i) => i)
+    expect(tramoDeBusquedas(lista, 0, 3)).toEqual([0, 1, 2])
+    expect(tramoDeBusquedas(lista, 1, 3)).toEqual([3, 4, 5])
+    expect(tramoDeBusquedas(lista, 2, 3)).toEqual([6, 0, 1])
+    expect(new Set([0, 1, 2].flatMap((c) => tramoDeBusquedas(lista, c, 3))).size).toBe(7)
+    expect(tramoDeBusquedas(lista, 5, 20)).toHaveLength(7)
+    expect(tramoDeBusquedas([], 5, 3)).toEqual([])
+  })
+
+  it('el numero de corrida cuenta lunes, miercoles y viernes, asi que las 69 busquedas se cubren en 5 corridas', () => {
+    expect(numeroDeCorrida(new Date('2026-09-21T13:00:00Z'))).toBe(1) // lunes
+    expect(numeroDeCorrida(new Date('2026-09-22T13:00:00Z'))).toBe(1) // martes: no corre
+    expect(numeroDeCorrida(new Date('2026-09-23T13:00:00Z'))).toBe(2) // miercoles
+    expect(numeroDeCorrida(new Date('2026-09-25T13:00:00Z'))).toBe(3) // viernes
+    expect(numeroDeCorrida(new Date('2026-09-28T13:00:00Z'))).toBe(4) // siguiente lunes
+    const lista = Array.from({ length: 69 }, (_, i) => i)
+    const fechas = ['2026-09-28', '2026-09-30', '2026-10-02', '2026-10-05', '2026-10-07']
+    const vistos = new Set(fechas.flatMap((f) => tramoDeBusquedas(lista, numeroDeCorrida(new Date(`${f}T13:00:00Z`)), 15)))
+    expect(vistos.size).toBe(69)
   })
 })

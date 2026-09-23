@@ -1,9 +1,9 @@
-name: Prospectos semanales (Google Places)
+name: Prospectos automáticos (Google Places)
 
 on:
   schedule:
-    # Lunes 13:00 UTC (7:00 AM Guadalajara): deja prospectos nuevos antes de empezar la semana.
-    - cron: "0 13 * * 1"
+    # Lunes, miércoles y viernes 13:00 UTC (7:00 AM Guadalajara): prospectos nuevos antes de empezar el día.
+    - cron: "0 13 * * 1,3,5"
   workflow_dispatch:
 
 jobs:

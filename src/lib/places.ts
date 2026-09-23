@@ -68,6 +68,30 @@ export interface Candidato {
   instagram?: string | null
 }
 
+/** Dias de la semana en que corre el buscador (0 = domingo): lunes, miercoles y viernes. */
+export const DIAS_DE_CORRIDA = [1, 3, 5]
+
+/**
+ * Numero de corrida que toca hoy: cuantos lunes, miercoles y viernes han pasado desde el
+ * 21-sep-2026. Sirve para que cada corrida tome el tramo siguiente de la lista sin guardar
+ * estado; una corrida manual el mismo dia repite el tramo, que es lo deseable.
+ */
+export function numeroDeCorrida(fecha = new Date(), dias = DIAS_DE_CORRIDA): number {
+  const inicio = Date.UTC(2026, 8, 21)
+  const hoy = Date.UTC(fecha.getUTCFullYear(), fecha.getUTCMonth(), fecha.getUTCDate())
+  let n = 0
+  for (let t = inicio; t <= hoy; t += 86_400_000) if (dias.includes(new Date(t).getUTCDay())) n++
+  return n
+}
+
+/** Tramo de la lista que toca en la corrida dada; en ceil(lista/porCorrida) corridas se recorre completa. */
+export function tramoDeBusquedas<T>(lista: T[], corrida: number, porCorrida: number): T[] {
+  if (!lista.length || porCorrida <= 0) return []
+  const n = Math.min(porCorrida, lista.length)
+  const inicio = (((corrida * n) % lista.length) + lista.length) % lista.length
+  return Array.from({ length: n }, (_, i) => lista[(inicio + i) % lista.length])
+}
+
 /**
  * Un candidato entra al CRM solo si hay por donde escribirle: correo o Instagram.
  * El telefono solo no basta (decision de Brandon, 23-sep-2026): los de puro telefono

@@ -1,5 +1,5 @@
 /**
- * Prospectos nuevos cada semana con Google Places.
+ * Prospectos nuevos con Google Places, lunes, miercoles y viernes.
  *
  * Recorre las busquedas de content/prospect-searches.json (giro x municipio), descarta
  * los negocios que ya estan en el CRM, rastrea el correo en el sitio de cada uno y da
@@ -10,15 +10,17 @@
  * GOOGLE_PLACES_API_KEY.
  *
  * Uso:
- *   node --env-file=.env --experimental-strip-types scripts/find-prospects.mjs [--max 40] [--dry-run]
+ *   node --env-file=.env --experimental-strip-types scripts/find-prospects.mjs [--max 40] [--busquedas 15] [--dry-run]
  */
 import { readFileSync } from 'node:fs'
 import { createClient } from '@supabase/supabase-js'
 import { buscarProspectos, importarCandidatos } from '../src/lib/places-server.ts'
-import { sePuedeEscribir } from '../src/lib/places.ts'
+import { numeroDeCorrida, sePuedeEscribir, tramoDeBusquedas } from '../src/lib/places.ts'
 
 const args = Object.fromEntries(process.argv.slice(2).map((a, i, all) => (a.startsWith('--') ? [a.slice(2), all[i + 1]?.startsWith('--') || all[i + 1] === undefined ? true : all[i + 1]] : [])).filter((x) => x.length))
 const MAX = Number(args.max) || 40
+// Busquedas por corrida: cada una cuesta en Google, y con tres corridas por semana asi se recorre la lista completa en unas dos semanas.
+const POR_CORRIDA = Number(args.busquedas) || 15
 const dryRun = Boolean(args['dry-run'])
 
 for (const v of ['NEXT_PUBLIC_SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY', 'GOOGLE_PLACES_API_KEY']) {
@@ -31,9 +33,10 @@ for (const v of ['NEXT_PUBLIC_SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY', 'GOOGL
 const config = JSON.parse(readFileSync(new URL('../content/prospect-searches.json', import.meta.url), 'utf8'))
 const db = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, { auth: { persistSession: false } })
 
-// Rota las busquedas: cada semana empieza en un punto distinto para no repetir siempre las mismas.
-const semana = Math.floor(Date.now() / (7 * 86_400_000))
-const busquedas = config.busquedas.map((_, i, all) => all[(i + semana) % all.length])
+// Cada corrida (lunes, miercoles y viernes) toma un tramo distinto de la lista.
+const corrida = numeroDeCorrida()
+const busquedas = tramoDeBusquedas(config.busquedas, corrida, POR_CORRIDA)
+console.log(`Corrida ${corrida}: ${busquedas.length} busquedas de ${config.busquedas.length}`)
 
 const hoy = new Date().toISOString().slice(0, 10)
 let total = 0
@@ -47,7 +50,7 @@ for (const b of busquedas) {
     continue
   }
   if (elegibles.length === 0) continue
-  const r = await importarCandidatos(db, elegibles, segmento, `Google Places semanal - ${segmento} - ${hoy}`, ['auto-semanal', `campana-${hoy.slice(0, 7)}`])
+  const r = await importarCandidatos(db, elegibles, segmento, `Google Places - ${segmento} - ${hoy}`, ['auto-places', `campana-${hoy.slice(0, 7)}`])
   total += r.insertados
   console.log(`  -> ${r.insertados} agregados`)
 }

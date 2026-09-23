@@ -1,23 +1,281 @@
 {
-  "_comentario": "Busquedas que corre scripts/find-prospects.mjs cada lunes (giro de src/lib/places.ts x municipio). Se rotan semana a semana.",
+  "_comentario": "Busquedas de scripts/find-prospects.mjs (giro de src/lib/places.ts x municipio). Corre lunes, miercoles y viernes; cada corrida toma un tramo distinto de la lista (ver tramoDeBusquedas).",
   "busquedas": [
-    { "giro": "abastos", "municipio": "guadalajara" },
-    { "giro": "abogados", "municipio": "zapopan" },
-    { "giro": "salud", "municipio": "guadalajara" },
-    { "giro": "restaurantes", "municipio": "zapopan" },
-    { "giro": "ecommerce", "municipio": "guadalajara" },
-    { "giro": "contabilidad", "municipio": "guadalajara" },
-    { "giro": "dental", "municipio": "zapopan" },
-    { "giro": "construccion", "municipio": "zmg" },
-    { "giro": "inmobiliaria", "municipio": "zapopan" },
-    { "giro": "logistica", "municipio": "tlaquepaque" },
-    { "giro": "ferreteria", "municipio": "guadalajara" },
-    { "giro": "escuelas", "municipio": "zapopan" },
-    { "giro": "fitness", "municipio": "guadalajara" },
-    { "giro": "talleres", "municipio": "tlaquepaque" },
-    { "giro": "clinicas-estetica", "municipio": "zapopan" },
-    { "giro": "restaurantes", "municipio": "guadalajara" },
-    { "giro": "abogados", "municipio": "guadalajara" },
-    { "giro": "ecommerce", "municipio": "zapopan" }
+    {
+      "giro": "abastos",
+      "municipio": "guadalajara"
+    },
+    {
+      "giro": "logistica",
+      "municipio": "guadalajara"
+    },
+    {
+      "giro": "abogados",
+      "municipio": "guadalajara"
+    },
+    {
+      "giro": "contabilidad",
+      "municipio": "guadalajara"
+    },
+    {
+      "giro": "salud",
+      "municipio": "guadalajara"
+    },
+    {
+      "giro": "dental",
+      "municipio": "guadalajara"
+    },
+    {
+      "giro": "restaurantes",
+      "municipio": "guadalajara"
+    },
+    {
+      "giro": "ecommerce",
+      "municipio": "guadalajara"
+    },
+    {
+      "giro": "construccion",
+      "municipio": "guadalajara"
+    },
+    {
+      "giro": "ferreteria",
+      "municipio": "guadalajara"
+    },
+    {
+      "giro": "inmobiliaria",
+      "municipio": "guadalajara"
+    },
+    {
+      "giro": "fitness",
+      "municipio": "guadalajara"
+    },
+    {
+      "giro": "escuelas",
+      "municipio": "guadalajara"
+    },
+    {
+      "giro": "talleres",
+      "municipio": "guadalajara"
+    },
+    {
+      "giro": "clinicas-estetica",
+      "municipio": "guadalajara"
+    },
+    {
+      "giro": "logistica",
+      "municipio": "zapopan"
+    },
+    {
+      "giro": "abogados",
+      "municipio": "zapopan"
+    },
+    {
+      "giro": "contabilidad",
+      "municipio": "zapopan"
+    },
+    {
+      "giro": "salud",
+      "municipio": "zapopan"
+    },
+    {
+      "giro": "dental",
+      "municipio": "zapopan"
+    },
+    {
+      "giro": "restaurantes",
+      "municipio": "zapopan"
+    },
+    {
+      "giro": "ecommerce",
+      "municipio": "zapopan"
+    },
+    {
+      "giro": "construccion",
+      "municipio": "zapopan"
+    },
+    {
+      "giro": "ferreteria",
+      "municipio": "zapopan"
+    },
+    {
+      "giro": "inmobiliaria",
+      "municipio": "zapopan"
+    },
+    {
+      "giro": "fitness",
+      "municipio": "zapopan"
+    },
+    {
+      "giro": "escuelas",
+      "municipio": "zapopan"
+    },
+    {
+      "giro": "talleres",
+      "municipio": "zapopan"
+    },
+    {
+      "giro": "clinicas-estetica",
+      "municipio": "zapopan"
+    },
+    {
+      "giro": "logistica",
+      "municipio": "tlaquepaque"
+    },
+    {
+      "giro": "abogados",
+      "municipio": "tlaquepaque"
+    },
+    {
+      "giro": "contabilidad",
+      "municipio": "tlaquepaque"
+    },
+    {
+      "giro": "salud",
+      "municipio": "tlaquepaque"
+    },
+    {
+      "giro": "dental",
+      "municipio": "tlaquepaque"
+    },
+    {
+      "giro": "restaurantes",
+      "municipio": "tlaquepaque"
+    },
+    {
+      "giro": "construccion",
+      "municipio": "tlaquepaque"
+    },
+    {
+      "giro": "ferreteria",
+      "municipio": "tlaquepaque"
+    },
+    {
+      "giro": "inmobiliaria",
+      "municipio": "tlaquepaque"
+    },
+    {
+      "giro": "fitness",
+      "municipio": "tlaquepaque"
+    },
+    {
+      "giro": "escuelas",
+      "municipio": "tlaquepaque"
+    },
+    {
+      "giro": "talleres",
+      "municipio": "tlaquepaque"
+    },
+    {
+      "giro": "clinicas-estetica",
+      "municipio": "tlaquepaque"
+    },
+    {
+      "giro": "logistica",
+      "municipio": "tonala"
+    },
+    {
+      "giro": "abogados",
+      "municipio": "tonala"
+    },
+    {
+      "giro": "contabilidad",
+      "municipio": "tonala"
+    },
+    {
+      "giro": "salud",
+      "municipio": "tonala"
+    },
+    {
+      "giro": "dental",
+      "municipio": "tonala"
+    },
+    {
+      "giro": "restaurantes",
+      "municipio": "tonala"
+    },
+    {
+      "giro": "construccion",
+      "municipio": "tonala"
+    },
+    {
+      "giro": "ferreteria",
+      "municipio": "tonala"
+    },
+    {
+      "giro": "inmobiliaria",
+      "municipio": "tonala"
+    },
+    {
+      "giro": "fitness",
+      "municipio": "tonala"
+    },
+    {
+      "giro": "escuelas",
+      "municipio": "tonala"
+    },
+    {
+      "giro": "talleres",
+      "municipio": "tonala"
+    },
+    {
+      "giro": "clinicas-estetica",
+      "municipio": "tonala"
+    },
+    {
+      "giro": "logistica",
+      "municipio": "tlajomulco"
+    },
+    {
+      "giro": "abogados",
+      "municipio": "tlajomulco"
+    },
+    {
+      "giro": "contabilidad",
+      "municipio": "tlajomulco"
+    },
+    {
+      "giro": "salud",
+      "municipio": "tlajomulco"
+    },
+    {
+      "giro": "dental",
+      "municipio": "tlajomulco"
+    },
+    {
+      "giro": "restaurantes",
+      "municipio": "tlajomulco"
+    },
+    {
+      "giro": "construccion",
+      "municipio": "tlajomulco"
+    },
+    {
+      "giro": "ferreteria",
+      "municipio": "tlajomulco"
+    },
+    {
+      "giro": "inmobiliaria",
+      "municipio": "tlajomulco"
+    },
+    {
+      "giro": "fitness",
+      "municipio": "tlajomulco"
+    },
+    {
+      "giro": "escuelas",
+      "municipio": "tlajomulco"
+    },
+    {
+      "giro": "talleres",
+      "municipio": "tlajomulco"
+    },
+    {
+      "giro": "clinicas-estetica",
+      "municipio": "tlajomulco"
+    },
+    {
+      "giro": "ecommerce",
+      "municipio": "zmg"
+    }
   ]
 }
