@@ -37,3 +37,17 @@ export function pasaFiltroRedes(c: Pick<Contact, 'social_links' | 'instagram_url
   if (filtro === 'none') return redes.length === 0
   return redes.some((s) => s.platform === filtro)
 }
+
+/**
+ * Formas de contactar a alguien: correo, red social o telefono (que da WhatsApp).
+ * Un prospecto sin ninguna no sirve en el CRM: no hay por donde escribirle.
+ */
+export function formasDeContacto(c: Pick<Contact, 'social_links' | 'instagram_url'> & { email?: string | null; phone?: string | null }): Array<'correo' | 'red' | 'telefono'> {
+  const out: Array<'correo' | 'red' | 'telefono'> = []
+  if ((c.email ?? '').trim()) out.push('correo')
+  if (redesDe(c).length) out.push('red')
+  if ((c.phone ?? '').replace(/\D/g, '').length >= 10) out.push('telefono')
+  return out
+}
+
+export const AVISO_SIN_CONTACTO = 'Agrega al menos un correo, una red social o un teléfono: sin eso no hay por dónde escribirle.'

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { pasaFiltroRedes, redesDe } from './contact-socials'
+import { formasDeContacto, pasaFiltroRedes, redesDe } from './contact-socials'
 
 describe('redes de un contacto', () => {
   it('junta social_links con el instagram_url suelto sin repetir Instagram', () => {
@@ -34,5 +34,19 @@ describe('filtro de redes en la tabla del CRM', () => {
   it('una plataforma concreta solo deja pasar a quien la tiene', () => {
     expect([conIg, conFb, sinNada].map((c) => pasaFiltroRedes(c, 'instagram'))).toEqual([true, false, false])
     expect([conIg, conFb, sinNada].map((c) => pasaFiltroRedes(c, 'facebook'))).toEqual([false, true, false])
+  })
+})
+
+describe('formas de contacto', () => {
+  it('cuenta correo, red social y telefono de 10 digitos o mas', () => {
+    expect(formasDeContacto({ email: 'a@b.mx' })).toEqual(['correo'])
+    expect(formasDeContacto({ instagram_url: 'x' })).toEqual(['red'])
+    expect(formasDeContacto({ phone: '33 1234 5678' })).toEqual(['telefono'])
+    expect(formasDeContacto({ email: 'a@b.mx', social_links: [{ platform: 'facebook', url: 'x' }], phone: '3312345678' })).toEqual(['correo', 'red', 'telefono'])
+  })
+
+  it('un contacto sin nada, o con telefono incompleto o correo en blanco, no tiene ninguna', () => {
+    expect(formasDeContacto({})).toEqual([])
+    expect(formasDeContacto({ email: '  ', phone: '12345', social_links: [{ platform: 'tiktok', url: '' }] })).toEqual([])
   })
 })
