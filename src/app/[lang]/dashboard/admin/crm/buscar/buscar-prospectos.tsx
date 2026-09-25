@@ -93,7 +93,7 @@ export function BuscarProspectos({ lang, configurado }: { lang: string; configur
         </div>
         <div className="space-y-1">
           <label className="text-xs font-medium text-muted-foreground">{es ? 'Búsqueda propia (opcional, sustituye al giro)' : 'Custom query (optional)'}</label>
-          <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={es ? 'p. ej. "distribuidora de material eléctrico"' : 'e.g. "electrical supplies distributor"'} />
+          <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={es ? 'p. ej. "Grupo Dalton" con el giro Empresas grandes' : 'e.g. "Grupo Dalton" with Large companies'} />
         </div>
         <Button onClick={buscar} disabled={ocupado !== null}><Search className="mr-2 h-4 w-4" />{ocupado === 'buscar' ? (es ? 'Buscando…' : 'Searching…') : es ? 'Buscar' : 'Search'}</Button>
       </div>

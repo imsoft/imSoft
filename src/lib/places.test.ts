@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { candidatoDe, dominioDe, enlacesDeContacto, extraerCorreo, extraerInstagram, filaDesdeCandidato, formatoTelefono, giroDe, limpiarNombre, marcarExistentes, nombreNormalizado, sePuedeEscribir, sinRepetidos, numeroDeCorrida, tramoDeBusquedas } from './places'
+import { candidatoDe, dominioDe, enlacesDeContacto, extraerCorreo, extraerInstagram, filaDesdeCandidato, formatoTelefono, giroDe, limpiarNombre, marcarExistentes, nombreNormalizado, sePuedeEscribir, sinRepetidos, numeroDeCorrida, tramoDeBusquedas, deLaMarca, giroDe as giroDe2 } from './places'
 import { mapRowsToContacts } from './import-contacts'
 
 describe('buscador de prospectos (Places)', () => {
@@ -103,5 +103,19 @@ describe('buscador de prospectos (Places)', () => {
     const fechas = ['2026-09-28', '2026-09-30', '2026-10-02', '2026-10-05', '2026-10-07']
     const vistos = new Set(fechas.flatMap((f) => tramoDeBusquedas(lista, numeroDeCorrida(new Date(`${f}T13:00:00Z`)), 15)))
     expect(vistos.size).toBe(69)
+  })
+
+  it('al buscar una empresa grande por nombre, se queda solo con esa marca y una sola vez', () => {
+    const c = [{ nombre: 'Farmacia San Juan' }, { nombre: 'Farmacias Guadalajara Chapultepec' }, { nombre: 'Farmacias Guadalajara Américas' }]
+    expect(deLaMarca(c, 'farmacias guadalajara')).toEqual([{ nombre: 'Farmacias Guadalajara Chapultepec' }])
+    expect(deLaMarca([{ nombre: 'Leche Sello Rojo S.A. de C.V.' }], 'sello rojo')).toHaveLength(1)
+    expect(deLaMarca(c, 'dalton')).toEqual([])
+    expect(giroDe2('corporativo')?.segmento).toBe('corporativo')
+  })
+
+  it('no toma buzones de privacidad, facturacion o bolsa de trabajo como correo de contacto', () => {
+    expect(extraerCorreo('<p>privacidad@sellorojo.com.mx</p>', 'sellorojo.com.mx')).toBeNull()
+    expect(extraerCorreo('facturacion@x.mx rh@x.mx ventas@x.mx', 'x.mx')).toBe('ventas@x.mx')
+    expect(extraerCorreo('vacantes@x.mx datos-personales@x.mx', 'x.mx')).toBeNull()
   })
 })

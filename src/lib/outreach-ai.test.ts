@@ -25,4 +25,10 @@ describe('gancho con IA', () => {
     expect(ganchoDesdeNotas('x'.repeat(400))).toBeNull();
     expect(ganchoDesdeNotas(null)).toBeNull();
   });
+
+  it('para empresas grandes el prompt cambia el tipo de problema', () => {
+    const p = promptGancho({ nombre: 'Laura', empresa: 'Grupo Dalton', segmento: 'corporativo', sitio: null, notas: null, cargo: null });
+    expect(p).toContain('Si el sector es "corporativo"');
+    expect(p).toContain('No supongas que les falta tecnología');
+  });
 });

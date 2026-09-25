@@ -112,6 +112,37 @@ const PLANTILLAS: Record<string, Record<Step, Plantilla>> = {
       ],
     },
   },
+  // Empresas grandes (Dalton, Farmacias Guadalajara...): no les falta Excel sino manos
+  // en sistemas. El correo ofrece ser proveedor externo para proyectos puntuales y pide
+  // que lo turnen a quien ve estos temas.
+  corporativo: {
+    1: {
+      subject: 'Desarrollo de software para {{empresa}}',
+      parrafos: [
+        'Hola {{nombre}}:',
+        'Soy Brandon, de imSoft. Desarrollamos software a la medida en Guadalajara y trabajamos como proveedor externo en proyectos puntuales: sistemas internos, integraciones entre sistemas y aplicaciones que el área de sistemas no alcanza a cubrir.',
+        '{{gancho}}',
+        'Trabajamos a precio fijo por proyecto, y el código y la documentación quedan a nombre de ustedes.',
+        '¿Me podrías decir quién ve estos temas en {{empresa}}? Si eres tú, te doy 15 minutos esta semana para platicarlo.',
+      ],
+    },
+    2: {
+      subject: 'Re: Desarrollo de software para {{empresa}}',
+      parrafos: [
+        'Hola {{nombre}}, te escribí hace unos días y entiendo que la semana se llena.',
+        '{{gancho}}',
+        'Si tiene sentido, con 15 minutos te cuento cómo trabajamos y cuánto costaría un primer proyecto. Y si esto le toca a otra persona, te agradezco que me indiques a quién.',
+      ],
+    },
+    3: {
+      subject: 'Re: Desarrollo de software para {{empresa}}',
+      parrafos: [
+        'Hola {{nombre}}, último correo de mi parte para no ser insistente.',
+        'Si más adelante en {{empresa}} necesitan un proveedor para un desarrollo a la medida, aquí me tienes.',
+        'Que te vaya muy bien.',
+      ],
+    },
+  },
   logistica: {
     1: {
       subject: 'Software para la operación de {{empresa}}',

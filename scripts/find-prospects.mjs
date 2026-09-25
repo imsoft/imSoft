@@ -15,7 +15,7 @@
 import { readFileSync } from 'node:fs'
 import { createClient } from '@supabase/supabase-js'
 import { buscarProspectos, importarCandidatos } from '../src/lib/places-server.ts'
-import { numeroDeCorrida, sePuedeEscribir, tramoDeBusquedas } from '../src/lib/places.ts'
+import { deLaMarca, numeroDeCorrida, sePuedeEscribir, tramoDeBusquedas } from '../src/lib/places.ts'
 
 const args = Object.fromEntries(process.argv.slice(2).map((a, i, all) => (a.startsWith('--') ? [a.slice(2), all[i + 1]?.startsWith('--') || all[i + 1] === undefined ? true : all[i + 1]] : [])).filter((x) => x.length))
 const MAX = Number(args.max) || 40
@@ -53,5 +53,15 @@ for (const b of busquedas) {
   const r = await importarCandidatos(db, elegibles, segmento, `Google Places - ${segmento} - ${hoy}`, ['auto-places', `campana-${hoy.slice(0, 7)}`])
   total += r.insertados
   console.log(`  -> ${r.insertados} agregados`)
+}
+// Empresas grandes, por nombre (content/empresas-grandes.json): 2 por corrida, fuera del tope.
+const grandes = JSON.parse(readFileSync(new URL('../content/empresas-grandes.json', import.meta.url), 'utf8')).empresas
+for (const e of tramoDeBusquedas(grandes, corrida, 2)) {
+  const { candidatos } = await buscarProspectos(db, 'corporativo', 'zmg', { max: 10, correos: true, queryLibre: e.busqueda })
+  const elegibles = deLaMarca(candidatos, e.clave).filter((c) => !c.enCrm && sePuedeEscribir(c))
+  console.log(`corporativo / ${e.nombre}: ${elegibles.length ? 'con correo o Instagram' : 'ya en el CRM, sin contacto o no encontrado'}`)
+  if (dryRun || elegibles.length === 0) continue
+  const r = await importarCandidatos(db, elegibles, 'corporativo', `Google Places - corporativo - ${hoy}`, ['auto-places', 'empresa-grande', `campana-${hoy.slice(0, 7)}`])
+  total += r.insertados
 }
 console.log(`\nTotal ${dryRun ? 'que se agregarian' : 'agregados'}: ${total}${dryRun ? ' (dry run, nada escrito)' : ''}`)

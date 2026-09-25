@@ -121,3 +121,14 @@ describe('rebotes', () => {
     expect(dominioDeCorreo(null)).toBeNull();
   });
 });
+
+describe('segmento corporativo', () => {
+  it('las empresas grandes reciben su propio correo: proveedor externo y a quien turnarlo, sin Excel ni JTP', () => {
+    const e = renderOutreach(1, { nombre: 'Laura', empresa: 'Grupo Dalton', gancho: 'Las integraciones con proveedores se quedan en la fila de sistemas.', segmento: segmentoDe(['corporativo']) });
+    expect(e.subject).toBe('Desarrollo de software para Grupo Dalton');
+    expect(e.text).toContain('proveedor externo');
+    expect(e.text).toContain('quién ve estos temas en Grupo Dalton');
+    expect(e.text).not.toMatch(/Excel|JTP/);
+    expect(renderOutreach(3, { nombre: 'Laura', empresa: 'Grupo Dalton', gancho: '', segmento: 'corporativo' }).subject).toBe('Re: Desarrollo de software para Grupo Dalton');
+  });
+});

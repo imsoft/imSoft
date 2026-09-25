@@ -1,0 +1,9 @@
+{
+  "_comentario": "Empresas grandes de la ZMG que scripts/find-prospects.mjs busca por nombre, 2 por corrida, con el segmento 'corporativo'. 'clave' es lo que debe traer el nombre en Google para contar como esa empresa. Agrega las que quieras.",
+  "empresas": [
+    { "nombre": "Grupo Dalton", "busqueda": "Grupo Dalton corporativo Guadalajara", "clave": "dalton" },
+    { "nombre": "Farmacias Guadalajara", "busqueda": "Farmacias Guadalajara corporativo oficinas", "clave": "farmacias guadalajara" },
+    { "nombre": "Sello Rojo", "busqueda": "Sello Rojo leche Guadalajara", "clave": "sello rojo" },
+    { "nombre": "El Palacio de Hierro", "busqueda": "El Palacio de Hierro Guadalajara", "clave": "palacio de hierro" }
+  ]
+}
