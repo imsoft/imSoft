@@ -264,3 +264,22 @@ export function segmentoDe(tags: string[] | null | undefined): string | null {
   const lower = (tags ?? []).map((t) => t.toLowerCase());
   return conocidos.find((k) => lower.some((t) => t === k || t.startsWith(`${k}-`))) ?? null;
 }
+
+/**
+ * Mensaje ajeno en un hilo de prospeccion: respuesta del prospecto o aviso de rebote.
+ * Los rebotes llegan en el mismo hilo desde mailer-daemon y se contaban como respuesta
+ * (Grupo EI salio como "respondio" en sep-2026 cuando su correo no existia).
+ */
+export function tipoDeMensajeAjeno(from: string, subject = ''): 'rebote' | 'respuesta' {
+  const f = from.toLowerCase();
+  const asunto = subject.toLowerCase();
+  if (/mailer-daemon|postmaster@|mail delivery (subsystem|system)|microsoftexchange|no-?reply@.*(bounce)/.test(f)) return 'rebote';
+  if (/delivery status notification|undeliverable|undelivered mail|returned mail|delivery failure|failure notice|no se pudo entregar|entrega fallida|mensaje no entregado/.test(asunto)) return 'rebote';
+  return 'respuesta';
+}
+
+/** Dominio de un correo, en minusculas; null si no parece correo. */
+export function dominioDeCorreo(email: string | null | undefined): string | null {
+  const m = String(email ?? '').trim().toLowerCase().match(/^[^@\s]+@([a-z0-9.-]+\.[a-z]{2,})$/);
+  return m ? m[1] : null;
+}

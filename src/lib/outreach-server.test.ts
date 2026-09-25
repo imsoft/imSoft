@@ -1,9 +1,9 @@
 import { describe, expect, it, vi } from 'vitest'
 
-vi.mock('@/lib/gmail/server', () => ({ enviarRaw: vi.fn(), hiloTieneRespuesta: vi.fn(), messageIdHeader: vi.fn() }))
+vi.mock('@/lib/gmail/server', () => ({ enviarRaw: vi.fn(), estadoDelHilo: vi.fn(), messageIdHeader: vi.fn() }))
 vi.mock('@anthropic-ai/sdk', () => ({ default: class {} }))
 
-import { marcarEnviadoAMano, registrarMensajeRed } from './outreach-server'
+import { dominioRecibeCorreo, marcarEnviadoAMano, marcarRebote, registrarMensajeRed } from './outreach-server'
 
 /**
  * Supabase falso: guarda que se actualizo/inserto en cada tabla y devuelve el borrador
@@ -17,6 +17,7 @@ function dbFalso(borrador: Record<string, unknown> | null) {
     const q: Record<string, unknown> = {
       select: () => q,
       eq: (col: string, val: unknown) => { filtros[col] = val; return q },
+      in: (col: string, val: unknown) => { filtros[col] = val; return q },
       maybeSingle: async () => ({ data: tabla === 'outreach_emails' ? borrador : null }),
       update: (valores: Record<string, unknown>) => { updates.push({ tabla, valores, filtros }); return q },
       insert: async (valores: Record<string, unknown>) => { inserts.push({ tabla, valores }); return { error: null } },
@@ -72,5 +73,29 @@ describe('registrarMensajeRed', () => {
     const contacto = updates.find((u) => u.tabla === 'contacts')!
     expect(contacto.valores).toMatchObject({ status: 'qualification' })
     expect(contacto.filtros).toEqual({ id: 'c1', status: 'no_contact' })
+  })
+})
+
+describe('rebote de un correo', () => {
+  it('cierra la secuencia, descarta borradores y etiqueta el correo como invalido sin perder sus etiquetas', async () => {
+    const { db, updates } = dbFalso(null)
+    await marcarRebote(db, 'c1', ['google-places', 'logistica'])
+    const correos = updates.filter((u) => u.tabla === 'outreach_emails')
+    expect(correos.map((u) => [u.valores.status, u.filtros.status])).toEqual([['closed', ['sent', 'replied']], ['skipped', 'draft']])
+    const contacto = updates.find((u) => u.tabla === 'contacts')!
+    expect(contacto.valores.tags).toEqual(['google-places', 'logistica', 'correo-invalido'])
+    expect(contacto.filtros).toEqual({ id: 'c1' })
+  })
+})
+
+describe('el dominio recibe correo', () => {
+  const noExiste = async () => { throw Object.assign(new Error('queryMx ENOTFOUND'), { code: 'ENOTFOUND' }) }
+  it('con MX si; dominio inexistente o sin MX no; un fallo de red no frena el borrador', async () => {
+    expect(await dominioRecibeCorreo('a@imsoft.io', async () => [{ exchange: 'smtp.google.com', priority: 1 }])).toBe(true)
+    expect(await dominioRecibeCorreo('info@gombienesraices.com', noExiste)).toBe(false)
+    expect(await dominioRecibeCorreo('a@x.mx', async () => { throw Object.assign(new Error('x'), { code: 'ENODATA' }) })).toBe(false)
+    expect(await dominioRecibeCorreo('a@x.mx', async () => [])).toBe(false)
+    expect(await dominioRecibeCorreo('a@x.mx', async () => { throw Object.assign(new Error('x'), { code: 'ETIMEOUT' }) })).toBe(true)
+    expect(await dominioRecibeCorreo('no-es-correo', noExiste)).toBe(false)
   })
 })

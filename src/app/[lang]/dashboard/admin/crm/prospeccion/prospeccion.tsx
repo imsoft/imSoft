@@ -102,7 +102,7 @@ export function Prospeccion({ lang, gmail, gmailConfigurado, campana, filas, sin
   async function sincronizar() {
     const j = await llamar('/api/outreach/sync', 'sync', {})
     if (!j) return
-    toast.success(es ? `${j.respondieron} respondieron · ${j.seguimientosCreados} seguimientos nuevos · ${j.cerrados} cerrados` : `${j.respondieron} replied · ${j.seguimientosCreados} new follow-ups · ${j.cerrados} closed`)
+    toast.success(es ? `${j.respondieron} respondieron · ${j.rebotaron ?? 0} rebotaron · ${j.seguimientosCreados} seguimientos nuevos · ${j.cerrados} cerrados` : `${j.respondieron} replied · ${j.seguimientosCreados} new follow-ups · ${j.cerrados} closed`)
     if (j.errores?.length) toast.error(j.errores.join('\n'))
   }
 

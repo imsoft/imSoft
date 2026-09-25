@@ -3,6 +3,7 @@
  * Alcances: enviar correo y leer hilos (para saber si contestaron).
  */
 import { serviceClient, SITE_URL } from '@/lib/quotes/server'
+import { tipoDeMensajeAjeno } from '@/lib/outreach'
 
 export const GMAIL_SCOPES = ['https://www.googleapis.com/auth/gmail.send', 'https://www.googleapis.com/auth/gmail.readonly', 'openid', 'email']
 const CLIENT_ID = process.env.GOOGLE_OAUTH_CLIENT_ID
@@ -105,15 +106,23 @@ export async function messageIdHeader(userId: string, messageId: string): Promis
   return j.payload?.headers?.find((h: { name: string; value: string }) => h.name.toLowerCase() === 'message-id')?.value ?? null
 }
 
-/** true si en el hilo hay algun mensaje que no mandamos nosotros. */
-export async function hiloTieneRespuesta(userId: string, threadId: string): Promise<boolean> {
+/**
+ * Que hay en el hilo aparte de lo que mandamos: una respuesta del prospecto, un aviso de
+ * rebote o nada. Si hay respuesta real, gana aunque tambien haya rebotes.
+ */
+export async function estadoDelHilo(userId: string, threadId: string): Promise<'respuesta' | 'rebote' | null> {
   const { token, email } = await accessToken(userId)
-  const r = await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/threads/${threadId}?format=metadata&metadataHeaders=From`, { headers: { Authorization: `Bearer ${token}` } })
-  if (!r.ok) return false
+  const r = await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/threads/${threadId}?format=metadata&metadataHeaders=From&metadataHeaders=Subject`, { headers: { Authorization: `Bearer ${token}` } })
+  if (!r.ok) return null
   const j = await r.json()
   const mios = email.toLowerCase()
-  return (j.messages ?? []).some((m: { payload?: { headers?: Array<{ name: string; value: string }> } }) => {
-    const from = m.payload?.headers?.find((h) => h.name.toLowerCase() === 'from')?.value?.toLowerCase() ?? ''
-    return from && !from.includes(mios)
+  const tipos = (j.messages ?? []).map((m: { payload?: { headers?: Array<{ name: string; value: string }> } }) => {
+    const h = (n: string) => m.payload?.headers?.find((x) => x.name.toLowerCase() === n)?.value ?? ''
+    const from = h('from')
+    if (!from || from.toLowerCase().includes(mios)) return null
+    return tipoDeMensajeAjeno(from, h('subject'))
   })
+  if (tipos.includes('respuesta')) return 'respuesta'
+  if (tipos.includes('rebote')) return 'rebote'
+  return null
 }

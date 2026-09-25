@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { codificarRemitente, construirMime, fechaSiguientePaso, plantillaDe, renderOutreach, segmentoDe, sumarDiasHabiles, topeDiario } from './outreach';
+import { codificarRemitente, construirMime, dominioDeCorreo, tipoDeMensajeAjeno, fechaSiguientePaso, plantillaDe, renderOutreach, segmentoDe, sumarDiasHabiles, topeDiario } from './outreach';
 
 describe('prospeccion', () => {
   it('rampa de envios diarios', () => {
@@ -103,5 +103,21 @@ describe('edición del cuerpo', () => {
     expect(r.text).toContain('encontré a Acme');
     expect(r.html).toContain('Párrafo extra &lt;x&gt;.');
     expect(renderDesdeCuerpo(2, { subject: 'Re: Hola', cuerpo: 'Solo uno.', empresa: 'Acme' }).text).not.toContain('respóndeme');
+  });
+});
+
+describe('rebotes', () => {
+  it('distingue el aviso de rebote de una respuesta real', () => {
+    expect(tipoDeMensajeAjeno('Mail Delivery Subsystem <mailer-daemon@googlemail.com>')).toBe('rebote');
+    expect(tipoDeMensajeAjeno('postmaster@segadi.com.mx', 'Undeliverable: Software')).toBe('rebote');
+    expect(tipoDeMensajeAjeno('Microsoft Outlook <MicrosoftExchange329e71ec88ae4615bbc36ab6ce41109e@x.onmicrosoft.com>')).toBe('rebote');
+    expect(tipoDeMensajeAjeno('Sistema <sistema@x.mx>', 'Mensaje no entregado')).toBe('rebote');
+    expect(tipoDeMensajeAjeno('Héctor Gil <hector@gilygil.mx>', 'Re: Software para la operación')).toBe('respuesta');
+  });
+
+  it('saca el dominio del correo', () => {
+    expect(dominioDeCorreo(' Info@GomBienesRaices.com ')).toBe('gombienesraices.com');
+    expect(dominioDeCorreo('sin-arroba')).toBeNull();
+    expect(dominioDeCorreo(null)).toBeNull();
   });
 });

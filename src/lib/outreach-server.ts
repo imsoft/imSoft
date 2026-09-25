@@ -2,11 +2,12 @@
  * Prospeccion por correo: borradores, envio por Gmail y seguimientos. Solo servidor.
  */
 import Anthropic from '@anthropic-ai/sdk'
+import { resolveMx } from 'node:dns/promises'
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { enviarRaw, hiloTieneRespuesta, messageIdHeader } from '@/lib/gmail/server'
+import { enviarRaw, estadoDelHilo, messageIdHeader } from '@/lib/gmail/server'
 import { GANCHO_TOOL, ganchoDesdeNotas, limpiarGancho, promptGancho } from '@/lib/outreach-ai'
 import { renderMensajeRed, type Canal } from '@/lib/mensaje-red'
-import { construirMime, cuerpoDe, fechaSiguientePaso, renderDesdeCuerpo, renderOutreach, segmentoDe, topeDiario, type Step } from '@/lib/outreach'
+import { dominioDeCorreo, construirMime, cuerpoDe, fechaSiguientePaso, renderDesdeCuerpo, renderOutreach, segmentoDe, topeDiario, type Step } from '@/lib/outreach'
 
 const TZ = 'America/Mexico_City'
 
@@ -45,6 +46,28 @@ export async function estadoCampana(db: SupabaseClient) {
   return { hoy, enviadosHoy: count ?? 0, tope, diasDesdePrimerEnvio: dias, restanHoy: Math.max(0, tope - (count ?? 0)) }
 }
 
+/**
+ * El dominio del correo existe y recibe correo (tiene MX). Evita rebotes como
+ * info@gombienesraices.com, cuyo dominio no existe. Un fallo de red cuenta como valido
+ * para no frenar borradores por un problema pasajero.
+ */
+export async function dominioRecibeCorreo(email: string | null | undefined, resolver: (d: string) => Promise<unknown[]> = resolveMx): Promise<boolean> {
+  const dominio = dominioDeCorreo(email)
+  if (!dominio) return false
+  try {
+    return (await resolver(dominio)).length > 0
+  } catch (err) {
+    const code = (err as { code?: string }).code
+    return !(code === 'ENOTFOUND' || code === 'ENODATA')
+  }
+}
+
+async function descartarSiNoRecibe(db: SupabaseClient, c: ContactoMin): Promise<boolean> {
+  if (await dominioRecibeCorreo(c.email)) return false
+  await db.from('contacts').update({ tags: [...new Set([...(c.tags ?? []), 'correo-invalido'])], updated_at: new Date().toISOString() }).eq('id', c.id)
+  return true
+}
+
 /** Gancho con Claude cuando el contacto no trae uno en sus notas. */
 export async function ganchoConIA(c: ContactoMin): Promise<string> {
   const client = new Anthropic()
@@ -73,6 +96,10 @@ export async function crearBorradoresPaso1(db: SupabaseClient, limite: number, c
   const errores: string[] = []
   for (const c of candidatos) {
     try {
+      if (await descartarSiNoRecibe(db, c)) {
+        errores.push(`${c.company ?? c.email}: el dominio de ${c.email} no recibe correo; se marcó como correo inválido`)
+        continue
+      }
       const gancho = ganchoDesdeNotas(c.notes) ?? (await ganchoConIA(c))
       const r = renderOutreach(1, { nombre: nombreDe(c), empresa: c.company ?? '', gancho, segmento: segmentoDe(c.tags) })
       const { error: e } = await db.from('outreach_emails').insert({ contact_id: c.id, step: 1, status: 'draft', campaign: campaign ?? segmentoDe(c.tags), gancho, subject: r.subject, html: r.html, text: r.text, scheduled_for: hoyLocal() })
@@ -98,6 +125,7 @@ export async function crearBorradorParaContacto(db: SupabaseClient, contactId: s
   if (!c) throw new Error('Contacto no encontrado')
   if (!c.email) throw new Error('El contacto no tiene correo')
   if ((c.tags ?? []).includes('correo-invalido')) throw new Error('El correo de este contacto está marcado como inválido')
+  if (await descartarSiNoRecibe(db, c as ContactoMin)) throw new Error(`El dominio de ${c.email} no existe o no recibe correo. Lo marqué como correo inválido; escríbele por redes si tiene.`)
   const gancho = ganchoDesdeNotas(c.notes) ?? (await ganchoConIA(c as ContactoMin))
   const r = renderOutreach(1, { nombre: nombreDe(c), empresa: c.company ?? '', gancho, segmento: segmentoDe(c.tags) })
   const { data, error } = await db.from('outreach_emails').insert({ contact_id: c.id, step: 1, status: 'draft', campaign: segmentoDe(c.tags), gancho, subject: r.subject, html: r.html, text: r.text, scheduled_for: hoyLocal() }).select('id').single()
@@ -192,7 +220,7 @@ export async function editarBorrador(db: SupabaseClient, id: string, cambios: { 
  * 3) Cierra los que ya recibieron los 3 correos sin respuesta.
  */
 export async function sincronizar(db: SupabaseClient, userId: string) {
-  const res = { respondieron: 0, seguimientosCreados: 0, cerrados: 0, errores: [] as string[] }
+  const res = { respondieron: 0, rebotaron: 0, seguimientosCreados: 0, cerrados: 0, errores: [] as string[] }
   const { data: enviados } = await db.from('outreach_emails').select('*').eq('status', 'sent').order('sent_at', { ascending: true })
   const porContacto = new Map<string, typeof enviados>()
   for (const r of enviados ?? []) porContacto.set(r.contact_id, [...(porContacto.get(r.contact_id) ?? []), r])
@@ -205,7 +233,13 @@ export async function sincronizar(db: SupabaseClient, userId: string) {
     const ultimo = filas![filas!.length - 1]
     try {
       const hilo = filas!.find((f) => f.gmail_thread_id)?.gmail_thread_id as string | undefined
-      if (hilo && (await hiloTieneRespuesta(userId, hilo))) {
+      const estado = hilo ? await estadoDelHilo(userId, hilo) : null
+      if (estado === 'rebote') {
+        await marcarRebote(db, contactId, contactoDe.get(contactId)?.tags ?? null)
+        res.rebotaron += 1
+        continue
+      }
+      if (estado === 'respuesta') {
         const ahora = new Date().toISOString()
         await db.from('outreach_emails').update({ status: 'replied', replied_at: ahora, updated_at: ahora }).eq('contact_id', contactId).eq('status', 'sent')
         await db.from('outreach_emails').update({ status: 'skipped', updated_at: ahora }).eq('contact_id', contactId).eq('status', 'draft')
@@ -236,6 +270,19 @@ export async function sincronizar(db: SupabaseClient, userId: string) {
     }
   }
   return res
+}
+
+/**
+ * El correo del contacto no existe: se cierra su secuencia, se descartan sus borradores y
+ * se etiqueta `correo-invalido`, que lo saca de futuros borradores. Sigue en el CRM por si
+ * tiene Instagram o telefono.
+ */
+export async function marcarRebote(db: SupabaseClient, contactId: string, tags: string[] | null) {
+  const ahora = new Date().toISOString()
+  await db.from('outreach_emails').update({ status: 'closed', updated_at: ahora }).eq('contact_id', contactId).in('status', ['sent', 'replied'])
+  await db.from('outreach_emails').update({ status: 'skipped', updated_at: ahora }).eq('contact_id', contactId).eq('status', 'draft')
+  const nuevas = [...new Set([...(tags ?? []), 'correo-invalido'])]
+  await db.from('contacts').update({ tags: nuevas, updated_at: ahora }).eq('id', contactId)
 }
 
 /** Registra como enviados a mano (paso 1) los contactos que ya se contactaron fuera del sistema. */
