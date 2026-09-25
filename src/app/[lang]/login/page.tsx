@@ -1,5 +1,6 @@
 import { getDictionary, hasLocale } from '../dictionaries';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
+import { panelDe } from '@/lib/panel-destino';
 import { HeroHeader } from "@/components/blocks/hero-section";
 import { FooterSection } from "@/components/blocks/footer-section";
 import LoginForm from './login-form';
@@ -21,6 +22,11 @@ export default async function LoginPage({ params }: {
 
   const dict = await getDictionary(lang);
   const supabase = await createClient();
+
+  // Con la sesion abierta no se muestra el formulario: parecia que la sesion se habia
+  // cerrado cuando solo se habia entrado por /login (marcador o enlace).
+  const { data: { user } } = await supabase.auth.getUser();
+  if (user) redirect(panelDe(user.user_metadata?.role, lang));
   
   // Obtener datos de contacto
   const { data: contactData } = await supabase

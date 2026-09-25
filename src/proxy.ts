@@ -26,9 +26,12 @@ export async function proxy(request: NextRequest) {
     (locale) => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`
   )
 
-  const response = pathnameHasLocale 
-    ? NextResponse.next()
+  // `let`: si Supabase renueva la sesion, la respuesta se rehace con la peticion ya
+  // actualizada, para que la pagina lea las cookies nuevas y no las vencidas.
+  const crear = () => pathnameHasLocale
+    ? NextResponse.next({ request })
     : NextResponse.redirect(new URL(`/${getLocale(request)}${pathname}`, request.url))
+  let response = crear()
 
   // Configurar cliente de Supabase para actualizar sesiones
   const supabase = createServerClient(
@@ -40,8 +43,9 @@ export async function proxy(request: NextRequest) {
           return request.cookies.getAll()
         },
         setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
+          response = crear()
           cookiesToSet.forEach(({ name, value, options }) => {
-            request.cookies.set(name, value)
             // Establecer cookie en la respuesta con opciones que aseguren persistencia
             response.cookies.set(name, value, {
               ...options,
