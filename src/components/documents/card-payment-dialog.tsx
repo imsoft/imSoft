@@ -53,7 +53,7 @@ export function CardPaymentDialog({ quoteId, folio, clientName, lang, msiDefault
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>{es ? 'Enlace de pago con tarjeta' : 'Card payment link'} · {folio}</DialogTitle>
-            <DialogDescription>{es ? 'Stripe cobra 3.6 % + $3 más IVA. El enlace sirve para un solo pago.' : 'Stripe charges 3.6% + $3 plus VAT. The link works for a single payment.'}</DialogDescription>
+            <DialogDescription>{es ? 'Stripe cobra 3.6 % + $3 más IVA. El enlace es de imsoft.io, sirve para un solo pago y no caduca.' : 'Stripe charges 3.6% + $3 plus VAT. The imsoft.io link works for a single payment and does not expire.'}</DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div className="grid gap-3 sm:grid-cols-[1fr_120px]">
@@ -87,7 +87,17 @@ export function CardPaymentDialog({ quoteId, folio, clientName, lang, msiDefault
                 <div className="flex justify-between font-semibold"><span>{es ? 'El cliente paga' : 'Client pays'}</span><span className="font-mono tabular-nums">{mxn(cobro)}</span></div>
                 <div className="flex justify-between text-muted-foreground"><span>{es ? 'Comisión de Stripe (con IVA)' : 'Stripe fee (incl. VAT)'}</span><span className="font-mono tabular-nums">−{mxn(comisionStripe(cobro))}</span></div>
                 <div className="flex justify-between"><span>{es ? 'Te llega' : 'You receive'}</span><span className={`font-mono tabular-nums ${netoTrasStripe(cobro) < monto ? 'text-amber-600' : 'text-emerald-700'}`}>{mxn(netoTrasStripe(cobro))}</span></div>
-                {msi && <p className="text-xs text-muted-foreground pt-1">{es ? 'Si el cliente elige meses sin intereses, Stripe descuenta además 5 % (3 meses), 7.5 % (6) o 12.5 % (12) más IVA.' : 'If the client picks installments, Stripe also deducts 5% (3 mo), 7.5% (6) or 12.5% (12) plus VAT.'}</p>}
+                {msi ? (
+                  <div className="space-y-1 border-t pt-2 text-xs">
+                    <p className="text-muted-foreground">{es ? 'Si el cliente elige meses sin intereses, Stripe cobra además el plazo. Te llegaría:' : 'If the client picks installments, Stripe charges extra. You would receive:'}</p>
+                    {([3, 6, 12] as const).map((m) => (
+                      <div key={m} className="flex justify-between"><span>{m} {es ? 'meses' : 'months'}</span><span className={`font-mono tabular-nums ${netoTrasStripe(cobro, m) < monto ? 'text-amber-600' : 'text-emerald-700'}`}>{mxn(netoTrasStripe(cobro, m))}</span></div>
+                    ))}
+                    <p className="text-muted-foreground">{es ? 'Stripe ofrece todos los plazos que tengas activos en su Dashboard.' : 'Stripe offers every plan enabled in its Dashboard.'}</p>
+                  </div>
+                ) : (
+                  <p className="border-t pt-2 text-xs text-muted-foreground">{es ? 'Sin meses sin intereses: el cliente solo verá pago en una exhibición.' : 'No installments: the client will only see a single payment.'}</p>
+                )}
               </div>
             )}
             {error && monto > 0 && <p className="text-xs text-destructive">{error}</p>}

@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { requireAdmin, serviceClient } from '@/lib/quotes/server'
+import { SITE_URL, requireAdmin, serviceClient } from '@/lib/quotes/server'
 import { stripe } from '@/lib/stripe'
 import { montoConRecargo, validarCobro } from '@/lib/cobro-tarjeta'
+import { firmarEnlace, nuevoIdEnlace, secretoDeEnlaces } from '@/lib/enlace-pago'
 
 /**
- * Enlace de pago de Stripe desde una cotizacion, sin necesidad de convertirla en proyecto:
- * monto libre + recargo opcional. El enlace se desactiva tras el primer pago.
+ * Enlace de pago con tarjeta desde una cotizacion, sin convertirla en proyecto: monto
+ * libre + recargo opcional, MSI solo si se piden. Un solo pago por enlace.
  */
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const auth = await requireAdmin()
@@ -18,24 +19,14 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   const error = validarCobro(monto, recargoPct)
   if (error) return NextResponse.json({ error }, { status: 400 })
 
-  const { data: q } = await serviceClient().from('quotes').select('id, folio, title, currency, client_name').eq('id', id).maybeSingle()
+  const { data: q } = await serviceClient().from('quotes').select('id, folio, lang').eq('id', id).maybeSingle()
   if (!q) return NextResponse.json({ error: 'Cotización no encontrada' }, { status: 404 })
 
   const cobro = montoConRecargo(monto, recargoPct)
   const etiqueta = typeof body.etiqueta === 'string' && body.etiqueta.trim() ? body.etiqueta.trim().slice(0, 80) : 'Pago'
-  const metadata = { quote_id: q.id, folio: q.folio, monto_base: String(monto), recargo_pct: String(recargoPct) }
-  try {
-    const link = await stripe.paymentLinks.create({
-      line_items: [{ price_data: { currency: String(q.currency || 'MXN').toLowerCase(), product_data: { name: `${q.title} · ${etiqueta}`, description: `Cotización ${q.folio}` }, unit_amount: Math.round(cobro * 100) }, quantity: 1 }],
-      metadata,
-      payment_intent_data: { metadata, description: `${q.folio} · ${etiqueta}` },
-      restrictions: { completed_sessions: { limit: 1 } },
-      // Con MSI el enlace se limita a tarjeta para que Stripe muestre los plazos.
-      ...(body.msi ? { payment_method_types: ['card'] as const } : {}),
-    })
-    return NextResponse.json({ url: link.url, id: link.id, cobro })
-  } catch (err) {
-    console.error('[quotes/payment-link]', err)
-    return NextResponse.json({ error: err instanceof Error ? err.message : 'Error de Stripe' }, { status: 500 })
-  }
+  // Enlace de imsoft.io: al abrirse crea la sesion de Stripe con los MSI que diga la
+  // cotizacion. Un Payment Link de Stripe no permite apagarlos (ver src/lib/enlace-pago.ts).
+  const token = firmarEnlace({ id: nuevoIdEnlace(), quoteId: q.id, monto, recargoPct, etiqueta, msi: Boolean(body.msi) }, secretoDeEnlaces(process.env.STRIPE_SECRET_KEY))
+  const lang = q.lang === 'en' ? 'en' : 'es'
+  return NextResponse.json({ url: `${SITE_URL}/${lang}/pagar/${token}`, cobro })
 }
