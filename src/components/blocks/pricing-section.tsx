@@ -191,6 +191,13 @@ export function PricingSection({ dict, lang }: PricingSectionProps) {
             </span>
             <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
           </a>
+          {isEs && (
+            <nav aria-label="Guías de precios" className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm">
+              <Link href="/es/blog/cuanto-cuesta-una-pagina-web-en-mexico" className="underline underline-offset-4 text-primary-foreground/90 hover:text-primary-foreground">¿Cuánto cuesta una página web?</Link>
+              <Link href="/es/blog/cuanto-cuesta-desarrollar-una-app-en-mexico" className="underline underline-offset-4 text-primary-foreground/90 hover:text-primary-foreground">¿Cuánto cuesta hacer una app?</Link>
+              <Link href="/es/cuanto-cuesta/software-a-la-medida" className="underline underline-offset-4 text-primary-foreground/90 hover:text-primary-foreground">¿Cuánto cuesta un software a la medida?</Link>
+            </nav>
+          )}
           <p className="text-center text-sm text-primary-foreground/60 max-w-2xl">
             {isEs
               ? '* Los precios son referencias orientativas. Cada proyecto recibe una propuesta con precio fijo en 48 horas. Aceptamos 3, 6 y 12 meses sin intereses con tarjeta de crédito de bancos participantes.'

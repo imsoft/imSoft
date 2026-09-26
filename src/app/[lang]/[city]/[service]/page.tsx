@@ -17,6 +17,7 @@ import { HeroHeader } from '@/components/blocks/hero-section';
 import { CityServiceLanding } from '@/components/landing/city-service-landing';
 import { CITY_SERVICE_LABELS, cityServiceContent, cityServiceHref, cityServicePages, cityServiceTitle, type CityKey, type CityServiceSlug } from '@/config/city-services';
 import { fetchPublishedPosts } from '@/lib/city-service-posts';
+import { precioDeServicio } from '@/config/guias-precio';
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io';
 
@@ -284,6 +285,9 @@ async function CityServicePage({ lang, city, slug }: { lang: string; city: CityK
     .filter((p) => p.city === city && p.slug !== slug)
     .map((p) => ({ name: cityServiceTitle(p.city, p.slug), href: cityServiceHref(lang, p.city, p.slug) }));
   if (city === 'guadalajara' && slug === 'paginas-web') related.unshift({ name: 'Páginas web en Zapopan', href: `/${lang}/zapopan/paginas-web` });
+  // La pagina de precio del servicio: responde la duda que frena a quien ya compara.
+  const precio = precioDeServicio(slug);
+  if (precio) related.unshift(precio);
 
   return (
     <div>
