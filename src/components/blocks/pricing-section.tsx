@@ -195,6 +195,7 @@ export function PricingSection({ dict, lang }: PricingSectionProps) {
             <nav aria-label="Guías de precios" className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm">
               <Link href="/es/blog/cuanto-cuesta-una-pagina-web-en-mexico" className="underline underline-offset-4 text-primary-foreground/90 hover:text-primary-foreground">¿Cuánto cuesta una página web?</Link>
               <Link href="/es/blog/cuanto-cuesta-desarrollar-una-app-en-mexico" className="underline underline-offset-4 text-primary-foreground/90 hover:text-primary-foreground">¿Cuánto cuesta hacer una app?</Link>
+              <Link href="/es/cuanto-cuesta/tienda-en-linea" className="underline underline-offset-4 text-primary-foreground/90 hover:text-primary-foreground">¿Cuánto cuesta una tienda en línea?</Link>
               <Link href="/es/cuanto-cuesta/software-a-la-medida" className="underline underline-offset-4 text-primary-foreground/90 hover:text-primary-foreground">¿Cuánto cuesta un software a la medida?</Link>
             </nav>
           )}

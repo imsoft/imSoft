@@ -13,8 +13,9 @@ import { cityServiceHref, cityServiceTitle } from '@/config/city-services';
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io';
 
 /** Landing de ciudad que corresponde a cada guia: quien pregunta el precio suele ser de GDL. */
-const LANDING_DE_GUIA: Record<GuiaPrecioSlug, 'empresas-de-software'> = {
+const LANDING_DE_GUIA: Record<GuiaPrecioSlug, 'empresas-de-software' | 'tiendas-en-linea'> = {
   'software-a-la-medida': 'empresas-de-software',
+  'tienda-en-linea': 'tiendas-en-linea',
 };
 
 // Solo en español: son busquedas de Mexico ("cuanto cuesta una pagina web en mexico").
@@ -55,9 +56,8 @@ export default async function GuiaPrecio({ params }: { params: Promise<{ lang: s
   const s = slug as GuiaPrecioSlug;
   const related = [
     { name: cityServiceTitle('guadalajara', LANDING_DE_GUIA[s]), href: cityServiceHref('es', 'guadalajara', LANDING_DE_GUIA[s]) },
-    // Las otras preguntas de precio, que responde el blog.
-    PRECIO_DE_SERVICIO['paginas-web'],
-    PRECIO_DE_SERVICIO['desarrollo-de-apps'],
+    // Las otras preguntas de precio.
+    ...Object.values(PRECIO_DE_SERVICIO).filter((p) => p.href !== `/es/cuanto-cuesta/${s}`),
   ];
 
   return (

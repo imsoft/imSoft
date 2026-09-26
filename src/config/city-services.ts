@@ -18,6 +18,8 @@
  * - Solo en español: en ingles estas busquedas no tienen volumen. /en canonicaliza a /es.
  */
 
+import { PRECIO_TIENDA_EN_LINEA } from './precio-tienda';
+
 export type CityServiceSlug = 'paginas-web' | 'empresas-de-software' | 'tiendas-en-linea' | 'desarrollo-de-apps';
 
 export const CITY_SERVICE_SLUGS: CityServiceSlug[] = ['paginas-web', 'empresas-de-software', 'tiendas-en-linea', 'desarrollo-de-apps'];
@@ -365,6 +367,7 @@ const GUADALAJARA: Record<CityServiceSlug, CityServiceContent> = {
         },
       ],
     },
+    pricing: PRECIO_TIENDA_EN_LINEA,
     proof: {
       title: 'Tiendas en línea que ya venden',
       description:
@@ -808,6 +811,7 @@ const MONTERREY: Record<CityServiceSlug, CityServiceContent> = {
         },
       ],
     },
+    pricing: PRECIO_TIENDA_EN_LINEA,
     proof: {
       title: 'Tiendas en línea que ya venden',
       description: 'Tres ecommerce del portafolio que puedes abrir. Somos de Guadalajara y no publicamos la ubicación de cada cliente.',
@@ -1244,6 +1248,7 @@ const CDMX: Partial<Record<CityServiceSlug, CityServiceContent>> = {
         },
       ],
     },
+    pricing: PRECIO_TIENDA_EN_LINEA,
     proof: {
       title: 'Ecommerce que ya venden',
       description: 'Tiendas del portafolio que puedes abrir. Somos de Guadalajara y no publicamos la ubicación de cada cliente.',
@@ -1569,6 +1574,7 @@ const QUERETARO: Record<CityServiceSlug, CityServiceContent> = {
         },
       ],
     },
+    pricing: PRECIO_TIENDA_EN_LINEA,
     proof: {
       title: 'Tiendas en línea que ya venden',
       description: 'Ecommerce del portafolio que puedes abrir. Somos de Guadalajara y no publicamos la ubicación de cada cliente.',
@@ -2005,6 +2011,7 @@ const PUEBLA: Record<CityServiceSlug, CityServiceContent> = {
         },
       ],
     },
+    pricing: PRECIO_TIENDA_EN_LINEA,
     proof: {
       title: 'Tiendas en línea que ya venden',
       description: 'Ecommerce del portafolio que puedes abrir. Somos de Guadalajara y no publicamos la ubicación de cada cliente.',

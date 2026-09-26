@@ -25,13 +25,14 @@ describe('guias "cuanto cuesta"', () => {
   });
 
   it('solo usan los precios publicados en el sitio, y los mismos del hero van en la tabla', () => {
-    const publicados = ['Desde $5,000 MXN', 'Desde $15,000 MXN', 'Desde $60,000 MXN', 'Desde $150,000 MXN'];
+    const publicados = ['Desde $5,000 MXN', 'Desde $15,000 MXN', 'Desde $60,000 MXN', 'Desde $150,000 MXN', 'Desde $19,000 MXN'];
     for (const { slug, g } of guias) {
       for (const item of g.pricing!.items) expect(publicados, slug).toContain(item.price);
-      for (const cifra of g.heroSubtitle.match(/\$[\d,]+/g) ?? []) expect(g.pricing!.items.some((i) => i.price.includes(cifra)), `${slug}: ${cifra}`).toBe(true);
+      // Toda cifra del texto principal esta en la tabla o en la nota de precios (el tope del rango va en la nota).
+      for (const cifra of g.heroSubtitle.match(/\$[\d,]+/g) ?? []) expect(g.pricing!.items.some((i) => i.price.includes(cifra)) || (g.pricing!.note ?? '').includes(cifra), `${slug}: ${cifra}`).toBe(true);
     }
-    // Tienda en linea no tiene precio publicado: no hay guia hasta tenerlo.
-    expect(GUIA_PRECIO_SLUGS).not.toContain('tienda-en-linea');
+    // Tienda: el rango de la nota sale de lo cobrado por las tres tiendas del portafolio.
+    expect(guiaPrecio('tienda-en-linea')!.pricing!.note).toContain('van de $19,000 a $60,000 MXN');
   });
 
   it('los proyectos citados existen en el portafolio', () => {

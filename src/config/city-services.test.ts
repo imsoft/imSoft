@@ -100,12 +100,12 @@ describe('landings de ciudad + servicio', () => {
   });
 
   it('los precios "desde" son los publicados en el sitio', () => {
-    const publicados = ['Desde $5,000 MXN', 'Desde $15,000 MXN', 'Desde $60,000 MXN', 'Desde $150,000 MXN'];
+    const publicados = ['Desde $5,000 MXN', 'Desde $15,000 MXN', 'Desde $60,000 MXN', 'Desde $150,000 MXN', 'Desde $19,000 MXN'];
     for (const { c } of paginas) {
       for (const item of c.pricing?.items ?? []) expect(publicados).toContain(item.price);
     }
-    // Tiendas en linea no tiene precio publicado: no se inventa uno.
-    for (const { c, slug } of paginas) if (slug === 'tiendas-en-linea') expect(c.pricing).toBeUndefined();
+    // Tiendas en linea: desde $19,000, el menor de lo que Brandon cobro por las tiendas del portafolio.
+    for (const { c, slug } of paginas) if (slug === 'tiendas-en-linea') expect(c.pricing?.items.map((i) => i.price)).toEqual(['Desde $19,000 MXN']);
   });
 
   it('cada pagina tiene preguntas frecuentes y el horario coincide con el del schema', () => {
