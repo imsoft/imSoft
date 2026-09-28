@@ -5,8 +5,9 @@
  * quitaria fuerza, asi que ahi se enlaza al articulo. "Cuanto cuesta un software para una
  * empresa" y "cuanto cuesta una tienda en linea en mexico" no tenian pagina y tienen guia.
  *
- * Tienda en linea: Brandon dio lo que cobro por las tres del portafolio (26-sep-2026): van
- * de $19,000 a $60,000 MXN. Se publica el rango, sin decir cuanto pago cada cliente.
+ * Tienda en linea: minimo de $9,999 MXN fijado por Brandon (28-sep-2026) para una tienda
+ * basica con plantilla; las tres completas del portafolio fueron de $19,000 a $60,000 MXN.
+ * Se publica el rango, sin decir cuanto pago cada cliente.
  *
  * Reglas: solo precios publicados en el sitio (seccion de precios), proyectos reales del
  * portafolio y nada de cifras del mercado sin fuente. Reutilizan el formato de las
@@ -147,10 +148,10 @@ export const GUIAS_PRECIO: Record<GuiaPrecioSlug, CityServiceContent> = {
   'tienda-en-linea': {
     seoTitle: '¿Cuánto cuesta una tienda en línea en México? Precios 2026',
     seoDescription:
-      'Cuánto cuesta una tienda en línea en México: desde $19,000 MXN. Qué sube el precio, comisiones, envíos y cuándo conviene Shopify o una tienda propia.',
+      'Cuánto cuesta una tienda en línea en México: desde $9,999 MXN. Qué sube el precio, comisiones, envíos y cuándo conviene Shopify o una tienda propia.',
     h1: '¿Cuánto cuesta una tienda en línea en México?',
     heroSubtitle:
-      'Con nosotros, una tienda en línea cuesta desde $19,000 MXN, a precio fijo; las que hemos entregado van de $19,000 a $60,000 MXN según el tamaño del catálogo y lo que tiene que hacer. Aquí te explicamos qué mueve ese precio, qué gastos tiene una tienda cuando ya está vendiendo y cómo decidir entre una plataforma de renta y una tienda propia.',
+      'Con nosotros, una tienda en línea básica cuesta desde $9,999 MXN, a precio fijo, y las tiendas completas que hemos entregado van de $19,000 a $60,000 MXN según el tamaño del catálogo y lo que tienen que hacer. Aquí te explicamos qué mueve ese precio, qué gastos tiene una tienda cuando ya está vendiendo y cómo decidir entre una plataforma de renta y una tienda propia.',
     audience: {
       title: 'Qué hace que una tienda en línea cueste más o menos',
       items: [
@@ -216,9 +217,9 @@ export const GUIAS_PRECIO: Record<GuiaPrecioSlug, CityServiceContent> = {
       title: 'Nuestros precios de referencia',
       description: 'Precio publicado, en pesos mexicanos. El precio final se fija por escrito antes de empezar.',
       items: [
-        { name: 'Tienda en línea', price: 'Desde $19,000 MXN', includes: 'Catálogo por categorías, carrito y proceso de compra, búsqueda de productos y envíos a todo México, con diseño de tu marca.' },
+        { name: 'Tienda en línea básica', price: 'Desde $9,999 MXN', includes: 'Tienda básica con plantilla personalizada: catálogo por categorías, carrito, pago en línea y panel para administrar productos y pedidos.' },
       ],
-      note: 'Las tiendas que hemos entregado van de $19,000 a $60,000 MXN. Lo que más sube el precio es el tamaño del catálogo, vender a empresas y conectar la tienda con tu inventario o tu facturación.',
+      note: 'Las tiendas completas que hemos entregado van de $19,000 a $60,000 MXN. Lo que más sube el precio es el tamaño del catálogo, un diseño propio en lugar de plantilla, vender a empresas y conectar la tienda con tu inventario o tu facturación.',
     },
     proof: {
       title: 'Tiendas en línea que hicimos',
