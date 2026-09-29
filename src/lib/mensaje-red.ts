@@ -104,7 +104,8 @@ export function canalesDe(c: { social_links?: SocialLink[] | null; instagram_url
   for (const canal of CANALES) {
     const red = redes.find((r) => r.platform === canal && esCanal(r.platform))
     if (canal === 'whatsapp') {
-      const num = numeroWhatsApp(c.phone) ?? (red ? red.url.replace(/\D/g, '') : null)
+      // El WhatsApp que el negocio publica gana al telefono, que muchas veces es fijo.
+      const num = (red ? red.url.replace(/\D/g, '') || null : null) ?? numeroWhatsApp(c.phone)
       if (num) out.push({ canal, url: `https://wa.me/${num}${texto ? `?text=${encodeURIComponent(texto)}` : ''}` })
       continue
     }

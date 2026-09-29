@@ -68,6 +68,8 @@ export interface Candidato {
   enCrm: boolean
   correo?: string | null
   instagram?: string | null
+  /** Numero del enlace de WhatsApp que el negocio publica en su sitio (52 + 10 digitos). */
+  whatsapp?: string | null
 }
 
 /**
@@ -105,12 +107,12 @@ export function tramoDeBusquedas<T>(lista: T[], corrida: number, porCorrida: num
 }
 
 /**
- * Un candidato entra al CRM solo si hay por donde escribirle: correo o Instagram.
- * El telefono solo no basta (decision de Brandon, 23-sep-2026): los de puro telefono
- * se quedaban sin contactar y se borraron 49 el mismo dia.
+ * Un candidato entra al CRM solo si hay por donde escribirle: correo, Instagram o el
+ * WhatsApp que publica en su sitio. El telefono de Google solo no basta (decision de
+ * Brandon, 23-sep-2026): suele ser fijo y los de puro telefono se quedaban sin contactar.
  */
-export function sePuedeEscribir(c: Pick<Candidato, 'correo' | 'instagram'>): boolean {
-  return Boolean((c.correo ?? '').trim() || (c.instagram ?? '').trim())
+export function sePuedeEscribir(c: Pick<Candidato, 'correo' | 'instagram' | 'whatsapp'>): boolean {
+  return Boolean((c.correo ?? '').trim() || (c.instagram ?? '').trim() || (c.whatsapp ?? '').trim())
 }
 
 const DOMINIOS_GENERICOS = ['facebook.com', 'instagram.com', 'wa.me', 'whatsapp.com', 'linktr.ee', 'google.com', 'goo.gl', 'business.site', 'negocio.site', 'tiktok.com', 'youtube.com', 'x.com', 'twitter.com']
@@ -247,6 +249,30 @@ export function extraerInstagram(html: string): string | null {
   return `https://instagram.com/${u}`
 }
 
+/** Numero de Mexico en formato de WhatsApp (52 + 10 digitos); otros paises se dejan como vienen. */
+function normalizarWhatsApp(digitos: string): string | null {
+  const d = digitos.replace(/\D/g, '')
+  if (d.length === 10) return `52${d}`
+  if (d.length === 13 && d.startsWith('521')) return `52${d.slice(3)}`
+  if (d.length >= 11 && d.length <= 13) return d
+  return null
+}
+
+/**
+ * WhatsApp que el negocio publica en su sitio: enlaces wa.me o api.whatsapp.com. A
+ * diferencia del telefono de Google, este numero si es de WhatsApp y el negocio lo ofrece
+ * para que le escriban.
+ */
+export function extraerWhatsApp(html: string): string | null {
+  const texto = html.replace(/&amp;/g, '&')
+  const re = /(?:wa\.me\/|(?:api|web)\.whatsapp\.com\/send\/?\?(?:[^"'\s>]*&)?phone=|whatsapp:\/\/send\?(?:[^"'\s>]*&)?phone=)(?:%2B|\+)?([\d][\d\s().-]{8,18}\d)/gi
+  for (const m of texto.matchAll(re)) {
+    const n = normalizarWhatsApp(m[1])
+    if (n) return n
+  }
+  return null
+}
+
 /** Enlaces internos que suelen tener datos de contacto. */
 export function enlacesDeContacto(html: string, base: string): string[] {
   const out = new Set<string>()
@@ -271,6 +297,7 @@ export function filaDesdeCandidato(c: Candidato, segmento: string): CsvRow {
     email: c.correo ?? '',
     telefono: c.telefono ?? '',
     instagram: c.instagram ?? '',
+    whatsapp: c.whatsapp ?? '',
     sitio: c.sitio ?? '',
     segmento,
     gancho: '',

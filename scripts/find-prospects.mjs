@@ -44,7 +44,7 @@ for (const b of busquedas) {
   if (total >= MAX) break
   const { candidatos, segmento, nuevos } = await buscarProspectos(db, b.giro, b.municipio, { max: 20, correos: true })
   const elegibles = candidatos.filter((c) => !c.enCrm && sePuedeEscribir(c)).slice(0, MAX - total)
-  console.log(`${b.giro} / ${b.municipio}: ${candidatos.length} encontrados, ${nuevos} nuevos, ${elegibles.length} con correo o Instagram`)
+  console.log(`${b.giro} / ${b.municipio}: ${candidatos.length} encontrados, ${nuevos} nuevos, ${elegibles.length} con correo, Instagram o WhatsApp`)
   if (dryRun) {
     total += elegibles.length
     continue
@@ -59,7 +59,7 @@ const grandes = JSON.parse(readFileSync(new URL('../content/empresas-grandes.jso
 for (const e of tramoDeBusquedas(grandes, corrida, 2)) {
   const { candidatos } = await buscarProspectos(db, 'corporativo', 'zmg', { max: 10, correos: true, queryLibre: e.busqueda })
   const elegibles = deLaMarca(candidatos, e.clave).filter((c) => !c.enCrm && sePuedeEscribir(c))
-  console.log(`corporativo / ${e.nombre}: ${elegibles.length ? 'con correo o Instagram' : 'ya en el CRM, sin contacto o no encontrado'}`)
+  console.log(`corporativo / ${e.nombre}: ${elegibles.length ? 'con correo, Instagram o WhatsApp' : 'ya en el CRM, sin contacto o no encontrado'}`)
   if (dryRun || elegibles.length === 0) continue
   const r = await importarCandidatos(db, elegibles, 'corporativo', `Google Places - corporativo - ${hoy}`, ['auto-places', 'empresa-grande', `campana-${hoy.slice(0, 7)}`])
   total += r.insertados

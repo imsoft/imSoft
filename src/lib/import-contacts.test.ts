@@ -61,6 +61,7 @@ describe('mapRowsToContacts', () => {
       tags: ['aduanal'],
       website_url: null,
       instagram_url: null,
+      social_links: null,
       notes: 'Sin portal de seguimiento',
     })
   })
@@ -153,5 +154,14 @@ describe('mapRowsToContacts', () => {
     const { contacts } = mapRowsToContacts([fila], { contactType: 'lead', status: 'qualification' })
     expect(contacts[0].contact_type).toBe('lead')
     expect(contacts[0].status).toBe('qualification')
+  })
+})
+
+describe('WhatsApp en la importacion', () => {
+  it('guarda el WhatsApp como canal del contacto y basta para darlo de alta', () => {
+    const { contacts, skipped } = mapRowsToContacts([{ empresa: 'Ferretería X', whatsapp: '523312345678' }])
+    expect(skipped.noContact).toHaveLength(0)
+    expect(contacts[0].social_links).toEqual([{ platform: 'whatsapp', url: '+523312345678' }])
+    expect(contacts[0].email).toBeNull()
   })
 })

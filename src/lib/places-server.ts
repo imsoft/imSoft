@@ -4,7 +4,7 @@
  */
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { mapRowsToContacts } from './import-contacts.ts'
-import { MUNICIPIOS, candidatoDe, enlacesDeContacto, extraerCorreo, extraerInstagram, filaDesdeCandidato, giroDe, marcarExistentes, sePuedeEscribir, sinRepetidos, type Candidato, type ContactoExistente, type PlaceResult } from './places.ts'
+import { MUNICIPIOS, candidatoDe, enlacesDeContacto, extraerCorreo, extraerInstagram, extraerWhatsApp, filaDesdeCandidato, giroDe, marcarExistentes, sePuedeEscribir, sinRepetidos, type Candidato, type ContactoExistente, type PlaceResult } from './places.ts'
 
 const FIELD_MASK = 'places.id,places.displayName,places.formattedAddress,places.websiteUri,places.nationalPhoneNumber,places.rating,places.userRatingCount,places.primaryTypeDisplayName,places.googleMapsUri,nextPageToken'
 
@@ -61,24 +61,26 @@ async function descargar(url: string, ms = 8000): Promise<string | null> {
   }
 }
 
-/** Correo e Instagram del sitio: portada y hasta 4 paginas de contacto/nosotros. */
-export async function contactoDelSitio(sitio: string): Promise<{ correo: string | null; instagram: string | null }> {
+/** Correo, Instagram y WhatsApp del sitio: portada y hasta 4 paginas de contacto/nosotros. */
+export async function contactoDelSitio(sitio: string): Promise<{ correo: string | null; instagram: string | null; whatsapp: string | null }> {
   const base = sitio.startsWith('http') ? sitio : `https://${sitio}`
   const dominio = new URL(base).hostname.replace(/^www\./, '')
   const home = await descargar(base)
-  if (!home) return { correo: null, instagram: null }
+  if (!home) return { correo: null, instagram: null, whatsapp: null }
   let correo = extraerCorreo(home, dominio)
   let instagram = extraerInstagram(home)
-  if (!correo) {
+  let whatsapp = extraerWhatsApp(home)
+  if (!correo || !whatsapp) {
     for (const url of enlacesDeContacto(home, base)) {
       const html = await descargar(url, 6000)
       if (!html) continue
       correo = correo ?? extraerCorreo(html, dominio)
       instagram = instagram ?? extraerInstagram(html)
-      if (correo) break
+      whatsapp = whatsapp ?? extraerWhatsApp(html)
+      if (correo && whatsapp) break
     }
   }
-  return { correo, instagram }
+  return { correo, instagram, whatsapp }
 }
 
 /** Enriquece en paralelo (de 5 en 5) los candidatos con sitio. */
@@ -88,8 +90,8 @@ export async function enriquecer(candidatos: Candidato[]): Promise<Candidato[]> 
   for (let k = 0; k < indices.length; k += 5) {
     await Promise.all(
       indices.slice(k, k + 5).map(async (i) => {
-        const { correo, instagram } = await contactoDelSitio(out[i].sitio!)
-        out[i] = { ...out[i], correo, instagram }
+        const { correo, instagram, whatsapp } = await contactoDelSitio(out[i].sitio!)
+        out[i] = { ...out[i], correo, instagram, whatsapp }
       }),
     )
   }

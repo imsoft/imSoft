@@ -53,6 +53,11 @@ describe('canales disponibles de un contacto', () => {
     ])
   })
 
+  it('el WhatsApp publicado por el negocio gana al telefono, que suele ser fijo', () => {
+    const c = { phone: '33 3880 6000', social_links: [{ platform: 'whatsapp' as const, url: '+523316029326' }] }
+    expect(canalesDe(c)).toEqual([{ canal: 'whatsapp', url: 'https://wa.me/523316029326' }])
+  })
+
   it('sin redes ni telefono no hay canales', () => {
     expect(canalesDe({})).toEqual([])
     expect(canalesDe({ phone: '123' })).toEqual([])

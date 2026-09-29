@@ -18,6 +18,8 @@ export interface CsvRow {
   gancho?: string
   segmento?: string
   instagram?: string
+  /** Numero de WhatsApp (solo digitos, con lada de pais). */
+  whatsapp?: string
   [key: string]: string | undefined
 }
 
@@ -36,6 +38,8 @@ export interface ContactInsert {
   tags: string[] | null
   website_url: string | null
   instagram_url: string | null
+  /** Canales extra del contacto; hoy solo el WhatsApp que publica en su sitio. */
+  social_links: Array<{ platform: 'whatsapp'; url: string }> | null
   notes: string | null
 }
 
@@ -89,10 +93,11 @@ export function mapRowsToContacts(rows: CsvRow[], options: MapOptions = {}): Map
 
     const phone = clean(row.telefono)
     const instagram = clean(row.instagram)
+    const whatsapp = (clean(row.whatsapp) ?? '').replace(/\D/g, '') || null
 
     // Sin correo se puede: los prospectos de WhatsApp e Instagram se localizan
-    // por telefono o por su perfil. Sin ninguno de los tres, el contacto no sirve.
-    if (!email && !phone && !instagram) {
+    // por telefono o por su perfil. Sin ninguno, el contacto no sirve.
+    if (!email && !phone && !instagram && !whatsapp) {
       skipped.noContact.push(row)
       continue
     }
@@ -122,6 +127,7 @@ export function mapRowsToContacts(rows: CsvRow[], options: MapOptions = {}): Map
       tags: tags.length > 0 ? tags : null,
       website_url: clean(row.sitio),
       instagram_url: instagram,
+      social_links: whatsapp ? [{ platform: 'whatsapp', url: `+${whatsapp}` }] : null,
       notes: clean(row.gancho),
     })
   }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { candidatoDe, dominioDe, enlacesDeContacto, extraerCorreo, extraerInstagram, filaDesdeCandidato, formatoTelefono, giroDe, limpiarNombre, marcarExistentes, nombreNormalizado, sePuedeEscribir, sinRepetidos, numeroDeCorrida, tramoDeBusquedas, deLaMarca, giroDe as giroDe2 } from './places'
+import { candidatoDe, dominioDe, enlacesDeContacto, extraerCorreo, extraerInstagram, extraerWhatsApp, filaDesdeCandidato, formatoTelefono, giroDe, limpiarNombre, marcarExistentes, nombreNormalizado, sePuedeEscribir, sinRepetidos, numeroDeCorrida, tramoDeBusquedas, deLaMarca, giroDe as giroDe2 } from './places'
 import { mapRowsToContacts } from './import-contacts'
 
 describe('buscador de prospectos (Places)', () => {
@@ -76,7 +76,20 @@ describe('buscador de prospectos (Places)', () => {
     expect(giroDe('nada')).toBeNull()
   })
 
-  it('solo entra al CRM quien tiene correo o Instagram; el telefono solo no basta', () => {
+  it('saca el WhatsApp que el negocio publica en su sitio', () => {
+    expect(extraerWhatsApp('<a href="https://wa.me/523312345678?text=Hola">WhatsApp</a>')).toBe('523312345678')
+    expect(extraerWhatsApp('<a href="https://api.whatsapp.com/send?phone=5213312345678&amp;text=Hola">')).toBe('523312345678')
+    expect(extraerWhatsApp('href="https://api.whatsapp.com/send/?text=hola&phone=%2B52 33 1234 5678"')).toBe('523312345678')
+    expect(extraerWhatsApp('<a href="https://wa.me/3312345678">')).toBe('523312345678')
+    expect(extraerWhatsApp('<a href="https://wa.me/12025550123">')).toBe('12025550123')
+    // Sin numero (enlace generico o grupo) no hay a quien escribir.
+    expect(extraerWhatsApp('<a href="https://wa.me/?text=hola">')).toBeNull()
+    expect(extraerWhatsApp('<a href="https://chat.whatsapp.com/AbCdEf">')).toBeNull()
+    expect(extraerWhatsApp('Tel. 33 1234 5678')).toBeNull()
+    expect(sePuedeEscribir({ whatsapp: '523312345678' })).toBe(true)
+  })
+
+  it('solo entra al CRM quien tiene correo, Instagram o WhatsApp publicado; el telefono solo no basta', () => {
     expect(sePuedeEscribir({ correo: 'a@b.mx', instagram: null })).toBe(true)
     expect(sePuedeEscribir({ correo: null, instagram: 'ferreteria' })).toBe(true)
     expect(sePuedeEscribir({ correo: ' ', instagram: '' })).toBe(false)
