@@ -4,7 +4,7 @@
 // v3: offline.html con el logo incrustado (data URI) y centrado corregido.
 // Subir la version fuerza la reinstalacion: si no, los clientes que ya tienen
 // offline.html precacheado nunca verian el nuevo.
-const CACHE_NAME = 'imsoft-cache-v3';
+const CACHE_NAME = 'imsoft-cache-v4';
 const OFFLINE_URL = '/offline.html';
 
 const ASSETS_TO_CACHE = [
@@ -51,6 +51,9 @@ self.addEventListener('fetch', (event) => {
 
   // Only handle local origin requests
   if (url.origin !== self.location.origin) return;
+
+  // La API nunca pasa por la cache: son datos vivos (contadores, CRM, cobros).
+  if (url.pathname.startsWith('/api/')) return;
 
   // Navigations (HTML): network-first, so a deploy or a bad cached copy
   // never leaves the user stuck on a stale page.

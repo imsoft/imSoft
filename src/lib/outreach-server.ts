@@ -6,7 +6,7 @@ import { resolveMx } from 'node:dns/promises'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { enviarRaw, estadoDelHilo, messageIdHeader } from '@/lib/gmail/server'
 import { GANCHO_TOOL, ganchoDesdeNotas, limpiarGancho, promptGancho } from '@/lib/outreach-ai'
-import { renderMensajeRed, type Canal } from '@/lib/mensaje-red'
+import { conteoPorCanal, renderMensajeRed, TOPE_DIARIO_CANAL, type Canal } from '@/lib/mensaje-red'
 import { dominioDeCorreo, construirMime, cuerpoDe, fechaSiguientePaso, renderDesdeCuerpo, renderOutreach, segmentoDe, topeDiario, type Step } from '@/lib/outreach'
 
 const TZ = 'America/Mexico_City'
@@ -191,6 +191,20 @@ export async function mensajeParaRed(db: SupabaseClient, contactId: string, cana
   const { data: previo } = await db.from('outreach_emails').select('gancho').eq('contact_id', contactId).eq('step', 1).not('gancho', 'is', null).maybeSingle()
   const gancho = (previo?.gancho as string | null) || ganchoDesdeNotas(c.notes) || (await ganchoConIA(c as ContactoMin))
   return { texto: renderMensajeRed(canal, { nombre: nombreDe(c), empresa: c.company ?? '', gancho, segmento: segmentoDe(c.tags) }), gancho }
+}
+
+/** Mensajes por redes registrados hoy (hora de Guadalajara) y en los ultimos 7 dias, por canal. */
+export async function mensajesDeRedes(db: SupabaseClient) {
+  const hoy = hoyLocal()
+  const inicioHoy = new Date(`${hoy}T00:00:00-06:00`)
+  const hace7 = new Date(inicioHoy.getTime() - 6 * 86_400_000)
+  const { data } = await db.from('activities').select('subject, completed_at').like('subject', 'Mensaje por %').gte('completed_at', hace7.toISOString()).limit(2000)
+  const filas = data ?? []
+  return {
+    hoy: conteoPorCanal(filas.filter((f) => new Date(f.completed_at as string) >= inicioHoy).map((f) => f.subject as string)),
+    semana: conteoPorCanal(filas.map((f) => f.subject as string)),
+    topes: TOPE_DIARIO_CANAL,
+  }
 }
 
 /** El mensaje ya se mando por la red: queda en el historial y el prospecto pasa a calificacion. */

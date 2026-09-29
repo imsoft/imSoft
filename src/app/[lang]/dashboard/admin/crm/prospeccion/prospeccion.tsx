@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Check, Copy, Mail, RefreshCw, Send, Sparkles, X } from 'lucide-react'
 import { cuerpoDe } from '@/lib/outreach'
+import { CANALES, ETIQUETA_CANAL, estadoDelTope, type Canal, type ConteoPorCanal } from '@/lib/mensaje-red'
 
 export interface FilaOutreach {
   id: string
@@ -33,13 +34,15 @@ interface Props {
   gmail: { email: string } | null
   gmailConfigurado: boolean
   campana: { hoy: string; enviadosHoy: number; tope: number; restanHoy: number; diasDesdePrimerEnvio: number }
+  /** Mensajes por redes registrados con "Ya lo envié": hoy, ultimos 7 dias y tope diario. */
+  redes: { hoy: ConteoPorCanal; semana: ConteoPorCanal; topes: Record<Canal, number> }
   filas: FilaOutreach[]
   sinContactar: number
 }
 
 const PASO = { 1: 'Primer correo', 2: 'Seguimiento 1', 3: 'Seguimiento 2' }
 
-export function Prospeccion({ lang, gmail, gmailConfigurado, campana, filas, sinContactar }: Props) {
+export function Prospeccion({ lang, gmail, gmailConfigurado, campana, redes, filas, sinContactar }: Props) {
   const es = lang !== 'en'
   const router = useRouter()
   const sp = useSearchParams()
@@ -174,7 +177,7 @@ export function Prospeccion({ lang, gmail, gmailConfigurado, campana, filas, sin
 
   return (
     <div className="space-y-6">
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <Card>
           <CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Gmail</CardTitle></CardHeader>
           <CardContent className="space-y-2">
@@ -198,6 +201,21 @@ export function Prospeccion({ lang, gmail, gmailConfigurado, campana, filas, sin
           <CardContent>
             <p className="text-3xl font-bold tabular-nums">{campana.enviadosHoy} <span className="text-base font-normal text-muted-foreground">/ {campana.tope}</span></p>
             <p className="text-sm text-muted-foreground">{es ? `Tope de la rampa (día ${campana.diasDesdePrimerEnvio + 1} de la campaña). Reparte los envíos a lo largo del día.` : `Ramp cap (campaign day ${campana.diasDesdePrimerEnvio + 1}). Spread sends through the day.`}</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">{es ? 'Mensajes por redes hoy' : 'Social messages today'}</CardTitle></CardHeader>
+          <CardContent className="space-y-1 text-sm">
+            {CANALES.filter((c) => c === 'whatsapp' || c === 'instagram' || redes.semana[c] > 0).map((c) => {
+              const e = estadoDelTope(redes.hoy[c], c)
+              return (
+                <p key={c} className="flex justify-between gap-3">
+                  <span>{ETIQUETA_CANAL[c]}</span>
+                  <span className={`font-medium tabular-nums ${e === 'tope' ? 'text-destructive' : e === 'cerca' ? 'text-amber-600' : ''}`}>{redes.hoy[c]} / {redes.topes[c]}</span>
+                </p>
+              )
+            })}
+            <p className="pt-1 text-xs text-muted-foreground">{es ? `Últimos 7 días: ${CANALES.reduce((n, c) => n + redes.semana[c], 0)}. Cuenta los marcados con "Ya lo envié".` : `Last 7 days: ${CANALES.reduce((n, c) => n + redes.semana[c], 0)}. Counts messages marked as sent.`}</p>
           </CardContent>
         </Card>
         <Card>

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { canalesDe, numeroWhatsApp, renderMensajeRed, TOPE_CANAL, urlDeRed } from './mensaje-red'
+import { canalDeAsunto, canalesDe, conteoPorCanal, estadoDelTope, ETIQUETA_CANAL, numeroWhatsApp, renderMensajeRed, TOPE_CANAL, TOPE_DIARIO_CANAL, urlDeRed } from './mensaje-red'
 
 const v = { nombre: 'Héctor', empresa: 'Gil y Gil', gancho: 'Cada filial lleva sus pedimentos en su propio Excel.', segmento: 'logistica-gdl' }
 
@@ -66,5 +66,29 @@ describe('canales disponibles de un contacto', () => {
   it('urlDeRed arma el perfil a partir del usuario', () => {
     expect(urlDeRed({ platform: 'tiktok', url: '@imsoft' })).toBe('https://tiktok.com/@imsoft')
     expect(urlDeRed({ platform: 'whatsapp', url: '+52 33 1234 5678' })).toBe('https://wa.me/523312345678')
+  })
+})
+
+describe('tope diario por red', () => {
+  it('el asunto con que se registra cada envio se lee de vuelta como canal', () => {
+    for (const c of ['instagram', 'whatsapp', 'twitter'] as const) expect(canalDeAsunto(`Mensaje por ${ETIQUETA_CANAL[c]}`)).toBe(c)
+    expect(canalDeAsunto('Llamada de seguimiento')).toBeNull()
+    expect(canalDeAsunto(null)).toBeNull()
+  })
+
+  it('cuenta por canal e ignora lo que no es mensaje por redes', () => {
+    const c = conteoPorCanal(['Mensaje por Instagram', 'Mensaje por WhatsApp', 'Mensaje por Instagram', 'Nota', null])
+    expect(c.instagram).toBe(2)
+    expect(c.whatsapp).toBe(1)
+    expect(c.linkedin).toBe(0)
+  })
+
+  it('avisa cuando faltan 3 o menos y frena al llegar al tope', () => {
+    const t = TOPE_DIARIO_CANAL.whatsapp
+    expect(estadoDelTope(0, 'whatsapp')).toBe('bien')
+    expect(estadoDelTope(t - 4, 'whatsapp')).toBe('bien')
+    expect(estadoDelTope(t - 3, 'whatsapp')).toBe('cerca')
+    expect(estadoDelTope(t, 'whatsapp')).toBe('tope')
+    expect(estadoDelTope(t + 5, 'whatsapp')).toBe('tope')
   })
 })

@@ -29,6 +29,45 @@ export const TOPE_CANAL: Record<Canal, number> = {
   twitter: 1000,
 }
 
+/**
+ * Mensajes de primer contacto por dia y por red. Son topes conservadores: WhatsApp e
+ * Instagram restringen cuentas que escriben a muchos desconocidos con textos parecidos.
+ */
+export const TOPE_DIARIO_CANAL: Record<Canal, number> = {
+  instagram: 15,
+  whatsapp: 15,
+  facebook: 15,
+  linkedin: 15,
+  tiktok: 10,
+  twitter: 10,
+}
+
+/** "Mensaje por Instagram" (asunto con que se registra cada envio) -> canal. */
+export function canalDeAsunto(subject: string | null | undefined): Canal | null {
+  const m = (subject ?? '').match(/^Mensaje por (.+)$/)
+  if (!m) return null
+  return CANALES.find((c) => ETIQUETA_CANAL[c] === m[1].trim()) ?? null
+}
+
+export type ConteoPorCanal = Record<Canal, number>
+
+/** Cuantos mensajes se registraron por canal a partir de sus asuntos. */
+export function conteoPorCanal(asuntos: Array<string | null | undefined>): ConteoPorCanal {
+  const out = Object.fromEntries(CANALES.map((c) => [c, 0])) as ConteoPorCanal
+  for (const a of asuntos) {
+    const c = canalDeAsunto(a)
+    if (c) out[c] += 1
+  }
+  return out
+}
+
+/** Estado del tope de hoy para un canal. */
+export function estadoDelTope(enviados: number, canal: Canal): 'bien' | 'cerca' | 'tope' {
+  const tope = TOPE_DIARIO_CANAL[canal]
+  if (enviados >= tope) return 'tope'
+  return enviados >= tope - 3 ? 'cerca' : 'bien'
+}
+
 export interface MensajeVars {
   nombre: string
   empresa: string
