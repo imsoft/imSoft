@@ -108,7 +108,8 @@ export async function messageIdHeader(userId: string, messageId: string): Promis
 
 /**
  * Que hay en el hilo aparte de lo que mandamos: una respuesta del prospecto, un aviso de
- * rebote o nada. Si hay respuesta real, gana aunque tambien haya rebotes.
+ * rebote o nada. Si hay respuesta real, gana aunque tambien haya rebotes. Los avisos de
+ * demora no cuentan: Gmail reintenta hasta 48 h y el correo todavia puede llegar.
  */
 export async function estadoDelHilo(userId: string, threadId: string): Promise<'respuesta' | 'rebote' | null> {
   const { token, email } = await accessToken(userId)

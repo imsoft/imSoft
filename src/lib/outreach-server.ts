@@ -55,7 +55,9 @@ export async function dominioRecibeCorreo(email: string | null | undefined, reso
   const dominio = dominioDeCorreo(email)
   if (!dominio) return false
   try {
-    return (await resolver(dominio)).length > 0
+    const mx = (await resolver(dominio)) as Array<{ exchange?: string }>
+    // MX nulo (".") o apuntando a la propia maquina: el dominio declara que no recibe correo.
+    return mx.some((r) => { const h = (r.exchange ?? '').toLowerCase().replace(/\.$/, ''); return h !== '' && h !== 'localhost' })
   } catch (err) {
     const code = (err as { code?: string }).code
     return !(code === 'ENOTFOUND' || code === 'ENODATA')

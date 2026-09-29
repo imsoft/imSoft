@@ -95,6 +95,9 @@ describe('el dominio recibe correo', () => {
     expect(await dominioRecibeCorreo('info@gombienesraices.com', noExiste)).toBe(false)
     expect(await dominioRecibeCorreo('a@x.mx', async () => { throw Object.assign(new Error('x'), { code: 'ENODATA' }) })).toBe(false)
     expect(await dominioRecibeCorreo('a@x.mx', async () => [])).toBe(false)
+    // MX nulo o a localhost: el dominio dice que no recibe correo.
+    expect(await dominioRecibeCorreo('a@x.mx', async () => [{ exchange: '', priority: 0 }])).toBe(false)
+    expect(await dominioRecibeCorreo('a@x.mx', async () => [{ exchange: 'localhost', priority: 0 }])).toBe(false)
     expect(await dominioRecibeCorreo('a@x.mx', async () => { throw Object.assign(new Error('x'), { code: 'ETIMEOUT' }) })).toBe(true)
     expect(await dominioRecibeCorreo('no-es-correo', noExiste)).toBe(false)
   })

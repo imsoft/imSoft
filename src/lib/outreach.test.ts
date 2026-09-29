@@ -113,6 +113,9 @@ describe('rebotes', () => {
     expect(tipoDeMensajeAjeno('Microsoft Outlook <MicrosoftExchange329e71ec88ae4615bbc36ab6ce41109e@x.onmicrosoft.com>')).toBe('rebote');
     expect(tipoDeMensajeAjeno('Sistema <sistema@x.mx>', 'Mensaje no entregado')).toBe('rebote');
     expect(tipoDeMensajeAjeno('Héctor Gil <hector@gilygil.mx>', 'Re: Software para la operación')).toBe('respuesta');
+    // Gmail avisa primero de la demora y sigue intentando: eso todavia no es un rebote.
+    expect(tipoDeMensajeAjeno('Mail Delivery Subsystem <mailer-daemon@googlemail.com>', 'Delivery Status Notification (Delay)')).toBe('demora');
+    expect(tipoDeMensajeAjeno('Mail Delivery Subsystem <mailer-daemon@googlemail.com>', 'Delivery Status Notification (Failure)')).toBe('rebote');
   });
 
   it('saca el dominio del correo', () => {

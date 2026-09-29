@@ -301,9 +301,11 @@ export function segmentoDe(tags: string[] | null | undefined): string | null {
  * Los rebotes llegan en el mismo hilo desde mailer-daemon y se contaban como respuesta
  * (Grupo EI salio como "respondio" en sep-2026 cuando su correo no existia).
  */
-export function tipoDeMensajeAjeno(from: string, subject = ''): 'rebote' | 'respuesta' {
+export function tipoDeMensajeAjeno(from: string, subject = ''): 'rebote' | 'demora' | 'respuesta' {
   const f = from.toLowerCase();
   const asunto = subject.toLowerCase();
+  // "Delivery Status Notification (Delay)": Gmail sigue intentando; aun no es un rebote.
+  if (/\(delay\)|delivery delayed|entrega retrasada|delayed mail/.test(asunto)) return 'demora';
   if (/mailer-daemon|postmaster@|mail delivery (subsystem|system)|microsoftexchange|no-?reply@.*(bounce)/.test(f)) return 'rebote';
   if (/delivery status notification|undeliverable|undelivered mail|returned mail|delivery failure|failure notice|no se pudo entregar|entrega fallida|mensaje no entregado/.test(asunto)) return 'rebote';
   return 'respuesta';
