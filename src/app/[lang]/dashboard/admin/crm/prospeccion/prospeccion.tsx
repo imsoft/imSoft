@@ -73,7 +73,16 @@ export function Prospeccion({ lang, gmail, gmailConfigurado, campana, redes, fil
   }, [sp, es])
 
   const hoy = campana.hoy
-  const borradores = useMemo(() => filas.filter((f) => f.status === 'draft'), [filas])
+  /**
+   * Correos que ya salieron en el envio en lote en curso. Durante el lote NO se pide la
+   * pagina de nuevo al servidor: si en ese momento hay una version nueva del sitio, Next
+   * recarga la pestaña entera y el lote se corta (paso el 30-sep-2026 tras el primer envio).
+   */
+  const [yaSalieron, setYaSalieron] = useState<Set<string>>(new Set())
+  const salieronSinRefrescar = useMemo(() => filas.filter((f) => f.status === 'draft' && yaSalieron.has(f.id)).length, [filas, yaSalieron])
+  const borradores = useMemo(() => filas.filter((f) => f.status === 'draft' && !yaSalieron.has(f.id)), [filas, yaSalieron])
+  /** Lo que queda del tope de hoy, descontando lo que ya salio en el lote en curso. */
+  const restan = Math.max(0, campana.restanHoy - salieronSinRefrescar)
   const deHoy = borradores.filter((f) => f.scheduled_for <= hoy)
   const futuros = borradores.filter((f) => f.scheduled_for > hoy)
   const enCurso = filas.filter((f) => f.status === 'sent')
@@ -131,10 +140,17 @@ export function Prospeccion({ lang, gmail, gmailConfigurado, campana, redes, fil
   const [previa, setPrevia] = useState(0)
   const [fuera, setFuera] = useState<Set<string>>(new Set())
 
+  useEffect(() => {
+    if (!lote) return
+    const avisar = (e: BeforeUnloadEvent) => { e.preventDefault() }
+    window.addEventListener('beforeunload', avisar)
+    return () => window.removeEventListener('beforeunload', avisar)
+  }, [lote])
+
   async function enviarTodos() {
     setConfirmarLote(false)
     // Foto de la lista al empezar: la pagina se refresca tras cada envio.
-    const lista = filas.filter((f) => f.status === 'draft' && f.scheduled_for <= campana.hoy && !fuera.has(f.id)).slice(0, campana.restanHoy)
+    const lista = filas.filter((f) => f.status === 'draft' && f.scheduled_for <= campana.hoy && !fuera.has(f.id) && !yaSalieron.has(f.id)).slice(0, restan)
     if (lista.length === 0) return
     detener.current = false
     setOcupado('lote')
@@ -149,7 +165,7 @@ export function Prospeccion({ lang, gmail, gmailConfigurado, campana, redes, fil
         const j = await r.json().catch(() => ({}))
         if (!r.ok) throw new Error(j.error || r.statusText)
         enviados += 1
-        router.refresh()
+        setYaSalieron((prev) => new Set(prev).add(f.id))
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err)
         errores.push(`${f.empresa || f.email}: ${msg}`)
@@ -224,7 +240,7 @@ export function Prospeccion({ lang, gmail, gmailConfigurado, campana, redes, fil
     }
   }
 
-  const puedeEnviar = Boolean(gmail) && campana.restanHoy > 0
+  const puedeEnviar = Boolean(gmail) && restan > 0
 
   return (
     <div className="space-y-6">
@@ -250,7 +266,7 @@ export function Prospeccion({ lang, gmail, gmailConfigurado, campana, redes, fil
         <Card>
           <CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">{es ? 'Hoy' : 'Today'}</CardTitle></CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold tabular-nums">{campana.enviadosHoy} <span className="text-base font-normal text-muted-foreground">/ {campana.tope}</span></p>
+            <p className="text-3xl font-bold tabular-nums">{campana.enviadosHoy + salieronSinRefrescar} <span className="text-base font-normal text-muted-foreground">/ {campana.tope}</span></p>
             <p className="text-sm text-muted-foreground">{es ? `Tope de la rampa (día ${campana.diasDesdePrimerEnvio + 1} de la campaña). Reparte los envíos a lo largo del día.` : `Ramp cap (campaign day ${campana.diasDesdePrimerEnvio + 1}). Spread sends through the day.`}</p>
           </CardContent>
         </Card>
@@ -283,7 +299,7 @@ export function Prospeccion({ lang, gmail, gmailConfigurado, campana, redes, fil
         <Button onClick={generar} disabled={ocupado !== null || sinContactar === 0}><Sparkles className="mr-2 h-4 w-4" />{ocupado === 'drafts' ? (es ? 'Generando…' : 'Generating…') : es ? 'Generar borradores' : 'Generate drafts'}</Button>
         <Button variant="outline" onClick={sincronizar} disabled={ocupado !== null || !gmail}><RefreshCw className="mr-2 h-4 w-4" />{ocupado === 'sync' ? (es ? 'Sincronizando…' : 'Syncing…') : es ? 'Buscar respuestas y seguimientos' : 'Check replies and follow-ups'}</Button>
         {deHoy.length > 1 && (
-          <Button variant="outline" onClick={() => { setPrevia(0); setFuera(new Set()); setConfirmarLote(true) }} disabled={ocupado !== null || !puedeEnviar}><Send className="mr-2 h-4 w-4" />{es ? `Enviar todos (${Math.min(deHoy.length, campana.restanHoy)})` : `Send all (${Math.min(deHoy.length, campana.restanHoy)})`}</Button>
+          <Button variant="outline" onClick={() => { setPrevia(0); setFuera(new Set()); setConfirmarLote(true) }} disabled={ocupado !== null || !puedeEnviar}><Send className="mr-2 h-4 w-4" />{es ? `Enviar todos (${Math.min(deHoy.length, restan)})` : `Send all (${Math.min(deHoy.length, restan)})`}</Button>
         )}
       </div>
 
@@ -403,8 +419,8 @@ export function Prospeccion({ lang, gmail, gmailConfigurado, campana, redes, fil
       <Dialog open={confirmarLote} onOpenChange={setConfirmarLote}>
         <DialogContent className="sm:max-w-3xl">
           {(() => {
-            const candidatos = deHoy.slice(0, campana.restanHoy + fuera.size).filter((f, i, all) => all.indexOf(f) === i)
-            const aEnviar = candidatos.filter((f) => !fuera.has(f.id)).slice(0, campana.restanHoy)
+            const candidatos = deHoy.slice(0, restan + fuera.size).filter((f, i, all) => all.indexOf(f) === i)
+            const aEnviar = candidatos.filter((f) => !fuera.has(f.id)).slice(0, restan)
             const idx = Math.min(previa, Math.max(0, candidatos.length - 1))
             const f = candidatos[idx]
             const excluido = f ? fuera.has(f.id) : false
@@ -436,7 +452,7 @@ export function Prospeccion({ lang, gmail, gmailConfigurado, campana, redes, fil
                     <p className="text-xs text-muted-foreground">{es ? 'Para corregir el texto, cierra esta ventana y abre el correo desde la lista. Un correo dejado fuera se queda como borrador.' : 'To edit the text, close this window and open the email from the list.'}</p>
                   </div>
                 )}
-                {deHoy.length > campana.restanHoy && <p className="text-sm text-amber-600">{es ? `Hoy solo caben ${campana.restanHoy} por el tope diario; los demás quedan para mañana.` : `Only ${campana.restanHoy} fit in today's cap.`}</p>}
+                {deHoy.length > restan && <p className="text-sm text-amber-600">{es ? `Hoy solo caben ${restan} por el tope diario; los demás quedan para mañana.` : `Only ${restan} fit in today's cap.`}</p>}
                 <DialogFooter>
                   <Button variant="outline" onClick={() => setConfirmarLote(false)}>{es ? 'Todavía no' : 'Not yet'}</Button>
                   <Button onClick={enviarTodos} disabled={aEnviar.length === 0}><Send className="mr-2 h-4 w-4" />{es ? `Enviar ${aEnviar.length}` : `Send ${aEnviar.length}`}</Button>
