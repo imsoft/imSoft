@@ -15,6 +15,29 @@ export function puedeRecibirCorreo(c: { email?: string | null; tags?: string[] |
   return !c.correo || c.correo.tipo === 'ninguno' || c.correo.tipo === 'borrador'
 }
 
+export interface CupoDeHoy {
+  /** Tope diario de la rampa (15, 25 o 40). */
+  tope: number
+  enviadosHoy: number
+  /** Borradores ya escritos que esperan envio hoy. */
+  enEspera: number
+  /** Cuantos correos nuevos caben hoy, contando lo enviado y lo que ya espera. */
+  caben: number
+}
+
+/** Lo que queda del tope diario para correos nuevos. */
+export function cupoDeHoy(tope: number, enviadosHoy: number, enEspera: number): CupoDeHoy {
+  return { tope, enviadosHoy, enEspera, caben: Math.max(0, tope - enviadosHoy - enEspera) }
+}
+
+/** Aviso cuando se eligen mas contactos de los que caben hoy; null si caben todos. */
+export function avisoDeCupo(elegidos: number, cupo: CupoDeHoy): string | null {
+  if (elegidos <= cupo.caben) return null
+  if (cupo.caben === 0) return 'El límite de hoy ya está lleno con lo enviado y los borradores en espera: lo que prepares queda como borrador para mañana.'
+  const sobran = elegidos - cupo.caben
+  return `Elegiste ${elegidos} y hoy caben ${cupo.caben}: ${sobran === 1 ? 'el otro queda' : `los otros ${sobran} quedan`} como borrador para mañana.`
+}
+
 export const PAUSA_MIN_MS = 20_000
 export const PAUSA_MAX_MS = 45_000
 

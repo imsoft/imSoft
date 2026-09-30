@@ -32,7 +32,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { ETIQUETA_PLATAFORMA, PLATAFORMAS } from '@/lib/contact-socials'
-import { puedeRecibirCorreo } from '@/lib/envio-lote'
+import { puedeRecibirCorreo, type CupoDeHoy } from '@/lib/envio-lote'
 import { CorreosEnLote } from '@/components/crm/correos-en-lote'
 import {
   Select,
@@ -55,12 +55,15 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
   lang: string
+  /** Tope diario de correos y cuanto queda hoy, para la barra de envio en lote. */
+  cupo?: CupoDeHoy
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   lang,
+  cupo,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
@@ -260,6 +263,7 @@ export function DataTable<TData, TValue>({
       </div>
       <CorreosEnLote
         lang={lang}
+        cupo={cupo}
         elegidos={Object.keys(rowSelection).filter((id) => (rowSelection as Record<string, boolean>)[id]).map((id) => {
           const c = (data as Array<{ id: string; company?: string | null; email?: string | null }>).find((x) => x.id === id)
           return { id, nombre: c?.company || c?.email || id }
