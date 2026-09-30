@@ -191,6 +191,8 @@ export interface Contact {
   email?: string
   additional_emails?: string[]
   invalid_emails?: string[]
+  /** En que va su secuencia de correos; lo calcula la pagina del CRM, no es columna. */
+  correo?: import('@/lib/estado-correo').EstadoCorreo
   phone?: string
   additional_phones?: string[]
   company?: string

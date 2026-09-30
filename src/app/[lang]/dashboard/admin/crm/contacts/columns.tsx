@@ -22,6 +22,7 @@ import { prepararCorreo } from '@/components/crm/preparar-correo'
 import { pasaFiltroRedes, redesDe } from '@/lib/contact-socials'
 import { canalesDe } from '@/lib/mensaje-red'
 import { correoInvalido } from '@/lib/correo-invalido'
+import { accionDeCorreo, etiquetaDeCorreo, type EstadoCorreo } from '@/lib/estado-correo'
 import { Checkbox } from '@/components/ui/checkbox'
 import { MensajeRedDialog } from '@/components/crm/mensaje-red-dialog'
 import { contactName } from '@/lib/contact-name'
@@ -71,11 +72,14 @@ const Tiktok = (props: React.HTMLAttributes<SVGElement>) => (
 function EmailCell({
   email,
   invalido,
+  estado,
   lang,
 }: {
   email?: string
   /** Rebotó, su dominio no recibe correo o se marcó a mano (ver correoInvalido). */
   invalido: boolean
+  /** En que va su secuencia de correos: enviado, seguimiento pendiente, respondio... */
+  estado?: EstadoCorreo
   lang: string
 }) {
   const [copied, setCopied] = useState(false)
@@ -102,8 +106,13 @@ function EmailCell({
     }
   }
 
+  const hoy = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Mexico_City' })
+  const linea = !isInvalid && estado ? etiquetaDeCorreo(estado, hoy) : null
+  const urge = estado?.tipo === 'enviado' && estado.tocaEl <= hoy
+
   return (
-    <div className="flex min-w-0 max-w-[min(20rem,50vw)] items-center gap-2">
+    <div className="min-w-0 max-w-[min(22rem,50vw)]">
+    <div className="flex min-w-0 items-center gap-2">
       {isInvalid ? (
         <span title={lang === 'en' ? 'Email no longer exists / Bounced' : 'El correo no existe / Rebotado'}>
           <AlertTriangle className="size-4 shrink-0 text-red-500" />
@@ -142,6 +151,12 @@ function EmailCell({
           <Copy className="h-3 w-3" />
         )}
       </Button>
+    </div>
+      {linea && (
+        <p className={`mt-0.5 truncate pl-6 text-xs ${estado?.tipo === 'respondio' ? 'font-medium text-emerald-600' : urge ? 'font-medium text-amber-600' : 'text-muted-foreground'}`} title={linea}>
+          {linea}
+        </p>
+      )}
     </div>
   )
 }
@@ -372,7 +387,7 @@ export function createColumns({ lang, onDelete, isDeleting }: ColumnsProps): Col
           disabled={!row.getCanSelect()}
           onCheckedChange={(v) => row.toggleSelected(Boolean(v))}
           aria-label={lang === 'en' ? 'Select contact' : 'Elegir contacto'}
-          title={row.getCanSelect() ? undefined : lang === 'en' ? 'No valid email' : 'Sin correo válido'}
+          title={row.getCanSelect() ? undefined : lang === 'en' ? 'No valid email, or already emailed' : 'Sin correo válido, o ya se le escribió'}
         />
       ),
     },
@@ -441,6 +456,7 @@ export function createColumns({ lang, onDelete, isDeleting }: ColumnsProps): Col
           <EmailCell
             email={row.original.email}
             invalido={correoInvalido(row.original)}
+            estado={row.original.correo}
             lang={lang}
           />
         )
@@ -531,6 +547,7 @@ export function createColumns({ lang, onDelete, isDeleting }: ColumnsProps): Col
 function AccionesCell({ contact, lang, onDelete, isDeleting }: { contact: Contact; lang: string; onDelete: (id: string) => void; isDeleting: string | null }) {
   const [mensajeAbierto, setMensajeAbierto] = useState(false)
   const puedeMensaje = canalesDe(contact).length > 0
+  const accion = accionDeCorreo(contact.correo ?? { tipo: 'ninguno' })
   return (
     <>
       {puedeMensaje && (
@@ -552,10 +569,16 @@ function AccionesCell({ contact, lang, onDelete, isDeleting }: { contact: Contac
                   {lang === 'en' ? 'View' : 'Ver'}
                 </Link>
               </DropdownMenuItem>
-              {contact.email && !correoInvalido(contact) && (
-                <DropdownMenuItem onClick={async () => { const url = await prepararCorreo(contact.id, lang); if (url) window.location.assign(url) }}>
+              {contact.email && !correoInvalido(contact) && accion && (
+                <DropdownMenuItem onClick={async () => { const url = await prepararCorreo(contact.id, lang, { seguimiento: accion === 'seguimiento' }); if (url) window.location.assign(url) }}>
                   <Mail className="mr-2 h-4 w-4" />
-                  {lang === 'en' ? 'Write email' : 'Escribir correo'}
+                  {accion === 'seguimiento' ? (lang === 'en' ? 'Write follow-up' : 'Escribir seguimiento') : accion === 'abrir-borrador' ? (lang === 'en' ? 'Open draft' : 'Abrir borrador') : lang === 'en' ? 'Write email' : 'Escribir correo'}
+                </DropdownMenuItem>
+              )}
+              {contact.email && !correoInvalido(contact) && !accion && (
+                <DropdownMenuItem disabled>
+                  <Mail className="mr-2 h-4 w-4" />
+                  {contact.correo?.tipo === 'respondio' ? (lang === 'en' ? 'Replied: answer in Gmail' : 'Respondió: contéstale en Gmail') : lang === 'en' ? 'Sequence finished' : 'Secuencia terminada'}
                 </DropdownMenuItem>
               )}
               {correoInvalido(contact) && (

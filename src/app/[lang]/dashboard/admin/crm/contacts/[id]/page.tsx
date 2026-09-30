@@ -14,6 +14,8 @@ import { PrepararCorreoButton } from '@/components/crm/preparar-correo-button'
 import { MensajeRedButton } from '@/components/crm/mensaje-red-button'
 import { canalesDe } from '@/lib/mensaje-red'
 import { correoInvalido } from '@/lib/correo-invalido'
+import { serviceClient } from '@/lib/quotes/server'
+import { accionDeCorreo, estadoDeCorreo, etiquetaDeCorreo, type FilaCorreo } from '@/lib/estado-correo'
 
 // Local SVG brand icons to avoid compilation issues due to lucide-react versions
 const Instagram = (props: React.HTMLAttributes<SVGElement>) => (
@@ -88,6 +90,12 @@ export default async function ContactDetailPage({ params }: {
     notFound()
   }
 
+  // En que va su secuencia de correos, para ofrecer escribir, abrir el borrador o dar seguimiento.
+  const { data: correos } = await serviceClient().from('outreach_emails').select('id, step, status, sent_at').eq('contact_id', id)
+  const estadoCorreo = estadoDeCorreo((correos ?? []) as FilaCorreo[])
+  const accionCorreo = accionDeCorreo(estadoCorreo)
+  const lineaCorreo = etiquetaDeCorreo(estadoCorreo, new Date().toLocaleDateString('en-CA', { timeZone: 'America/Mexico_City' }))
+
   const getContactTypeLabel = (type: string) => {
     const labels: Record<string, { en: string; es: string }> = {
       lead: { en: 'Lead', es: 'Lead' },
@@ -144,7 +152,10 @@ export default async function ContactDetailPage({ params }: {
           </div>
         </div>
         <div className="flex gap-2">
-          {contact.email && !correoInvalido(contact) && <PrepararCorreoButton contactId={id} lang={lang} />}
+          {contact.email && !correoInvalido(contact) && accionCorreo && <PrepararCorreoButton contactId={id} lang={lang} accion={accionCorreo} />}
+          {contact.email && !correoInvalido(contact) && lineaCorreo && (
+            <span className="inline-flex items-center rounded-md border px-3 text-sm text-muted-foreground">{lineaCorreo}</span>
+          )}
           {correoInvalido(contact) && (
             <span className="inline-flex items-center rounded-md border border-red-500/40 bg-red-500/10 px-3 text-sm font-medium text-red-600 dark:text-red-400" title={lang === 'en' ? 'The email bounced or its domain does not receive mail' : 'El correo rebotó o su dominio no recibe correo'}>
               {lang === 'en' ? 'Invalid email' : 'Correo inválido'}

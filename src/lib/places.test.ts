@@ -130,5 +130,7 @@ describe('buscador de prospectos (Places)', () => {
     expect(extraerCorreo('<p>privacidad@sellorojo.com.mx</p>', 'sellorojo.com.mx')).toBeNull()
     expect(extraerCorreo('facturacion@x.mx rh@x.mx ventas@x.mx', 'x.mx')).toBe('ventas@x.mx')
     expect(extraerCorreo('vacantes@x.mx datos-personales@x.mx', 'x.mx')).toBeNull()
+    // Correos de relleno de plantillas web (se le escribio a uno asi el 29-sep-2026).
+    expect(extraerCorreo('support@demoagency.com info@yourdomain.com', 'supermaynuez.mx')).toBeNull()
   })
 })

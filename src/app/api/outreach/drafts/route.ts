@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => ({}))
   const limite = Math.min(50, Math.max(1, Number(body.limite) || 15))
   try {
-    if (typeof body.contactId === 'string') return NextResponse.json(await crearBorradorParaContacto(serviceClient(), body.contactId))
+    if (typeof body.contactId === 'string') return NextResponse.json(await crearBorradorParaContacto(serviceClient(), body.contactId, { seguimiento: body.seguimiento === true }))
     const r = await crearBorradoresPaso1(serviceClient(), limite, typeof body.campaign === 'string' ? body.campaign : null)
     return NextResponse.json(r)
   } catch (err) {

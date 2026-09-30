@@ -49,7 +49,7 @@ export function ContactCard({ contact, lang }: ContactCardProps) {
     }
 
     setIsSendingEmail(true)
-    prepararCorreo(contact.id, lang).then((url) => { setIsSendingEmail(false); if (url) router.push(url) })
+    prepararCorreo(contact.id, lang, { seguimiento: true }).then((url) => { setIsSendingEmail(false); if (url) router.push(url) })
   }
 
   const getStatusColor = (status: string) => {

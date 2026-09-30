@@ -6,7 +6,7 @@ import { Mail } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { prepararCorreo } from './preparar-correo'
 
-export function PrepararCorreoButton({ contactId, lang, variant = 'outline' }: { contactId: string; lang: string; variant?: 'outline' | 'default' | 'ghost' }) {
+export function PrepararCorreoButton({ contactId, lang, variant = 'outline', accion = 'escribir' }: { contactId: string; lang: string; variant?: 'outline' | 'default' | 'ghost'; accion?: 'escribir' | 'abrir-borrador' | 'seguimiento' }) {
   const router = useRouter()
   const [ocupado, setOcupado] = useState(false)
   return (
@@ -15,13 +15,13 @@ export function PrepararCorreoButton({ contactId, lang, variant = 'outline' }: {
       disabled={ocupado}
       onClick={async () => {
         setOcupado(true)
-        const url = await prepararCorreo(contactId, lang)
+        const url = await prepararCorreo(contactId, lang, { seguimiento: accion === 'seguimiento' })
         setOcupado(false)
         if (url) router.push(url)
       }}
     >
       <Mail className="mr-2 h-4 w-4" />
-      {ocupado ? (lang === 'en' ? 'Preparing…' : 'Preparando…') : lang === 'en' ? 'Write email' : 'Escribir correo'}
+      {ocupado ? (lang === 'en' ? 'Preparing…' : 'Preparando…') : accion === 'seguimiento' ? (lang === 'en' ? 'Write follow-up' : 'Escribir seguimiento') : accion === 'abrir-borrador' ? (lang === 'en' ? 'Open draft' : 'Abrir borrador') : lang === 'en' ? 'Write email' : 'Escribir correo'}
     </Button>
   )
 }

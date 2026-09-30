@@ -97,7 +97,7 @@ export function DataTable<TData, TValue>({
     onRowSelectionChange: setRowSelection,
     // La seleccion se guarda por id del contacto para que sobreviva a filtros y paginas.
     getRowId: (row) => (row as { id: string }).id,
-    enableRowSelection: (row) => puedeRecibirCorreo(row.original as { email?: string | null; tags?: string[] | null; invalid_emails?: string[] | null }),
+    enableRowSelection: (row) => puedeRecibirCorreo(row.original as { email?: string | null; tags?: string[] | null; invalid_emails?: string[] | null; correo?: { tipo: string } | null }),
     onPaginationChange: setPagination,
     autoResetPageIndex: false,
     state: {

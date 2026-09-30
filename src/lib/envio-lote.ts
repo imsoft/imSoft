@@ -5,9 +5,14 @@
  */
 import { correoInvalido } from './correo-invalido.ts'
 
-/** Se le puede preparar un correo: tiene correo y no esta marcado como invalido. */
-export function puedeRecibirCorreo(c: { email?: string | null; tags?: string[] | null; invalid_emails?: string[] | null }): boolean {
-  return Boolean((c.email ?? '').trim()) && !correoInvalido(c)
+/**
+ * Se le puede preparar un correo en lote: tiene correo, no esta marcado como invalido y no
+ * se le ha escrito ya. Los seguimientos no van en lote: se dan uno por uno o desde
+ * "Buscar respuestas y seguimientos", que respeta las fechas.
+ */
+export function puedeRecibirCorreo(c: { email?: string | null; tags?: string[] | null; invalid_emails?: string[] | null; correo?: { tipo: string } | null }): boolean {
+  if (!(c.email ?? '').trim() || correoInvalido(c)) return false
+  return !c.correo || c.correo.tipo === 'ninguno' || c.correo.tipo === 'borrador'
 }
 
 export const PAUSA_MIN_MS = 20_000

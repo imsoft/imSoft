@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from 'vitest'
 vi.mock('@/lib/gmail/server', () => ({ enviarRaw: vi.fn(), estadoDelHilo: vi.fn(), messageIdHeader: vi.fn() }))
 vi.mock('@anthropic-ai/sdk', () => ({ default: class {} }))
 
-import { dominioRecibeCorreo, marcarEnviadoAMano, marcarRebote, registrarMensajeRed } from './outreach-server'
+import { crearBorradorParaContacto, dominioRecibeCorreo, marcarEnviadoAMano, marcarRebote, registrarMensajeRed } from './outreach-server'
 
 /**
  * Supabase falso: guarda que se actualizo/inserto en cada tabla y devuelve el borrador
@@ -100,5 +100,45 @@ describe('el dominio recibe correo', () => {
     expect(await dominioRecibeCorreo('a@x.mx', async () => [{ exchange: 'localhost', priority: 0 }])).toBe(false)
     expect(await dominioRecibeCorreo('a@x.mx', async () => { throw Object.assign(new Error('x'), { code: 'ETIMEOUT' }) })).toBe(true)
     expect(await dominioRecibeCorreo('no-es-correo', noExiste)).toBe(false)
+  })
+})
+
+describe('borrador para un contacto concreto', () => {
+  /** Supabase minimo: la lista de correos previos del contacto, el contacto y el insert del borrador. */
+  function db(previos: Array<Record<string, unknown>>) {
+    const inserts: Array<Record<string, unknown>> = []
+    const from = (tabla: string) => {
+      const q: Record<string, unknown> = {
+        select: () => q,
+        eq: () => q,
+        order: () => q,
+        maybeSingle: async () => ({ data: tabla === 'contacts' ? { id: 'c1', first_name: 'Laura', email: 'laura@x.mx', company: 'Ferretería X', notes: null, tags: ['ferreteria'] } : null }),
+        insert: (v: Record<string, unknown>) => { inserts.push(v); return { select: () => ({ single: async () => ({ data: { id: 'nuevo' }, error: null }) }) } },
+        then: (ok: (v: unknown) => void) => ok({ data: tabla === 'outreach_emails' ? previos : null, error: null }),
+      }
+      return q
+    }
+    return { db: { from } as never, inserts }
+  }
+  const enviado = { id: 'e1', step: 1, status: 'sent', sent_at: '2026-09-24T19:14:00Z', gancho: 'Las cotizaciones se arman a mano.', campaign: 'ferreteria' }
+
+  it('si ya se le escribio, sin pedirlo no crea nada y dice cuando toca el seguimiento', async () => {
+    const { db: d, inserts } = db([enviado])
+    await expect(crearBorradorParaContacto(d, 'c1')).rejects.toThrow('Ya se le escribió el 24 sep; su seguimiento toca el 30 sep.')
+    expect(inserts).toEqual([])
+  })
+
+  it('pidiendo seguimiento crea el paso 2 con el mismo gancho y en el hilo de la campaña', async () => {
+    const { db: d, inserts } = db([enviado])
+    const r = await crearBorradorParaContacto(d, 'c1', { seguimiento: true })
+    expect(r).toMatchObject({ id: 'nuevo', existente: false, seguimiento: 1 })
+    expect(inserts[0]).toMatchObject({ contact_id: 'c1', step: 2, status: 'draft', gancho: 'Las cotizaciones se arman a mano.', campaign: 'ferreteria' })
+    expect(String(inserts[0].subject)).toMatch(/^Re: /)
+  })
+
+  it('con borrador pendiente devuelve ese; si respondio o termino la secuencia, no escribe', async () => {
+    expect(await crearBorradorParaContacto(db([enviado, { id: 'e2', step: 2, status: 'draft', sent_at: null }]).db, 'c1', { seguimiento: true })).toEqual({ id: 'e2', existente: true })
+    await expect(crearBorradorParaContacto(db([{ ...enviado, status: 'replied' }]).db, 'c1', { seguimiento: true })).rejects.toThrow('ya respondió')
+    await expect(crearBorradorParaContacto(db([{ ...enviado, status: 'closed' }]).db, 'c1', { seguimiento: true })).rejects.toThrow('no hay más seguimientos')
   })
 })

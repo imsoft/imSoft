@@ -6,6 +6,8 @@ import { Plus } from 'lucide-react'
 import Link from 'next/link'
 import { ContactsTable } from './contacts/contacts-table'
 import { CrmTabs } from './crm-tabs'
+import { serviceClient } from '@/lib/quotes/server'
+import { estadoDeCorreo, type FilaCorreo } from '@/lib/estado-correo'
 
 export default async function CRMPage({ params }: {
   params: Promise<{ lang: string }>
@@ -34,6 +36,13 @@ export default async function CRMPage({ params }: {
     .select('*')
     .order('created_at', { ascending: false })
 
+  // En que va la secuencia de correos de cada contacto, para mostrarlo en la tabla.
+  // outreach_emails solo lo lee el servidor (service role); el admin ya esta verificado.
+  const { data: correos } = await serviceClient().from('outreach_emails').select('id, contact_id, step, status, sent_at').limit(5000)
+  const porContacto = new Map<string, FilaCorreo[]>()
+  for (const f of (correos ?? []) as Array<FilaCorreo & { contact_id: string }>) porContacto.set(f.contact_id, [...(porContacto.get(f.contact_id) ?? []), f])
+  const conCorreo = (contacts || []).map((c) => ({ ...c, correo: estadoDeCorreo(porContacto.get(c.id) ?? []) }))
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -55,7 +64,7 @@ export default async function CRMPage({ params }: {
         </Button>
       </div>
       <CrmTabs lang={lang} activa="contactos" />
-      <ContactsTable contacts={contacts || []} dict={dict} lang={lang} />
+      <ContactsTable contacts={conCorreo} dict={dict} lang={lang} />
     </div>
   )
 }

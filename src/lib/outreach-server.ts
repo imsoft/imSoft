@@ -6,6 +6,7 @@ import { resolveMx } from 'node:dns/promises'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { enviarRaw, estadoDelHilo, messageIdHeader } from '@/lib/gmail/server'
 import { GANCHO_TOOL, ganchoDesdeNotas, limpiarGancho, promptGancho } from '@/lib/outreach-ai'
+import { estadoDeCorreo, fechaCorta, type FilaCorreo } from '@/lib/estado-correo'
 import { conteoPorCanal, renderMensajeRed, TOPE_DIARIO_CANAL, type Canal } from '@/lib/mensaje-red'
 import { dominioDeCorreo, construirMime, cuerpoDe, fechaSiguientePaso, renderDesdeCuerpo, renderOutreach, segmentoDe, topeDiario, type Step } from '@/lib/outreach'
 
@@ -115,14 +116,29 @@ export async function crearBorradoresPaso1(db: SupabaseClient, limite: number, c
 }
 
 /**
- * Borrador del primer correo para un contacto concreto (desde la tabla o la ficha),
- * sin importar su estado. Si ya tiene uno pendiente lo devuelve; si ya se le escribio, avisa.
+ * Borrador para un contacto concreto (desde la tabla o la ficha), sin importar su estado.
+ * Si ya tiene uno pendiente lo devuelve. Si ya se le escribio, solo crea el seguimiento
+ * cuando se pide expresamente (`seguimiento`): el envio en lote no debe adelantar
+ * seguimientos por accidente.
  */
-export async function crearBorradorParaContacto(db: SupabaseClient, contactId: string) {
-  const { data: previos } = await db.from('outreach_emails').select('id, step, status').eq('contact_id', contactId).order('step', { ascending: false })
-  const pendiente = (previos ?? []).find((r) => r.status === 'draft')
-  if (pendiente) return { id: pendiente.id as string, existente: true }
-  if ((previos ?? []).length) throw new Error('A este contacto ya se le escribió; los seguimientos se crean solos desde "Buscar respuestas y seguimientos".')
+export async function crearBorradorParaContacto(db: SupabaseClient, contactId: string, opts: { seguimiento?: boolean } = {}) {
+  const { data: previos } = await db.from('outreach_emails').select('id, step, status, sent_at, gancho, campaign').eq('contact_id', contactId).order('step', { ascending: false })
+  const estado = estadoDeCorreo((previos ?? []) as FilaCorreo[])
+  if (estado.tipo === 'borrador') return { id: estado.borradorId, existente: true }
+  if (estado.tipo === 'respondio') throw new Error('Este contacto ya respondió: contéstale desde Gmail, en el mismo hilo.')
+  if (estado.tipo === 'terminado') throw new Error('Ya se le mandaron los correos de la secuencia; no hay más seguimientos.')
+  if (estado.tipo === 'enviado') {
+    if (!opts.seguimiento) throw new Error(`Ya se le escribió el ${fechaCorta(estado.fecha)}; su seguimiento toca el ${fechaCorta(estado.tocaEl)}.`)
+    const { data: c } = await db.from('contacts').select(CONTACTO_COLS).eq('id', contactId).maybeSingle()
+    if (!c) throw new Error('Contacto no encontrado')
+    if ((c.tags ?? []).includes('correo-invalido')) throw new Error('El correo de este contacto está marcado como inválido')
+    const primero = (previos ?? []).find((r) => r.step === 1) ?? (previos ?? [])[0]
+    const gancho = ganchoDesdeNotas(primero?.gancho as string | null) ?? ganchoDesdeNotas(c.notes) ?? (await ganchoConIA(c as ContactoMin))
+    const r = renderOutreach(estado.siguientePaso, { nombre: nombreDe(c), empresa: c.company ?? '', gancho, segmento: segmentoDe(c.tags) })
+    const { data, error } = await db.from('outreach_emails').insert({ contact_id: c.id, step: estado.siguientePaso, status: 'draft', campaign: primero?.campaign ?? segmentoDe(c.tags), gancho, subject: r.subject, html: r.html, text: r.text, scheduled_for: hoyLocal() }).select('id').single()
+    if (error) throw new Error(error.message)
+    return { id: data.id as string, existente: false, seguimiento: estado.siguientePaso - 1, adelantado: estado.tocaEl > hoyLocal() ? estado.tocaEl : null }
+  }
   const { data: c } = await db.from('contacts').select(CONTACTO_COLS).eq('id', contactId).maybeSingle()
   if (!c) throw new Error('Contacto no encontrado')
   if (!c.email) throw new Error('El contacto no tiene correo')
