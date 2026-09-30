@@ -22,6 +22,7 @@ import { prepararCorreo } from '@/components/crm/preparar-correo'
 import { pasaFiltroRedes, redesDe } from '@/lib/contact-socials'
 import { canalesDe } from '@/lib/mensaje-red'
 import { correoInvalido } from '@/lib/correo-invalido'
+import { Checkbox } from '@/components/ui/checkbox'
 import { MensajeRedDialog } from '@/components/crm/mensaje-red-dialog'
 import { contactName } from '@/lib/contact-name'
 
@@ -352,6 +353,29 @@ interface ColumnsProps {
 
 export function createColumns({ lang, onDelete, isDeleting }: ColumnsProps): ColumnDef<Contact>[] {
   return [
+    // Casilla para elegir a quien prepararle correo en lote. Solo se puede marcar a quien
+    // tiene correo valido (ver enableRowSelection en la tabla).
+    {
+      id: 'select',
+      enableHiding: false,
+      enableSorting: false,
+      header: ({ table }) => (
+        <Checkbox
+          checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate')}
+          onCheckedChange={(v) => table.toggleAllPageRowsSelected(Boolean(v))}
+          aria-label={lang === 'en' ? 'Select everyone on this page with a valid email' : 'Elegir a todos los de esta página con correo válido'}
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          disabled={!row.getCanSelect()}
+          onCheckedChange={(v) => row.toggleSelected(Boolean(v))}
+          aria-label={lang === 'en' ? 'Select contact' : 'Elegir contacto'}
+          title={row.getCanSelect() ? undefined : lang === 'en' ? 'No valid email' : 'Sin correo válido'}
+        />
+      ),
+    },
     {
       accessorKey: 'name',
       header: ({ column }) => {

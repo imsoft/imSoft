@@ -1,15 +1,16 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Check, Copy, Mail, RefreshCw, Send, Sparkles, X } from 'lucide-react'
 import { cuerpoDe } from '@/lib/outreach'
+import { minutosDeLote, pausaEntreEnvios } from '@/lib/envio-lote'
 import { CANALES, ETIQUETA_CANAL, estadoDelTope, type Canal, type ConteoPorCanal } from '@/lib/mensaje-red'
 
 export interface FilaOutreach {
@@ -122,6 +123,52 @@ export function Prospeccion({ lang, gmail, gmailConfigurado, campana, redes, fil
     if (abierto?.id === f.id) setAbierto(null)
   }
 
+  // ----- Envio en lote: uno por uno, con pausa entre cada correo -----
+  const [confirmarLote, setConfirmarLote] = useState(false)
+  const [lote, setLote] = useState<{ i: number; total: number; actual: string; espera: number; enviados: number; errores: string[] } | null>(null)
+  const detener = useRef(false)
+
+  async function enviarTodos() {
+    setConfirmarLote(false)
+    // Foto de la lista al empezar: la pagina se refresca tras cada envio.
+    const lista = filas.filter((f) => f.status === 'draft' && f.scheduled_for <= campana.hoy).slice(0, campana.restanHoy)
+    if (lista.length === 0) return
+    detener.current = false
+    setOcupado('lote')
+    let enviados = 0
+    const errores: string[] = []
+    for (let i = 0; i < lista.length; i++) {
+      if (detener.current) break
+      const f = lista[i]
+      setLote({ i, total: lista.length, actual: f.empresa || f.email, espera: 0, enviados, errores })
+      try {
+        const r = await fetch(`/api/outreach/${f.id}/send`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' })
+        const j = await r.json().catch(() => ({}))
+        if (!r.ok) throw new Error(j.error || r.statusText)
+        enviados += 1
+        router.refresh()
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err)
+        errores.push(`${f.empresa || f.email}: ${msg}`)
+        // Tope del dia o Gmail desconectado: seguir solo daria el mismo error en cada uno.
+        if (/tope de hoy|Gmail/i.test(msg)) break
+      }
+      if (i < lista.length - 1 && !detener.current) {
+        const hasta = Date.now() + pausaEntreEnvios()
+        while (Date.now() < hasta && !detener.current) {
+          setLote({ i, total: lista.length, actual: lista[i + 1].empresa || lista[i + 1].email, espera: Math.ceil((hasta - Date.now()) / 1000), enviados, errores })
+          await new Promise((ok) => setTimeout(ok, 1000))
+        }
+      }
+    }
+    setLote(null)
+    setOcupado(null)
+    router.refresh()
+    const texto = es ? `${enviados} de ${lista.length} ${lista.length === 1 ? 'correo enviado' : 'correos enviados'}${detener.current ? ' (detenido)' : ''}` : `${enviados} of ${lista.length} emails sent`
+    if (errores.length) toast.error(texto, { description: errores.slice(0, 5).join('\n'), duration: 20_000 })
+    else toast.success(texto)
+  }
+
   async function saltar(f: FilaOutreach) {
     if (await llamar(`/api/outreach/${f.id}/skip`, `skip-${f.id}`, {})) toast.success(es ? 'Descartado' : 'Skipped')
     if (abierto?.id === f.id) setAbierto(null)
@@ -231,7 +278,22 @@ export function Prospeccion({ lang, gmail, gmailConfigurado, campana, redes, fil
       <div className="flex flex-wrap gap-2">
         <Button onClick={generar} disabled={ocupado !== null || sinContactar === 0}><Sparkles className="mr-2 h-4 w-4" />{ocupado === 'drafts' ? (es ? 'Generando…' : 'Generating…') : es ? 'Generar borradores' : 'Generate drafts'}</Button>
         <Button variant="outline" onClick={sincronizar} disabled={ocupado !== null || !gmail}><RefreshCw className="mr-2 h-4 w-4" />{ocupado === 'sync' ? (es ? 'Sincronizando…' : 'Syncing…') : es ? 'Buscar respuestas y seguimientos' : 'Check replies and follow-ups'}</Button>
+        {deHoy.length > 1 && (
+          <Button variant="outline" onClick={() => setConfirmarLote(true)} disabled={ocupado !== null || !puedeEnviar}><Send className="mr-2 h-4 w-4" />{es ? `Enviar todos (${Math.min(deHoy.length, campana.restanHoy)})` : `Send all (${Math.min(deHoy.length, campana.restanHoy)})`}</Button>
+        )}
       </div>
+
+      {lote && (
+        <div className="flex flex-wrap items-center gap-3 rounded-lg border border-primary/40 bg-primary/5 p-4 text-sm" role="status">
+          <span className="font-semibold tabular-nums">{es ? `Enviando ${lote.i + 1} de ${lote.total}` : `Sending ${lote.i + 1} of ${lote.total}`}</span>
+          <span className="min-w-0 flex-1 truncate text-muted-foreground">
+            {lote.espera > 0 ? (es ? `Siguiente: ${lote.actual} en ${lote.espera} s` : `Next: ${lote.actual} in ${lote.espera}s`) : lote.actual}
+            {' · '}{es ? `${lote.enviados} ${lote.enviados === 1 ? 'enviado' : 'enviados'}` : `${lote.enviados} sent`}{lote.errores.length > 0 && (es ? ` · ${lote.errores.length} con error` : ` · ${lote.errores.length} failed`)}
+          </span>
+          <span className="text-xs text-muted-foreground">{es ? 'No cierres esta pestaña.' : 'Keep this tab open.'}</span>
+          <Button size="sm" variant="outline" onClick={() => { detener.current = true }}>{es ? 'Detener' : 'Stop'}</Button>
+        </div>
+      )}
 
       <Cola titulo={es ? `Para enviar hoy (${deHoy.length})` : `To send today (${deHoy.length})`} filas={deHoy} vacio={es ? 'Nada pendiente. Genera borradores o sincroniza para ver seguimientos.' : 'Nothing pending.'} abrir={abrir} enviar={enviar} saltar={saltar} ocupado={ocupado} puedeEnviar={puedeEnviar} es={es} />
       {futuros.length > 0 && <Cola titulo={es ? `Programados (${futuros.length})` : `Scheduled (${futuros.length})`} filas={futuros} vacio="" abrir={abrir} enviar={enviar} saltar={saltar} ocupado={ocupado} puedeEnviar={puedeEnviar} es={es} />}
@@ -300,6 +362,25 @@ export function Prospeccion({ lang, gmail, gmailConfigurado, campana, redes, fil
               })()}
             </>
           )}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={confirmarLote} onOpenChange={setConfirmarLote}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>{es ? `Enviar ${Math.min(deHoy.length, campana.restanHoy)} correos, uno por uno` : `Send ${Math.min(deHoy.length, campana.restanHoy)} emails, one by one`}</DialogTitle>
+            <DialogDescription>
+              {es
+                ? `Cada correo sale por Gmail con su propio texto, con una pausa de 20 a 45 segundos entre uno y otro. Tarda ${minutosDeLote(Math.min(deHoy.length, campana.restanHoy)) === 1 ? 'cerca de un minuto' : `unos ${minutosDeLote(Math.min(deHoy.length, campana.restanHoy))} minutos`} y necesita esta pestaña abierta. Puedes detenerlo en cualquier momento.`
+                : `Each email goes out through Gmail with its own text, 20 to 45 seconds apart. It takes about ${minutosDeLote(Math.min(deHoy.length, campana.restanHoy))} minutes and needs this tab open.`}
+            </DialogDescription>
+          </DialogHeader>
+          <p className="text-sm">{es ? 'Se envían tal como están en "Para enviar hoy". Si no los has revisado, ábrelos antes: un correo enviado no se puede recuperar.' : 'They are sent exactly as shown in "To send today". Review them first: a sent email cannot be recalled.'}</p>
+          {deHoy.length > campana.restanHoy && <p className="text-sm text-amber-600">{es ? `Hoy solo caben ${campana.restanHoy} por el tope diario; los demás quedan para mañana.` : `Only ${campana.restanHoy} fit in today's cap.`}</p>}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setConfirmarLote(false)}>{es ? 'Todavía no' : 'Not yet'}</Button>
+            <Button onClick={enviarTodos}><Send className="mr-2 h-4 w-4" />{es ? 'Sí, enviar' : 'Yes, send'}</Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

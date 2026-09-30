@@ -32,6 +32,8 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { ETIQUETA_PLATAFORMA, PLATAFORMAS } from '@/lib/contact-socials'
+import { puedeRecibirCorreo } from '@/lib/envio-lote'
+import { CorreosEnLote } from '@/components/crm/correos-en-lote'
 import {
   Select,
   SelectContent,
@@ -93,6 +95,9 @@ export function DataTable<TData, TValue>({
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
+    // La seleccion se guarda por id del contacto para que sobreviva a filtros y paginas.
+    getRowId: (row) => (row as { id: string }).id,
+    enableRowSelection: (row) => puedeRecibirCorreo(row.original as { email?: string | null; tags?: string[] | null; invalid_emails?: string[] | null }),
     onPaginationChange: setPagination,
     autoResetPageIndex: false,
     state: {
@@ -253,6 +258,14 @@ export function DataTable<TData, TValue>({
           </div>
         </div>
       </div>
+      <CorreosEnLote
+        lang={lang}
+        elegidos={Object.keys(rowSelection).filter((id) => (rowSelection as Record<string, boolean>)[id]).map((id) => {
+          const c = (data as Array<{ id: string; company?: string | null; email?: string | null }>).find((x) => x.id === id)
+          return { id, nombre: c?.company || c?.email || id }
+        })}
+        limpiar={() => setRowSelection({})}
+      />
       <div className="max-w-full overflow-x-auto rounded-md border">
         <Table className="min-w-max w-full">
           <TableHeader>
