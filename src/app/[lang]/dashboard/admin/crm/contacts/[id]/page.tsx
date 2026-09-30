@@ -13,6 +13,7 @@ import { contactName } from '@/lib/contact-name'
 import { PrepararCorreoButton } from '@/components/crm/preparar-correo-button'
 import { MensajeRedButton } from '@/components/crm/mensaje-red-button'
 import { canalesDe } from '@/lib/mensaje-red'
+import { correoInvalido } from '@/lib/correo-invalido'
 
 // Local SVG brand icons to avoid compilation issues due to lucide-react versions
 const Instagram = (props: React.HTMLAttributes<SVGElement>) => (
@@ -143,7 +144,12 @@ export default async function ContactDetailPage({ params }: {
           </div>
         </div>
         <div className="flex gap-2">
-          {contact.email && <PrepararCorreoButton contactId={id} lang={lang} />}
+          {contact.email && !correoInvalido(contact) && <PrepararCorreoButton contactId={id} lang={lang} />}
+          {correoInvalido(contact) && (
+            <span className="inline-flex items-center rounded-md border border-red-500/40 bg-red-500/10 px-3 text-sm font-medium text-red-600 dark:text-red-400" title={lang === 'en' ? 'The email bounced or its domain does not receive mail' : 'El correo rebotó o su dominio no recibe correo'}>
+              {lang === 'en' ? 'Invalid email' : 'Correo inválido'}
+            </span>
+          )}
           {canalesDe(contact).length > 0 && <MensajeRedButton contacto={{ id, nombre: contactName(contact) || contact.company || '', social_links: contact.social_links, instagram_url: contact.instagram_url, phone: contact.phone }} lang={lang} />}
           <Button asChild>
             <Link href={`/${lang}/dashboard/admin/crm/contacts/${id}/edit`}>

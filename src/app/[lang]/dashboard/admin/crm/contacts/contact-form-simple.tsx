@@ -30,6 +30,7 @@ import { Contact, SocialLink } from '@/types/database'
 import { Plus, Trash2 } from 'lucide-react'
 import { SocialLinksEditor } from '@/components/crm/social-links-editor'
 import { AVISO_SIN_CONTACTO, formasDeContacto } from '@/lib/contact-socials'
+import { tagsTrasCambiarCorreo } from '@/lib/correo-invalido'
 
 const emailSchema = z.string().email('Correo inválido')
 
@@ -185,6 +186,8 @@ export function ContactFormSimple({ contact, lang, userId }: ContactFormProps) {
         email: values.email?.trim() || null,
         additional_emails: additionalEmails.length > 0 ? additionalEmails : null,
         invalid_emails: updatedInvalidEmails,
+        // Correo nuevo: todavia no ha rebotado, se le quita la marca de invalido.
+        ...(contact ? { tags: tagsTrasCambiarCorreo(contact.tags, contact.email, values.email) } : {}),
         phone: values.phone || null,
         additional_phones: additionalPhones.length > 0 ? additionalPhones : null,
         company: values.company || null,

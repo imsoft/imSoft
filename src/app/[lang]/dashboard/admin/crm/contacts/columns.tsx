@@ -21,6 +21,7 @@ import { createClient } from '@/lib/supabase/client'
 import { prepararCorreo } from '@/components/crm/preparar-correo'
 import { pasaFiltroRedes, redesDe } from '@/lib/contact-socials'
 import { canalesDe } from '@/lib/mensaje-red'
+import { correoInvalido } from '@/lib/correo-invalido'
 import { MensajeRedDialog } from '@/components/crm/mensaje-red-dialog'
 import { contactName } from '@/lib/contact-name'
 
@@ -68,17 +69,16 @@ const Tiktok = (props: React.HTMLAttributes<SVGElement>) => (
 
 function EmailCell({
   email,
-  invalidEmails,
+  invalido,
   lang,
 }: {
   email?: string
-  invalidEmails?: string[]
+  /** Rebotó, su dominio no recibe correo o se marcó a mano (ver correoInvalido). */
+  invalido: boolean
   lang: string
 }) {
   const [copied, setCopied] = useState(false)
-  const isInvalid = Boolean(email) && Array.isArray(invalidEmails) && invalidEmails.some(
-    (e) => e.toLowerCase() === email!.toLowerCase()
-  )
+  const isInvalid = invalido
 
   // Contacto de WhatsApp o Instagram: no tiene correo y no es un error.
   if (!email) {
@@ -105,7 +105,7 @@ function EmailCell({
     <div className="flex min-w-0 max-w-[min(20rem,50vw)] items-center gap-2">
       {isInvalid ? (
         <span title={lang === 'en' ? 'Email no longer exists / Bounced' : 'El correo no existe / Rebotado'}>
-          <AlertTriangle className="size-4 shrink-0 text-red-500 animate-pulse" />
+          <AlertTriangle className="size-4 shrink-0 text-red-500" />
         </span>
       ) : (
         <Mail className="size-4 shrink-0 text-muted-foreground" />
@@ -123,6 +123,11 @@ function EmailCell({
       >
         {email}
       </span>
+      {isInvalid && (
+        <span className="shrink-0 rounded-full border border-red-500/40 bg-red-500/10 px-2 py-0.5 text-[11px] font-medium text-red-600 dark:text-red-400">
+          {lang === 'en' ? 'Invalid' : 'Inválido'}
+        </span>
+      )}
       <Button
         variant="ghost"
         size="icon"
@@ -411,7 +416,7 @@ export function createColumns({ lang, onDelete, isDeleting }: ColumnsProps): Col
         return (
           <EmailCell
             email={row.original.email}
-            invalidEmails={row.original.invalid_emails}
+            invalido={correoInvalido(row.original)}
             lang={lang}
           />
         )
@@ -456,6 +461,15 @@ export function createColumns({ lang, onDelete, isDeleting }: ColumnsProps): Col
       cell: ({ row }) => {
         return <DescriptionCell description={row.original.notes} lang={lang} />
       },
+    },
+    // Columna oculta: existe solo para que el filtro "Tipo" tenga sobre que filtrar
+    // (sin ella el selector no hacia nada y la tabla avisaba que la columna no existe).
+    {
+      id: 'contact_type',
+      accessorKey: 'contact_type',
+      header: lang === 'en' ? 'Type' : 'Tipo',
+      enableHiding: false,
+      filterFn: (row, _id, value) => !value || value === 'all' || row.original.contact_type === value,
     },
     {
       id: 'socials',
@@ -514,10 +528,16 @@ function AccionesCell({ contact, lang, onDelete, isDeleting }: { contact: Contac
                   {lang === 'en' ? 'View' : 'Ver'}
                 </Link>
               </DropdownMenuItem>
-              {contact.email && (
+              {contact.email && !correoInvalido(contact) && (
                 <DropdownMenuItem onClick={async () => { const url = await prepararCorreo(contact.id, lang); if (url) window.location.assign(url) }}>
                   <Mail className="mr-2 h-4 w-4" />
                   {lang === 'en' ? 'Write email' : 'Escribir correo'}
+                </DropdownMenuItem>
+              )}
+              {correoInvalido(contact) && (
+                <DropdownMenuItem disabled className="text-red-600 dark:text-red-400">
+                  <AlertTriangle className="mr-2 h-4 w-4" />
+                  {lang === 'en' ? 'Invalid email: use social media' : 'Correo inválido: escríbele por redes'}
                 </DropdownMenuItem>
               )}
               {puedeMensaje && (

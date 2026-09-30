@@ -11,6 +11,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { prepararCorreo } from '@/components/crm/preparar-correo'
+import { correoInvalido } from '@/lib/correo-invalido'
 import type { Contact } from '@/types/database'
 import { contactName } from '@/lib/contact-name'
 
@@ -134,7 +135,7 @@ export function ContactCard({ contact, lang }: ContactCardProps) {
               {contact.email && (
                 <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                   <Mail className="h-3 w-3 shrink-0" />
-                  <span className="truncate">{contact.email}</span>
+                  <span className={`truncate ${correoInvalido(contact) ? 'text-red-500 line-through' : ''}`} title={correoInvalido(contact) ? (lang === 'en' ? 'Invalid email' : 'Correo inválido') : undefined}>{contact.email}</span>
                 </div>
               )}
               {contact.phone && (
@@ -150,7 +151,7 @@ export function ContactCard({ contact, lang }: ContactCardProps) {
               <Badge variant="outline" className={`text-xs ${getStatusColor(contact.status)}`}>
                 {getStatusLabel(contact.status)}
               </Badge>
-              {contact.email && contact.status !== 'no_contact' && (
+              {contact.email && !correoInvalido(contact) && contact.status !== 'no_contact' && (
                 <Button
                   variant="ghost"
                   size="sm"

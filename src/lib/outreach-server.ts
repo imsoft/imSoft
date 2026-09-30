@@ -66,7 +66,7 @@ export async function dominioRecibeCorreo(email: string | null | undefined, reso
 
 async function descartarSiNoRecibe(db: SupabaseClient, c: ContactoMin): Promise<boolean> {
   if (await dominioRecibeCorreo(c.email)) return false
-  await db.from('contacts').update({ tags: [...new Set([...(c.tags ?? []), 'correo-invalido'])], updated_at: new Date().toISOString() }).eq('id', c.id)
+  await db.from('contacts').update({ tags: [...new Set([...(c.tags ?? []), 'correo-invalido'])], ...(c.email ? { invalid_emails: [c.email.toLowerCase()] } : {}), updated_at: new Date().toISOString() }).eq('id', c.id)
   return true
 }
 
@@ -298,7 +298,9 @@ export async function marcarRebote(db: SupabaseClient, contactId: string, tags: 
   await db.from('outreach_emails').update({ status: 'closed', updated_at: ahora }).eq('contact_id', contactId).in('status', ['sent', 'replied'])
   await db.from('outreach_emails').update({ status: 'skipped', updated_at: ahora }).eq('contact_id', contactId).eq('status', 'draft')
   const nuevas = [...new Set([...(tags ?? []), 'correo-invalido'])]
-  await db.from('contacts').update({ tags: nuevas, updated_at: ahora }).eq('id', contactId)
+  const { data: c } = await db.from('contacts').select('email, invalid_emails').eq('id', contactId).maybeSingle()
+  const invalidos = [...new Set([...((c?.invalid_emails as string[] | null) ?? []), ...(c?.email ? [String(c.email).toLowerCase()] : [])])]
+  await db.from('contacts').update({ tags: nuevas, invalid_emails: invalidos, updated_at: ahora }).eq('id', contactId)
 }
 
 /** Registra como enviados a mano (paso 1) los contactos que ya se contactaron fuera del sistema. */
