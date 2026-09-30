@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { correoInvalido, tagsTrasCambiarCorreo } from './correo-invalido'
+import { buzonNoComercial, correoInvalido, tagsTrasCambiarCorreo } from './correo-invalido'
 
 describe('correo invalido', () => {
   it('lo es por etiqueta (rebote o dominio sin correo) o por la lista marcada a mano', () => {
@@ -19,5 +19,16 @@ describe('correo invalido', () => {
     expect(tagsTrasCambiarCorreo(['correo-invalido'], 'a@x.mx', 'nuevo@x.mx')).toBeNull()
     expect(tagsTrasCambiarCorreo(['logistica', 'correo-invalido'], 'a@x.mx', ' A@X.mx ')).toEqual(['logistica', 'correo-invalido'])
     expect(tagsTrasCambiarCorreo(null, 'a@x.mx', 'b@x.mx')).toBeNull()
+  })
+})
+
+describe('buzones no comerciales', () => {
+  it('privacidad, facturacion, RH y legal no son a quien venderle', () => {
+    for (const e of ['privacidad@x.mx', 'privacidaddatos@constructoramonte.com.mx', 'aviso.privacidad@x.mx', 'datos-personales@x.mx', 'facturacion@x.mx', 'rh@x.mx', 'legal@station24.com', 'vacantes.gdl@x.mx']) expect(buzonNoComercial(e), e).toBe(true)
+  })
+
+  it('los buzones normales y los que solo se parecen si pasan', () => {
+    for (const e of ['contacto@x.mx', 'ventas@x.mx', 'rhinos@x.mx', 'legalizaciones@x.mx', 'marco@x.mx', 'pagosyventas@x.mx', 'hola@privacidad.mx']) expect(buzonNoComercial(e), e).toBe(false)
+    expect(buzonNoComercial(null)).toBe(false)
   })
 })

@@ -3,6 +3,7 @@
  * La E/S (Places API, rastreo de sitios, Supabase) vive en src/lib/places-server.ts.
  */
 import type { CsvRow } from './import-contacts.ts'
+import { buzonNoComercial } from './correo-invalido.ts'
 
 /** Municipios de la zona metropolitana de Guadalajara con su centro aproximado. */
 export const MUNICIPIOS: Record<string, { nombre: string; lat: number; lng: number; radio: number }> = {
@@ -217,17 +218,11 @@ export function sinRepetidos(candidatos: Candidato[]): Candidato[] {
 const EMAIL_RE = /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/gi
 const CORREOS_BASURA = /(noreply|no-reply|donotreply|example|sentry|wixpress|godaddy|squarespace|shopify|wordpress|@2x|\.png$|\.jpg$|\.svg$|\.webp$|\.gif$|^(usuario|correo|email|nombre|tu-?correo|tu-?email|ejemplo|test)@|@(dominio|tudominio|ejemplo|correo|email|test|sitio|demoagency|yourdomain|yoursite|yourcompany|domain|company|mysite|website)\.)/i
 const PREFERIDOS = ['contacto', 'ventas', 'info', 'hola', 'informes', 'atencion', 'admin', 'direccion', 'gerencia']
-/**
- * Buzones que existen para otra cosa: datos personales (ARCO), facturacion, bolsa de
- * trabajo, quejas. Un correo de venta ahi no llega a nadie que decida (Sello Rojo solo
- * publicaba privacidad@).
- */
-const BUZONES_AJENOS = /^(privacidad|aviso-?de-?privacidad|datos-?personales|datospersonales|arco|derechos-?arco|proteccion-?de-?datos|transparencia|facturacion|facturas?|factura-?electronica|cfdi|cobranza|pagos|rh|rrhh|recursos-?humanos|reclutamiento|bolsa-?de-?trabajo|empleo|empleos|vacantes|cv|curriculum|talento|quejas|denuncias|etica|linea-?etica|compliance|legal|juridico|abuse|postmaster|webmaster)@/i
 
 /** Mejor correo de un HTML: del mismo dominio primero, luego el de prefijo mas util. */
 export function extraerCorreo(html: string, dominio: string | null): string | null {
   const texto = html.replace(/&#64;|&commat;/g, '@').replace(/\s*\[at\]\s*|\s*\(at\)\s*/gi, '@').replace(/\s*\[dot\]\s*|\s*\(dot\)\s*/gi, '.')
-  const todos = [...new Set((texto.match(EMAIL_RE) ?? []).map((e) => e.toLowerCase()))].filter((e) => !CORREOS_BASURA.test(e) && !BUZONES_AJENOS.test(e) && e.length < 80)
+  const todos = [...new Set((texto.match(EMAIL_RE) ?? []).map((e) => e.toLowerCase()))].filter((e) => !CORREOS_BASURA.test(e) && !buzonNoComercial(e) && e.length < 80)
   if (todos.length === 0) return null
   const puntaje = (e: string) => {
     const [local, dom] = e.split('@')

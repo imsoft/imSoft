@@ -7,6 +7,7 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 import { enviarRaw, estadoDelHilo, messageIdHeader } from '@/lib/gmail/server'
 import { GANCHO_TOOL, ganchoDesdeNotas, limpiarGancho, promptGancho } from '@/lib/outreach-ai'
 import { estadoDeCorreo, fechaCorta, type FilaCorreo } from '@/lib/estado-correo'
+import { buzonNoComercial } from '@/lib/correo-invalido'
 import { conteoPorCanal, renderMensajeRed, TOPE_DIARIO_CANAL, type Canal } from '@/lib/mensaje-red'
 import { dominioDeCorreo, construirMime, cuerpoDe, fechaSiguientePaso, renderDesdeCuerpo, renderOutreach, segmentoDe, topeDiario, type Step } from '@/lib/outreach'
 
@@ -66,7 +67,8 @@ export async function dominioRecibeCorreo(email: string | null | undefined, reso
 }
 
 async function descartarSiNoRecibe(db: SupabaseClient, c: ContactoMin): Promise<boolean> {
-  if (await dominioRecibeCorreo(c.email)) return false
+  // Buzon de privacidad, facturacion, RH o legal: existe, pero no es a quien escribirle.
+  if (!buzonNoComercial(c.email) && (await dominioRecibeCorreo(c.email))) return false
   await db.from('contacts').update({ tags: [...new Set([...(c.tags ?? []), 'correo-invalido'])], ...(c.email ? { invalid_emails: [c.email.toLowerCase()] } : {}), updated_at: new Date().toISOString() }).eq('id', c.id)
   return true
 }
@@ -100,7 +102,7 @@ export async function crearBorradoresPaso1(db: SupabaseClient, limite: number, c
   for (const c of candidatos) {
     try {
       if (await descartarSiNoRecibe(db, c)) {
-        errores.push(`${c.company ?? c.email}: el dominio de ${c.email} no recibe correo; se marcó como correo inválido`)
+        errores.push(`${c.company ?? c.email}: ${c.email} ${buzonNoComercial(c.email) ? 'es un buzón de privacidad, facturación, RH o legal' : 'está en un dominio que no recibe correo'}; se marcó como correo inválido`)
         continue
       }
       const gancho = ganchoDesdeNotas(c.notes) ?? (await ganchoConIA(c))
@@ -143,7 +145,7 @@ export async function crearBorradorParaContacto(db: SupabaseClient, contactId: s
   if (!c) throw new Error('Contacto no encontrado')
   if (!c.email) throw new Error('El contacto no tiene correo')
   if ((c.tags ?? []).includes('correo-invalido')) throw new Error('El correo de este contacto está marcado como inválido')
-  if (await descartarSiNoRecibe(db, c as ContactoMin)) throw new Error(`El dominio de ${c.email} no existe o no recibe correo. Lo marqué como correo inválido; escríbele por redes si tiene.`)
+  if (await descartarSiNoRecibe(db, c as ContactoMin)) throw new Error(buzonNoComercial(c.email) ? `${c.email} es un buzón de privacidad, facturación, RH o legal, no de ventas. Lo marqué como correo inválido; escríbele por redes si tiene.` : `El dominio de ${c.email} no existe o no recibe correo. Lo marqué como correo inválido; escríbele por redes si tiene.`)
   const gancho = ganchoDesdeNotas(c.notes) ?? (await ganchoConIA(c as ContactoMin))
   const r = renderOutreach(1, { nombre: nombreDe(c), empresa: c.company ?? '', gancho, segmento: segmentoDe(c.tags) })
   const { data, error } = await db.from('outreach_emails').insert({ contact_id: c.id, step: 1, status: 'draft', campaign: segmentoDe(c.tags), gancho, subject: r.subject, html: r.html, text: r.text, scheduled_for: hoyLocal() }).select('id').single()
