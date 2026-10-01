@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { PAUSA_MAX_MS, PAUSA_MIN_MS, avisoDeCupo, cupoDeHoy, minutosDeLote, pausaEntreEnvios, puedeRecibirCorreo, resumenDeLote } from './envio-lote'
+import { PAUSA_MAX_MS, PAUSA_MIN_MS, celebracionDeEnvio, avisoDeCupo, cupoDeHoy, minutosDeLote, pausaEntreEnvios, puedeRecibirCorreo, resumenDeLote } from './envio-lote'
 
 describe('envio en lote', () => {
   it('solo se puede elegir a quien tiene correo y no esta marcado como invalido', () => {
@@ -49,5 +49,23 @@ describe('envio en lote', () => {
     expect(avisoDeCupo(8, cupo)).toBe('Elegiste 8 y hoy caben 5: los otros 3 quedan como borrador para mañana.')
     expect(avisoDeCupo(6, cupo)).toBe('Elegiste 6 y hoy caben 5: el otro queda como borrador para mañana.')
     expect(avisoDeCupo(3, cupoDeHoy(25, 19, 8))).toMatch(/^El límite de hoy ya está lleno/)
+  })
+
+  it('festeja cuando se completa el limite del dia o el lote sale completo', () => {
+    const base = { enviados: 6, total: 6, errores: 0, detenido: false, enviadosHoy: 25, tope: 25 }
+    expect(celebracionDeEnvio(base)).toMatchObject({ tipo: 'meta', titulo: '¡Meta del día cumplida!' })
+    expect(celebracionDeEnvio(base)!.texto).toContain('25 de 25')
+    expect(celebracionDeEnvio({ ...base, enviadosHoy: 12 })).toMatchObject({ tipo: 'lote' })
+    // Un solo envio que completa el limite tambien cuenta.
+    expect(celebracionDeEnvio({ enviados: 1, total: 1, errores: 0, detenido: false, enviadosHoy: 25, tope: 25 })?.tipo).toBe('meta')
+  })
+
+  it('no festeja un lote detenido, con errores, incompleto o de un solo correo', () => {
+    const base = { enviados: 6, total: 6, errores: 0, detenido: false, enviadosHoy: 12, tope: 25 }
+    expect(celebracionDeEnvio({ ...base, detenido: true })).toBeNull()
+    expect(celebracionDeEnvio({ ...base, errores: 1 })).toBeNull()
+    expect(celebracionDeEnvio({ ...base, enviados: 4 })).toBeNull()
+    expect(celebracionDeEnvio({ ...base, enviados: 1, total: 1 })).toBeNull()
+    expect(celebracionDeEnvio({ ...base, enviados: 0 })).toBeNull()
   })
 })

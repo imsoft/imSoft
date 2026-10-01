@@ -69,3 +69,23 @@ export function resumenDeLote(r: ResultadoLote): string {
   if (r.errores.length) partes.push(`${r.errores.length} sin preparar`)
   return partes.length ? partes.join(' · ') : 'No se preparó ningún correo'
 }
+
+export interface Celebracion {
+  /** 'meta': se completo el limite del dia. 'lote': salio completo el lote, sin errores. */
+  tipo: 'meta' | 'lote'
+  titulo: string
+  texto: string
+}
+
+/**
+ * Si el envio merece festejo: se llego al limite diario, o el lote salio completo y sin
+ * errores. Un lote detenido, con errores o de un solo correo no festeja.
+ */
+export function celebracionDeEnvio(r: { enviados: number; total: number; errores: number; detenido: boolean; enviadosHoy: number; tope: number }): Celebracion | null {
+  if (r.enviados <= 0) return null
+  if (r.enviadosHoy >= r.tope) {
+    return { tipo: 'meta', titulo: '¡Meta del día cumplida!', texto: `Hoy salieron ${r.enviadosHoy} de ${r.tope} correos, tu límite diario completo.` }
+  }
+  if (r.detenido || r.errores > 0 || r.enviados < r.total || r.total < 2) return null
+  return { tipo: 'lote', titulo: '¡Correos enviados!', texto: `Salieron los ${r.enviados} correos del lote, cada uno con su texto.` }
+}

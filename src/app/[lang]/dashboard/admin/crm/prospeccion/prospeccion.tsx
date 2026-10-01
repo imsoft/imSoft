@@ -8,9 +8,10 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Check, ChevronLeft, ChevronRight, Copy, Eye, Loader2, Mail, RefreshCw, Send, Sparkles, X } from 'lucide-react'
+import { Check, ChevronLeft, PartyPopper, ChevronRight, Copy, Eye, Loader2, Mail, RefreshCw, Send, Sparkles, X } from 'lucide-react'
 import { cuerpoDe } from '@/lib/outreach'
-import { minutosDeLote, pausaEntreEnvios } from '@/lib/envio-lote'
+import { celebracionDeEnvio, minutosDeLote, pausaEntreEnvios, type Celebracion } from '@/lib/envio-lote'
+import { Confetti } from '@/components/documents/confetti'
 import { CANALES, ETIQUETA_CANAL, estadoDelTope, type Canal, type ConteoPorCanal } from '@/lib/mensaje-red'
 
 export interface FilaOutreach {
@@ -123,6 +124,11 @@ export function Prospeccion({ lang, gmail, gmailConfigurado, campana, redes, fil
     const j = await llamar(`/api/outreach/${f.id}/send`, `send-${f.id}`, {})
     if (j) toast.success(es ? `Enviado a ${f.empresa || f.email}${j.siguiente ? ` · seguimiento el ${j.siguiente}` : ''}` : `Sent to ${f.empresa || f.email}`)
     if (abierto?.id === f.id) setAbierto(null)
+    if (j) {
+      const enviadosHoy = campana.enviadosHoy + salieronSinRefrescar + 1
+      const c = celebracionDeEnvio({ enviados: 1, total: 1, errores: 0, detenido: false, enviadosHoy, tope: campana.tope })
+      if (c) setFiesta({ ...c, enviadosHoy })
+    }
   }
 
   /** El correo salio por otro camino (copiado a Gmail, WhatsApp...). */
@@ -136,6 +142,8 @@ export function Prospeccion({ lang, gmail, gmailConfigurado, campana, redes, fil
   const [confirmarLote, setConfirmarLote] = useState(false)
   const [lote, setLote] = useState<{ i: number; total: number; actual: string; espera: number; pausa: number; enviados: number; errores: string[] } | null>(null)
   const detener = useRef(false)
+  /** Festejo al completar el limite del dia o un lote entero. */
+  const [fiesta, setFiesta] = useState<(Celebracion & { enviadosHoy: number }) | null>(null)
   /** Revision antes de enviar: que correo se esta viendo y cuales se dejan fuera de este envio. */
   const [previa, setPrevia] = useState(0)
   const [fuera, setFuera] = useState<Set<string>>(new Set())
@@ -152,6 +160,7 @@ export function Prospeccion({ lang, gmail, gmailConfigurado, campana, redes, fil
     // Foto de la lista al empezar: la pagina se refresca tras cada envio.
     const lista = filas.filter((f) => f.status === 'draft' && f.scheduled_for <= campana.hoy && !fuera.has(f.id) && !yaSalieron.has(f.id)).slice(0, restan)
     if (lista.length === 0) return
+    const yaHoy = campana.enviadosHoy + salieronSinRefrescar
     detener.current = false
     setOcupado('lote')
     let enviados = 0
@@ -185,8 +194,11 @@ export function Prospeccion({ lang, gmail, gmailConfigurado, campana, redes, fil
     setOcupado(null)
     router.refresh()
     const texto = es ? `${enviados} de ${lista.length} ${lista.length === 1 ? 'correo enviado' : 'correos enviados'}${detener.current ? ' (detenido)' : ''}` : `${enviados} of ${lista.length} emails sent`
+    const enviadosHoy = yaHoy + enviados
+    const c = celebracionDeEnvio({ enviados, total: lista.length, errores: errores.length, detenido: detener.current, enviadosHoy, tope: campana.tope })
+    if (c) setFiesta({ ...c, enviadosHoy })
     if (errores.length) toast.error(texto, { description: errores.slice(0, 5).join('\n'), duration: 20_000 })
-    else toast.success(texto)
+    else if (!c) toast.success(texto)
   }
 
   async function saltar(f: FilaOutreach) {
@@ -411,6 +423,41 @@ export function Prospeccion({ lang, gmail, gmailConfigurado, campana, redes, fil
                   </div>
                 )
               })()}
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={fiesta !== null} onOpenChange={(o) => { if (!o) setFiesta(null) }}>
+        <DialogContent className="sm:max-w-md text-center">
+          {fiesta && (
+            <>
+              <Confetti delayMs={150} />
+              <div className="mx-auto mt-2 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+                <PartyPopper className="h-8 w-8 text-primary" aria-hidden />
+              </div>
+              <DialogHeader className="items-center text-center sm:text-center">
+                <DialogTitle className="text-2xl">{es ? fiesta.titulo : fiesta.tipo === 'meta' ? 'Daily goal reached!' : 'Emails sent!'}</DialogTitle>
+                <DialogDescription className="text-center">{es ? fiesta.texto : `${fiesta.enviadosHoy} of ${campana.tope} emails went out today.`}</DialogDescription>
+              </DialogHeader>
+              <div className="grid grid-cols-2 gap-3 text-sm">
+                <div className="rounded-lg border bg-muted/40 p-3">
+                  <p className="text-2xl font-bold tabular-nums">{fiesta.enviadosHoy}<span className="text-base font-normal text-muted-foreground"> / {campana.tope}</span></p>
+                  <p className="text-muted-foreground">{es ? 'enviados hoy' : 'sent today'}</p>
+                </div>
+                <div className="rounded-lg border bg-muted/40 p-3">
+                  <p className="text-2xl font-bold tabular-nums">{enCurso.length}</p>
+                  <p className="text-muted-foreground">{es ? 'esperando respuesta' : 'awaiting reply'}</p>
+                </div>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                {fiesta.tipo === 'meta'
+                  ? (es ? 'Mañana se renueva tu límite. Los seguimientos se preparan solos cuando les toca.' : 'Your limit renews tomorrow.')
+                  : (es ? `Hoy todavía caben ${Math.max(0, campana.tope - fiesta.enviadosHoy)} más.` : `${Math.max(0, campana.tope - fiesta.enviadosHoy)} more fit today.`)}
+              </p>
+              <DialogFooter className="sm:justify-center">
+                <Button onClick={() => setFiesta(null)}>{es ? '¡Listo!' : 'Done!'}</Button>
+              </DialogFooter>
             </>
           )}
         </DialogContent>
