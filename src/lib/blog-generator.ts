@@ -128,12 +128,30 @@ const PATRON_CIFRA = /\d+(?:[.,]\d+)?\s?%|\$\s?\d|\bmxn\b|\busd\b|\bseg[uú]n\b|
  * mismo parrafo o item de lista. El generador anterior pedia "datos concretos" sin
  * fuentes y el modelo se los inventaba ("segun datos de 2026, el 80%...").
  */
+/**
+ * Deja el HTML del articulo en la forma que espera el validador y el sitio: atributos con
+ * comillas dobles y sin comillas escapadas. El modelo a veces entrega href='...' o
+ * href=\\"...\\" (paso en el reintento del 3-oct-2026) y el validador, que solo veia
+ * href="...", concluia que el articulo no enlazaba ninguna fuente.
+ */
+export function normalizarHtml(html: string): string {
+  return (html ?? '')
+    .replace(/\\"/g, '"')
+    .replace(/\\'/g, "'")
+    .replace(/(\s(?:href|src|target|rel|class|title|alt)=)'([^'<>]*)'/gi, '$1"$2"');
+}
+
+/** Normaliza los dos idiomas del articulo. */
+export function normalizarArticulo<T extends { content_es: string; content_en: string }>(a: T): T {
+  return { ...a, content_es: normalizarHtml(a.content_es), content_en: normalizarHtml(a.content_en) };
+}
+
 export function validateArticle(
   article: GeneratedArticle,
   lang: 'es' | 'en',
 ): string[] {
   const problemas: string[] = [];
-  const html = lang === 'es' ? article.content_es : article.content_en;
+  const html = normalizarHtml(lang === 'es' ? article.content_es : article.content_en);
   const title = lang === 'es' ? article.title_es : article.title_en;
   const excerpt = lang === 'es' ? article.excerpt_es : article.excerpt_en;
 

@@ -23,6 +23,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { generateImage, uploadImageToSupabase } from "./lib/blog-image.mjs";
 import {
   MAX_TITLE_OVERLAP,
+  normalizarArticulo,
   pickNextTopic,
   titleOverlap,
   validateArticle,
@@ -157,7 +158,7 @@ async function generateBlogPost(topic, existingTitles, correcciones = []) {
     PUBLISH_TOOL,
   ];
   const aviso = correcciones.length
-    ? `\n\nUn intento anterior de este mismo artículo fue RECHAZADO por el validador. Corrige exactamente esto y entrega el artículo completo otra vez:\n${correcciones.map((c) => `- ${c}`).join("\n")}\n\nRecuerda: toda cifra (precio, porcentaje, comisión) lleva su fuente enlazada en ese mismo párrafo; si no tienes fuente para una cifra, quítala. El título debe ser claramente distinto de los ya publicados.`
+    ? `\n\nUn intento anterior de este mismo artículo fue RECHAZADO por el validador. Corrige exactamente esto y entrega el artículo completo otra vez:\n${correcciones.map((c) => `- ${c}`).join("\n")}\n\nRecuerda: toda cifra (precio, porcentaje, comisión) lleva su fuente enlazada en ese mismo párrafo; si no tienes fuente para una cifra, quítala. El título debe ser claramente distinto de los ya publicados. Los enlaces van en HTML con comillas dobles: <a href=\"https://...\">texto</a>, y cada fuente declarada debe aparecer enlazada en el texto de los dos idiomas.`
     : "";
   const messages = [{ role: "user", content: buildPrompt(topic, existingTitles) + aviso }];
 
@@ -174,7 +175,7 @@ async function generateBlogPost(topic, existingTitles, correcciones = []) {
       })
       .finalMessage();
     const publish = response.content.find((b) => b.type === "tool_use" && b.name === "publish_blog_post");
-    if (publish) return publish.input;
+    if (publish) return normalizarArticulo(publish.input);
     if (response.stop_reason === "pause_turn") {
       // El bucle de búsqueda del servidor se pausó: se reenvía tal cual y continúa.
       messages.push({ role: "assistant", content: response.content });
@@ -484,6 +485,7 @@ async function main() {
   let problemas = await validar(generated);
   if (problemas.length > 0) {
     console.log(`Primer intento rechazado (${problemas.length} problemas). Reintentando con las correcciones...`);
+    for (const pr of problemas) console.log(`  primer intento: ${pr}`);
     generated = await generateBlogPost(topic, existingTitles, problemas);
     console.log(`Título (segundo intento): ${generated.title_es}`);
     problemas = await validar(generated);

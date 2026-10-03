@@ -8,6 +8,7 @@ import {
   validateArticle,
   type GeneratedArticle,
   type QueueTopic,
+  normalizarHtml,
 } from './blog-generator';
 import cola from '../../content/blog-queue.json';
 import { GUIAS_PRECIO, GUIA_PRECIO_SLUGS } from '../config/guias-precio';
@@ -48,6 +49,15 @@ describe('content/blog-queue.json', () => {
       vistos.add(t.slug_es);
       vistos.add(t.slug_en);
     }
+  });
+});
+
+describe('normalizarHtml', () => {
+  it('deja los enlaces con comillas dobles aunque el modelo los entregue con simples o escapadas', () => {
+    expect(normalizarHtml("<p>Ver <a href='https://x.mx/precios' target='_blank'>precios</a>.</p>")).toBe('<p>Ver <a href="https://x.mx/precios" target="_blank">precios</a>.</p>');
+    expect(normalizarHtml('<a href=\\"https://x.mx\\">x</a>')).toBe('<a href="https://x.mx">x</a>');
+    // Un apostrofo dentro del texto no se toca.
+    expect(normalizarHtml("<p>It's fine</p>")).toBe("<p>It's fine</p>");
   });
 });
 
