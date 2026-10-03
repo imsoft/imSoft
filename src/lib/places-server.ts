@@ -43,8 +43,17 @@ export async function buscarLugares(query: string, municipio: string, max = 60):
 }
 
 export async function contactosExistentes(db: SupabaseClient): Promise<ContactoExistente[]> {
-  const { data } = await db.from('contacts').select('company, website_url, phone, email').limit(5000)
-  return (data ?? []) as ContactoExistente[]
+  const [{ data }, { data: portafolio }] = await Promise.all([
+    db.from('contacts').select('company, website_url, phone, email').limit(5000),
+    db.from('portfolio').select('title_es, title, client, project_url').limit(500),
+  ])
+  // Los clientes del portafolio cuentan como existentes: no se les prospecta en frio
+  // (Ferreacabados Jalisco entro como prospecto y recibio un correo el 30-sep-2026).
+  const clientes: ContactoExistente[] = (portafolio ?? []).flatMap((p) => {
+    const nombre = String(p.title_es ?? p.title ?? '').split(/ [-·] /)[0].trim()
+    return [nombre, String(p.client ?? '').trim()].filter(Boolean).map((company) => ({ company, website_url: (p.project_url as string | null) ?? null, phone: null, email: null }))
+  })
+  return [...((data ?? []) as ContactoExistente[]), ...clientes]
 }
 
 async function descargar(url: string, ms = 8000): Promise<string | null> {

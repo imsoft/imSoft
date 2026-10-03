@@ -145,13 +145,21 @@ ${existingTitles.map((t) => `- ${t}`).join("\n")}
 Cuando termines, llama a publish_blog_post una sola vez con el artículo completo.`;
 }
 
-async function generateBlogPost(topic, existingTitles) {
+/**
+ * `correcciones`: problemas que el validador encontro en el intento anterior. Con ellos
+ * se pide el articulo de nuevo en vez de rendirse (el tema se quedaba atorado en la cola:
+ * fallo el 15-sep y el 1-oct-2026 sin que nada cambiara entre un intento y otro).
+ */
+async function generateBlogPost(topic, existingTitles, correcciones = []) {
   const client = new Anthropic({ apiKey: ANTHROPIC_API_KEY });
   const tools = [
     { type: "web_search_20260209", name: "web_search", max_uses: 10, user_location: { type: "approximate", country: "MX" } },
     PUBLISH_TOOL,
   ];
-  const messages = [{ role: "user", content: buildPrompt(topic, existingTitles) }];
+  const aviso = correcciones.length
+    ? `\n\nUn intento anterior de este mismo artículo fue RECHAZADO por el validador. Corrige exactamente esto y entrega el artículo completo otra vez:\n${correcciones.map((c) => `- ${c}`).join("\n")}\n\nRecuerda: toda cifra (precio, porcentaje, comisión) lleva su fuente enlazada en ese mismo párrafo; si no tienes fuente para una cifra, quítala. El título debe ser claramente distinto de los ya publicados.`
+    : "";
+  const messages = [{ role: "user", content: buildPrompt(topic, existingTitles) + aviso }];
 
   for (let intento = 0; intento < 4; intento += 1) {
     // Streaming: el SDK lo exige para respuestas largas, y esta puede tardar minutos.
@@ -456,21 +464,34 @@ async function main() {
   console.log(`Tema: "${topic.busqueda}" → /es/blog/${topic.slug_es}`);
 
   const existingTitles = existing.map((p) => p.title_es).filter(Boolean);
-  const generated = await generateBlogPost(topic, existingTitles);
-  console.log(`Título: ${generated.title_es}`);
 
-  const problemas = [...validateArticle(generated, "es"), ...validateArticle(generated, "en")];
-  const clash = existingTitles
-    .map((t) => ({ t, score: titleOverlap(generated.title_es, t) }))
-    .sort((a, b) => b.score - a.score)[0];
-  if (clash && clash.score >= MAX_TITLE_OVERLAP) {
-    problemas.push(`el título solapa ${(clash.score * 100).toFixed(0)}% con uno publicado: "${clash.t}"`);
+  const validar = async (g) => {
+    const problemas = [...validateArticle(g, "es"), ...validateArticle(g, "en")];
+    const clash = existingTitles
+      .map((t) => ({ t, score: titleOverlap(g.title_es, t) }))
+      .sort((a, b) => b.score - a.score)[0];
+    if (clash && clash.score >= MAX_TITLE_OVERLAP) {
+      problemas.push(`el título solapa ${(clash.score * 100).toFixed(0)}% con uno publicado: "${clash.t}"`);
+    }
+    problemas.push(...(await verifySources(g.fuentes)).map((f) => `fuente que no responde: ${f}`));
+    return problemas;
+  };
+
+  // Dos intentos: si el primero no pasa la validación, el segundo recibe la lista de
+  // problemas para corregirlos. Si tampoco pasa, no se publica y se avisa por correo.
+  let generated = await generateBlogPost(topic, existingTitles);
+  console.log(`Título: ${generated.title_es}`);
+  let problemas = await validar(generated);
+  if (problemas.length > 0) {
+    console.log(`Primer intento rechazado (${problemas.length} problemas). Reintentando con las correcciones...`);
+    generated = await generateBlogPost(topic, existingTitles, problemas);
+    console.log(`Título (segundo intento): ${generated.title_es}`);
+    problemas = await validar(generated);
   }
-  problemas.push(...(await verifySources(generated.fuentes)).map((f) => `fuente que no responde: ${f}`));
 
   if (problemas.length > 0) {
     const detalle = problemas.map((p) => `- ${p}`).join("\n");
-    throw new Error(`El artículo no pasó la validación y NO se publicó:\n${detalle}`);
+    throw new Error(`El artículo no pasó la validación tras dos intentos y NO se publicó:\n${detalle}`);
   }
   console.log(`Validado: ${generated.fuentes.length} fuentes, todas responden.`);
 

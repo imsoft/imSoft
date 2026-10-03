@@ -113,9 +113,38 @@ export function Prospeccion({ lang, gmail, gmailConfigurado, campana, redes, fil
     if (j.errores?.length) toast.error(j.errores.join('\n'))
   }
 
+  /**
+   * Al abrir Prospeccion se buscan solos los rebotes, las respuestas y los seguimientos
+   * que ya tocan, como mucho cada 3 horas. Antes dependia de acordarse de pulsar el boton
+   * y los rebotes se quedaban dias sin registrar (8 de 16 el 3-oct-2026).
+   */
+  const autoSync = useRef(false)
+  useEffect(() => {
+    if (autoSync.current || !gmail) return
+    autoSync.current = true
+    let ultima = 0
+    try { ultima = Number(window.localStorage.getItem('imsoft-outreach-sync') ?? 0) } catch { /* sin almacenamiento */ }
+    if (Date.now() - ultima < 3 * 3_600_000) return
+    const t = setTimeout(async () => {
+      try {
+        const r = await fetch('/api/outreach/sync', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' })
+        const j = await r.json().catch(() => ({}))
+        if (!r.ok) return
+        try { window.localStorage.setItem('imsoft-outreach-sync', String(Date.now())) } catch { /* sin almacenamiento */ }
+        const novedades = (j.respondieron ?? 0) + (j.rebotaron ?? 0) + (j.seguimientosCreados ?? 0)
+        if (novedades === 0) return
+        if (j.respondieron) toast.success(es ? `${j.respondieron} ${j.respondieron === 1 ? 'prospecto respondió' : 'prospectos respondieron'}` : `${j.respondieron} replied`, { duration: 15_000 })
+        toast.info(es ? `Revisión automática: ${j.rebotaron ?? 0} rebotaron · ${j.seguimientosCreados ?? 0} seguimientos listos` : `Auto check: ${j.rebotaron ?? 0} bounced · ${j.seguimientosCreados ?? 0} follow-ups ready`)
+        router.refresh()
+      } catch { /* se intentara la proxima vez */ }
+    }, 1500)
+    return () => clearTimeout(t)
+  }, [gmail, es, router])
+
   async function sincronizar() {
     const j = await llamar('/api/outreach/sync', 'sync', {})
     if (!j) return
+    try { window.localStorage.setItem('imsoft-outreach-sync', String(Date.now())) } catch { /* sin almacenamiento */ }
     toast.success(es ? `${j.respondieron} respondieron · ${j.rebotaron ?? 0} rebotaron · ${j.seguimientosCreados} seguimientos nuevos · ${j.cerrados} cerrados` : `${j.respondieron} replied · ${j.seguimientosCreados} new follow-ups · ${j.cerrados} closed`)
     if (j.errores?.length) toast.error(j.errores.join('\n'))
   }

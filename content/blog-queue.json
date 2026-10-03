@@ -1,18 +1,11 @@
 {
-  "_doc": "Cola de temas del blog automatico. Cada entrada es una busqueda REAL (validada con el autocompletado de Google es-MX o con Search Console). El script publica la primera cuyo slug_es no exista aun en la tabla blog; no hace falta marcarla como usada. Sin entradas pendientes, no publica nada.",
+  "_doc": "Cola de temas del blog automatico. Cada entrada es una busqueda REAL (validada con el autocompletado de Google es-MX o con Search Console). El script publica la primera cuyo slug_es no exista aun en la tabla blog; no hace falta marcarla como usada. Sin entradas pendientes, no publica nada. No agregar temas que ya responde una guia de /es/cuanto-cuesta/ (tienda en linea, software a la medida): competirian con ella en Google.",
   "temas": [
     {
       "slug_es": "cuanto-cuesta-una-pagina-web-en-mexico",
       "slug_en": "how-much-does-a-website-cost-in-mexico",
       "busqueda": "cuanto cuesta una pagina web",
       "angulo": "Rangos publicados por agencias y freelancers mexicanos en 2026 para pagina basica, corporativa y tienda; que incluye cada rango; costos anuales (dominio, hosting, mantenimiento); como pedir una cotizacion util.",
-      "categoria": "business"
-    },
-    {
-      "slug_es": "cuanto-cuesta-una-tienda-en-linea-en-mexico",
-      "slug_en": "how-much-does-an-online-store-cost-in-mexico",
-      "busqueda": "cuanto cuesta una tienda en linea en mexico",
-      "angulo": "Comparar Shopify/Tiendanube (mensualidad + comisiones) contra tienda a medida; comisiones reales de pasarelas en Mexico (Stripe, Mercado Pago, Conekta) citadas de sus paginas de precios; en que punto conviene cada opcion.",
       "categoria": "business"
     },
     {
