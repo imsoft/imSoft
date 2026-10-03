@@ -3,7 +3,7 @@
  * Alcances: enviar correo y leer hilos (para saber si contestaron).
  */
 import { serviceClient, SITE_URL } from '@/lib/quotes/server'
-import { tipoDeMensajeAjeno } from '@/lib/outreach'
+import { destinatarioFallido, tipoDeMensajeAjeno } from '@/lib/outreach'
 
 export const GMAIL_SCOPES = ['https://www.googleapis.com/auth/gmail.send', 'https://www.googleapis.com/auth/gmail.readonly', 'openid', 'email']
 const CLIENT_ID = process.env.GOOGLE_OAUTH_CLIENT_ID
@@ -126,4 +126,37 @@ export async function estadoDelHilo(userId: string, threadId: string): Promise<'
   if (tipos.includes('respuesta')) return 'respuesta'
   if (tipos.includes('rebote')) return 'rebote'
   return null
+}
+
+/**
+ * Correos que rebotaron de forma definitiva en los ultimos `dias`, leyendo los avisos de
+ * mailer-daemon de toda la bandeja. Cubre los que llegan fuera del hilo del envio y los de
+ * correos mandados a mano, que `estadoDelHilo` no ve.
+ */
+export async function rebotesRecientes(userId: string, dias = 30): Promise<string[]> {
+  const { token } = await accessToken(userId)
+  const auth = { headers: { Authorization: `Bearer ${token}` } }
+  const ids: string[] = []
+  let pagina: string | undefined
+  for (let i = 0; i < 5; i += 1) {
+    const q = encodeURIComponent(`from:mailer-daemon newer_than:${dias}d`)
+    const r = await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/messages?q=${q}&maxResults=100${pagina ? `&pageToken=${pagina}` : ''}`, auth)
+    if (!r.ok) break
+    const j = await r.json()
+    ids.push(...((j.messages ?? []) as Array<{ id: string }>).map((m) => m.id))
+    pagina = j.nextPageToken
+    if (!pagina) break
+  }
+  const fallidos = new Set<string>()
+  for (const id of ids) {
+    const r = await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/messages/${id}?format=metadata&metadataHeaders=Subject&metadataHeaders=From&metadataHeaders=X-Failed-Recipients`, auth)
+    if (!r.ok) continue
+    const m = await r.json()
+    const h = (n: string) => (m.payload?.headers as Array<{ name: string; value: string }> | undefined)?.find((x) => x.name.toLowerCase() === n)?.value ?? ''
+    // Solo fallos definitivos: los avisos de demora no cuentan.
+    if (tipoDeMensajeAjeno(h('from'), h('subject')) !== 'rebote') continue
+    const email = destinatarioFallido(h('x-failed-recipients'), m.snippet as string)
+    if (email) fallidos.add(email)
+  }
+  return [...fallidos]
 }

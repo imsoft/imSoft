@@ -316,3 +316,15 @@ export function dominioDeCorreo(email: string | null | undefined): string | null
   const m = String(email ?? '').trim().toLowerCase().match(/^[^@\s]+@([a-z0-9.-]+\.[a-z]{2,})$/);
   return m ? m[1] : null;
 }
+
+/**
+ * A quien no se le pudo entregar, segun un aviso de rebote de Gmail. Sale de la cabecera
+ * X-Failed-Recipients o, si falta, del texto del aviso ("no se entregó a x@y.mx").
+ * Sirve para los rebotes que llegan como correo aparte, fuera del hilo del envio.
+ */
+export function destinatarioFallido(cabecera: string | null | undefined, texto: string | null | undefined): string | null {
+  const directo = (cabecera ?? '').split(',')[0].trim().toLowerCase();
+  if (/^[^@\s]+@[^@\s]+\.[a-z]{2,}$/.test(directo)) return directo;
+  const m = (texto ?? '').match(/(?:entreg[óo] a|entregarse a|entregar tu mensaje a|delivered to|delivering your message to|mensaje para)\s+<?([a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,})/i);
+  return m ? m[1].toLowerCase().replace(/\.$/, '') : null;
+}

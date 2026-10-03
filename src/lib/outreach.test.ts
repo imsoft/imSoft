@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { codificarRemitente, construirMime, dominioDeCorreo, tipoDeMensajeAjeno, fechaSiguientePaso, plantillaDe, renderOutreach, segmentoDe, sumarDiasHabiles, topeDiario } from './outreach';
+import { codificarRemitente, construirMime, destinatarioFallido, dominioDeCorreo, tipoDeMensajeAjeno, fechaSiguientePaso, plantillaDe, renderOutreach, segmentoDe, sumarDiasHabiles, topeDiario } from './outreach';
 
 describe('prospeccion', () => {
   it('rampa de envios diarios', () => {
@@ -133,5 +133,21 @@ describe('segmento corporativo', () => {
     expect(e.text).toContain('quién ve estos temas en Grupo Dalton');
     expect(e.text).not.toMatch(/Excel|JTP/);
     expect(renderOutreach(3, { nombre: 'Laura', empresa: 'Grupo Dalton', gancho: '', segmento: 'corporativo' }).subject).toBe('Re: Desarrollo de software para Grupo Dalton');
+  });
+});
+
+describe('destinatario de un aviso de rebote', () => {
+  it('sale de la cabecera X-Failed-Recipients', () => {
+    expect(destinatarioFallido('Gabriela.Flores@cabrerallamas.com', '')).toBe('gabriela.flores@cabrerallamas.com');
+  });
+
+  it('o del texto del aviso, en español o en ingles', () => {
+    expect(destinatarioFallido('', 'No se encontró la dirección Tu mensaje no se entregó a sbeas@pcz.com.mx porque la dirección no se encuentra')).toBe('sbeas@pcz.com.mx');
+    expect(destinatarioFallido(null, "Address not found Your message wasn't delivered to info@exteriorlogistics.com because the address couldn't be found")).toBe('info@exteriorlogistics.com');
+    expect(destinatarioFallido(null, 'Tu mensaje no pudo entregarse a cliente@ferreabastecedora.com.mx. La bandeja de entrada está llena')).toBe('cliente@ferreabastecedora.com.mx');
+  });
+
+  it('sin destinatario reconocible no inventa uno', () => {
+    expect(destinatarioFallido('', 'Aviso sin dirección')).toBeNull();
   });
 });

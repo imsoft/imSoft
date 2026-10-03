@@ -4,7 +4,7 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { resolveMx } from 'node:dns/promises'
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { enviarRaw, estadoDelHilo, messageIdHeader } from '@/lib/gmail/server'
+import { enviarRaw, estadoDelHilo, messageIdHeader, rebotesRecientes } from '@/lib/gmail/server'
 import { GANCHO_TOOL, ganchoDesdeNotas, limpiarGancho, promptGancho } from '@/lib/outreach-ai'
 import { estadoDeCorreo, fechaCorta, type FilaCorreo } from '@/lib/estado-correo'
 import { buzonNoComercial } from '@/lib/correo-invalido'
@@ -258,6 +258,22 @@ export async function sincronizar(db: SupabaseClient, userId: string) {
   const { data: enviados } = await db.from('outreach_emails').select('*').eq('status', 'sent').order('sent_at', { ascending: true })
   const porContacto = new Map<string, typeof enviados>()
   for (const r of enviados ?? []) porContacto.set(r.contact_id, [...(porContacto.get(r.contact_id) ?? []), r])
+
+  // Rebotes que llegaron como correo aparte (fuera del hilo) o de envios hechos a mano.
+  try {
+    const fallidos = await rebotesRecientes(userId)
+    if (fallidos.length) {
+      const { data: afectados } = await db.from('contacts').select('id, email, tags').in('email', fallidos)
+      for (const c of afectados ?? []) {
+        if (((c.tags as string[] | null) ?? []).includes('correo-invalido')) continue
+        await marcarRebote(db, c.id as string, c.tags as string[] | null)
+        porContacto.delete(c.id as string)
+        res.rebotaron += 1
+      }
+    }
+  } catch (err) {
+    res.errores.push(`rebotes: ${err instanceof Error ? err.message : String(err)}`)
+  }
 
   const { data: contactos } = await db.from('contacts').select(CONTACTO_COLS).in('id', [...porContacto.keys()].length ? [...porContacto.keys()] : ['00000000-0000-0000-0000-000000000000'])
   const contactoDe = new Map(((contactos ?? []) as ContactoMin[]).map((c) => [c.id, c]))
