@@ -18,7 +18,7 @@
  * - Solo en español: en ingles estas busquedas no tienen volumen. /en canonicaliza a /es.
  */
 
-import { PRECIO_TIENDA_EN_LINEA } from './precio-tienda';
+import { PRECIO_TIENDA_EN_LINEA } from './precio-tienda.ts';
 
 export type CityServiceSlug = 'paginas-web' | 'empresas-de-software' | 'tiendas-en-linea' | 'desarrollo-de-apps';
 
