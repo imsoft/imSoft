@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
+import { rolDe } from '@/lib/roles'
 
 /**
  * PATCH /api/projects/[id]/tasks/[taskId]
@@ -20,7 +21,7 @@ export async function PATCH(
     }
 
     // Verificar que el usuario es admin
-    const role = user.user_metadata?.role
+    const role = rolDe(user)
     if (role !== 'admin') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
@@ -109,7 +110,7 @@ export async function DELETE(
     }
 
     // Verificar que el usuario es admin
-    const role = user.user_metadata?.role
+    const role = rolDe(user)
     if (role !== 'admin') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }

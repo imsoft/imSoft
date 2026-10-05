@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import type { ContactStatus } from '@/types/database'
+import { esAdmin } from '@/lib/roles'
 
 export async function PATCH(
   request: Request,
@@ -20,7 +21,7 @@ export async function PATCH(
     }
 
     // Verificar que el usuario sea admin
-    if (user.user_metadata?.role !== 'admin') {
+    if (!esAdmin(user)) {
       return NextResponse.json(
         { error: 'Forbidden' },
         { status: 403 }

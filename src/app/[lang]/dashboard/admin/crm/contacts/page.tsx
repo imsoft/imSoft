@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Plus, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import { ContactsTable } from './contacts-table'
+import { esAdmin } from '@/lib/roles'
 
 export default async function ContactsPage({ params }: {
   params: Promise<{ lang: string }>
@@ -23,7 +24,7 @@ export default async function ContactsPage({ params }: {
   }
 
   // Verificar que el usuario sea admin
-  if (user.user_metadata?.role !== 'admin') {
+  if (!esAdmin(user)) {
     redirect(`/${lang}/dashboard/client`)
   }
 

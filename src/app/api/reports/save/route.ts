@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { esAdmin } from '@/lib/roles'
 
 export async function POST(request: Request) {
   try {
@@ -15,7 +16,7 @@ export async function POST(request: Request) {
     }
 
     // Verificar que sea admin
-    if (user.user_metadata?.role !== 'admin') {
+    if (!esAdmin(user)) {
       return NextResponse.json(
         { error: 'Forbidden' },
         { status: 403 }

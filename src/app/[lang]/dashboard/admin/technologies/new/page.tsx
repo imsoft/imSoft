@@ -2,6 +2,7 @@ import { getDictionary, hasLocale } from '../../../../dictionaries'
 import { notFound, redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { TechnologyForm } from '../technology-form'
+import { esAdmin } from '@/lib/roles'
 
 export default async function NewTechnologyPage({ params }: {
   params: Promise<{ lang: string }>
@@ -20,7 +21,7 @@ export default async function NewTechnologyPage({ params }: {
   }
 
   // Verificar que sea admin
-  if (user.user_metadata?.role !== 'admin') {
+  if (!esAdmin(user)) {
     redirect(`/${lang}/dashboard/client`)
   }
 

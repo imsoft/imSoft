@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { esAdmin } from '@/lib/roles'
 
 // GET: Obtener todas las empresas o empresas de un usuario específico
 export async function GET(request: Request) {
@@ -17,7 +18,7 @@ export async function GET(request: Request) {
 
     // Si es admin, puede ver todas las empresas (con o sin usuario) o filtrar por user_id
     // Si es cliente, solo puede ver sus propias empresas
-    const isAdmin = user.user_metadata?.role === 'admin'
+    const isAdmin = esAdmin(user)
     
     let data, error
 
@@ -107,7 +108,7 @@ export async function POST(request: Request) {
 
     // Los clientes solo pueden crear empresas para sí mismos
     // Los admins pueden crear empresas para cualquier usuario o sin usuario (user_id = null)
-    const isAdmin = user.user_metadata?.role === 'admin'
+    const isAdmin = esAdmin(user)
     let targetUserId: string | null = null
     
     if (isAdmin) {

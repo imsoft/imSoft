@@ -6,6 +6,7 @@ import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import { ContactFormSimple } from '../../contact-form-simple'
 import { contactName } from '@/lib/contact-name'
+import { esAdmin } from '@/lib/roles'
 
 export default async function EditContactPage({ params }: {
   params: Promise<{ lang: string; id: string }>
@@ -23,7 +24,7 @@ export default async function EditContactPage({ params }: {
   }
 
   // Verificar que el usuario sea admin
-  if (user.user_metadata?.role !== 'admin') {
+  if (!esAdmin(user)) {
     redirect(`/${lang}/dashboard/client`)
   }
 

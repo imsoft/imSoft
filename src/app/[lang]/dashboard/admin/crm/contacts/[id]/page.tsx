@@ -16,6 +16,7 @@ import { canalesDe } from '@/lib/mensaje-red'
 import { correoInvalido } from '@/lib/correo-invalido'
 import { serviceClient } from '@/lib/quotes/server'
 import { accionDeCorreo, estadoDeCorreo, etiquetaDeCorreo, type FilaCorreo } from '@/lib/estado-correo'
+import { esAdmin } from '@/lib/roles'
 
 // Local SVG brand icons to avoid compilation issues due to lucide-react versions
 const Instagram = (props: React.HTMLAttributes<SVGElement>) => (
@@ -75,7 +76,7 @@ export default async function ContactDetailPage({ params }: {
   }
 
   // Verificar que el usuario sea admin
-  if (user.user_metadata?.role !== 'admin') {
+  if (!esAdmin(user)) {
     redirect(`/${lang}/dashboard/client`)
   }
 

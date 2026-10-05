@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { headers } from 'next/headers'
 import Stripe from 'stripe'
-import { createClient } from '@/lib/supabase/server'
+import { serviceClient } from '@/lib/quotes/server'
 import { stripe } from '@/lib/stripe'
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET
@@ -19,7 +19,7 @@ if (!webhookSecret) {
  * es de un enlace antiguo sin payment_id y hay que seguir por la via anterior.
  */
 async function completarPagoPendiente(
-  supabase: Awaited<ReturnType<typeof createClient>>,
+  supabase: ReturnType<typeof serviceClient>,
   paymentId: string | undefined,
   referencia: string,
 ): Promise<boolean> {
@@ -84,7 +84,9 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const supabase = await createClient()
+    // Llave de servicio: el webhook no trae sesion de usuario y, con las reglas de la
+    // base, sin ella no podia registrar ni completar pagos.
+    const supabase = serviceClient()
 
     // Control de Idempotencia: Verificar si el evento ya fue procesado
     const { error: idempotencyError } = await supabase

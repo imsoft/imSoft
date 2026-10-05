@@ -5,6 +5,7 @@ import { getDictionary, hasLocale } from '../../dictionaries'
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import { rolDe } from '@/lib/roles'
 
 export default async function AdminDashboardLayout({
   children,
@@ -28,7 +29,7 @@ export default async function AdminDashboardLayout({
   }
 
   // Verificar que el usuario tenga rol de administrador
-  const userRole = user.user_metadata?.role || 'client'
+  const userRole = rolDe(user)
   
   if (userRole !== 'admin') {
     // Si no es admin, redirigir al dashboard de cliente

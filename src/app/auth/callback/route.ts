@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { rolDe } from '@/lib/roles'
 
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url)
@@ -16,7 +17,7 @@ export async function GET(request: NextRequest) {
       const { data: { user } } = await supabase.auth.getUser()
 
       if (user) {
-        const userRole = user.user_metadata?.role || 'client'
+        const userRole = rolDe(user)
 
         // Si es la primera vez que inicia sesión con Google y no tiene rol, asignarlo como cliente
         if (!user.user_metadata?.role) {

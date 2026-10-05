@@ -23,6 +23,7 @@ import { useRouter } from 'next/navigation'
 import { GoogleButton } from '@/components/ui/google-button'
 import { Captcha } from '@/components/ui/captcha'
 import type { TurnstileInstance } from '@marsidev/react-turnstile'
+import { rolDe } from '@/lib/roles'
 
 const createFormSchema = (dict: Dictionary) => z.object({
   email: z.string().email({
@@ -89,7 +90,7 @@ export default function LoginForm({ dict, lang }: LoginFormProps) {
         // TODO: Verificar el rol del usuario desde la base de datos
         // Por ahora, redirigimos a un dashboard por defecto
         // En producción, deberías verificar el rol desde user_metadata o una tabla de usuarios
-        const userRole = user.user_metadata?.role || 'client'
+        const userRole = rolDe(user)
         
         // Usar window.location para forzar una recarga completa y asegurar que las cookies se lean
         if (userRole === 'admin') {

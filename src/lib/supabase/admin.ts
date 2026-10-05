@@ -6,6 +6,7 @@
  */
 
 import { createClient } from '@supabase/supabase-js'
+import { esAdmin } from '@/lib/roles'
 
 /**
  * Crea un cliente de Supabase con permisos de administrador
@@ -51,12 +52,13 @@ export async function setAdminRole(email: string) {
     throw new Error(`Usuario con email ${email} no encontrado`)
   }
 
-  // Actualizar el user_metadata con el rol de administrador
+  // El rol va en app_metadata: solo el servidor puede escribirlo. En user_metadata lo
+  // podria cambiar el propio usuario (ver src/lib/roles.ts).
   const { data, error } = await supabase.auth.admin.updateUserById(
     user.id,
     {
-      user_metadata: {
-        ...user.user_metadata,
+      app_metadata: {
+        ...user.app_metadata,
         role: 'admin'
       }
     }
@@ -82,6 +84,6 @@ export async function isAdmin(userId: string): Promise<boolean> {
     return false
   }
 
-  return data.user.user_metadata?.role === 'admin'
+  return esAdmin(data.user)
 }
 

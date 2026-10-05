@@ -5,6 +5,7 @@ import { TechnologiesTable } from './technologies-table'
 import { Button } from '@/components/ui/button'
 import { Plus } from 'lucide-react'
 import Link from 'next/link'
+import { esAdmin } from '@/lib/roles'
 
 export default async function AdminTechnologiesPage({ params }: {
   params: Promise<{ lang: string }>
@@ -23,7 +24,7 @@ export default async function AdminTechnologiesPage({ params }: {
   }
 
   // Verificar que sea admin
-  if (user.user_metadata?.role !== 'admin') {
+  if (!esAdmin(user)) {
     redirect(`/${lang}/dashboard/client`)
   }
 

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createPaymentLink } from '@/lib/stripe'
 import { notasEnlace, validarMontoEnlace } from '@/lib/payment-links'
+import { rolDe } from '@/lib/roles'
 
 export async function POST(
   request: NextRequest,
@@ -18,7 +19,7 @@ export async function POST(
     }
 
     // Verificar que el usuario es admin
-    const userRole = user.user_metadata?.role
+    const userRole = rolDe(user)
     if (userRole !== 'admin') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }

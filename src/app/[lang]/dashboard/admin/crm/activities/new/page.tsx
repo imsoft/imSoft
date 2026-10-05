@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import { ActivityForm } from '../activity-form'
+import { esAdmin } from '@/lib/roles'
 
 export default async function NewActivityPage({ params }: {
   params: Promise<{ lang: string }>
@@ -22,7 +23,7 @@ export default async function NewActivityPage({ params }: {
   }
 
   // Verificar que el usuario sea admin
-  if (user.user_metadata?.role !== 'admin') {
+  if (!esAdmin(user)) {
     redirect(`/${lang}/dashboard/client`)
   }
 

@@ -10,6 +10,7 @@ import { serviceClient } from '@/lib/quotes/server'
 import { estadoDeCorreo, type FilaCorreo } from '@/lib/estado-correo'
 import { estadoCampana } from '@/lib/outreach-server'
 import { cupoDeHoy } from '@/lib/envio-lote'
+import { esAdmin } from '@/lib/roles'
 
 export default async function CRMPage({ params }: {
   params: Promise<{ lang: string }>
@@ -28,7 +29,7 @@ export default async function CRMPage({ params }: {
   }
 
   // Verificar que el usuario sea admin
-  if (user.user_metadata?.role !== 'admin') {
+  if (!esAdmin(user)) {
     redirect(`/${lang}/dashboard/client`)
   }
 

@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { buildBlogNotificationHtml } from '@/lib/email/blog-notification-template'
 import { buildUnsubscribeUrl } from '@/lib/email/unsubscribe'
+import { esAdmin } from '@/lib/roles'
 
 
 // Resend acepta hasta 100 correos por lote en batch.send().
@@ -35,7 +36,7 @@ export async function POST(request: NextRequest) {
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
-    if (user.user_metadata?.role !== 'admin') {
+    if (!esAdmin(user)) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
@@ -121,7 +122,7 @@ export async function POST(request: NextRequest) {
         // Soft opt-in: se excluye únicamente a quien explícitamente se dio de baja.
         if (u.user_metadata?.email_opt_in === false) continue
         // No nos enviamos la newsletter a nosotros mismos (admins).
-        if (u.user_metadata?.role === 'admin') continue
+        if (esAdmin(u)) continue
 
         seen.add(email)
         recipients.push({

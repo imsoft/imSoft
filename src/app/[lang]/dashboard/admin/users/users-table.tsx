@@ -34,6 +34,7 @@ import {
 import { Users, Plus } from "lucide-react"
 import { DataTable } from "@/components/ui/data-table"
 import type { Dictionary, Locale } from '@/app/[lang]/dictionaries'
+import { rolDe } from '@/lib/roles'
 
 interface User {
   id: string
@@ -45,6 +46,8 @@ interface User {
     full_name?: string
     role?: string
   }
+  /** De aqui sale el rol: solo el servidor puede escribirlo (ver src/lib/roles.ts). */
+  app_metadata?: Record<string, unknown>
   created_at?: string
 }
 
@@ -141,10 +144,10 @@ export function UsersTable({ users, dict, lang }: UsersTableProps) {
     },
     {
       id: "role",
-      accessorFn: (row) => row.user_metadata?.role || 'client',
+      accessorFn: (row) => rolDe(row),
       header: () => <div>{lang === 'en' ? 'Role' : 'Rol'}</div>,
       cell: ({ row }) => {
-        const role = row.original.user_metadata?.role || 'client'
+        const role = rolDe(row.original)
         return (
           <div className="capitalize">
             {role === 'admin' 
