@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { correoBlog, correoContacto, correoContratoFirmado, correoCotizacionAceptada, correoCotizacionAlCliente, correoFalloBlog, correoTareaCompletada } from './plantillas'
+import { correoBlog, correoCodigoApp, correoContacto, correoContratoFirmado, correoCotizacionAceptada, correoCotizacionAlCliente, correoFalloBlog, correoTareaCompletada } from './plantillas'
 
 const todos = () => [
   correoCotizacionAceptada({ nombre: 'Álvaro Gutiérrez', folio: 'COT-2026-001', titulo: 'Plataforma de avalúos', cliente: 'Álvaro', empresa: 'Valuadores de los Altos', total: '$199,404.00', quoteId: 'q1' }),
@@ -9,6 +9,7 @@ const todos = () => [
   correoTareaCompletada({ cliente: 'Ana', proyecto: 'Web', tarea: 'Diseño', completadas: 3, total: 10, enlace: 'https://www.imsoft.io/es/dashboard/client/projects/p1' }),
   correoBlog({ nombre: 'Ana', titulo: 'Cuánto cuesta una app', resumen: 'Guía', imagen: 'https://x.mx/i.png', enlace: 'https://www.imsoft.io/es/blog/x', bajaUrl: 'https://www.imsoft.io/baja?t=1' }),
   correoFalloBlog({ titulo: 'Post', error: 'Resend 500' }),
+  correoCodigoApp({ codigo: '48291637', minutos: 60 }),
 ]
 
 describe('correos de la plataforma', () => {
@@ -43,5 +44,12 @@ describe('correos de la plataforma', () => {
     expect(c.html).not.toContain('<script>')
     expect(c.html).toContain('&lt;script&gt;')
     expect(c.html).not.toContain('<b>X</b>')
+  })
+
+  it('el codigo de la app va en el asunto y en el cuerpo, con su vigencia', () => {
+    const c = correoCodigoApp({ codigo: '48291637', minutos: 60 })
+    expect(c.subject).toBe('48291637 es tu código para entrar a imSoft')
+    expect(c.html).toContain('48291637')
+    expect(c.html).toContain('Vence en 60 minutos')
   })
 })

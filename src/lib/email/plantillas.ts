@@ -172,3 +172,23 @@ export function correoFalloBlog(p: { titulo?: string | null; error: string }): C
     }),
   }
 }
+
+/** Al cliente: codigo de un solo uso para entrar a la app movil. */
+export function correoCodigoApp(p: { codigo: string; minutos: number }): Correo {
+  return {
+    subject: `${p.codigo} es tu código para entrar a imSoft`,
+    html: emailLayout({
+      preheader: `Tu código es ${p.codigo}. Vence en ${p.minutos} minutos.`,
+      etiqueta: 'App de clientes',
+      titulo: 'Tu código para entrar',
+      cuerpo: [
+        parrafo('Escribe este código en la app de imSoft para iniciar sesión:'),
+        // Grande y espaciado: se lee de un vistazo y se copia sin errores desde el telefono.
+        `<p style="margin:0 0 20px;padding:18px 12px;background:#f4f6fb;border:1px solid #e3e8f0;border-radius:12px;text-align:center;font-family:Menlo,Consolas,monospace;font-size:30px;font-weight:700;letter-spacing:6px;color:#0f172a">${esc(p.codigo)}</p>`,
+        parrafo(`Vence en ${p.minutos} minutos y sirve una sola vez.`, { tenue: true }),
+        parrafo('Si no intentaste entrar, ignora este correo: nadie puede acceder sin el código.', { tenue: true, chico: true }),
+      ].join(''),
+      pie: ['Recibiste este correo porque alguien pidió entrar a la app de imSoft con esta dirección.'],
+    }),
+  }
+}
