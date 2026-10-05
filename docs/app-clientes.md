@@ -41,33 +41,24 @@ notificaciones push y modo sin conexión. Se agregan cuando se vea qué usan los
 - **Orden:** primero iPhone completa y publicada; después Android con lo aprendido.
 - **Repositorio:** aparte de este (`imsoft-app-ios`, `imsoft-app-android`), privados.
 
-## Seguridad: pendiente antes de la app
+## Seguridad: revisada el 5-oct-2026
 
-Comprobado el 4-oct-2026 con la llave pública, sin sesión:
+Al revisar las políticas apareció un problema mayor que los permisos de la app: el rol de
+administrador se leía de `user_metadata`, que el propio usuario puede cambiar, y el registro
+está abierto. Cualquiera que se registrara podía volverse administrador. Se comprobó con un
+usuario de prueba (eliminado después): pasó a leer los 378 contactos del CRM.
 
-- `companies` se puede leer sin iniciar sesión (nombre, logo y `user_id` de las 22 empresas).
-  Si es intencional para mostrar logos en el sitio, conviene exponer solo nombre y logo.
-- `project_payments` responde "permission denied for table users": su política consulta la
-  tabla de usuarios de Auth, que un cliente tampoco puede leer. Es probable que un cliente
-  con sesión reciba ese mismo error al ver sus pagos, también en la web. No se ha podido
-  comprobar porque no existe ningún usuario cliente.
-- `projects` y `project_tasks` están vacías, así que no se pudo ver qué dejan leer.
-- `quotes` solo tiene política de administrador: un cliente no puede leer sus cotizaciones
-  desde la app; hoy las ve por el enlace público con token.
-
-Las políticas de estas tablas no están en `supabase/migrations` (se crearon desde el panel).
-Para revisarlas hace falta su definición actual:
-
-```sql
-select tablename, policyname, cmd, roles, qual, with_check
-from pg_policies
-where schemaname = 'public'
-  and tablename in ('projects', 'project_tasks', 'project_payments', 'companies', 'quotes', 'contact_messages')
-order by tablename, policyname;
-```
-
-La regla que deben cumplir: un cliente solo lee filas de proyectos cuya empresa
-(`companies.user_id`) es él mismo; el administrador lee y escribe todo.
+- **Código (desplegado):** `src/lib/roles.ts` es el único lugar que decide el rol, desde
+  `app_metadata`, que solo escribe el servidor.
+- **Base de datos (la aplica Brandon):** `supabase/migrations/20261005_roles_app_metadata.sql`.
+  Cambia `is_admin()` a `app_metadata`, pasa a `is_admin()` las políticas que leían el rol
+  por su cuenta (cotizaciones, pagos, prospección…), cierra los mensajes de contacto (antes
+  cualquier usuario con sesión los leía todos) y quita a los clientes el permiso de editar
+  o borrar proyectos. Probada en un Postgres local con las mismas políticas.
+- Con eso un cliente lee solo sus proyectos, tareas y pagos, que es lo que la app necesita.
+  El error "permission denied for table users" al leer pagos queda resuelto.
+- Sigue abierto: `companies` se puede leer sin sesión (nombre y logo de las empresas), y un
+  cliente no puede leer sus cotizaciones desde la app (solo por el enlace público).
 
 ## Requisitos de las tiendas
 
