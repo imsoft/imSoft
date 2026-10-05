@@ -46,8 +46,17 @@ begin
     q := regexp_replace(replace(p.qual, en_token, 'public.is_admin()'), en_tabla, 'public.is_admin()', 'g');
     w := regexp_replace(replace(p.with_check, en_token, 'public.is_admin()'), en_tabla, 'public.is_admin()', 'g');
     if coalesce(q, '') ~ 'user_meta' or coalesce(w, '') ~ 'user_meta' then
-      raise notice 'No reconozco la forma de %.% "%": revisar a mano', p.schemaname, p.tablename, p.policyname;
-      continue;
+      -- Forma no reconocida. Si la politica es de administradores (se llaman "Admins can
+      -- ..."), toda su condicion es la comprobacion de rol: se sustituye completa. Estas
+      -- politicas consultan auth.users y fallan con "permission denied for table users",
+      -- lo que rompia la tabla entera para todos, tambien para el admin.
+      if p.policyname ~* '^admins? can ' then
+        q := case when p.qual is not null then 'public.is_admin()' end;
+        w := case when p.with_check is not null then 'public.is_admin()' end;
+      else
+        raise notice 'No reconozco la forma de %.% "%": revisar a mano', p.schemaname, p.tablename, p.policyname;
+        continue;
+      end if;
     end if;
     begin
       execute format('alter policy %I on %I.%I', p.policyname, p.schemaname, p.tablename)
