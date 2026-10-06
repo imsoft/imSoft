@@ -79,6 +79,12 @@ notificaciones push y modo sin conexión. Se agregan cuando se vea qué usan los
   ligado a su empresa (Supabase une cuentas por correo verificado). Con otro correo entra, pero
   ve todo vacío.
 
+Configurado el 5-oct-2026: proyecto de Google Cloud `imsoft-482700` con clientes web (Supabase),
+Android (SHA-1 de desarrollo) e iOS, los dos últimos ya en Supabase; Firebase `imsoft-9a0e8` con
+`FIREBASE_SERVICE_ACCOUNT` en Vercel; push a Android probado de punta a punta desde producción.
+Al firmar para Play Store hay que agregar la SHA-1 de la firma de Google Play como segundo
+cliente Android (y en Firebase).
+
 ## Estado al 5-oct-2026
 
 Las dos apps están completas en su primera versión, compiladas y probadas con la cuenta de
