@@ -21,7 +21,7 @@ Brandon, así que el código debe ser simple y parecido entre las dos plataforma
 
 | Pantalla | Qué muestra | De dónde sale |
 | --- | --- | --- |
-| Entrar | Correo y contraseña, o enlace mágico. Sin registro: las cuentas las crea imSoft. | Supabase Auth |
+| Entrar | Correo y código de 8 dígitos que llega por correo (`POST /api/app/login`; el captcha del sitio impide usar contraseña desde la app). Sin registro: las cuentas las crea imSoft. | imsoft.io + Supabase Auth |
 | Mis proyectos | Lista con estado y avance; al abrir uno: tareas hechas y pendientes, fechas, enlace a recursos. | `projects`, `project_tasks` |
 | Pagos | Por proyecto: total, pagado, pendiente; cada pago con fecha y estado; botón para pagar un pendiente (abre el enlace de pago en el navegador). | `project_payments` |
 | Cuenta | Datos de la empresa, cerrar sesión, **eliminar cuenta** (lo exige Apple), aviso de privacidad. | `companies`, Auth |
@@ -31,15 +31,33 @@ notificaciones push y modo sin conexión. Se agregan cuando se vea qué usan los
 
 ## Cómo se construye
 
-- **iPhone:** SwiftUI, iOS 17 o superior, `supabase-swift`. Sin dependencias extra.
-- **Android:** Kotlin con Jetpack Compose, `supabase-kt`.
+- **iPhone:** SwiftUI, iOS 17 o superior. Proyecto generado con XcodeGen (`project.yml`).
+- **Android:** Kotlin con Jetpack Compose, minSdk 26.
+- **Sin SDK de Supabase:** las dos hablan con la API REST y Auth de Supabase con lo que trae
+  cada plataforma (URLSession / HttpURLConnection). Menos dependencias que mantener.
 - **Misma estructura en las dos:** una capa de datos (sesión + consultas), un modelo por
   tabla y una vista por pantalla, con los mismos nombres. Así un cambio se replica leyendo
   un archivo y escribiendo su gemelo.
-- **Sin servidor propio:** las apps leen de Supabase con la sesión del cliente. Lo único que
-  pasa por imsoft.io es el pago (el enlace `/pagar/…` que ya existe).
-- **Orden:** primero iPhone completa y publicada; después Android con lo aprendido.
-- **Repositorio:** aparte de este (`imsoft-app-ios`, `imsoft-app-android`), privados.
+- **Por imsoft.io pasan solo tres cosas:** pedir el código (`/api/app/login`, con límite de
+  1 por minuto y 5 por hora por cuenta), eliminar la cuenta (`DELETE /api/app/cuenta`) y el
+  pago (el enlace `/pagar/…` que ya existe). Los datos se leen directo de Supabase con la
+  sesión del cliente; la sesión se guarda cifrada (Keychain / Android Keystore).
+- **Repositorios:** aparte de este, en `~/Proyectos/imSoft/aplicaciones-moviles/`
+  (`imsoft-clientes-ios`, `imsoft-clientes-android`), locales por ahora; al subirlos, privados.
+- **Cuenta de demostración:** `demo-app@imsoft.io`, con una empresa y un proyecto marcados como
+  demostración, 7 tareas y 2 pagos. Sirve para capturas y para el revisor de las tiendas.
+  Pendiente: el revisor de Apple no puede recibir el código por correo; hace falta una forma
+  de entrar para esa cuenta (por ejemplo un código fijo configurado en el servidor).
+- **Capturas desde la terminal:** las compilaciones de desarrollo aceptan variables
+  (`IMSOFT_DEBUG_EMAIL`/`IMSOFT_DEBUG_CODIGO`/`IMSOFT_DEBUG_PESTANA` en iOS vía `SIMCTL_CHILD_`,
+  extras `email`/`codigo`/`pestana` en Android vía `am start`) para abrirse ya con sesión. El
+  código se obtiene con `auth.admin.generateLink` (`properties.email_otp`).
+
+## Estado al 5-oct-2026
+
+Las dos apps están completas en su primera versión, compiladas y probadas con la cuenta de
+demostración (10 pruebas unitarias cada una). Falta: cuentas de las tiendas, firmar, subir,
+capturas finales y la ficha de cada tienda.
 
 ## Seguridad: revisada el 5-oct-2026
 
