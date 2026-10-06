@@ -51,7 +51,21 @@ notificaciones push y modo sin conexión. Se agregan cuando se vea qué usan los
 - **Capturas desde la terminal:** las compilaciones de desarrollo aceptan variables
   (`IMSOFT_DEBUG_EMAIL`/`IMSOFT_DEBUG_CODIGO`/`IMSOFT_DEBUG_PESTANA` en iOS vía `SIMCTL_CHILD_`,
   extras `email`/`codigo`/`pestana` en Android vía `am start`) para abrirse ya con sesión. El
-  código se obtiene con `auth.admin.generateLink` (`properties.email_otp`).
+  código se obtiene con `pnpm app:codigo` (usa `auth.admin.generateLink`, `properties.email_otp`).
+
+## Tablets y orientación (6-oct-2026)
+
+- **Las dos apps corren en teléfono y tablet, en vertical y en horizontal.** Android ya no
+  bloquea la orientación (Android 16 la ignoraba de todos modos en pantallas grandes) y rota
+  sin recrear la pantalla. iOS es app de iPhone e iPad (`TARGETED_DEVICE_FAMILY: "1,2"`), con
+  horizontal en iPhone y las cuatro orientaciones en iPad.
+- **Ancho de lectura:** las listas y el formulario de entrar se limitan a 600 puntos y se
+  centran (`ConAnchoLectura` en Android, `.frame(maxWidth: 600)` en iOS). En teléfono vertical
+  no cambia nada. En iOS las listas van a todo lo ancho porque así se ven las apps nativas en iPad.
+- **Para publicar:** App Store Connect exige capturas de iPad de 13" (simulador
+  `iPad Pro 13-inch`); Google Play pide capturas de tablet de 7" y 10" para no marcar la app
+  como no optimizada (emulador `Tablet_imSoft`, Pixel Tablet con Android 16). Las capturas
+  con sesión se toman con `pnpm app:codigo` y las variables de depuración de arriba.
 
 ## Avisos push, cotizaciones y acceso con Google/Apple (5-oct-2026)
 
