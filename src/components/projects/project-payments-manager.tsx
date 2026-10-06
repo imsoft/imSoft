@@ -228,11 +228,13 @@ export function ProjectPaymentsManager({ projectId, projectCurrency = 'MXN', pro
         if (error) throw error
         toast.success(lang === 'en' ? 'Payment updated successfully' : 'Pago actualizado exitosamente')
       } else {
-        const { error } = await supabase
-          .from('project_payments')
-          .insert([data])
-
-        if (error) throw error
+        // Pasa por el servidor para que el cliente reciba el aviso en su telefono.
+        const r = await fetch(`/api/projects/${projectId}/payments`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        })
+        if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || `HTTP ${r.status}`)
         toast.success(lang === 'en' ? 'Payment added successfully' : 'Pago agregado exitosamente')
       }
 

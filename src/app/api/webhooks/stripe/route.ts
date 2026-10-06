@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { avisarAlCliente, avisoPago } from '@/lib/notificaciones'
 import { headers } from 'next/headers'
 import Stripe from 'stripe'
 import { serviceClient } from '@/lib/quotes/server'
@@ -40,6 +41,10 @@ async function completarPagoPendiente(
     })
     .eq('id', paymentId)
   if (error) console.error('[Stripe Webhook] Error completando pago pendiente:', error)
+  if (!error) {
+    const { data: pago } = await supabase.from('project_payments').select('project_id, amount, currency').eq('id', paymentId).maybeSingle()
+    if (pago) await avisarAlCliente(supabase, pago.project_id, (proyecto) => avisoPago({ proyecto, monto: Number(pago.amount), moneda: pago.currency, status: 'completed', proyectoId: pago.project_id }))
+  }
   return !error
 }
 
@@ -154,6 +159,9 @@ export async function POST(request: NextRequest) {
             notes: `Stripe Payment - Session ID: ${session.id}`,
           })
 
+        if (!paymentError) {
+          await avisarAlCliente(supabase, projectId, (proyecto) => avisoPago({ proyecto, monto: amount, moneda: currency, status: 'completed', proyectoId: projectId }))
+        }
         if (paymentError) {
           console.error('Error creating payment record:', paymentError)
           return NextResponse.json(
