@@ -23,13 +23,15 @@ interface Props {
   lang: string
   abierto: boolean
   onClose: () => void
+  /** Canal con el que abre el dialogo; si no, el primero disponible del contacto. */
+  canalInicial?: Canal | null
 }
 
 /**
  * Mensaje de prospeccion para una red social: se genera con el mismo gancho del correo,
  * se copia o se abre la red, y "Ya lo envie" lo deja en el historial y cambia el estado.
  */
-export function MensajeRedDialog({ contacto, lang, abierto, onClose }: Props) {
+export function MensajeRedDialog({ contacto, lang, abierto, onClose, canalInicial }: Props) {
   const es = lang !== 'en'
   const router = useRouter()
   const [texto, setTexto] = useState('')
@@ -42,11 +44,12 @@ export function MensajeRedDialog({ contacto, lang, abierto, onClose }: Props) {
 
   useEffect(() => {
     if (!abierto) return
-    const primero = canalesDe(contacto)[0]?.canal ?? null
+    const disponibles = canalesDe(contacto).map((c) => c.canal)
+    const primero = (canalInicial && disponibles.includes(canalInicial) ? canalInicial : disponibles[0]) ?? null
     // Diferido: fijar el canal inicial tras abrir, no dentro del render.
     const t = setTimeout(() => { setCanal(primero); setTexto('') }, 0)
     return () => clearTimeout(t)
-  }, [abierto, contacto])
+  }, [abierto, contacto, canalInicial])
 
   // Cuantos van hoy por cada red, para no pasarse del tope diario.
   useEffect(() => {

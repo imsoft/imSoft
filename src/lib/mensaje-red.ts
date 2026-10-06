@@ -152,3 +152,52 @@ export function canalesDe(c: { social_links?: SocialLink[] | null; instagram_url
   }
   return out
 }
+
+/** Canales en los que se escribe desde la cola: los que de verdad se atienden a diario. */
+export const CANALES_COLA: Canal[] = ['whatsapp', 'instagram']
+
+export interface ContactoDeCola {
+  id: string
+  first_name?: string | null
+  last_name?: string | null
+  company?: string | null
+  email?: string | null
+  phone?: string | null
+  instagram_url?: string | null
+  social_links?: SocialLink[] | null
+}
+
+export interface FilaCola {
+  id: string
+  nombre: string
+  empresa: string
+  /** Canales de la cola por los que se le puede escribir, en orden de preferencia. */
+  canales: Canal[]
+  /** Sin correo: redes es la unica forma de llegarle, por eso va primero. */
+  sinCorreo: boolean
+  contacto: ContactoDeCola
+}
+
+/**
+ * Cola de mensajes por redes para hoy: prospectos sin contactar que tienen WhatsApp o
+ * Instagram. Primero los que no tienen correo (no hay otro camino), luego los que tienen
+ * WhatsApp (contesta mas gente que por DM). Es puro: la pagina trae los contactos.
+ */
+export function colaDeRedes(contactos: ContactoDeCola[]): FilaCola[] {
+  const filas: FilaCola[] = []
+  for (const c of contactos) {
+    const disponibles = canalesDe(c).map((x) => x.canal)
+    const canales = CANALES_COLA.filter((x) => disponibles.includes(x))
+    if (!canales.length) continue
+    filas.push({
+      id: c.id,
+      nombre: [c.first_name, c.last_name].filter((x) => x && x.trim()).join(' ').trim(),
+      empresa: (c.company ?? '').trim(),
+      canales,
+      sinCorreo: !(c.email ?? '').trim(),
+      contacto: c,
+    })
+  }
+  const peso = (f: FilaCola) => (f.sinCorreo ? 0 : 2) + (f.canales.includes('whatsapp') ? 0 : 1)
+  return filas.sort((a, b) => peso(a) - peso(b))
+}

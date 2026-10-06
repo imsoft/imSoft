@@ -12,7 +12,8 @@ import { Check, ChevronLeft, PartyPopper, ChevronRight, Copy, Eye, Loader2, Mail
 import { cuerpoDe } from '@/lib/outreach'
 import { celebracionDeEnvio, minutosDeLote, pausaEntreEnvios, type Celebracion } from '@/lib/envio-lote'
 import { Confetti } from '@/components/documents/confetti'
-import { CANALES, ETIQUETA_CANAL, estadoDelTope, type Canal, type ConteoPorCanal } from '@/lib/mensaje-red'
+import { CANALES, ETIQUETA_CANAL, estadoDelTope, type Canal, type ConteoPorCanal, type FilaCola } from '@/lib/mensaje-red'
+import { ColaRedes } from '@/components/crm/cola-redes'
 
 export interface FilaOutreach {
   id: string
@@ -40,11 +41,13 @@ interface Props {
   redes: { hoy: ConteoPorCanal; semana: ConteoPorCanal; topes: Record<Canal, number> }
   filas: FilaOutreach[]
   sinContactar: number
+  /** Prospectos sin contactar con WhatsApp o Instagram, listos para escribirles. */
+  cola: { filas: FilaCola[]; total: number }
 }
 
 const PASO = { 1: 'Primer correo', 2: 'Seguimiento 1', 3: 'Seguimiento 2' }
 
-export function Prospeccion({ lang, gmail, gmailConfigurado, campana, redes, filas, sinContactar }: Props) {
+export function Prospeccion({ lang, gmail, gmailConfigurado, campana, redes, filas, sinContactar, cola }: Props) {
   const es = lang !== 'en'
   const router = useRouter()
   const sp = useSearchParams()
@@ -330,11 +333,14 @@ export function Prospeccion({ lang, gmail, gmailConfigurado, campana, redes, fil
           <CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">{es ? 'Embudo' : 'Funnel'}</CardTitle></CardHeader>
           <CardContent className="text-sm space-y-1">
             <p>{sinContactar} {es ? 'sin contactar (con correo)' : 'uncontacted (with email)'}</p>
+            <p>{cola.total} {es ? 'sin contactar (con WhatsApp o Instagram)' : 'uncontacted (with WhatsApp or Instagram)'}</p>
             <p>{enCurso.length} {es ? 'correos esperando respuesta' : 'emails awaiting reply'}</p>
             <p>{respondieron.length} {es ? 'respondieron' : 'replied'}</p>
           </CardContent>
         </Card>
       </div>
+
+      <ColaRedes lang={lang} filas={cola.filas} total={cola.total} />
 
       <div className="flex flex-wrap gap-2">
         <Button onClick={generar} disabled={ocupado !== null || sinContactar === 0}><Sparkles className="mr-2 h-4 w-4" />{ocupado === 'drafts' ? (es ? 'Generando…' : 'Generating…') : es ? 'Generar borradores' : 'Generate drafts'}</Button>

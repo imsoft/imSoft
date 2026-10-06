@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { canalDeAsunto, canalesDe, conteoPorCanal, estadoDelTope, ETIQUETA_CANAL, numeroWhatsApp, renderMensajeRed, TOPE_CANAL, TOPE_DIARIO_CANAL, urlDeRed } from './mensaje-red'
+import { canalDeAsunto, canalesDe, colaDeRedes, conteoPorCanal, estadoDelTope, ETIQUETA_CANAL, numeroWhatsApp, renderMensajeRed, TOPE_CANAL, TOPE_DIARIO_CANAL, urlDeRed } from './mensaje-red'
 
 const v = { nombre: 'Héctor', empresa: 'Gil y Gil', gancho: 'Cada filial lleva sus pedimentos en su propio Excel.', segmento: 'logistica-gdl' }
 
@@ -90,5 +90,35 @@ describe('tope diario por red', () => {
     expect(estadoDelTope(t - 3, 'whatsapp')).toBe('cerca')
     expect(estadoDelTope(t, 'whatsapp')).toBe('tope')
     expect(estadoDelTope(t + 5, 'whatsapp')).toBe('tope')
+  })
+})
+
+describe('cola de redes', () => {
+  const base = { first_name: 'Ana', last_name: 'Ruiz', company: 'Acme', email: 'a@acme.mx', phone: null, instagram_url: null, social_links: null }
+  it('solo entra quien tiene WhatsApp o Instagram; LinkedIn solo no cuenta', () => {
+    const cola = colaDeRedes([
+      { ...base, id: 'sin', social_links: [{ platform: 'linkedin', url: 'ana' }] },
+      { ...base, id: 'ig', instagram_url: '@acme' },
+      { ...base, id: 'wa', phone: '33 2536 5558' },
+    ])
+    expect(cola.map((f) => f.id)).toEqual(['wa', 'ig'])
+    expect(cola[0].canales).toEqual(['whatsapp'])
+    expect(cola[1].canales).toEqual(['instagram'])
+  })
+
+  it('primero los que no tienen correo, luego los de WhatsApp, y arma nombre y empresa', () => {
+    const cola = colaDeRedes([
+      { ...base, id: 'ig-correo', instagram_url: 'acme' },
+      { ...base, id: 'wa-correo', phone: '3325365558' },
+      { ...base, id: 'ig-sin-correo', email: '', instagram_url: 'acme', first_name: ' Ana ', last_name: null, company: ' Acme ' },
+    ])
+    expect(cola.map((f) => f.id)).toEqual(['ig-sin-correo', 'wa-correo', 'ig-correo'])
+    expect(cola[0]).toMatchObject({ nombre: 'Ana', empresa: 'Acme', sinCorreo: true })
+    expect(cola[1].sinCorreo).toBe(false)
+  })
+
+  it('con teléfono e Instagram da los dos canales, WhatsApp primero', () => {
+    const [f] = colaDeRedes([{ ...base, id: 'x', phone: '3325365558', instagram_url: 'acme' }])
+    expect(f.canales).toEqual(['whatsapp', 'instagram'])
   })
 })

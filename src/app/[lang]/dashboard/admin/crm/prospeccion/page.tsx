@@ -3,7 +3,7 @@ import { hasLocale } from '../../../../dictionaries'
 import { CrmTabs } from '../crm-tabs'
 import { requireAdmin, serviceClient } from '@/lib/quotes/server'
 import { cuentaConectada, gmailConfigurado } from '@/lib/gmail/server'
-import { CONTACTO_COLS, estadoCampana, mensajesDeRedes, type ContactoMin } from '@/lib/outreach-server'
+import { CONTACTO_COLS, estadoCampana, mensajesDeRedes, prospectosParaRedes, type ContactoMin } from '@/lib/outreach-server'
 import { Prospeccion, type FilaOutreach } from './prospeccion'
 
 export const dynamic = 'force-dynamic'
@@ -15,12 +15,13 @@ export default async function AdminProspeccionPage({ params }: { params: Promise
   if (!auth.ok) notFound()
 
   const db = serviceClient()
-  const [gmail, campana, redes, { data: filas }, { count: sinContactar }] = await Promise.all([
+  const [gmail, campana, redes, { data: filas }, { count: sinContactar }, cola] = await Promise.all([
     cuentaConectada(auth.userId),
     estadoCampana(db),
     mensajesDeRedes(db),
     db.from('outreach_emails').select('*').in('status', ['draft', 'sent', 'replied']).order('scheduled_for', { ascending: true }).order('step', { ascending: true }).limit(300),
     db.from('contacts').select('id', { count: 'exact', head: true }).eq('contact_type', 'prospect').eq('status', 'no_contact').not('email', 'is', null),
+    prospectosParaRedes(db),
   ])
   const ids = [...new Set((filas ?? []).map((f) => f.contact_id as string))]
   const { data: contactos } = ids.length ? await db.from('contacts').select(CONTACTO_COLS).in('id', ids) : { data: [] }
@@ -44,7 +45,7 @@ export default async function AdminProspeccionPage({ params }: { params: Promise
         </p>
       </div>
       <CrmTabs lang={lang} activa="prospeccion" />
-      <Prospeccion lang={lang} gmail={gmail} gmailConfigurado={gmailConfigurado()} campana={campana} redes={redes} filas={rows} sinContactar={sinContactar ?? 0} />
+      <Prospeccion lang={lang} gmail={gmail} gmailConfigurado={gmailConfigurado()} campana={campana} redes={redes} filas={rows} sinContactar={sinContactar ?? 0} cola={cola} />
     </div>
   )
 }

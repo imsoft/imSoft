@@ -8,7 +8,7 @@ import { enviarRaw, estadoDelHilo, messageIdHeader, rebotesRecientes } from '@/l
 import { GANCHO_TOOL, ganchoDesdeNotas, limpiarGancho, promptGancho } from '@/lib/outreach-ai'
 import { estadoDeCorreo, fechaCorta, type FilaCorreo } from '@/lib/estado-correo'
 import { buzonNoComercial } from '@/lib/correo-invalido'
-import { conteoPorCanal, renderMensajeRed, TOPE_DIARIO_CANAL, type Canal } from '@/lib/mensaje-red'
+import { colaDeRedes, conteoPorCanal, renderMensajeRed, TOPE_DIARIO_CANAL, type Canal, type ContactoDeCola, type FilaCola } from '@/lib/mensaje-red'
 import { dominioDeCorreo, construirMime, cuerpoDe, fechaSiguientePaso, renderDesdeCuerpo, renderOutreach, segmentoDe, topeDiario, type Step } from '@/lib/outreach'
 
 const TZ = 'America/Mexico_City'
@@ -223,6 +223,22 @@ export async function mensajesDeRedes(db: SupabaseClient) {
     semana: conteoPorCanal(filas.map((f) => f.subject as string)),
     topes: TOPE_DIARIO_CANAL,
   }
+}
+
+/**
+ * Prospectos sin contactar a los que se les puede escribir por WhatsApp o Instagram, en el
+ * orden en que conviene atenderlos. `total` es cuantos hay en la cola; `filas` trae a lo mas `limite`.
+ */
+export async function prospectosParaRedes(db: SupabaseClient, limite = 25): Promise<{ filas: FilaCola[]; total: number }> {
+  const { data } = await db
+    .from('contacts')
+    .select('id, first_name, last_name, company, email, phone, instagram_url, social_links')
+    .eq('contact_type', 'prospect')
+    .eq('status', 'no_contact')
+    .order('created_at', { ascending: true })
+    .limit(1000)
+  const cola = colaDeRedes((data ?? []) as ContactoDeCola[])
+  return { filas: cola.slice(0, limite), total: cola.length }
 }
 
 /** El mensaje ya se mando por la red: queda en el historial y el prospecto pasa a calificacion. */
