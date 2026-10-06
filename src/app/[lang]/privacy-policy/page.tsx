@@ -179,6 +179,11 @@ export default async function PrivacyPolicyPage({ params }: {
                 <p className="text-muted-foreground leading-relaxed">{p?.s15P}</p>
               </section>
 
+              <section className="mb-8">
+                <h2 className="text-2xl font-semibold mb-4">{p?.s16Title}</h2>
+                <p className="text-muted-foreground leading-relaxed">{p?.s16P}</p>
+              </section>
+
               <div className="mt-8 p-4 bg-muted rounded-lg">
                 <p className="text-sm text-muted-foreground">{p?.lastUpdated}</p>
               </div>

@@ -864,7 +864,9 @@
       "s14P": "If you believe that the processing of your personal data violates applicable data protection law, you have the right to file a complaint with the data protection supervisory authority in your country of residence. However, we recommend that you first contact us to try to resolve any concerns you may have.",
       "s15Title": "15. Contact",
       "s15P": "If you have questions, comments, concerns, or requests related to this Privacy Notice or our privacy practices, you can contact us through our contact page. We are committed to responding to your inquiries in a timely manner and working with you to resolve any concerns you may have about the processing of your personal data.",
-      "lastUpdated": "Last updated: May 2026. By using our services, you acknowledge that you have read, understood, and agree to the practices described in this Privacy Notice."
+      "s16Title": "16. Mobile App for Clients",
+      "s16P": "The \"imSoft\" app for iPhone and Android is the client portal on your phone. To work, it processes: your email address and, if you sign in with Apple or Google, the name and email those services share with us; a technical device identifier (notification token) when you choose to receive alerts about the progress and payments of your projects; and the project, quote and payment data we already process as part of the service. We do not use this data for advertising or to track you across other apps or websites, and we do not share it with third parties other than the providers needed to run the service (Supabase for the database and sign-in; Apple and Google to deliver notifications; Stripe if you choose to pay by card). You can turn off alerts in your phone settings and delete your account from the \"Account\" screen of the app: this removes your access and your device identifier; project and payment records are kept for as long as Mexican tax law requires.",
+      "lastUpdated": "Last updated: October 2026. By using our services, you acknowledge that you have read, understood, and agree to the practices described in this Privacy Notice."
     },
     "cookiePolicy": {
       "title": "Cookie Policy",
