@@ -6,6 +6,7 @@ import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Check, ChevronLeft, PartyPopper, ChevronRight, Copy, Eye, Loader2, Mail, RefreshCw, Send, Sparkles, X } from 'lucide-react'
@@ -88,6 +89,23 @@ export function Prospeccion({ lang, gmail, gmailConfigurado, campana, redes, fil
   /** Lo que queda del tope de hoy, descontando lo que ya salio en el lote en curso. */
   const restan = Math.max(0, campana.restanHoy - salieronSinRefrescar)
   const deHoy = borradores.filter((f) => f.scheduled_for <= hoy)
+  /** Correos elegidos a mano para el envio en lote (tope: lo que queda del dia). Vacio = los primeros de la lista. */
+  const [seleccion, setSeleccion] = useState<Set<string>>(new Set())
+  const seleccionados = useMemo(() => deHoy.filter((f) => seleccion.has(f.id)), [deHoy, seleccion])
+  /** Lo que entra al lote: la seleccion si hay, si no la lista en orden. */
+  const paraLote = seleccionados.length > 0 ? seleccionados : deHoy
+  function alternarSeleccion(id: string) {
+    setSeleccion((s) => {
+      const n = new Set(s)
+      if (n.has(id)) n.delete(id)
+      else if (n.size < restan) n.add(id)
+      else toast.info(es ? `Hoy solo caben ${restan}. Quita uno para elegir otro.` : `Only ${restan} fit today. Unselect one first.`)
+      return n
+    })
+  }
+  function seleccionarPrimeros() {
+    setSeleccion(new Set(deHoy.slice(0, restan).map((f) => f.id)))
+  }
   const futuros = borradores.filter((f) => f.scheduled_for > hoy)
   const enCurso = filas.filter((f) => f.status === 'sent')
   const respondieron = filas.filter((f) => f.status === 'replied')
@@ -190,7 +208,8 @@ export function Prospeccion({ lang, gmail, gmailConfigurado, campana, redes, fil
   async function enviarTodos() {
     setConfirmarLote(false)
     // Foto de la lista al empezar: la pagina se refresca tras cada envio.
-    const lista = filas.filter((f) => f.status === 'draft' && f.scheduled_for <= campana.hoy && !fuera.has(f.id) && !yaSalieron.has(f.id)).slice(0, restan)
+    const elegidos = seleccion.size > 0 ? seleccion : null
+    const lista = filas.filter((f) => f.status === 'draft' && f.scheduled_for <= campana.hoy && !fuera.has(f.id) && !yaSalieron.has(f.id) && (!elegidos || elegidos.has(f.id))).slice(0, restan)
     if (lista.length === 0) return
     const yaHoy = campana.enviadosHoy + salieronSinRefrescar
     detener.current = false
@@ -224,6 +243,7 @@ export function Prospeccion({ lang, gmail, gmailConfigurado, campana, redes, fil
     }
     setLote(null)
     setOcupado(null)
+    setSeleccion(new Set())
     router.refresh()
     const texto = es ? `${enviados} de ${lista.length} ${lista.length === 1 ? 'correo enviado' : 'correos enviados'}${detener.current ? ' (detenido)' : ''}` : `${enviados} of ${lista.length} emails sent`
     const enviadosHoy = yaHoy + enviados
@@ -346,7 +366,15 @@ export function Prospeccion({ lang, gmail, gmailConfigurado, campana, redes, fil
         <Button onClick={generar} disabled={ocupado !== null || sinContactar === 0}><Sparkles className="mr-2 h-4 w-4" />{ocupado === 'drafts' ? (es ? 'Generando…' : 'Generating…') : es ? 'Generar borradores' : 'Generate drafts'}</Button>
         <Button variant="outline" onClick={sincronizar} disabled={ocupado !== null || !gmail}><RefreshCw className="mr-2 h-4 w-4" />{ocupado === 'sync' ? (es ? 'Sincronizando…' : 'Syncing…') : es ? 'Buscar respuestas y seguimientos' : 'Check replies and follow-ups'}</Button>
         {deHoy.length > 1 && (
-          <Button variant="outline" onClick={() => { setPrevia(0); setFuera(new Set()); setConfirmarLote(true) }} disabled={ocupado !== null || !puedeEnviar}><Send className="mr-2 h-4 w-4" />{es ? `Enviar todos (${Math.min(deHoy.length, restan)})` : `Send all (${Math.min(deHoy.length, restan)})`}</Button>
+          <Button variant="outline" onClick={() => { setPrevia(0); setFuera(new Set()); setConfirmarLote(true) }} disabled={ocupado !== null || !puedeEnviar}>
+            <Send className="mr-2 h-4 w-4" />
+            {seleccionados.length > 0
+              ? (es ? `Enviar seleccionados (${Math.min(seleccionados.length, restan)})` : `Send selected (${Math.min(seleccionados.length, restan)})`)
+              : (es ? `Enviar los primeros (${Math.min(deHoy.length, restan)})` : `Send first (${Math.min(deHoy.length, restan)})`)}
+          </Button>
+        )}
+        {seleccionados.length > 0 && (
+          <Button variant="ghost" onClick={() => setSeleccion(new Set())} disabled={ocupado !== null}><X className="mr-2 h-4 w-4" />{es ? 'Quitar selección' : 'Clear selection'}</Button>
         )}
       </div>
 
@@ -393,7 +421,8 @@ export function Prospeccion({ lang, gmail, gmailConfigurado, campana, redes, fil
         </div>
       )}
 
-      <Cola titulo={es ? `Para enviar hoy (${deHoy.length})` : `To send today (${deHoy.length})`} filas={deHoy} vacio={es ? 'Nada pendiente. Genera borradores o sincroniza para ver seguimientos.' : 'Nothing pending.'} abrir={abrir} enviar={enviar} saltar={saltar} ocupado={ocupado} puedeEnviar={puedeEnviar} es={es} />
+      <Cola titulo={es ? `Para enviar hoy (${deHoy.length})` : `To send today (${deHoy.length})`} filas={deHoy} vacio={es ? 'Nada pendiente. Genera borradores o sincroniza para ver seguimientos.' : 'Nothing pending.'} abrir={abrir} enviar={enviar} saltar={saltar} ocupado={ocupado} puedeEnviar={puedeEnviar} es={es}
+        seleccion={puedeEnviar ? { ids: seleccion, tope: restan, alternar: alternarSeleccion, primeros: seleccionarPrimeros, limpiar: () => setSeleccion(new Set()) } : undefined} />
       {futuros.length > 0 && <Cola titulo={es ? `Programados (${futuros.length})` : `Scheduled (${futuros.length})`} filas={futuros} vacio="" abrir={abrir} enviar={enviar} saltar={saltar} ocupado={ocupado} puedeEnviar={puedeEnviar} es={es} />}
       <Cola titulo={es ? `Enviados, esperando respuesta (${enCurso.length})` : `Sent, awaiting reply (${enCurso.length})`} filas={enCurso} vacio={es ? 'Todavía no hay envíos.' : 'No sends yet.'} abrir={abrir} enviar={enviar} saltar={saltar} ocupado={ocupado} puedeEnviar={false} es={es} />
       {respondieron.length > 0 && <Cola titulo={es ? `Respondieron (${respondieron.length})` : `Replied (${respondieron.length})`} filas={respondieron} vacio="" abrir={abrir} enviar={enviar} saltar={saltar} ocupado={ocupado} puedeEnviar={false} es={es} />}
@@ -501,7 +530,7 @@ export function Prospeccion({ lang, gmail, gmailConfigurado, campana, redes, fil
       <Dialog open={confirmarLote} onOpenChange={setConfirmarLote}>
         <DialogContent className="sm:max-w-3xl">
           {(() => {
-            const candidatos = deHoy.slice(0, restan + fuera.size).filter((f, i, all) => all.indexOf(f) === i)
+            const candidatos = paraLote.slice(0, restan + fuera.size).filter((f, i, all) => all.indexOf(f) === i)
             const aEnviar = candidatos.filter((f) => !fuera.has(f.id)).slice(0, restan)
             const idx = Math.min(previa, Math.max(0, candidatos.length - 1))
             const f = candidatos[idx]
@@ -534,7 +563,7 @@ export function Prospeccion({ lang, gmail, gmailConfigurado, campana, redes, fil
                     <p className="text-xs text-muted-foreground">{es ? 'Para corregir el texto, cierra esta ventana y abre el correo desde la lista. Un correo dejado fuera se queda como borrador.' : 'To edit the text, close this window and open the email from the list.'}</p>
                   </div>
                 )}
-                {deHoy.length > restan && <p className="text-sm text-amber-600">{es ? `Hoy solo caben ${restan} por el tope diario; los demás quedan para mañana.` : `Only ${restan} fit in today's cap.`}</p>}
+                {paraLote.length > restan && <p className="text-sm text-amber-600">{es ? `Hoy solo caben ${restan} por el tope diario; los demás quedan para mañana.` : `Only ${restan} fit in today's cap.`}</p>}
                 <DialogFooter>
                   <Button variant="outline" onClick={() => setConfirmarLote(false)}>{es ? 'Todavía no' : 'Not yet'}</Button>
                   <Button onClick={enviarTodos} disabled={aEnviar.length === 0}><Send className="mr-2 h-4 w-4" />{es ? `Enviar ${aEnviar.length}` : `Send ${aEnviar.length}`}</Button>
@@ -548,10 +577,32 @@ export function Prospeccion({ lang, gmail, gmailConfigurado, campana, redes, fil
   )
 }
 
-function Cola({ titulo, filas, vacio, abrir, enviar, saltar, ocupado, puedeEnviar, es }: { titulo: string; filas: FilaOutreach[]; vacio: string; abrir: (f: FilaOutreach) => void; enviar: (f: FilaOutreach) => void; saltar: (f: FilaOutreach) => void; ocupado: string | null; puedeEnviar: boolean; es: boolean }) {
+/** Seleccion a mano de los correos que van en el lote; solo la cola de hoy la usa. */
+interface Seleccion {
+  ids: Set<string>
+  /** Cuantos caben hoy. */
+  tope: number
+  alternar: (id: string) => void
+  primeros: () => void
+  limpiar: () => void
+}
+
+function Cola({ titulo, filas, vacio, abrir, enviar, saltar, ocupado, puedeEnviar, es, seleccion }: { titulo: string; filas: FilaOutreach[]; vacio: string; abrir: (f: FilaOutreach) => void; enviar: (f: FilaOutreach) => void; saltar: (f: FilaOutreach) => void; ocupado: string | null; puedeEnviar: boolean; es: boolean; seleccion?: Seleccion }) {
+  const sel = seleccion && filas.length > 0 ? seleccion : undefined
+  const marcados = sel ? filas.filter((f) => sel.ids.has(f.id)).length : 0
+  const llena = sel ? marcados >= sel.tope : false
   return (
     <section className="space-y-2">
-      <h2 className="text-lg font-semibold">{titulo}</h2>
+      <div className="flex flex-wrap items-center gap-3">
+        <h2 className="text-lg font-semibold">{titulo}</h2>
+        {sel && (
+          <p className="text-sm text-muted-foreground">
+            {marcados > 0
+              ? (es ? `${marcados} de ${sel.tope} elegidos para el lote` : `${marcados} of ${sel.tope} selected`)
+              : (es ? `Marca hasta ${sel.tope} para elegir cuáles salen hoy.` : `Tick up to ${sel.tope} to choose which go out today.`)}
+          </p>
+        )}
+      </div>
       {filas.length === 0 ? (
         <p className="text-sm text-muted-foreground">{vacio}</p>
       ) : (
@@ -559,6 +610,17 @@ function Cola({ titulo, filas, vacio, abrir, enviar, saltar, ocupado, puedeEnvia
           <table className="w-full text-sm">
             <thead className="bg-muted/50 text-xs uppercase tracking-wide text-muted-foreground">
               <tr>
+                {sel && (
+                  <th className="w-10 p-3">
+                    <Checkbox
+                      checked={marcados === 0 ? false : llena ? true : 'indeterminate'}
+                      onCheckedChange={() => (marcados > 0 ? sel.limpiar() : sel.primeros())}
+                      disabled={ocupado !== null}
+                      aria-label={marcados > 0 ? (es ? 'Quitar selección' : 'Clear selection') : (es ? `Elegir los primeros ${sel.tope}` : `Select first ${sel.tope}`)}
+                      title={marcados > 0 ? (es ? 'Quitar selección' : 'Clear selection') : (es ? `Elegir los primeros ${sel.tope}` : `Select first ${sel.tope}`)}
+                    />
+                  </th>
+                )}
                 <th className="p-3 text-left">{es ? 'Empresa' : 'Company'}</th>
                 <th className="p-3 text-left">{es ? 'Contacto' : 'Contact'}</th>
                 <th className="p-3 text-left">{es ? 'Paso' : 'Step'}</th>
@@ -568,8 +630,20 @@ function Cola({ titulo, filas, vacio, abrir, enviar, saltar, ocupado, puedeEnvia
               </tr>
             </thead>
             <tbody>
-              {filas.map((f) => (
-                <tr key={f.id} className="border-t hover:bg-muted/30">
+              {filas.map((f) => {
+                const marcado = sel ? sel.ids.has(f.id) : false
+                return (
+                <tr key={f.id} className={`border-t hover:bg-muted/30 ${marcado ? 'bg-primary/5' : ''}`}>
+                  {sel && (
+                    <td className="p-3">
+                      <Checkbox
+                        checked={marcado}
+                        onCheckedChange={() => sel.alternar(f.id)}
+                        disabled={ocupado !== null || (!marcado && llena)}
+                        aria-label={es ? `Elegir ${f.empresa || f.email}` : `Select ${f.empresa || f.email}`}
+                      />
+                    </td>
+                  )}
                   <td className="p-3 font-medium"><button className="underline underline-offset-4" onClick={() => abrir(f)}>{f.empresa || '—'}</button></td>
                   <td className="p-3">{f.nombre}<div className="text-xs text-muted-foreground">{f.email}</div></td>
                   <td className="p-3"><Badge variant={f.step === 1 ? 'default' : 'secondary'}>{PASO[f.step]}</Badge></td>
@@ -585,7 +659,8 @@ function Cola({ titulo, filas, vacio, abrir, enviar, saltar, ocupado, puedeEnvia
                     )}
                   </td>
                 </tr>
-              ))}
+                )
+              })}
             </tbody>
           </table>
         </div>
