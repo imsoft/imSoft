@@ -116,6 +116,12 @@ describe('rebotes', () => {
     // Gmail avisa primero de la demora y sigue intentando: eso todavia no es un rebote.
     expect(tipoDeMensajeAjeno('Mail Delivery Subsystem <mailer-daemon@googlemail.com>', 'Delivery Status Notification (Delay)')).toBe('demora');
     expect(tipoDeMensajeAjeno('Mail Delivery Subsystem <mailer-daemon@googlemail.com>', 'Delivery Status Notification (Failure)')).toBe('rebote');
+    // Fuera de la oficina: no es respuesta, la secuencia sigue.
+    expect(tipoDeMensajeAjeno('Mario Flores <mario.flores@acastaneda.com>', 'Respuesta automática: Software para la operación de Corporación Castañeda')).toBe('automatica');
+    expect(tipoDeMensajeAjeno('Ana <ana@x.mx>', 'Automatic reply: Software a la medida')).toBe('automatica');
+    expect(tipoDeMensajeAjeno('Ana <ana@x.mx>', 'Fuera de la oficina')).toBe('automatica');
+    expect(tipoDeMensajeAjeno('Ana <ana@x.mx>', 'Re: Software a la medida', 'auto-replied')).toBe('automatica');
+    expect(tipoDeMensajeAjeno('Ana <ana@x.mx>', 'Re: Software a la medida', 'no')).toBe('respuesta');
   });
 
   it('saca el dominio del correo', () => {

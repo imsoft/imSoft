@@ -132,5 +132,9 @@ describe('buscador de prospectos (Places)', () => {
     expect(extraerCorreo('vacantes@x.mx datos-personales@x.mx', 'x.mx')).toBeNull()
     // Correos de relleno de plantillas web (se le escribio a uno asi el 29-sep-2026).
     expect(extraerCorreo('support@demoagency.com info@yourdomain.com', 'supermaynuez.mx')).toBeNull()
+    // Relleno de plantilla que llego al CRM y reboto el 2026-10-08.
+    expect(extraerCorreo('<a href="mailto:johndoe@mail.com">johndoe@mail.com</a>', 'colegiobatiz.edu.mx')).toBeNull()
+    // mailto con espacio codificado: el %20 no es parte del correo.
+    expect(extraerCorreo('<a href="mailto:%20reservaspisosiete@doubletreegdlch.com">Reservas</a>', 'doubletreegdlch.com')).toBe('reservaspisosiete@doubletreegdlch.com')
   })
 })

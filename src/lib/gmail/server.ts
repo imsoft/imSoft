@@ -109,11 +109,12 @@ export async function messageIdHeader(userId: string, messageId: string): Promis
 /**
  * Que hay en el hilo aparte de lo que mandamos: una respuesta del prospecto, un aviso de
  * rebote o nada. Si hay respuesta real, gana aunque tambien haya rebotes. Los avisos de
- * demora no cuentan: Gmail reintenta hasta 48 h y el correo todavia puede llegar.
+ * demora no cuentan: Gmail reintenta hasta 48 h y el correo todavia puede llegar. Las
+ * respuestas automaticas (fuera de la oficina) tampoco: nadie leyo el correo.
  */
 export async function estadoDelHilo(userId: string, threadId: string): Promise<'respuesta' | 'rebote' | null> {
   const { token, email } = await accessToken(userId)
-  const r = await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/threads/${threadId}?format=metadata&metadataHeaders=From&metadataHeaders=Subject`, { headers: { Authorization: `Bearer ${token}` } })
+  const r = await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/threads/${threadId}?format=metadata&metadataHeaders=From&metadataHeaders=Subject&metadataHeaders=Auto-Submitted`, { headers: { Authorization: `Bearer ${token}` } })
   if (!r.ok) return null
   const j = await r.json()
   const mios = email.toLowerCase()
@@ -121,7 +122,7 @@ export async function estadoDelHilo(userId: string, threadId: string): Promise<'
     const h = (n: string) => m.payload?.headers?.find((x) => x.name.toLowerCase() === n)?.value ?? ''
     const from = h('from')
     if (!from || from.toLowerCase().includes(mios)) return null
-    return tipoDeMensajeAjeno(from, h('subject'))
+    return tipoDeMensajeAjeno(from, h('subject'), h('auto-submitted'))
   })
   if (tipos.includes('respuesta')) return 'respuesta'
   if (tipos.includes('rebote')) return 'rebote'

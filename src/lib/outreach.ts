@@ -301,13 +301,17 @@ export function segmentoDe(tags: string[] | null | undefined): string | null {
  * Los rebotes llegan en el mismo hilo desde mailer-daemon y se contaban como respuesta
  * (Grupo EI salio como "respondio" en sep-2026 cuando su correo no existia).
  */
-export function tipoDeMensajeAjeno(from: string, subject = ''): 'rebote' | 'demora' | 'respuesta' {
+export function tipoDeMensajeAjeno(from: string, subject = '', autoSubmitted = ''): 'rebote' | 'demora' | 'automatica' | 'respuesta' {
   const f = from.toLowerCase();
   const asunto = subject.toLowerCase();
   // "Delivery Status Notification (Delay)": Gmail sigue intentando; aun no es un rebote.
   if (/\(delay\)|delivery delayed|entrega retrasada|delayed mail/.test(asunto)) return 'demora';
   if (/mailer-daemon|postmaster@|mail delivery (subsystem|system)|microsoftexchange|no-?reply@.*(bounce)/.test(f)) return 'rebote';
   if (/delivery status notification|undeliverable|undelivered mail|returned mail|delivery failure|failure notice|no se pudo entregar|entrega fallida|mensaje no entregado/.test(asunto)) return 'rebote';
+  // Fuera de la oficina y similares: nadie leyo el correo, la secuencia debe seguir.
+  // (Corporación Castañeda salio como "respondio" el 2026-10-05 por un aviso de vacaciones.)
+  if (/^auto-(replied|generated)/i.test(autoSubmitted.trim())) return 'automatica';
+  if (/respuesta autom[aá]tica|automatic reply|auto-?reply|autoreply|out of office|fuera de (la )?oficina|ausente de la oficina|ausencia temporal|de vacaciones|automatische antwort/.test(asunto)) return 'automatica';
   return 'respuesta';
 }
 

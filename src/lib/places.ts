@@ -216,12 +216,14 @@ export function sinRepetidos(candidatos: Candidato[]): Candidato[] {
 }
 
 const EMAIL_RE = /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/gi
-const CORREOS_BASURA = /(noreply|no-reply|donotreply|example|sentry|wixpress|godaddy|squarespace|shopify|wordpress|@2x|\.png$|\.jpg$|\.svg$|\.webp$|\.gif$|^(usuario|correo|email|nombre|tu-?correo|tu-?email|ejemplo|test)@|@(dominio|tudominio|ejemplo|correo|email|test|sitio|demoagency|yourdomain|yoursite|yourcompany|domain|company|mysite|website)\.)/i
+const CORREOS_BASURA = /(noreply|no-reply|donotreply|example|sentry|wixpress|godaddy|squarespace|shopify|wordpress|@2x|\.png$|\.jpg$|\.svg$|\.webp$|\.gif$|^(usuario|correo|email|nombre|tu-?correo|tu-?email|ejemplo|test|john\.?doe|jane\.?doe|lorem|ipsum|your-?name|your-?email|someone|user|username|mail)@|@(dominio|tudominio|ejemplo|correo|email|test|sitio|demoagency|yourdomain|yoursite|yourcompany|domain|company|mysite|website)\.)/i
 const PREFERIDOS = ['contacto', 'ventas', 'info', 'hola', 'informes', 'atencion', 'admin', 'direccion', 'gerencia']
 
 /** Mejor correo de un HTML: del mismo dominio primero, luego el de prefijo mas util. */
 export function extraerCorreo(html: string, dominio: string | null): string | null {
-  const texto = html.replace(/&#64;|&commat;/g, '@').replace(/\s*\[at\]\s*|\s*\(at\)\s*/gi, '@').replace(/\s*\[dot\]\s*|\s*\(dot\)\s*/gi, '.')
+  // Un mailto con espacio codificado ("mailto:%20ventas@x.mx") dejaba el %20 pegado al correo
+  // y el envio rebotaba (Piso Siete, 2026-10-08).
+  const texto = html.replace(/%20/gi, ' ').replace(/&#64;|&commat;/g, '@').replace(/\s*\[at\]\s*|\s*\(at\)\s*/gi, '@').replace(/\s*\[dot\]\s*|\s*\(dot\)\s*/gi, '.')
   const todos = [...new Set((texto.match(EMAIL_RE) ?? []).map((e) => e.toLowerCase()))].filter((e) => !CORREOS_BASURA.test(e) && !buzonNoComercial(e) && e.length < 80)
   if (todos.length === 0) return null
   const puntaje = (e: string) => {
