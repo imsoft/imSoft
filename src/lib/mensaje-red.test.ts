@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { canalDeAsunto, canalesDe, colaDeRedes, conteoPorCanal, estadoDelTope, ETIQUETA_CANAL, numeroWhatsApp, renderMensajeRed, TOPE_CANAL, TOPE_DIARIO_CANAL, urlDeRed } from './mensaje-red'
+import { canalDeAsunto, canalesDe, colaDeRedes, conteoPorCanal, estadoDelTope, ETIQUETA_CANAL, numeroWhatsApp, ofertaDe, renderMensajeRed, TOPE_CANAL, TOPE_DIARIO_CANAL, urlDeRed } from './mensaje-red'
 
 const v = { nombre: 'Héctor', empresa: 'Gil y Gil', gancho: 'Cada filial lleva sus pedimentos en su propio Excel.', segmento: 'logistica-gdl' }
 
@@ -115,6 +115,34 @@ describe('cola de redes', () => {
     expect(cola.map((f) => f.id)).toEqual(['ig-sin-correo', 'wa-correo', 'ig-correo'])
     expect(cola[0]).toMatchObject({ nombre: 'Ana', empresa: 'Acme', sinCorreo: true })
     expect(cola[1].sinCorreo).toBe(false)
+  })
+
+  it('dentro de cada grupo, primero los de zona premium', () => {
+    const cola = colaDeRedes([
+      { ...base, id: 'wa', email: '', phone: '3325365558' },
+      { ...base, id: 'wa-premium', email: '', phone: '3325365559', tags: ['restaurantes', 'zona-premium'] },
+      { ...base, id: 'correo-premium', phone: '3325365550', tags: ['zona-premium'] },
+    ])
+    // La zona ordena dentro del grupo, no le gana a "sin correo".
+    expect(cola.map((f) => f.id)).toEqual(['wa-premium', 'wa', 'correo-premium'])
+    expect(cola[0].zonaPremium).toBe(true)
+  })
+
+  it('a restaurantes, gimnasios y tiendas les ofrece su propia app', () => {
+    expect(ofertaDe(['google-places', 'restaurantes'])).toBe('app')
+    expect(ofertaDe(['fitness-gdl'])).toBe('app')
+    expect(ofertaDe(['ecommerce'])).toBe('app')
+    expect(ofertaDe(['ferreteria'])).toBeNull()
+    expect(ofertaDe(null)).toBeNull()
+    // Una cadena grande con area de sistemas no recibe el mensaje de la app.
+    expect(ofertaDe(['restaurantes', 'corporativo'])).toBeNull()
+
+    const t = renderMensajeRed('instagram', { nombre: '', empresa: 'Tukafe', gancho: 'Sus clientes frecuentes piden por WhatsApp y nadie los premia.', oferta: 'app' })
+    expect(t).toContain('apps a la medida')
+    expect(t).toContain('pedidos, puntos y promociones')
+    expect(t).not.toContain('Excel')
+    // Sin oferta, el mensaje de siempre.
+    expect(renderMensajeRed('instagram', { nombre: '', empresa: 'X', gancho: 'g' })).toContain('procesos a mano o en Excel')
   })
 
   it('con teléfono e Instagram da los dos canales, WhatsApp primero', () => {

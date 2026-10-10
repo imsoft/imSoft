@@ -288,6 +288,16 @@ export function enlacesDeContacto(html: string, base: string): string[] {
 }
 
 /** Fila lista para mapRowsToContacts, con el mismo formato que el CSV manual. */
+/**
+ * Colonias y plazas de la ZMG donde el negocio promedio tiene mas presupuesto. Sirve para
+ * priorizar, no para descartar: un buen prospecto fuera de la lista sigue entrando.
+ */
+const ZONAS_PREMIUM = /puerta de hierro|andares|valle real|colinas de san javier|san javier|providencia|country club|lomas del valle|virreyes|royal country|zona real|jardines universidad|ciudad del sol|chapalita|vallarta norte|vallarta san jorge|monraz|terranova|lafayette|colonia americana|col\.? americana|bugambilias|santa anita|el palomar|rinconada del bosque|plaza patria|midtown|la rioja|solares/i
+
+export function zonaPremium(direccion: string | null | undefined): boolean {
+  return ZONAS_PREMIUM.test(direccion ?? '')
+}
+
 export function filaDesdeCandidato(c: Candidato, segmento: string): CsvRow {
   return {
     empresa: c.nombre,
@@ -297,6 +307,7 @@ export function filaDesdeCandidato(c: Candidato, segmento: string): CsvRow {
     whatsapp: c.whatsapp ?? '',
     sitio: c.sitio ?? '',
     segmento,
+    zona: zonaPremium(c.direccion) ? 'zona-premium' : '',
     gancho: '',
   }
 }

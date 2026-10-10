@@ -68,15 +68,38 @@ export function estadoDelTope(enviados: number, canal: Canal): 'bien' | 'cerca' 
   return enviados >= tope - 3 ? 'cerca' : 'bien'
 }
 
+/** Etiqueta de los prospectos en colonias de alto poder adquisitivo (la pone el buscador). */
+export const TAG_ZONA_PREMIUM = 'zona-premium'
+
+/**
+ * Giros de consumo con clientela que regresa: restaurantes y cafes, gimnasios, tiendas.
+ * A esos no se les habla de Excel sino de su propia app (pedidos, puntos, promociones),
+ * hecha a la medida. La idea salio de la app de Tukafe, en Puerta de Hierro (2026-10-09).
+ */
+const GIROS_APP = ['restaurantes', 'fitness', 'ecommerce']
+
+export type Oferta = 'app'
+
+/** Que se le ofrece a este prospecto segun sus etiquetas; null = el mensaje de siempre. */
+export function ofertaDe(tags: string[] | null | undefined): Oferta | null {
+  const lower = (tags ?? []).map((t) => t.toLowerCase())
+  // Un corporativo tiene area de sistemas: su mensaje es otro aunque venda al publico.
+  if (lower.some((t) => t === 'corporativo' || t.startsWith('corporativo-'))) return null
+  return GIROS_APP.some((g) => lower.some((t) => t === g || t.startsWith(`${g}-`))) ? 'app' : null
+}
+
 export interface MensajeVars {
   nombre: string
   empresa: string
   gancho: string
   segmento?: string | null
+  oferta?: Oferta | null
 }
 
-const presentacion = (segmento?: string | null) =>
-  segmento?.startsWith('logistica')
+const presentacion = (segmento?: string | null, oferta?: Oferta | null) =>
+  oferta === 'app'
+    ? 'Soy Brandon, de imSoft. Hacemos apps a la medida en Guadalajara para negocios con clientela que regresa: pedidos, puntos y promociones con su propia marca, sin comisiones de terceros.'
+    : segmento?.startsWith('logistica')
     ? 'Soy Brandon, de imSoft. Hacemos software a la medida en Guadalajara y varios de nuestros clientes son del sector aduanal y logístico.'
     : 'Soy Brandon, de imSoft. Hacemos software a la medida en Guadalajara para negocios que ya operan bien pero cargan con procesos a mano o en Excel.'
 
@@ -88,14 +111,14 @@ export function renderMensajeRed(canal: Canal, v: MensajeVars): string {
   const partes: string[] = []
   switch (canal) {
     case 'linkedin':
-      partes.push(`${saludo}vi el perfil de ${v.empresa || 'tu empresa'} y te escribo directo.`, presentacion(v.segmento), gancho, 'Trabajamos a precio fijo y el código queda 100 % de ustedes.', cierre)
+      partes.push(`${saludo}vi el perfil de ${v.empresa || 'tu empresa'} y te escribo directo.`, presentacion(v.segmento, v.oferta), gancho, 'Trabajamos a precio fijo y el código queda 100 % de ustedes.', cierre)
       break
     case 'whatsapp':
-      partes.push(`${saludo}${presentacion(v.segmento).replace(/^Soy/, 'soy')}`, gancho, cierre)
+      partes.push(`${saludo}${presentacion(v.segmento, v.oferta).replace(/^Soy/, 'soy')}`, gancho, cierre)
       break
     default:
       // Instagram, Facebook, TikTok y X: un DM corto; el detalle va en la llamada.
-      partes.push(`${saludo}${presentacion(v.segmento).replace(/^Soy/, 'soy')}`, gancho, '¿Te doy 15 minutos esta semana para platicarlo? Si no es para ustedes, te lo digo de frente.')
+      partes.push(`${saludo}${presentacion(v.segmento, v.oferta).replace(/^Soy/, 'soy')}`, gancho, '¿Te doy 15 minutos esta semana para platicarlo? Si no es para ustedes, te lo digo de frente.')
   }
   const texto = partes.filter((p) => p.trim()).join('\n\n')
   return texto.length > TOPE_CANAL[canal] ? texto.slice(0, TOPE_CANAL[canal] - 1).replace(/\s+\S*$/, '') + '…' : texto
@@ -165,6 +188,7 @@ export interface ContactoDeCola {
   phone?: string | null
   instagram_url?: string | null
   social_links?: SocialLink[] | null
+  tags?: string[] | null
 }
 
 export interface FilaCola {
@@ -175,13 +199,16 @@ export interface FilaCola {
   canales: Canal[]
   /** Sin correo: redes es la unica forma de llegarle, por eso va primero. */
   sinCorreo: boolean
+  /** En una colonia de alto poder adquisitivo: sube dentro de su grupo. */
+  zonaPremium: boolean
   contacto: ContactoDeCola
 }
 
 /**
  * Cola de mensajes por redes para hoy: prospectos sin contactar que tienen WhatsApp o
  * Instagram. Primero los que no tienen correo (no hay otro camino), luego los que tienen
- * WhatsApp (contesta mas gente que por DM). Es puro: la pagina trae los contactos.
+ * WhatsApp (contesta mas gente que por DM). Dentro de cada grupo, primero los de zona
+ * premium: ahi es mas probable que haya presupuesto. Es puro: la pagina trae los contactos.
  */
 export function colaDeRedes(contactos: ContactoDeCola[]): FilaCola[] {
   const filas: FilaCola[] = []
@@ -195,9 +222,10 @@ export function colaDeRedes(contactos: ContactoDeCola[]): FilaCola[] {
       empresa: (c.company ?? '').trim(),
       canales,
       sinCorreo: !(c.email ?? '').trim(),
+      zonaPremium: (c.tags ?? []).includes(TAG_ZONA_PREMIUM),
       contacto: c,
     })
   }
-  const peso = (f: FilaCola) => (f.sinCorreo ? 0 : 2) + (f.canales.includes('whatsapp') ? 0 : 1)
+  const peso = (f: FilaCola) => (f.sinCorreo ? 0 : 4) + (f.canales.includes('whatsapp') ? 0 : 2) + (f.zonaPremium ? 0 : 1)
   return filas.sort((a, b) => peso(a) - peso(b))
 }

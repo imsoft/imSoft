@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { candidatoDe, dominioDe, enlacesDeContacto, extraerCorreo, extraerInstagram, extraerWhatsApp, filaDesdeCandidato, formatoTelefono, giroDe, limpiarNombre, marcarExistentes, nombreNormalizado, sePuedeEscribir, sinRepetidos, numeroDeCorrida, tramoDeBusquedas, deLaMarca, giroDe as giroDe2 } from './places'
+import { candidatoDe, dominioDe, enlacesDeContacto, extraerCorreo, extraerInstagram, extraerWhatsApp, filaDesdeCandidato, formatoTelefono, giroDe, limpiarNombre, marcarExistentes, nombreNormalizado, sePuedeEscribir, sinRepetidos, numeroDeCorrida, tramoDeBusquedas, deLaMarca, zonaPremium, giroDe as giroDe2 } from './places'
 import { mapRowsToContacts } from './import-contacts'
 
 describe('buscador de prospectos (Places)', () => {
@@ -74,6 +74,16 @@ describe('buscador de prospectos (Places)', () => {
     expect(contacts[0]).toMatchObject({ company: 'ES Contable', email: 'ventas@escontable.com', phone: '33 1973 2676', website_url: 'https://escontable.com', tags: ['auto', 'contabilidad'], status: 'no_contact', contact_type: 'prospect' })
     expect(giroDe('contabilidad')?.segmento).toBe('contabilidad')
     expect(giroDe('nada')).toBeNull()
+  })
+
+  it('etiqueta a los prospectos de colonias con mas presupuesto', () => {
+    expect(zonaPremium('Blvd. Puerta de Hierro 4965, Puerta de Hierro, 45116 Zapopan, Jal.')).toBe(true)
+    expect(zonaPremium('Av. Pablo Neruda 2850, Providencia, 44630 Guadalajara, Jal.')).toBe(true)
+    expect(zonaPremium('Av. Tonalá 123, Centro, 45400 Tonalá, Jal.')).toBe(false)
+    expect(zonaPremium(null)).toBe(false)
+    const cafe = { ...candidatoDe({ id: 'p1', displayName: { text: 'Tukafe' }, formattedAddress: 'Plaza Andares, Puerta de Hierro, Zapopan', nationalPhoneNumber: '33 1234 5678' }) }
+    const { contacts } = mapRowsToContacts([filaDesdeCandidato(cafe, 'restaurantes')], { source: 'Google Places', tags: ['auto'] })
+    expect(contacts[0].tags).toEqual(['auto', 'restaurantes', 'zona-premium'])
   })
 
   it('saca el WhatsApp que el negocio publica en su sitio', () => {

@@ -17,6 +17,8 @@ export interface CsvRow {
   sitio?: string
   gancho?: string
   segmento?: string
+  /** Etiqueta de zona ("zona-premium"); la pone el buscador de prospectos. */
+  zona?: string
   instagram?: string
   /** Numero de WhatsApp (solo digitos, con lada de pais). */
   whatsapp?: string
@@ -112,7 +114,8 @@ export function mapRowsToContacts(rows: CsvRow[], options: MapOptions = {}): Map
     if (email) seen.add(email)
 
     const segmento = clean(row.segmento)
-    const tags = [...baseTags, ...(segmento ? [segmento] : [])]
+    const zona = clean(row.zona)
+    const tags = [...baseTags, ...(segmento ? [segmento] : []), ...(zona ? [zona] : [])]
 
     contacts.push({
       first_name: clean(row.nombre),
