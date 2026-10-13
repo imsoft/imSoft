@@ -141,6 +141,10 @@ describe('cola de redes', () => {
     expect(t).toContain('apps a la medida')
     expect(t).toContain('pedidos, puntos y promociones')
     expect(t).not.toContain('Excel')
+    // En un gimnasio no hay "pedidos": habla de clases y membresías.
+    const g = renderMensajeRed('instagram', { nombre: '', empresa: 'Navi Gym', gancho: 'g', segmento: 'fitness-gdl', oferta: 'app' })
+    expect(g).toContain('reservas de clases, membresías')
+    expect(g).not.toContain('pedidos')
     // Sin oferta, el mensaje de siempre.
     expect(renderMensajeRed('instagram', { nombre: '', empresa: 'X', gancho: 'g' })).toContain('procesos a mano o en Excel')
   })
