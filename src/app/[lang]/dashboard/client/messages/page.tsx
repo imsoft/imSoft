@@ -39,7 +39,7 @@ export default async function ClientMessagesPage({ params }: {
   const statusConfig: Record<ContactMessage['status'], { label: string; className: string }> = {
     unread: {
       label: isEs ? 'Enviado' : 'Sent',
-      className: 'bg-blue-500/10 text-blue-600 border-blue-500/20',
+      className: 'bg-primary/10 text-primary border-primary/20',
     },
     read: {
       label: isEs ? 'Visto' : 'Seen',

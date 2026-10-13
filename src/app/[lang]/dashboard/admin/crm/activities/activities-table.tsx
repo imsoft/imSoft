@@ -95,7 +95,7 @@ export function ActivitiesTable({ activities, dict, lang }: ActivitiesTableProps
   }
 
   const activityTypeColors: Record<string, string> = {
-    call: 'bg-blue-500/10 text-blue-700 dark:text-blue-400',
+    call: 'bg-primary/10 text-primary',
     email: 'bg-purple-500/10 text-purple-700 dark:text-purple-400',
     meeting: 'bg-green-500/10 text-green-700 dark:text-green-400',
     note: 'bg-yellow-500/10 text-yellow-700 dark:text-yellow-400',
@@ -104,7 +104,7 @@ export function ActivitiesTable({ activities, dict, lang }: ActivitiesTableProps
 
   const statusColors: Record<string, string> = {
     completed: 'bg-green-500/10 text-green-700 dark:text-green-400',
-    scheduled: 'bg-blue-500/10 text-blue-700 dark:text-blue-400',
+    scheduled: 'bg-primary/10 text-primary',
     cancelled: 'bg-red-500/10 text-red-700 dark:text-red-400',
   }
 

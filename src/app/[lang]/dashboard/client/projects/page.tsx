@@ -85,7 +85,7 @@ export default async function ClientProjectsPage({ params }: {
             const description = lang === 'en' ? (project.description_en || project.description) : (project.description_es || project.description)
 
             const statusColors = {
-              'planning': 'bg-blue-500',
+              'planning': 'bg-primary',
               'in-progress': 'bg-yellow-500',
               'completed': 'bg-green-500',
               'on-hold': 'bg-orange-500',
@@ -119,7 +119,7 @@ export default async function ClientProjectsPage({ params }: {
                       {project.status && (
                         <Badge
                           variant="outline"
-                          className={`${statusColors[project.status as keyof typeof statusColors] || 'bg-gray-500'} text-white border-0`}
+                          className={`${statusColors[project.status as keyof typeof statusColors] || 'bg-muted-foreground'} text-white border-0`}
                         >
                           {statusLabels[project.status as keyof typeof statusLabels] || project.status}
                         </Badge>

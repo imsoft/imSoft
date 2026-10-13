@@ -47,7 +47,7 @@ export function ContactMessagesTable({ messages, lang }: ContactMessagesTablePro
   const router = useRouter()
 
   const statusColors = {
-    unread: 'bg-blue-500/10 text-blue-600 border-blue-500/20',
+    unread: 'bg-primary/10 text-primary border-primary/20',
     read: 'bg-muted/50 text-muted-foreground border-border',
     replied: 'bg-green-500/10 text-green-600 border-green-500/20',
     archived: 'bg-orange-500/10 text-orange-600 border-orange-500/20',

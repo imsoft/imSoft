@@ -54,9 +54,9 @@ export function TaskProgress({ projectId, lang }: TaskProgressProps) {
   // Priority configuration
   const priorityConfig = {
     low: {
-      color: 'text-blue-600 dark:text-blue-400',
-      bg: 'bg-blue-50 dark:bg-blue-950',
-      border: 'border-blue-200 dark:border-blue-800',
+      color: 'text-primary',
+      bg: 'bg-primary/10',
+      border: 'border-primary/30',
       label: lang === 'en' ? 'Low' : 'Baja'
     },
     medium: {

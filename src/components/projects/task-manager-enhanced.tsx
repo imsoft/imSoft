@@ -94,7 +94,7 @@ function SortableTask({ task, lang, onToggle, onDelete, onEdit }: SortableTaskPr
   }
 
   const priorityConfig = {
-    low: { color: 'text-blue-600', bg: 'bg-blue-50 dark:bg-blue-950', label: lang === 'en' ? 'Low' : 'Baja' },
+    low: { color: 'text-primary', bg: 'bg-primary/10', label: lang === 'en' ? 'Low' : 'Baja' },
     medium: { color: 'text-yellow-600', bg: 'bg-yellow-50 dark:bg-yellow-950', label: lang === 'en' ? 'Medium' : 'Media' },
     high: { color: 'text-orange-600', bg: 'bg-orange-50 dark:bg-orange-950', label: lang === 'en' ? 'High' : 'Alta' },
     critical: { color: 'text-red-600', bg: 'bg-red-50 dark:bg-red-950', label: lang === 'en' ? 'Critical' : 'Crítica' },

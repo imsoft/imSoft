@@ -111,7 +111,7 @@ export function ProjectPaymentsViewer({
                   {paymentPercentage.toFixed(1)}%
                 </span>
               </div>
-              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+              <div className="w-full bg-muted rounded-full h-2">
                 <div
                   className="bg-green-600 dark:bg-green-400 h-2 rounded-full transition-all"
                   style={{ width: `${Math.min(paymentPercentage, 100)}%` }}
@@ -161,7 +161,7 @@ export function ProjectPaymentsViewer({
             return (
               <div
                 key={payment.id}
-                className="flex items-center justify-between p-4 border rounded-lg bg-white dark:bg-gray-900"
+                className="flex items-center justify-between p-4 border rounded-lg bg-card"
               >
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
@@ -170,7 +170,7 @@ export function ProjectPaymentsViewer({
                     </span>
                     <Badge
                       variant="outline"
-                      className={`${statusColors[payment.status] || 'bg-gray-500'} text-white border-0`}
+                      className={`${statusColors[payment.status] || 'bg-muted-foreground'} text-white border-0`}
                     >
                       {statusLabels[payment.status]}
                     </Badge>

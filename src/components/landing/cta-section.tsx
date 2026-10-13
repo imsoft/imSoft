@@ -15,7 +15,7 @@ interface CTASectionProps {
 
 export function CTASection({ title, description, buttonText, lang }: CTASectionProps) {
   return (
-    <section className="relative py-20 px-4 overflow-hidden bg-linear-to-br from-primary via-blue-600 to-purple-700">
+    <section className="relative py-20 px-4 overflow-hidden bg-linear-to-br from-primary via-primary/90 to-ring">
       {/* Background effect */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute -left-1/4 top-0 h-[600px] w-[600px] rounded-full bg-white/10 blur-3xl" />
@@ -27,7 +27,7 @@ export function CTASection({ title, description, buttonText, lang }: CTASectionP
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white">
             {title}
           </h2>
-          <p className="text-lg md:text-xl text-blue-100 max-w-2xl mx-auto">
+          <p className="text-lg md:text-xl text-primary-foreground/85 max-w-2xl mx-auto">
             {description}
           </p>
 

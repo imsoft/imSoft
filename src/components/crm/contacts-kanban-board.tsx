@@ -32,8 +32,8 @@ interface ContactsKanbanBoardProps {
 }
 
 const STAGES: { id: ContactStatus; label_en: string; label_es: string; color: string }[] = [
-  { id: 'no_contact', label_en: 'No Contact', label_es: 'Sin Contacto', color: 'bg-gray-500/10' },
-  { id: 'qualification', label_en: 'Prospecting', label_es: 'Prospección', color: 'bg-blue-500/10' },
+  { id: 'no_contact', label_en: 'No Contact', label_es: 'Sin Contacto', color: 'bg-muted' },
+  { id: 'qualification', label_en: 'Prospecting', label_es: 'Prospección', color: 'bg-primary/10' },
   { id: 'negotiation', label_en: 'Negotiation', label_es: 'Negociación', color: 'bg-purple-500/10' },
   { id: 'closed_won', label_en: 'Won', label_es: 'Ganados', color: 'bg-green-500/10' },
   { id: 'closed_lost', label_en: 'Lost', label_es: 'Perdidos', color: 'bg-red-500/10' },
@@ -50,8 +50,8 @@ function DroppableColumn({ id, hasContacts, children, isOver, lang }: { id: stri
         showDropIndicator
           ? 'bg-primary/5 border-2 border-dashed border-primary ring-2 ring-primary/20'
           : hasContacts
-          ? 'bg-gray-50/50 border-2 border-transparent'
-          : 'bg-gray-50/30 border-2 border-transparent'
+          ? 'bg-muted/50 border-2 border-transparent'
+          : 'bg-muted/30 border-2 border-transparent'
       }`}
       style={{ minHeight: '400px' }}
     >
@@ -268,7 +268,7 @@ export function ContactsKanbanBoard({ contacts: initialContacts, lang }: Contact
   const getEmptyStateContent = (stageId: ContactStatus) => {
     const emptyStates: Record<ContactStatus, { icon: React.ReactNode; message: { en: string; es: string }; emoji: string }> = {
       no_contact: {
-        icon: <Target className="h-8 w-8 text-blue-500" />,
+        icon: <Target className="h-8 w-8 text-primary" />,
         message: {
           en: 'Ready to start? Add your first contact! 🎯',
           es: '¡Listo para comenzar! Agrega tu primer contacto 🎯'
@@ -276,7 +276,7 @@ export function ContactsKanbanBoard({ contacts: initialContacts, lang }: Contact
         emoji: '🎯'
       },
       qualification: {
-        icon: <Rocket className="h-8 w-8 text-blue-600" />,
+        icon: <Rocket className="h-8 w-8 text-primary" />,
         message: {
           en: 'Let\'s find new opportunities! 🚀',
           es: '¡Busquemos nuevas oportunidades! 🚀'

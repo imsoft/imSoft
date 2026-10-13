@@ -676,7 +676,7 @@ export function ProjectPaymentsManager({ projectId, projectCurrency = 'MXN', pro
             return (
               <div
                 key={payment.id}
-                className="flex items-center justify-between p-4 border rounded-lg bg-white dark:bg-gray-900"
+                className="flex items-center justify-between p-4 border rounded-lg bg-card"
               >
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
@@ -685,7 +685,7 @@ export function ProjectPaymentsManager({ projectId, projectCurrency = 'MXN', pro
                     </span>
                     <Badge
                       variant="outline"
-                      className={`${statusColors[payment.status] || 'bg-gray-500'} text-white border-0`}
+                      className={`${statusColors[payment.status] || 'bg-muted-foreground'} text-white border-0`}
                     >
                       {lang === 'es' 
                         ? statusLabels?.label_es || payment.status

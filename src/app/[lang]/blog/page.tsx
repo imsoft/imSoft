@@ -275,7 +275,7 @@ export default async function BlogPage({ params, searchParams }: {
                       href={`/${lang}/blog/${post.slug}`}
                       className="group"
                     >
-                      <Card className="overflow-hidden h-full transition-all hover:shadow-xl bg-white dark:bg-gray-900">
+                      <Card className="overflow-hidden h-full transition-all hover:shadow-xl bg-card">
                         <div className="relative w-full h-48">
                           <Image
                             src={post.image}

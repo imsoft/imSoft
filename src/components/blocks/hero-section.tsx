@@ -40,18 +40,9 @@ export function HeroSection({ dict, lang, companies = [], portfolioProjects = []
         return blogTitles.filter(t => t.title && t.title.trim() !== '');
     }, [blogTitles]);
     
-    // Inicializar con un título aleatorio si hay títulos disponibles
-    const [randomBlogTitle, setRandomBlogTitle] = useState<{ title: string; slug: string } | null>(() => {
-        const valid = blogTitles.filter(t => t.title && t.title.trim() !== '');
-        if (valid.length > 0) {
-            const randomIndex = Math.floor(Math.random() * valid.length);
-            return {
-                title: valid[randomIndex].title,
-                slug: valid[randomIndex].slug,
-            };
-        }
-        return null;
-    });
+    // El titulo inicial es el primero, igual en servidor y cliente: elegirlo al azar aqui
+    // daba un texto distinto en cada lado y React fallaba la hidratacion. El azar va en el efecto.
+    const [randomBlogTitle, setRandomBlogTitle] = useState<{ title: string; slug: string } | null>(null);
 
     useEffect(() => {
         if (validTitles.length > 0) {
@@ -109,7 +100,7 @@ export function HeroSection({ dict, lang, companies = [], portfolioProjects = []
                                             href={announcementLink}
                                             className="hover:bg-background dark:hover:border-t-border bg-muted group mx-auto flex max-w-full w-fit items-center gap-2 sm:gap-4 rounded-full border p-1.5 sm:p-1 pl-3 sm:pl-4 pr-2 sm:pr-1 shadow-md shadow-black/5 transition-all duration-300 dark:border-t-white/5 dark:shadow-zinc-950">
                                             <span className="text-foreground text-xs sm:text-sm transition-opacity duration-500 line-clamp-1 sm:line-clamp-none">{announcementText}</span>
-                                            <span className="dark:border-background hidden sm:block h-4 w-0.5 border-l bg-white dark:bg-zinc-700 shrink-0"></span>
+                                            <span className="dark:border-background hidden sm:block h-4 w-0.5 border-l bg-border shrink-0"></span>
                                             <span className="text-foreground text-xs sm:text-sm font-medium whitespace-nowrap shrink-0">{dict.hero.announcementLink}</span>
 
                                             <div className="bg-background group-hover:bg-muted size-5 sm:size-6 overflow-hidden rounded-full duration-500 shrink-0">

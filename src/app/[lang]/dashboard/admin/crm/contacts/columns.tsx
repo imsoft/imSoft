@@ -303,8 +303,8 @@ const STATUS_LABELS: Record<string, { en: string; es: string }> = {
 }
 
 const STATUS_COLORS: Record<string, string> = {
-  no_contact: 'bg-gray-500/10 text-gray-700 dark:text-gray-400',
-  qualification: 'bg-blue-500/10 text-blue-700 dark:text-blue-400',
+  no_contact: 'bg-muted text-muted-foreground',
+  qualification: 'bg-primary/10 text-primary',
   negotiation: 'bg-purple-500/10 text-purple-700 dark:text-purple-400',
   closed_won: 'bg-green-500/10 text-green-700 dark:text-green-400',
   closed_lost: 'bg-red-500/10 text-red-700 dark:text-red-400',
@@ -350,7 +350,7 @@ function StatusCell({ contactId, status, lang }: { contactId: string; status: st
       <DropdownMenuContent align="start">
         {Object.keys(STATUS_LABELS).map((k) => (
           <DropdownMenuItem key={k} onClick={() => cambiar(k)} className={k === actual ? 'font-medium' : ''}>
-            <span className={`mr-2 inline-block size-2 rounded-full ${STATUS_COLORS[k]?.split(' ')[0].replace('/10', '') || 'bg-gray-400'}`} />
+            <span className={`mr-2 inline-block size-2 rounded-full ${STATUS_COLORS[k]?.split(' ')[0].replace('/10', '') || 'bg-muted-foreground'}`} />
             {statusLabel(k, lang)}
             {k === actual && <Check className="ml-auto size-3.5" />}
           </DropdownMenuItem>

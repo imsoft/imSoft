@@ -54,13 +54,13 @@ export function ContactCard({ contact, lang }: ContactCardProps) {
 
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
-      no_contact: 'bg-gray-500/10 text-gray-700 dark:text-gray-400 border-gray-500/20',
-      qualification: 'bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/20',
+      no_contact: 'bg-muted text-muted-foreground border-border',
+      qualification: 'bg-primary/10 text-primary border-primary/20',
       negotiation: 'bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-500/20',
       closed_won: 'bg-green-500/10 text-green-700 dark:text-green-400 border-green-500/20',
       closed_lost: 'bg-red-500/10 text-red-700 dark:text-red-400 border-red-500/20',
     }
-    return colors[status] || 'bg-gray-500/10 text-gray-700 dark:text-gray-400 border-gray-500/20'
+    return colors[status] || 'bg-muted text-muted-foreground border-border'
   }
 
   const getStatusLabel = (status: string) => {
