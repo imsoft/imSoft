@@ -41,7 +41,7 @@ export function QuoteDocument({ quote }: { quote: QuoteLike & { created_at?: str
           <p className="text-xs uppercase tracking-widest text-neutral-500 mb-3">Qué incluye · {(quote.features ?? []).filter((f) => f.trim()).length} características</p>
           <ol className="grid gap-2 sm:grid-cols-2 text-sm">
             {(quote.features ?? []).filter((f) => f.trim()).map((f, i) => (
-              <li key={i} className="flex gap-2"><span className="w-6 shrink-0 text-right tabular-nums text-sky-600 font-semibold">{i + 1}.</span><span>{f}</span></li>
+              <li key={i} className="flex gap-2"><span className="w-6 shrink-0 text-right tabular-nums text-primary font-semibold">{i + 1}.</span><span>{f}</span></li>
             ))}
           </ol>
         </section>

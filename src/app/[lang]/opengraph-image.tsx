@@ -31,7 +31,7 @@ export default async function Image({ params }: { params: { lang: string } }) {
               width: '52px',
               height: '52px',
               borderRadius: '12px',
-              background: '#6366f1',
+              background: '#1e9df1',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -92,7 +92,7 @@ export default async function Image({ params }: { params: { lang: string } }) {
 
         {/* Bottom: URL */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#6366f1' }} />
+          <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#1e9df1' }} />
           <span style={{ color: '#64748b', fontSize: '18px' }}>imsoft.io</span>
         </div>
       </div>

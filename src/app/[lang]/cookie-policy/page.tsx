@@ -88,7 +88,7 @@ export default async function CookiePolicyPage({ params }: {
                       <li><strong>imsoft_cookie_consent:</strong> {c?.s3_1_consent}</li>
                     </ul>
                   </div>
-                  <div className="border-l-4 border-blue-500 pl-4">
+                  <div className="border-l-4 border-primary pl-4">
                     <h3 className="text-xl font-semibold mb-2">{c?.s3_2Title}</h3>
                     <p className="text-muted-foreground leading-relaxed mb-2">{c?.s3_2P}</p>
                     <p className="text-sm text-muted-foreground"><strong>{c?.s3_2Examples}</strong></p>

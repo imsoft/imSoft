@@ -68,7 +68,7 @@ export default async function Image({
               width: '48px',
               height: '48px',
               borderRadius: '12px',
-              background: '#6366f1',
+              background: '#1e9df1',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -128,7 +128,7 @@ export default async function Image({
 
         {/* Footer */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ width: '36px', height: '3px', borderRadius: '2px', background: '#6366f1' }} />
+          <div style={{ width: '36px', height: '3px', borderRadius: '2px', background: '#1e9df1' }} />
           <span style={{ color: '#475569', fontSize: '17px', letterSpacing: '0.02em' }}>
             imsoft.io/blog
           </span>

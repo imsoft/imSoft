@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { notFound } from 'next/navigation';
 import { getDictionary, hasLocale } from './dictionaries';
@@ -16,8 +16,8 @@ import { WhatsAppButton } from '@/components/ui/whatsapp-button';
 import { CtaTracker } from '@/components/analytics/cta-tracker';
 import { SpeedInsights } from "@vercel/speed-insights/next"
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
   display: "swap",
 });
@@ -25,7 +25,7 @@ const geistSans = Geist({
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#6366f1',
+  themeColor: '#1e9df1',
 };
 
 export async function generateMetadata({
@@ -64,7 +64,7 @@ export default async function RootLayout({
     >
       <head>
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#6366f1" />
+        <meta name="theme-color" content="#1e9df1" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="imSoft" />
@@ -120,7 +120,7 @@ export default async function RootLayout({
       </head>
       {/* Sin overflow-x-hidden en body: con <html> ya recortado, body se volveria un
           contenedor de scroll que nunca se desplaza y anularia todo position: sticky. */}
-      <body className={`${geistSans.variable} antialiased`}>
+      <body className={`${inter.variable} antialiased`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

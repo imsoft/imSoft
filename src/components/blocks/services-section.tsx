@@ -82,7 +82,7 @@ export function ServicesSection({ dict, lang, services, headingLevel = 'h2' }: S
                       <p
                         className="font-bold text-sm whitespace-nowrap"
                         style={{
-                          color: 'var(--secondary-foreground)'
+                          color: 'var(--primary-foreground)'
                         }}
                       >
                         {service.title}
@@ -138,7 +138,7 @@ export function ServicesSection({ dict, lang, services, headingLevel = 'h2' }: S
                           <p
                             className="font-bold text-sm whitespace-nowrap"
                             style={{
-                              color: 'var(--secondary-foreground)'
+                              color: 'var(--primary-foreground)'
                             }}
                           >
                             {service.title}
