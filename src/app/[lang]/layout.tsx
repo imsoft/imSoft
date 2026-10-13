@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Montserrat } from "next/font/google";
 import "./globals.css";
 import { notFound } from 'next/navigation';
 import { getDictionary, hasLocale } from './dictionaries';
@@ -16,8 +16,8 @@ import { WhatsAppButton } from '@/components/ui/whatsapp-button';
 import { CtaTracker } from '@/components/analytics/cta-tracker';
 import { SpeedInsights } from "@vercel/speed-insights/next"
 
-const inter = Inter({
-  variable: "--font-inter",
+const montserrat = Montserrat({
+  variable: "--font-montserrat",
   subsets: ["latin"],
   display: "swap",
 });
@@ -120,7 +120,7 @@ export default async function RootLayout({
       </head>
       {/* Sin overflow-x-hidden en body: con <html> ya recortado, body se volveria un
           contenedor de scroll que nunca se desplaza y anularia todo position: sticky. */}
-      <body className={`${inter.variable} antialiased`}>
+      <body className={`${montserrat.variable} antialiased`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
