@@ -15,14 +15,18 @@ export default async function AdminProspeccionPage({ params }: { params: Promise
   if (!auth.ok) notFound()
 
   const db = serviceClient()
-  const [gmail, campana, redes, { data: filas }, { count: sinContactar }, cola] = await Promise.all([
+  // Los borradores van aparte de los enviados: con cientos de correos esperando
+  // respuesta, un solo tope de 300 dejaba fuera a los borradores de hoy.
+  const [gmail, campana, redes, { data: borradores }, { data: enviados }, { count: sinContactar }, cola] = await Promise.all([
     cuentaConectada(auth.userId),
     estadoCampana(db),
     mensajesDeRedes(db),
-    db.from('outreach_emails').select('*').in('status', ['draft', 'sent', 'replied']).order('scheduled_for', { ascending: true }).order('step', { ascending: true }).limit(300),
+    db.from('outreach_emails').select('*').eq('status', 'draft').order('scheduled_for', { ascending: true }).order('step', { ascending: true }).limit(500),
+    db.from('outreach_emails').select('*').in('status', ['sent', 'replied']).order('scheduled_for', { ascending: false }).order('step', { ascending: true }).limit(300),
     db.from('contacts').select('id', { count: 'exact', head: true }).eq('contact_type', 'prospect').eq('status', 'no_contact').not('email', 'is', null),
     prospectosParaRedes(db),
   ])
+  const filas = [...(borradores ?? []), ...(enviados ?? [])]
   const ids = [...new Set((filas ?? []).map((f) => f.contact_id as string))]
   const { data: contactos } = ids.length ? await db.from('contacts').select(CONTACTO_COLS).in('id', ids) : { data: [] }
   const cDe = new Map(((contactos ?? []) as ContactoMin[]).map((c) => [c.id, c]))
