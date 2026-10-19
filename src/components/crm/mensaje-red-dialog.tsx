@@ -3,11 +3,12 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
-import { Check, Copy, ExternalLink, MessageCircle, RefreshCw } from 'lucide-react'
+import { Check, Copy, ExternalLink, MessageCircle, RefreshCw, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { canalesDe, estadoDelTope, ETIQUETA_CANAL, TOPE_DIARIO_CANAL, type Canal, type ConteoPorCanal } from '@/lib/mensaje-red'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { canalesDe, estadoDelTope, ETIQUETA_CANAL, MOTIVOS_DESCARTE_REDES, TOPE_DIARIO_CANAL, type Canal, type ConteoPorCanal, type MotivoDescarteRedes } from '@/lib/mensaje-red'
 import type { SocialLink } from '@/types/database'
 
 export interface ContactoParaMensaje {
@@ -36,7 +37,7 @@ export function MensajeRedDialog({ contacto, lang, abierto, onClose, canalInicia
   const router = useRouter()
   const [texto, setTexto] = useState('')
   const [canal, setCanal] = useState<Canal | null>(null)
-  const [ocupado, setOcupado] = useState<'generar' | 'enviado' | null>(null)
+  const [ocupado, setOcupado] = useState<'generar' | 'enviado' | 'descartar' | null>(null)
   const [conteo, setConteo] = useState<ConteoPorCanal | null>(null)
   const [forzar, setForzar] = useState(false)
   const canales = useMemo(() => canalesDe(contacto, texto), [contacto, texto])
@@ -95,6 +96,23 @@ export function MensajeRedDialog({ contacto, lang, abierto, onClose, canalInicia
       if (!r.ok) throw new Error(j.error || r.statusText)
       const van = (conteo?.[canal] ?? 0) + 1
       toast.success(es ? `Registrado · van ${van} de ${TOPE_DIARIO_CANAL[canal]} hoy por ${ETIQUETA_CANAL[canal]}` : `Logged · ${van} of ${TOPE_DIARIO_CANAL[canal]} today on ${ETIQUETA_CANAL[canal]}`)
+      onClose()
+      router.refresh()
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : String(err))
+    } finally {
+      setOcupado(null)
+    }
+  }
+
+  /** Los datos no sirven para escribirle: sale de la cola sin contar como enviado. */
+  async function descartar(motivo: MotivoDescarteRedes) {
+    setOcupado('descartar')
+    try {
+      const r = await fetch('/api/outreach/mensaje/descartar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contactId: contacto.id, motivo }) })
+      const j = await r.json().catch(() => ({}))
+      if (!r.ok) throw new Error(j.error || r.statusText)
+      toast.success(es ? 'Descartado de la cola de redes' : 'Removed from the social queue')
       onClose()
       router.refresh()
     } catch (err) {
@@ -163,6 +181,18 @@ export function MensajeRedDialog({ contacto, lang, abierto, onClose, canalInicia
               <Button variant="outline" onClick={yaEnviado} disabled={!texto || ocupado !== null} title={es ? 'Lo registra en el historial del contacto y lo pasa a calificación' : 'Logs it and moves the contact to qualification'}>
                 <Check className="mr-2 h-4 w-4" />{es ? 'Ya lo envié' : 'Already sent'}
               </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" disabled={ocupado === 'enviado' || ocupado === 'descartar'} title={es ? 'Sácalo de la cola sin contarlo como enviado' : 'Remove it from the queue without counting it as sent'}>
+                    <X className="mr-2 h-4 w-4" />{es ? 'Descartar' : 'Skip'}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  {(Object.keys(MOTIVOS_DESCARTE_REDES) as MotivoDescarteRedes[]).map((m) => (
+                    <DropdownMenuItem key={m} onSelect={() => descartar(m)}>{MOTIVOS_DESCARTE_REDES[m]}</DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
         )}

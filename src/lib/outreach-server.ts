@@ -8,7 +8,7 @@ import { enviarRaw, estadoDelHilo, messageIdHeader, rebotesRecientes } from '@/l
 import { GANCHO_TOOL, ganchoDesdeNotas, limpiarGancho, promptGancho } from '@/lib/outreach-ai'
 import { estadoDeCorreo, fechaCorta, type FilaCorreo } from '@/lib/estado-correo'
 import { buzonNoComercial } from '@/lib/correo-invalido'
-import { colaDeRedes, conteoPorCanal, ofertaDe, renderMensajeRed, TOPE_DIARIO_CANAL, type Canal, type ContactoDeCola, type FilaCola, type Oferta } from '@/lib/mensaje-red'
+import { colaDeRedes, conteoPorCanal, MOTIVOS_DESCARTE_REDES, ofertaDe, renderMensajeRed, TAG_REDES_DESCARTADO, TOPE_DIARIO_CANAL, type Canal, type MotivoDescarteRedes, type ContactoDeCola, type FilaCola, type Oferta } from '@/lib/mensaje-red'
 import { dominioDeCorreo, construirMime, cuerpoDe, fechaSiguientePaso, renderDesdeCuerpo, renderOutreach, segmentoDe, topeDiario, type Step } from '@/lib/outreach'
 
 const TZ = 'America/Mexico_City'
@@ -250,6 +250,20 @@ export async function registrarMensajeRed(db: SupabaseClient, userId: string, co
   const { error } = await db.from('activities').insert({ contact_id: contactId, activity_type: 'note', subject: `Mensaje por ${etiqueta}`, description: texto, status: 'completed', completed_at: ahora, created_by: userId })
   if (error) throw new Error(error.message)
   await db.from('contacts').update({ status: 'qualification', updated_at: ahora }).eq('id', contactId).eq('status', 'no_contact')
+  return { ok: true }
+}
+
+/**
+ * Saca al contacto de la cola de redes sin fingir que se le escribio: le pone la etiqueta
+ * `redes-descartado`, deja el motivo en su historial y no toca su estado.
+ */
+export async function descartarDeRedes(db: SupabaseClient, userId: string, contactId: string, motivo: MotivoDescarteRedes) {
+  const { data: c } = await db.from('contacts').select('id, tags').eq('id', contactId).maybeSingle()
+  if (!c) throw new Error('Contacto no encontrado')
+  const ahora = new Date().toISOString()
+  const { error } = await db.from('contacts').update({ tags: [...new Set([...((c.tags as string[] | null) ?? []), TAG_REDES_DESCARTADO])], updated_at: ahora }).eq('id', contactId)
+  if (error) throw new Error(error.message)
+  await db.from('activities').insert({ contact_id: contactId, activity_type: 'note', subject: 'Descartado de la cola de redes', description: MOTIVOS_DESCARTE_REDES[motivo], status: 'completed', completed_at: ahora, created_by: userId })
   return { ok: true }
 }
 

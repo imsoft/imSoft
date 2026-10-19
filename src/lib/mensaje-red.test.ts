@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { canalDeAsunto, canalesDe, colaDeRedes, conteoPorCanal, estadoDelTope, ETIQUETA_CANAL, numeroWhatsApp, ofertaDe, renderMensajeRed, TOPE_CANAL, TOPE_DIARIO_CANAL, urlDeRed } from './mensaje-red'
+import { canalDeAsunto, canalesDe, colaDeRedes, TAG_REDES_DESCARTADO, conteoPorCanal, estadoDelTope, ETIQUETA_CANAL, numeroWhatsApp, ofertaDe, renderMensajeRed, TOPE_CANAL, TOPE_DIARIO_CANAL, urlDeRed } from './mensaje-red'
 
 const v = { nombre: 'Héctor', empresa: 'Gil y Gil', gancho: 'Cada filial lleva sus pedimentos en su propio Excel.', segmento: 'logistica-gdl' }
 
@@ -115,6 +115,14 @@ describe('cola de redes', () => {
     expect(cola.map((f) => f.id)).toEqual(['ig-sin-correo', 'wa-correo', 'ig-correo'])
     expect(cola[0]).toMatchObject({ nombre: 'Ana', empresa: 'Acme', sinCorreo: true })
     expect(cola[1].sinCorreo).toBe(false)
+  })
+
+  it('los descartados de redes no entran a la cola aunque tengan WhatsApp', () => {
+    const cola = colaDeRedes([
+      { ...base, id: 'malo', email: '', phone: '3325365558', tags: [TAG_REDES_DESCARTADO] },
+      { ...base, id: 'bueno', email: '', phone: '3325365559' },
+    ])
+    expect(cola.map((f) => f.id)).toEqual(['bueno'])
   })
 
   it('dentro de cada grupo, primero los de zona premium', () => {

@@ -71,6 +71,19 @@ export function estadoDelTope(enviados: number, canal: Canal): 'bien' | 'cerca' 
 /** Etiqueta de los prospectos en colonias de alto poder adquisitivo (la pone el buscador). */
 export const TAG_ZONA_PREMIUM = 'zona-premium'
 
+/** Etiqueta que saca al contacto de la cola de redes: sus datos no sirven para escribirle. */
+export const TAG_REDES_DESCARTADO = 'redes-descartado'
+
+/** Por que se descarta un contacto de la cola de redes; queda en su historial. */
+export const MOTIVOS_DESCARTE_REDES = {
+  'sin-whatsapp': 'El número no está en WhatsApp',
+  'perfil-no-cuadra': 'El perfil de Instagram no es del negocio',
+  'corporativo': 'Corporativo o franquicia: no decide local',
+  'ya-contactado': 'Ya se le había escrito antes',
+  'otro': 'Otro motivo',
+} as const
+export type MotivoDescarteRedes = keyof typeof MOTIVOS_DESCARTE_REDES
+
 /**
  * Giros de consumo con clientela que regresa: restaurantes y cafes, gimnasios, tiendas.
  * A esos no se les habla de Excel sino de su propia app (pedidos, puntos, promociones),
@@ -210,11 +223,13 @@ export interface FilaCola {
  * Cola de mensajes por redes para hoy: prospectos sin contactar que tienen WhatsApp o
  * Instagram. Primero los que no tienen correo (no hay otro camino), luego los que tienen
  * WhatsApp (contesta mas gente que por DM). Dentro de cada grupo, primero los de zona
- * premium: ahi es mas probable que haya presupuesto. Es puro: la pagina trae los contactos.
+ * premium: ahi es mas probable que haya presupuesto. Los descartados (etiqueta
+ * `redes-descartado`) no entran. Es puro: la pagina trae los contactos.
  */
 export function colaDeRedes(contactos: ContactoDeCola[]): FilaCola[] {
   const filas: FilaCola[] = []
   for (const c of contactos) {
+    if ((c.tags ?? []).includes(TAG_REDES_DESCARTADO)) continue
     const disponibles = canalesDe(c).map((x) => x.canal)
     const canales = CANALES_COLA.filter((x) => disponibles.includes(x))
     if (!canales.length) continue
