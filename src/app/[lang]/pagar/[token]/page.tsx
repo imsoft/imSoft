@@ -5,6 +5,7 @@ import { SITE_URL, serviceClient } from '@/lib/quotes/server'
 import { stripe } from '@/lib/stripe'
 import { montoConRecargo } from '@/lib/cobro-tarjeta'
 import { consultaPagado, leerEnlace, secretoDeEnlaces } from '@/lib/enlace-pago'
+import { PagarTarjeta } from '@/components/pagar/pagar-tarjeta'
 
 export const dynamic = 'force-dynamic'
 export const metadata: Metadata = { title: 'Pago con tarjeta · imSoft', robots: { index: false, follow: false } }
@@ -30,8 +31,14 @@ export default async function Pagar({ params }: { params: Promise<{ lang: string
   if (pagado.data.length) return <Aviso titulo={es ? 'Este pago ya está hecho' : 'This payment is already done'} texto={es ? `Recibimos el pago de ${d.etiqueta} de la cotización ${q.folio}. ¡Gracias!` : `We received the payment for quote ${q.folio}. Thank you!`} />
 
   const cobro = montoConRecargo(d.monto, d.recargoPct)
+  const volverA = `${SITE_URL}/${lang}/cotizacion/${q.token}`
+  // Con plazo fijo el cobro se hace aqui: el cliente solo puede pagar con el plan acordado.
+  const pk = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+  if (d.plazo !== undefined && pk) {
+    return <PagarTarjeta token={token} lang={lang} publishableKey={pk} concepto={`${q.title} · ${d.etiqueta}`} folio={q.folio} cobro={cobro} currency={String(q.currency || 'MXN')} plazo={d.plazo} volver={volverA} />
+  }
   const metadata = { enlace: d.id, quote_id: d.quoteId, folio: q.folio, monto_base: String(d.monto), recargo_pct: String(d.recargoPct), msi: d.msi ? '1' : '0' }
-  const volver = `${SITE_URL}/${lang}/cotizacion/${q.token}`
+  const volver = volverA
   const session = await stripe.checkout.sessions.create({
     mode: 'payment',
     locale: es ? 'es-419' : 'en',

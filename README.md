@@ -72,6 +72,9 @@ SUPABASE_SERVICE_ROLE_KEY=
 # Stripe (requerido para pagos)
 STRIPE_SECRET_KEY=
 STRIPE_WEBHOOK_SECRET=
+# Llave publicable (pk_live_… o pk_test_…): la usa imsoft.io/pagar para cobrar con plazo fijo de MSI.
+# Sin ella, los enlaces con plazo caen a Stripe Checkout (que muestra todos los plazos del Dashboard).
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
 
 # App
 NEXT_PUBLIC_SITE_URL=https://imsoft.io

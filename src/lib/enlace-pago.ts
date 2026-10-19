@@ -21,6 +21,19 @@ export interface DatosEnlace {
   recargoPct: number
   etiqueta: string
   msi: boolean
+  /**
+   * Plazo acordado: 0 = una exhibicion, 3/6/12 = meses sin intereses. Con plazo, el pago
+   * se cobra en imsoft.io con ese plan exacto (el cliente no puede elegir otro). Sin
+   * plazo (enlaces viejos) se manda a Checkout de Stripe con `msi` como siempre.
+   */
+  plazo?: Plazo
+}
+
+export const PLAZOS = [0, 3, 6, 12] as const
+export type Plazo = (typeof PLAZOS)[number]
+
+export function esPlazo(v: unknown): v is Plazo {
+  return (PLAZOS as readonly number[]).includes(v as number)
 }
 
 const b64 = (s: string | Buffer) => Buffer.from(s).toString('base64url')
@@ -35,7 +48,7 @@ export function nuevoIdEnlace(): string {
 
 /** Token de la URL: datos en base64url + firma. */
 export function firmarEnlace(d: DatosEnlace, secreto: string): string {
-  const cuerpo = b64(JSON.stringify({ i: d.id, q: d.quoteId, m: d.monto, r: d.recargoPct, e: d.etiqueta, s: d.msi ? 1 : 0 }))
+  const cuerpo = b64(JSON.stringify({ i: d.id, q: d.quoteId, m: d.monto, r: d.recargoPct, e: d.etiqueta, s: d.msi ? 1 : 0, ...(d.plazo === undefined ? {} : { p: d.plazo }) }))
   return `${cuerpo}.${firma(cuerpo, secreto)}`
 }
 
@@ -49,7 +62,8 @@ export function leerEnlace(token: string, secreto: string): DatosEnlace | null {
   try {
     const o = JSON.parse(Buffer.from(cuerpo, 'base64url').toString('utf8'))
     if (typeof o.i !== 'string' || typeof o.q !== 'string' || typeof o.m !== 'number' || typeof o.r !== 'number' || typeof o.e !== 'string') return null
-    return { id: o.i, quoteId: o.q, monto: o.m, recargoPct: o.r, etiqueta: o.e, msi: o.s === 1 }
+    if (o.p !== undefined && !esPlazo(o.p)) return null
+    return { id: o.i, quoteId: o.q, monto: o.m, recargoPct: o.r, etiqueta: o.e, msi: o.s === 1, ...(o.p === undefined ? {} : { plazo: o.p as Plazo }) }
   } catch {
     return null
   }
