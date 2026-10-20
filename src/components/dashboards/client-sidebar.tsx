@@ -17,6 +17,7 @@ import {
   MessageSquare,
   Inbox,
   CreditCard,
+  FileSignature,
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -54,6 +55,11 @@ export function ClientSidebar({ dict, lang }: ClientSidebarProps) {
       title: dict.dashboard.client.nav.messages,
       url: `/${lang}/dashboard/client/messages`,
       icon: Inbox,
+    },
+    {
+      title: dict.dashboard.client.nav.documents,
+      url: `/${lang}/dashboard/client/documents`,
+      icon: FileSignature,
     },
     {
       title: dict.dashboard.client.nav.billing,
