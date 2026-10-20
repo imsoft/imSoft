@@ -10,10 +10,10 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Textarea } from '@/components/ui/textarea'
 import { Copy, ExternalLink, Printer, Save, Send } from 'lucide-react'
-import { ContractDocument } from '@/components/documents/contract-document'
+import { ContractDocument, type Huella } from '@/components/documents/contract-document'
 import type { Contract, Quote } from '@/types/quotes'
 
-export function ContractEditor({ lang, quote, contract, publicUrl }: { lang: string; quote: Quote; contract: Contract; publicUrl: string }) {
+export function ContractEditor({ lang, quote, contract, publicUrl, huella }: { lang: string; quote: Quote; contract: Contract; publicUrl: string; huella?: Huella | null }) {
   const es = lang !== 'en'
   const router = useRouter()
   const [html, setHtml] = useState(contract.body_html)
@@ -62,7 +62,7 @@ export function ContractEditor({ lang, quote, contract, publicUrl }: { lang: str
       {editando ? (
         <Textarea className="border-2! border-border! font-mono text-xs min-h-[480px]" value={html} onChange={(e) => setHtml(e.target.value)} />
       ) : (
-        <ContractDocument contract={{ ...contract, body_html: html }} clientName={quote.client_name} clientCompany={quote.client_company} />
+        <ContractDocument contract={{ ...contract, body_html: html }} clientName={quote.client_name} clientCompany={quote.client_company} huella={huella} />
       )}
     </div>
   )

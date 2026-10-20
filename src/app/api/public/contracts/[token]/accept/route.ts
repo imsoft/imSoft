@@ -1,14 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { ADMIN_EMAIL, clientIp, enviarCorreo, serviceClient } from '@/lib/quotes/server'
 import { correoContratoFirmado } from '@/lib/email/plantillas'
+import { motivoFirmaInvalida } from '@/lib/firma-contrato'
+import { huellaContrato } from '@/lib/huella-contrato'
 
-/** El cliente acepta el contrato desde el enlace publico. Misma evidencia que la cotizacion. */
+/**
+ * El cliente firma el contrato desde el enlace publico: nombre, casilla y firma dibujada.
+ * Ademas de la evidencia de la cotizacion (fecha, IP, navegador) se guarda la huella
+ * SHA-256 del texto aceptado.
+ */
 export async function POST(req: NextRequest, { params }: { params: Promise<{ token: string }> }) {
   const { token } = await params
   const body = await req.json().catch(() => ({}))
   const nombre = String(body.nombre ?? '').trim()
   if (nombre.length < 3) return NextResponse.json({ error: 'Escribe tu nombre completo para aceptar.' }, { status: 400 })
   if (!body.acepta) return NextResponse.json({ error: 'Marca la casilla de aceptación.' }, { status: 400 })
+  const motivo = motivoFirmaInvalida(body.firma)
+  if (motivo) return NextResponse.json({ error: motivo }, { status: 400 })
 
   const db = serviceClient()
   const { data: c } = await db.from('contracts').select('*, quotes(id, folio, title, client_name)').eq('token', token).maybeSingle()
@@ -19,7 +27,16 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ tok
   const ahora = new Date().toISOString()
   const { error } = await db
     .from('contracts')
-    .update({ status: 'signed', signed_at: ahora, signed_name: nombre, signed_ip: clientIp(req.headers), signed_user_agent: req.headers.get('user-agent') ?? null, updated_at: ahora })
+    .update({
+      status: 'signed',
+      signed_at: ahora,
+      signed_name: nombre,
+      signed_ip: clientIp(req.headers),
+      signed_user_agent: req.headers.get('user-agent') ?? null,
+      signed_signature: body.firma as string,
+      signed_hash: huellaContrato(c.body_html),
+      updated_at: ahora,
+    })
     .eq('id', c.id)
     .eq('status', 'sent')
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })

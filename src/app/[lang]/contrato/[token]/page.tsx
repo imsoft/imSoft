@@ -7,6 +7,7 @@ import { AcceptForm } from '@/components/documents/accept-form'
 import { PrintButton } from '@/components/documents/print-button'
 import { Confetti } from '@/components/documents/confetti'
 import type { Contract } from '@/types/quotes'
+import { huellaContrato } from '@/lib/huella-contrato'
 
 export const dynamic = 'force-dynamic'
 export async function generateMetadata({ params }: { params: Promise<{ lang: string; token: string }> }): Promise<Metadata> {
@@ -33,12 +34,14 @@ export default async function ContratoPublico({ params }: { params: Promise<{ la
   const c = data as Contract & { quotes: { client_name: string; client_company?: string | null } | null }
   // Solo se puede firmar cuando esta enviado; en borrador el cliente solo ve el documento, sin avisos.
   const puedeFirmar = c.status === 'sent'
+  const actual = huellaContrato(c.body_html)
+  const huella = c.signed_hash ? { actual, coincide: actual === c.signed_hash } : null
   return (
     <main className="min-h-screen bg-neutral-100 px-4 py-8 print:bg-white print:p-0">
       <div className="mx-auto max-w-3xl space-y-6">
         <div className="no-print flex justify-end"><PrintButton lang={lang} /></div>
         <Confetti />
-        <ContractDocument contract={c} clientName={c.quotes?.client_name ?? ''} clientCompany={c.quotes?.client_company} />
+        <ContractDocument contract={c} clientName={c.quotes?.client_name ?? ''} clientCompany={c.quotes?.client_company} huella={huella} />
         {puedeFirmar && <AcceptForm endpoint={`/api/public/contracts/${token}/accept`} tipo="contrato" lang={lang} />}
       </div>
     </main>

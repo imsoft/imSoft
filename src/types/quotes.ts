@@ -50,6 +50,10 @@ export interface Contract {
   signed_name?: string | null
   signed_ip?: string | null
   signed_user_agent?: string | null
+  /** PNG en data URL con el trazo del cliente al aceptar. */
+  signed_signature?: string | null
+  /** SHA-256 del body_html en el momento de la aceptacion. */
+  signed_hash?: string | null
   created_at?: string
   updated_at?: string
 }
