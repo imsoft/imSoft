@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   PROMOCIONES, descuentoValido, estaVencida, importesMensualidades, numMensualidades, textoMensualidades, featuresValidas, fechaVigencia, hitosValidos, importesHitos, itemsDesdePrecio, itemsValidos, motivoNoAceptable,
-  plazoEntrega, porcentajeDescuento, precioProyecto, renderContrato, siguienteFolio, textoFormaDePago, totales, type QuoteLike,
+  DIAS_REVISION, plazoEntrega, porcentajeDescuento, precioProyecto, renderContrato, siguienteFolio, textoFormaDePago, totales, type QuoteLike,
 } from './cotizaciones';
 import { CONDICIONES_DEFAULT } from '@/config/emisor';
 
@@ -162,5 +162,26 @@ describe('cotizaciones', () => {
     expect(renderContrato({ ...q, terms: { ...q.terms, penalizacion_dia: 0 } }, 'CON-2026-002')).not.toContain('por cada día hábil adicional');
     // Escapa HTML del cliente
     expect(renderContrato({ ...q, client_name: '<b>x</b>' }, 'CON-2026-003')).toContain('&lt;b&gt;x&lt;/b&gt;');
+  });
+
+  it('el contrato trae las cláusulas de aceptación, terceros, datos, responsabilidad y cesión', () => {
+    const html = renderContrato(q, 'CON-2026-004');
+    const titulos = [...html.matchAll(/<h2>([^<]+)<\/h2>/g)].map((m) => m[1]);
+    expect(titulos).toEqual([
+      'Primera. Objeto', 'Segunda. Precio y forma de pago', 'Tercera. Plazo de entrega', 'Cuarta. Entrega y aceptación',
+      'Quinta. Propiedad de los entregables', 'Sexta. Cambios de alcance', 'Séptima. Obligaciones del Cliente', 'Octava. Garantía y soporte',
+      'Novena. Servicios de terceros y operación', 'Décima. Datos personales', 'Décima primera. Límite de responsabilidad',
+      'Décima segunda. Confidencialidad', 'Décima tercera. Vigencia, terminación y cesión', 'Décima cuarta. Comunicaciones y aceptación',
+      'Décima quinta. Jurisdicción',
+    ]);
+    expect(html).toContain(`${DIAS_REVISION} días hábiles para revisarla`);
+    expect(html).toContain('se limita al monto efectivamente pagado');
+    expect(html).toContain('Ley Federal de Protección de Datos Personales');
+    expect(html).toContain('responsabilidad exclusiva del Cliente y de quien los firme');
+    expect(html).toContain('Ninguna de las partes podrá ceder');
+    // Las referencias cruzadas apuntan a la numeración nueva
+    expect(html).toContain('conforme a las cláusulas Sexta y Séptima');
+    const conMensualidades = renderContrato({ ...q, payment: { ...q.payment, hitos: q.payment.hitos.map((h) => ({ ...h, mensualidades: 3 })) } }, 'CON-2026-005');
+    expect(conMensualidades).toContain('conforme a la cláusula Quinta, al quedar pagado el total');
   });
 });

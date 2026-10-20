@@ -283,6 +283,9 @@ function esc(s: string | null | undefined): string {
  * de enviarlo. Es un borrador de trabajo: un abogado deberia revisarlo antes de usarlo
  * como contrato definitivo.
  */
+/** Dias habiles que tiene el cliente para revisar una entrega antes de que se tenga por aceptada. */
+export const DIAS_REVISION = 5;
+
 export function renderContrato(q: QuoteLike & { created_at?: string | null }, folioContrato: string, fecha = new Date()): string {
   const t = totales(q);
   const plazo = plazoEntrega(q, fecha);
@@ -315,30 +318,45 @@ ${q.intro ? `<p>${esc(q.intro)}</p>` : ''}
 <p>El precio total es de <strong>${mxn(t.total, q.currency)}</strong> (${t.descuento > 0 ? `precio de lista de ${mxn(t.lista, q.currency)} menos un descuento de ${mxn(t.descuento, q.currency)} por concepto de "${esc(q.discount?.motivo ?? '')}", es decir, ${mxn(t.subtotal, q.currency)}` : mxn(t.subtotal, q.currency)}${q.apply_iva ? ` más ${mxn(t.iva, q.currency)} de IVA` : ', sin IVA'}), pagadero así:</p>${t.descuento > 0 ? `
 <p>El descuento aplica únicamente a este contrato y no constituye un precio de referencia para trabajos futuros.</p>` : ''}
 <ul>${pagos}</ul>
-<p>Los pagos se realizan por transferencia bancaria o mediante enlace de pago con tarjeta${q.payment.msi ? ', incluidos meses sin intereses cuando el banco emisor lo permita' : ''}. El Prestador emite CFDI por cada pago recibido; los asuntos de facturación se atienden en ${esc(EMISOR.emailFacturacion)}. ${hayMensualidades ? 'Las mensualidades pactadas son un pago diferido sin intereses. Los entregables se ponen en producción al cubrirse la primera mensualidad del hito correspondiente; la propiedad se transfiere conforme a la cláusula Cuarta, al quedar pagado el total. El atraso en cualquier mensualidad faculta al Prestador a suspender el servicio, los accesos y el soporte hasta que el pago se regularice, sin que ello modifique las fechas de las mensualidades restantes.' : 'Ningún entregable se pone en producción ni se transfiere hasta recibir el pago del hito correspondiente.'}</p>
+<p>Los pagos se realizan por transferencia bancaria o mediante enlace de pago con tarjeta${q.payment.msi ? ', incluidos meses sin intereses cuando el banco emisor lo permita' : ''}. El Prestador emite CFDI por cada pago recibido; los asuntos de facturación se atienden en ${esc(EMISOR.emailFacturacion)}. ${hayMensualidades ? 'Las mensualidades pactadas son un pago diferido sin intereses. Los entregables se ponen en producción al cubrirse la primera mensualidad del hito correspondiente; la propiedad se transfiere conforme a la cláusula Quinta, al quedar pagado el total. El atraso en cualquier mensualidad faculta al Prestador a suspender el servicio, los accesos y el soporte hasta que el pago se regularice, sin que ello modifique las fechas de las mensualidades restantes.' : 'Ningún entregable se pone en producción ni se transfiere hasta recibir el pago del hito correspondiente.'}</p>
 
 <h2>Tercera. Plazo de entrega</h2>
-<p>El Prestador entregará el proyecto a más tardar el <strong>${esc(fechaLarga(plazo.fechaLimite))}</strong>, es decir, en un plazo de ${plazo.semanas} ${plazo.semanas === 1 ? 'semana' : 'semanas'} contado desde la cotización, siempre que el Cliente entregue el anticipo y los insumos iniciales oportunamente. El plazo se ajustará de común acuerdo si el alcance cambia o si el Cliente retrasa la entrega de insumos, conforme a las cláusulas Quinta y Sexta.</p>
+<p>El Prestador entregará el proyecto a más tardar el <strong>${esc(fechaLarga(plazo.fechaLimite))}</strong>, es decir, en un plazo de ${plazo.semanas} ${plazo.semanas === 1 ? 'semana' : 'semanas'} contado desde la cotización, siempre que el Cliente entregue el anticipo y los insumos iniciales oportunamente. El plazo se ajustará de común acuerdo si el alcance cambia o si el Cliente retrasa la entrega de insumos, conforme a las cláusulas Sexta y Séptima.</p>
 
-<h2>Cuarta. Propiedad de los entregables</h2>
-<p>${esc(q.terms.propiedad)} El Prestador conserva el derecho de mencionar el proyecto en su portafolio, salvo que el Cliente indique lo contrario por escrito. Las herramientas, librerías y componentes de terceros conservan sus propias licencias.</p>
+<h2>Cuarta. Entrega y aceptación</h2>
+<p>Cada entrega se notificará al Cliente por escrito, con acceso al entregable en un ambiente de pruebas o en producción. El Cliente contará con ${DIAS_REVISION} días hábiles para revisarla y reportar por escrito los defectos respecto a lo contratado; el Prestador los corregirá y volverá a presentar la entrega. Si transcurre ese plazo sin observaciones, o si el Cliente usa el entregable para su operación, la entrega se tendrá por aceptada. Las observaciones que amplíen o cambien el alcance se tratan conforme a la cláusula Sexta y no suspenden la aceptación.</p>
 
-<h2>Quinta. Cambios de alcance</h2>
+<h2>Quinta. Propiedad de los entregables</h2>
+<p>${esc(q.terms.propiedad)} El Prestador conserva el derecho de mencionar el proyecto en su portafolio, salvo que el Cliente indique lo contrario por escrito. Las herramientas, librerías y componentes de terceros conservan sus propias licencias. El Prestador conserva la propiedad de sus herramientas, componentes y conocimientos genéricos desarrollados antes o fuera de este contrato, y otorga al Cliente licencia para usarlos como parte del proyecto.</p>
+
+<h2>Sexta. Cambios de alcance</h2>
 <p>${esc(q.terms.cambios_alcance)}</p>
 
-<h2>Sexta. Obligaciones del Cliente</h2>
-<p>El Cliente entregará oportunamente la información, contenidos, accesos, materiales y aprobaciones necesarios para el desarrollo, y revisará los avances en un plazo razonable. ${esc(penal)}</p>
+<h2>Séptima. Obligaciones del Cliente</h2>
+<p>El Cliente entregará oportunamente la información, contenidos, accesos, materiales y aprobaciones necesarios para el desarrollo, y revisará los avances en un plazo razonable. ${esc(penal)} El Cliente garantiza que cuenta con los derechos y autorizaciones sobre los contenidos, datos, marcas y materiales que entregue, y responderá frente a terceros por cualquier reclamación derivada de ellos.</p>
 
-<h2>Séptima. Garantía y soporte</h2>
-<p>El Prestador corregirá sin costo, durante ${q.terms.garantia_dias} días naturales después de la entrega, cualquier defecto de funcionamiento respecto a lo contratado. La garantía no cubre cambios de alcance, fallas causadas por terceros, ni modificaciones realizadas por personas ajenas al Prestador. ${esc(q.terms.soporte)} Las solicitudes de garantía y soporte se envían a ${esc(EMISOR.emailSoporte)}.</p>
+<h2>Octava. Garantía y soporte</h2>
+<p>El Prestador corregirá sin costo, durante ${q.terms.garantia_dias} días naturales después de la entrega, cualquier defecto de funcionamiento respecto a lo contratado. La garantía no cubre cambios de alcance, fallas causadas por terceros, ni modificaciones realizadas por personas ajenas al Prestador. ${esc(q.terms.soporte)} Las solicitudes de garantía y soporte se envían a ${esc(EMISOR.emailSoporte)}. Fuera de la garantía, el mantenimiento, las mejoras y el soporte se cotizan por separado.</p>
 
-<h2>Octava. Confidencialidad</h2>
+<h2>Novena. Servicios de terceros y operación</h2>
+<p>El proyecto puede apoyarse en servicios de terceros, como alojamiento, dominios, correo, pasarelas de pago, mensajería o proveedores de inteligencia artificial. Sus costos, disponibilidad, condiciones y cambios de precio son ajenos al Prestador y corren por cuenta del Cliente, ya sea contratándolos a su nombre o reembolsándolos al Prestador, salvo lo que la cotización incluya expresamente. Los resultados que el software produzca a partir de datos del Cliente o con apoyo de inteligencia artificial, como cálculos, documentos, reportes o recomendaciones, son herramientas de trabajo: su revisión, validación y uso profesional, legal o comercial son responsabilidad exclusiva del Cliente y de quien los firme o emita.</p>
+
+<h2>Décima. Datos personales</h2>
+<p>El Cliente es responsable de los datos personales que capture, trate o almacene en el sistema, y de contar con el aviso de privacidad y los consentimientos que exige la Ley Federal de Protección de Datos Personales en Posesión de los Particulares. El Prestador actúa como encargado: trata esos datos únicamente para desarrollar, operar y dar soporte al proyecto, siguiendo las instrucciones del Cliente, con medidas de seguridad razonables, y los devuelve o elimina al terminar el contrato, salvo obligación legal de conservarlos.</p>
+
+<h2>Décima primera. Límite de responsabilidad</h2>
+<p>La responsabilidad total del Prestador por cualquier causa derivada de este contrato se limita al monto efectivamente pagado por el Cliente en los doce meses anteriores al hecho que la origine. El Prestador no responde por lucro cesante, pérdida de datos, de negocio o de oportunidades, ni por daños indirectos, aun cuando se le haya advertido de su posibilidad. Esta limitación no aplica en casos de dolo o negligencia grave del Prestador.</p>
+
+<h2>Décima segunda. Confidencialidad</h2>
 <p>Ambas partes tratarán como confidencial la información técnica, comercial y de negocio que conozcan con motivo de este contrato, y no la divulgarán a terceros sin autorización escrita, durante la vigencia del contrato y dos años después.</p>
 
-<h2>Novena. Terminación</h2>
-<p>Cualquiera de las partes puede dar por terminado el contrato mediante aviso escrito. En ese caso, el Cliente pagará el trabajo realizado hasta la fecha, y el Prestador entregará los avances correspondientes a lo pagado. Los anticipos no son reembolsables una vez iniciado el trabajo.</p>
+<h2>Décima tercera. Vigencia, terminación y cesión</h2>
+<p>Este contrato entra en vigor en la fecha de su aceptación y termina cuando ambas partes cumplan sus obligaciones, incluido el periodo de garantía. Cualquiera de las partes puede darlo por terminado anticipadamente mediante aviso escrito. En ese caso, el Cliente pagará el trabajo realizado hasta la fecha, y el Prestador entregará los avances correspondientes a lo pagado. Los anticipos no son reembolsables una vez iniciado el trabajo. Ninguna de las partes podrá ceder este contrato sin el consentimiento escrito de la otra. Las cláusulas de propiedad, datos personales, límite de responsabilidad y confidencialidad sobreviven a la terminación.</p>
 
-<h2>Décima. Jurisdicción</h2>
+<h2>Décima cuarta. Comunicaciones y aceptación</h2>
+<p>Las comunicaciones entre las partes se realizan por escrito a los correos indicados en este contrato y en la cotización, y se tienen por recibidas al día hábil siguiente de su envío. Las partes reconocen la aceptación en línea de este contrato, con registro de nombre, fecha, hora y dirección de red, como manifestación válida de su consentimiento, con los mismos efectos que la firma autógrafa, conforme al Código de Comercio y al Código Civil Federal.</p>
+
+<h2>Décima quinta. Jurisdicción</h2>
 <p>Para la interpretación y cumplimiento de este contrato, las partes se someten a las leyes y a los tribunales competentes de ${esc(EMISOR.ciudad)}, renunciando a cualquier otro fuero que pudiera corresponderles.</p>
 
 <p>Leído que fue por ambas partes y enteradas de su contenido y alcance, lo aceptan en ${esc(EMISOR.ciudad)}, el ${esc(fechaTxt)}.</p>
