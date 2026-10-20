@@ -24,7 +24,7 @@ interface Props {
   cobro: number
   currency: string
   plazo: Plazo
-  /** A donde regresa el cliente al terminar (la cotizacion). */
+  /** A donde va el cliente al terminar: esta misma pagina con ?pago=ok, que confirma el cobro. */
   volver: string
 }
 
@@ -89,7 +89,7 @@ export function PagarTarjeta({ token, lang, publishableKey, concepto, folio, cob
       }
       if (status !== 'succeeded' && status !== 'processing') throw new Error(es ? 'El pago no se completó. No se hizo ningún cargo.' : 'The payment did not complete. Nothing was charged.')
       setPaso('hecho')
-      window.location.assign(`${volver}?pago=ok`)
+      window.location.assign(volver)
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err))
       setPaso('tarjeta')

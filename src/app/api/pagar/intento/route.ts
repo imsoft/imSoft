@@ -23,6 +23,7 @@ export async function POST(req: NextRequest) {
     payment_method: body.paymentMethodId,
     payment_method_types: ['card'],
     description: `${q.folio} · ${d.etiqueta}`,
+    ...(q.client_email ? { receipt_email: q.client_email } : {}),
     metadata,
     payment_method_options: { card: { installments: { enabled: d.plazo > 0 } } },
   })

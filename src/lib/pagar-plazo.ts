@@ -26,3 +26,19 @@ export function etiquetaPlazo(plazo: Plazo, es = true): string {
   if (!plazo) return es ? 'Una sola exhibición' : 'Single payment'
   return es ? `${plazo} meses sin intereses` : `${plazo} interest-free months`
 }
+
+/** Lo que ve el cliente cuando el pago ya esta hecho (recien pagado o al reabrir el enlace). */
+export function resumenPagoHecho(o: { recien: boolean; cobro: number; etiqueta: string; folio: string; fecha: Date; currency?: string; plazo?: Plazo }, es = true): { titulo: string; texto: string; detalle: string } {
+  const monto = new Intl.NumberFormat(es ? 'es-MX' : 'en-US', { style: 'currency', currency: o.currency || 'MXN' }).format(o.cobro)
+  const fecha = o.fecha.toLocaleDateString(es ? 'es-MX' : 'en-US', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'America/Mexico_City' })
+  const plazo = o.plazo ? ` ${es ? 'a' : 'in'} ${o.plazo} ${es ? 'meses sin intereses' : 'interest-free months'}` : ''
+  return {
+    titulo: o.recien ? (es ? '¡Recibimos tu pago!' : 'Payment received!') : (es ? 'Este pago ya está hecho' : 'This payment is already done'),
+    texto: es
+      ? `${o.etiqueta} de la cotización ${o.folio}: ${monto}${plazo}, pagado el ${fecha}.`
+      : `${o.etiqueta} of quote ${o.folio}: ${monto}${plazo}, paid on ${fecha}.`,
+    detalle: o.recien
+      ? (es ? 'Stripe te manda el comprobante por correo en unos minutos. No tienes que hacer nada más.' : 'Stripe emails you the receipt in a few minutes. Nothing else to do.')
+      : (es ? 'Este enlace era para un solo pago y ya se usó. Si te toca otro pago, pídenos el enlace nuevo.' : 'This link was for a single payment and has been used. Ask us for a new link for the next payment.'),
+  }
+}

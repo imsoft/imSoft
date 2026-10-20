@@ -9,7 +9,7 @@ import { montoConRecargo } from '@/lib/cobro-tarjeta'
 
 export interface EnlaceAbierto {
   d: DatosEnlace
-  q: { id: string; folio: string; title: string; currency: string | null; token: string; lang: string | null }
+  q: { id: string; folio: string; title: string; currency: string | null; token: string; lang: string | null; client_email: string | null }
   /** Lo que se cobra, ya con recargo. */
   cobro: number
   pagado: boolean
@@ -21,7 +21,7 @@ export async function abrirEnlace(token: string): Promise<ResultadoEnlace> {
   if (!stripe) return { ok: false, status: 503, error: 'sin-stripe' }
   const d = leerEnlace(token, secretoDeEnlaces(process.env.STRIPE_SECRET_KEY))
   if (!d) return { ok: false, status: 400, error: 'no-valido' }
-  const { data: q } = await serviceClient().from('quotes').select('id, folio, title, currency, token, lang').eq('id', d.quoteId).maybeSingle()
+  const { data: q } = await serviceClient().from('quotes').select('id, folio, title, currency, token, lang, client_email').eq('id', d.quoteId).maybeSingle()
   if (!q) return { ok: false, status: 404, error: 'sin-cotizacion' }
   const pagado = await stripe.paymentIntents.search({ query: consultaPagado(d.id), limit: 1 })
   return { ok: true, enlace: { d, q, cobro: montoConRecargo(d.monto, d.recargoPct), pagado: pagado.data.length > 0 } }
