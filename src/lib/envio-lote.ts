@@ -89,3 +89,23 @@ export function celebracionDeEnvio(r: { enviados: number; total: number; errores
   if (r.detenido || r.errores > 0 || r.enviados < r.total || r.total < 2) return null
   return { tipo: 'lote', titulo: '¡Correos enviados!', texto: `Salieron los ${r.enviados} correos del lote, cada uno con su texto.` }
 }
+
+/**
+ * Gmail limita las consultas por minuto de cada cuenta (no es el tope diario). Cuando el
+ * envio choca con ese limite basta esperar un minuto y reintentar el mismo correo. Pasaba
+ * cuando la revision automatica de respuestas corria a la vez que un lote (22-oct-2026).
+ */
+export const MENSAJE_LIMITE_GMAIL = 'Gmail pidió esperar un minuto: se alcanzó su límite de consultas por minuto.'
+export const ESPERA_LIMITE_GMAIL_MS = 65_000
+export const REINTENTOS_LIMITE_GMAIL = 3
+
+/** La respuesta de Gmail es un limite temporal por minuto (429, o 403 por cuota o rate limit). */
+export function esRespuestaDeLimite(status: number, cuerpo: string): boolean {
+  if (status === 429) return true
+  return status === 403 && /rate ?limit|quota exceeded|ratelimitexceeded|userratelimitexceeded/i.test(cuerpo)
+}
+
+/** El error que llega al navegador es el limite por minuto (se espera y se reintenta, no se corta el lote). */
+export function esLimiteGmail(mensaje: string): boolean {
+  return mensaje.includes(MENSAJE_LIMITE_GMAIL) || /quota exceeded|rate ?limit/i.test(mensaje)
+}

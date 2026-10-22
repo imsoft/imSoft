@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { PAUSA_MAX_MS, PAUSA_MIN_MS, celebracionDeEnvio, avisoDeCupo, cupoDeHoy, minutosDeLote, pausaEntreEnvios, puedeRecibirCorreo, resumenDeLote } from './envio-lote'
+import { MENSAJE_LIMITE_GMAIL, PAUSA_MAX_MS, PAUSA_MIN_MS, esLimiteGmail, esRespuestaDeLimite, celebracionDeEnvio, avisoDeCupo, cupoDeHoy, minutosDeLote, pausaEntreEnvios, puedeRecibirCorreo, resumenDeLote } from './envio-lote'
 
 describe('envio en lote', () => {
   it('solo se puede elegir a quien tiene correo y no esta marcado como invalido', () => {
@@ -67,5 +67,25 @@ describe('envio en lote', () => {
     expect(celebracionDeEnvio({ ...base, enviados: 4 })).toBeNull()
     expect(celebracionDeEnvio({ ...base, enviados: 1, total: 1 })).toBeNull()
     expect(celebracionDeEnvio({ ...base, enviados: 0 })).toBeNull()
+  })
+})
+
+describe('limite por minuto de Gmail', () => {
+  const cuota = '{"error":{"code":403,"message":"Quota exceeded for quota metric \'Total Query Cost\' and limit \'Units per minute per user\' of service \'gmail.googleapis.com\'"}}'
+
+  it('reconoce la respuesta de Gmail que pide esperar (429, o 403 por cuota o rate limit)', () => {
+    expect(esRespuestaDeLimite(403, cuota)).toBe(true)
+    expect(esRespuestaDeLimite(429, '')).toBe(true)
+    expect(esRespuestaDeLimite(403, '{"error":{"errors":[{"reason":"userRateLimitExceeded"}]}}')).toBe(true)
+    // Un 403 por permisos no es un limite: no se reintenta.
+    expect(esRespuestaDeLimite(403, '{"error":{"message":"Request had insufficient authentication scopes."}}')).toBe(false)
+    expect(esRespuestaDeLimite(400, cuota)).toBe(false)
+  })
+
+  it('el lote espera y reintenta ante el limite, pero corta si Gmail esta desconectado o se llego al tope', () => {
+    expect(esLimiteGmail(MENSAJE_LIMITE_GMAIL)).toBe(true)
+    expect(esLimiteGmail(`Gmail send 403: ${cuota}`)).toBe(true)
+    expect(esLimiteGmail('No hay una cuenta de Gmail conectada')).toBe(false)
+    expect(esLimiteGmail('Ya mandaste 40 hoy; el tope de hoy es 40.')).toBe(false)
   })
 })

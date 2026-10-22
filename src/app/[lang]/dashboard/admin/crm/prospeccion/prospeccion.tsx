@@ -11,7 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Check, ChevronLeft, PartyPopper, ChevronRight, Copy, Eye, Loader2, Mail, RefreshCw, Send, Sparkles, X } from 'lucide-react'
 import { cuerpoDe } from '@/lib/outreach'
-import { celebracionDeEnvio, minutosDeLote, pausaEntreEnvios, type Celebracion } from '@/lib/envio-lote'
+import { celebracionDeEnvio, ESPERA_LIMITE_GMAIL_MS, esLimiteGmail, minutosDeLote, pausaEntreEnvios, REINTENTOS_LIMITE_GMAIL, type Celebracion } from '@/lib/envio-lote'
 import { Confetti } from '@/components/documents/confetti'
 import { CANALES, ETIQUETA_CANAL, estadoDelTope, type Canal, type ConteoPorCanal, type FilaCola } from '@/lib/mensaje-red'
 import { ColaRedes } from '@/components/crm/cola-redes'
@@ -140,24 +140,41 @@ export function Prospeccion({ lang, gmail, gmailConfigurado, campana, redes, fil
    * y los rebotes se quedaban dias sin registrar (8 de 16 el 3-oct-2026).
    */
   const autoSync = useRef(false)
+  /**
+   * Revision automatica en curso. Un lote espera a que termine antes de mandar: las dos
+   * cosas gastan el limite por minuto de la misma cuenta de Gmail.
+   */
+  const syncEnCurso = useRef<Promise<void> | null>(null)
+  const loteEnCurso = useRef(false)
   useEffect(() => {
     if (autoSync.current || !gmail) return
     autoSync.current = true
     let ultima = 0
     try { ultima = Number(window.localStorage.getItem('imsoft-outreach-sync') ?? 0) } catch { /* sin almacenamiento */ }
     if (Date.now() - ultima < 3 * 3_600_000) return
-    const t = setTimeout(async () => {
+    const t = setTimeout(() => {
+      if (loteEnCurso.current) return
+      // Se marca al empezar, no al terminar: si se abre otra pestaña o se recarga mientras
+      // corre, no arranca una segunda revision encima (se juntaban varias el 22-oct-2026).
+      try { window.localStorage.setItem('imsoft-outreach-sync', String(Date.now())) } catch { /* sin almacenamiento */ }
+      syncEnCurso.current = (async () => {
       try {
         const r = await fetch('/api/outreach/sync', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' })
         const j = await r.json().catch(() => ({}))
-        if (!r.ok) return
-        try { window.localStorage.setItem('imsoft-outreach-sync', String(Date.now())) } catch { /* sin almacenamiento */ }
+        if (!r.ok) {
+          // Fallo: se libera la marca para que la siguiente visita lo intente de nuevo.
+          try { window.localStorage.setItem('imsoft-outreach-sync', String(ultima)) } catch { /* sin almacenamiento */ }
+          return
+        }
         const novedades = (j.respondieron ?? 0) + (j.rebotaron ?? 0) + (j.seguimientosCreados ?? 0)
         if (novedades === 0) return
         if (j.respondieron) toast.success(es ? `${j.respondieron} ${j.respondieron === 1 ? 'prospecto respondió' : 'prospectos respondieron'}` : `${j.respondieron} replied`, { duration: 15_000 })
         toast.info(es ? `Revisión automática: ${j.rebotaron ?? 0} rebotaron · ${j.seguimientosCreados ?? 0} seguimientos listos` : `Auto check: ${j.rebotaron ?? 0} bounced · ${j.seguimientosCreados ?? 0} follow-ups ready`)
         router.refresh()
-      } catch { /* se intentara la proxima vez */ }
+      } catch { /* se intentara la proxima vez */ } finally {
+        syncEnCurso.current = null
+      }
+      })()
     }, 1500)
     return () => clearTimeout(t)
   }, [gmail, es, router])
@@ -190,7 +207,7 @@ export function Prospeccion({ lang, gmail, gmailConfigurado, campana, redes, fil
 
   // ----- Envio en lote: uno por uno, con pausa entre cada correo -----
   const [confirmarLote, setConfirmarLote] = useState(false)
-  const [lote, setLote] = useState<{ i: number; total: number; actual: string; espera: number; pausa: number; enviados: number; errores: string[] } | null>(null)
+  const [lote, setLote] = useState<{ i: number; total: number; actual: string; espera: number; pausa: number; enviados: number; errores: string[]; limite?: boolean; nota?: string } | null>(null)
   const detener = useRef(false)
   /** Festejo al completar el limite del dia o un lote entero. */
   const [fiesta, setFiesta] = useState<(Celebracion & { enviadosHoy: number }) | null>(null)
@@ -213,25 +230,50 @@ export function Prospeccion({ lang, gmail, gmailConfigurado, campana, redes, fil
     if (lista.length === 0) return
     const yaHoy = campana.enviadosHoy + salieronSinRefrescar
     detener.current = false
+    loteEnCurso.current = true
     setOcupado('lote')
     let enviados = 0
     const errores: string[] = []
+    // Si la revision automatica sigue corriendo, se espera a que acabe antes de mandar.
+    if (syncEnCurso.current) {
+      setLote({ i: 0, total: lista.length, actual: lista[0].empresa || lista[0].email, espera: 0, pausa: 0, enviados, errores, nota: es ? 'Esperando a que termine la revisión de respuestas para no chocar con el límite de Gmail' : 'Waiting for the reply check to finish' })
+      await syncEnCurso.current.catch(() => {})
+    }
+    /** Espera visible (en segundos) antes del siguiente intento o del siguiente correo. */
+    const esperar = async (ms: number, i: number, actual: string, limite: boolean) => {
+      const hasta = Date.now() + ms
+      while (Date.now() < hasta && !detener.current) {
+        setLote({ i, total: lista.length, actual, espera: Math.ceil((hasta - Date.now()) / 1000), pausa: Math.round(ms / 1000), enviados, errores, limite })
+        await new Promise((ok) => setTimeout(ok, 1000))
+      }
+    }
     for (let i = 0; i < lista.length; i++) {
       if (detener.current) break
       const f = lista[i]
-      setLote({ i, total: lista.length, actual: f.empresa || f.email, espera: 0, pausa: 0, enviados, errores })
-      try {
-        const r = await fetch(`/api/outreach/${f.id}/send`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' })
-        const j = await r.json().catch(() => ({}))
-        if (!r.ok) throw new Error(j.error || r.statusText)
-        enviados += 1
-        setYaSalieron((prev) => new Set(prev).add(f.id))
-      } catch (err) {
-        const msg = err instanceof Error ? err.message : String(err)
-        errores.push(`${f.empresa || f.email}: ${msg}`)
-        // Tope del dia o Gmail desconectado: seguir solo daria el mismo error en cada uno.
-        if (/tope de hoy|Gmail/i.test(msg)) break
+      let cortar = false
+      // Ante el limite por minuto de Gmail se espera y se reintenta el mismo correo.
+      for (let intento = 0; intento <= REINTENTOS_LIMITE_GMAIL && !detener.current; intento++) {
+        setLote({ i, total: lista.length, actual: f.empresa || f.email, espera: 0, pausa: 0, enviados, errores })
+        try {
+          const r = await fetch(`/api/outreach/${f.id}/send`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' })
+          const j = await r.json().catch(() => ({}))
+          if (!r.ok) throw new Error(j.error || r.statusText)
+          enviados += 1
+          setYaSalieron((prev) => new Set(prev).add(f.id))
+          break
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : String(err)
+          if (esLimiteGmail(msg) && intento < REINTENTOS_LIMITE_GMAIL) {
+            await esperar(ESPERA_LIMITE_GMAIL_MS, i, f.empresa || f.email, true)
+            continue
+          }
+          errores.push(`${f.empresa || f.email}: ${msg}`)
+          // Tope del dia o Gmail desconectado: seguir solo daria el mismo error en cada uno.
+          if (/tope de hoy|Gmail/i.test(msg)) cortar = true
+          break
+        }
       }
+      if (cortar) break
       if (i < lista.length - 1 && !detener.current) {
         const pausa = pausaEntreEnvios()
         const hasta = Date.now() + pausa
@@ -243,6 +285,7 @@ export function Prospeccion({ lang, gmail, gmailConfigurado, campana, redes, fil
     }
     setLote(null)
     setOcupado(null)
+    loteEnCurso.current = false
     setSeleccion(new Set())
     router.refresh()
     const texto = es ? `${enviados} de ${lista.length} ${lista.length === 1 ? 'correo enviado' : 'correos enviados'}${detener.current ? ' (detenido)' : ''}` : `${enviados} of ${lista.length} emails sent`
@@ -396,7 +439,11 @@ export function Prospeccion({ lang, gmail, gmailConfigurado, campana, redes, fil
                 )}
               </p>
               <p className="truncate text-muted-foreground">
-                {lote.espera > 0
+                {lote.nota
+                  ? lote.nota
+                  : lote.limite && lote.espera > 0
+                  ? (es ? `Gmail pidió esperar un minuto · reintento con ${lote.actual} en ${lote.espera} s` : `Gmail asked to wait a minute · retrying ${lote.actual} in ${lote.espera}s`)
+                  : lote.espera > 0
                   ? (es ? `Siguiente: ${lote.actual}, en ${lote.espera} s` : `Next: ${lote.actual}, in ${lote.espera}s`)
                   : (es ? `Saliendo por Gmail a ${lote.actual}` : `Going out through Gmail to ${lote.actual}`)}
                 {lote.errores.length > 0 && <span className="text-destructive">{es ? ` · ${lote.errores.length} con error` : ` · ${lote.errores.length} failed`}</span>}

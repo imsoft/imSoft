@@ -4,6 +4,24 @@
  */
 import { serviceClient, SITE_URL } from '@/lib/quotes/server'
 import { destinatarioFallido, tipoDeMensajeAjeno } from '@/lib/outreach'
+import { esRespuestaDeLimite, MENSAJE_LIMITE_GMAIL } from '@/lib/envio-lote'
+
+/**
+ * Ritmo de las lecturas en lote (revision de respuestas y rebotes): cada consulta tarda al
+ * menos este tiempo, para que una revision no se coma el limite por minuto de Gmail y deje
+ * sin cupo a los envios. threads.get cuesta 10 unidades y messages.get 5: asi quedan en
+ * unas 60 unidades por segundo, menos de la mitad del limite.
+ */
+const RITMO_HILO_MS = 170
+const RITMO_MENSAJE_MS = 85
+
+async function aRitmo<T>(minMs: number, f: () => Promise<T>): Promise<T> {
+  const inicio = Date.now()
+  const r = await f()
+  const falta = minMs - (Date.now() - inicio)
+  if (falta > 0) await new Promise((ok) => setTimeout(ok, falta))
+  return r
+}
 
 export const GMAIL_SCOPES = ['https://www.googleapis.com/auth/gmail.send', 'https://www.googleapis.com/auth/gmail.readonly', 'openid', 'email']
 const CLIENT_ID = process.env.GOOGLE_OAUTH_CLIENT_ID
@@ -93,7 +111,11 @@ export async function enviarRaw(userId: string, raw: string, threadId?: string |
     headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
     body: JSON.stringify(threadId ? { raw, threadId } : { raw }),
   })
-  if (!r.ok) throw new Error(`Gmail send ${r.status}: ${(await r.text()).slice(0, 300)}`)
+  if (!r.ok) {
+    const cuerpo = await r.text()
+    if (esRespuestaDeLimite(r.status, cuerpo)) throw new Error(MENSAJE_LIMITE_GMAIL)
+    throw new Error(`Gmail send ${r.status}: ${cuerpo.slice(0, 300)}`)
+  }
   return r.json()
 }
 
@@ -114,7 +136,7 @@ export async function messageIdHeader(userId: string, messageId: string): Promis
  */
 export async function estadoDelHilo(userId: string, threadId: string): Promise<'respuesta' | 'rebote' | null> {
   const { token, email } = await accessToken(userId)
-  const r = await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/threads/${threadId}?format=metadata&metadataHeaders=From&metadataHeaders=Subject&metadataHeaders=Auto-Submitted`, { headers: { Authorization: `Bearer ${token}` } })
+  const r = await aRitmo(RITMO_HILO_MS, () => fetch(`https://gmail.googleapis.com/gmail/v1/users/me/threads/${threadId}?format=metadata&metadataHeaders=From&metadataHeaders=Subject&metadataHeaders=Auto-Submitted`, { headers: { Authorization: `Bearer ${token}` } }))
   if (!r.ok) return null
   const j = await r.json()
   const mios = email.toLowerCase()
@@ -150,7 +172,7 @@ export async function rebotesRecientes(userId: string, dias = 30): Promise<strin
   }
   const fallidos = new Set<string>()
   for (const id of ids) {
-    const r = await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/messages/${id}?format=metadata&metadataHeaders=Subject&metadataHeaders=From&metadataHeaders=X-Failed-Recipients`, auth)
+    const r = await aRitmo(RITMO_MENSAJE_MS, () => fetch(`https://gmail.googleapis.com/gmail/v1/users/me/messages/${id}?format=metadata&metadataHeaders=Subject&metadataHeaders=From&metadataHeaders=X-Failed-Recipients`, auth))
     if (!r.ok) continue
     const m = await r.json()
     const h = (n: string) => (m.payload?.headers as Array<{ name: string; value: string }> | undefined)?.find((x) => x.name.toLowerCase() === n)?.value ?? ''
