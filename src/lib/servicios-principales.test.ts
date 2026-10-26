@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { SERVICIOS_PRINCIPALES, casoIlustrado, serviciosDeMarketing, serviciosSecundarios } from './servicios-principales'
+import { SERVICIOS_PRINCIPALES, casoIlustrado, desdeDe, serviciosDeMarketing, serviciosSecundarios } from './servicios-principales'
+import { PISOS, etiquetaDesde } from '@/config/precios'
 
 const servicios = [
   { id: '1', slug: 'web-pages', title_es: 'Páginas Web', title_en: 'Web Pages', icon: '🖥️', category: 'technology' },
@@ -21,14 +22,17 @@ describe('servicios principales de la portada', () => {
     }
   })
 
-  it('los precios publicados coinciden con la referencia de precios de la portada', () => {
-    const desde = Object.fromEntries(SERVICIOS_PRINCIPALES.map((s) => [s.slug, s.desde?.es ?? null]))
+  it('cada tarjeta muestra el piso de precio de la fuente única, en pesos o en dólares', () => {
+    const desde = Object.fromEntries(SERVICIOS_PRINCIPALES.map((s) => [s.slug, desdeDe(s, 'es')]))
     expect(desde['web-pages']).toBe('Desde $15,000 MXN')
+    expect(desde['tiendas-en-linea']).toBe('Desde $30,000 MXN')
+    expect(desde['software-a-medida']).toBe('Desde $45,000 MXN')
+    expect(desde['aplicaciones-moviles']).toBe('Desde $60,000 MXN')
     expect(desde['desarrollo-de-mvp']).toBe('Desde $60,000 MXN')
-    expect(desde['software-a-medida']).toBe('Desde $150,000 MXN')
-    // Donde no hay precio publicado no se inventa: se promete el precio fijo en 24 h.
-    expect(desde['aplicaciones-moviles']).toBeNull()
-    expect(desde['tiendas-en-linea']).toBeNull()
+    expect(desdeDe(SERVICIOS_PRINCIPALES[0], 'en')).toBe('From $2,400 USD')
+    // Software a la medida ya no arranca en el nivel de las plataformas completas.
+    expect(PISOS['software-a-medida'].mxn).toBeLessThan(PISOS['plataforma-completa'].mxn)
+    expect(etiquetaDesde('plataforma-completa', 'es')).toBe('Desde $150,000 MXN')
   })
 
   it('toma la imagen del caso desde el portafolio y no truena si el proyecto no está', () => {

@@ -5,11 +5,11 @@
  * servicios principales con problema, entregables, precio y un caso real, y el resto en
  * una lista compacta. La pagina /services sigue mostrando todo.
  *
- * Los precios "desde" son los mismos de la seccion de referencia de precios; donde no hay
- * uno publicado se promete el precio fijo en 24 horas en lugar de inventar una cifra. Los
- * ganchos usan el mismo lenguaje que los mensajes de prospeccion del CRM.
+ * Los precios "desde" salen de src/config/precios.ts, la misma fuente que la referencia de
+ * precios. Los ganchos usan el mismo lenguaje que los mensajes de prospeccion del CRM.
  */
 import type { Service } from '@/types/database'
+import { etiquetaDesde, type ClaveDePrecio } from '@/config/precios'
 
 export interface ServicioPrincipal {
   /** Slug del servicio en la tabla `services` (enlace a /services/<slug>). */
@@ -18,8 +18,8 @@ export interface ServicioPrincipal {
   /** El problema del cliente, en una frase. */
   problema: { es: string; en: string }
   entregables: { es: [string, string, string]; en: [string, string, string] }
-  /** Precio "desde" publicado, o null para "precio fijo en 24 horas". */
-  desde: { es: string; en: string } | null
+  /** Clave del piso de precio en src/config/precios.ts. */
+  precio: ClaveDePrecio
   /** Slug del proyecto del portafolio que ilustra el servicio, si hay uno. */
   caso: { slug: string; nombre: string } | null
 }
@@ -36,7 +36,7 @@ export const SERVICIOS_PRINCIPALES: ServicioPrincipal[] = [
       es: ['Sistema web con usuarios y roles para tu equipo', 'Portal donde tus clientes consultan su estatus solos', 'Código 100% tuyo, sin licencias ni mensualidades'],
       en: ['Web system with users and roles for your team', 'Portal where your clients check their status themselves', '100% your code, no licenses or monthly fees'],
     },
-    desde: { es: 'Desde $150,000 MXN', en: 'From $8,000 USD' },
+    precio: 'software-a-medida',
     caso: { slug: 'jtp-logistics-inventory', nombre: 'JTP Logistics' },
   },
   {
@@ -50,7 +50,7 @@ export const SERVICIOS_PRINCIPALES: ServicioPrincipal[] = [
       es: ['Producto funcional en 6 a 8 semanas', 'Registro, pagos y panel de administración incluidos', 'Arquitectura que crece sin reescribir'],
       en: ['Working product in 6 to 8 weeks', 'Sign-up, payments and admin panel included', 'Architecture that grows without a rewrite'],
     },
-    desde: { es: 'Desde $60,000 MXN', en: 'From $3,000 USD' },
+    precio: 'desarrollo-de-mvp',
     caso: { slug: 'urbans', nombre: 'URBANS' },
   },
   {
@@ -64,7 +64,7 @@ export const SERVICIOS_PRINCIPALES: ServicioPrincipal[] = [
       es: ['App iOS y Android con tu marca, publicada en las tiendas', 'Pedidos, puntos y promociones directas a quien ya te compra', 'Sin comisiones de terceros por cada venta'],
       en: ['iOS and Android app with your brand, published in the stores', 'Orders, points and promotions straight to existing customers', 'No third-party commission on each sale'],
     },
-    desde: null,
+    precio: 'aplicaciones-moviles',
     caso: null,
   },
   {
@@ -78,7 +78,7 @@ export const SERVICIOS_PRINCIPALES: ServicioPrincipal[] = [
       es: ['Catálogo, carrito y pagos con tarjeta y meses sin intereses', 'Envíos a todo México e inventario al día', 'Dos idiomas y dos monedas si vendes fuera'],
       en: ['Catalog, cart and card payments with installments', 'Shipping across Mexico and up-to-date inventory', 'Two languages and two currencies if you sell abroad'],
     },
-    desde: null,
+    precio: 'tiendas-en-linea',
     caso: { slug: 'starfilters', nombre: 'Star Filters' },
   },
   {
@@ -92,10 +92,15 @@ export const SERVICIOS_PRINCIPALES: ServicioPrincipal[] = [
       es: ['Diseño propio, rápido y pensado para celular', 'Posicionamiento en Google para tu ciudad', 'Dominio, hosting y certificado incluidos'],
       en: ['Custom design, fast and built for mobile', 'Google positioning for your city', 'Domain, hosting and SSL included'],
     },
-    desde: { es: 'Desde $15,000 MXN', en: 'From $800 USD' },
+    precio: 'web-pages',
     caso: { slug: 'cijj', nombre: 'Ingenieros Jóvenes de Jalisco' },
   },
 ]
+
+/** Etiqueta "Desde $X" del servicio en el idioma pedido. */
+export function desdeDe(servicio: ServicioPrincipal, lang: string): string {
+  return etiquetaDesde(servicio.precio, lang)
+}
 
 export interface CasoIlustrado {
   slug: string

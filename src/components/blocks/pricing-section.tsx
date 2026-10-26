@@ -6,6 +6,7 @@ import { Check, ArrowRight } from 'lucide-react'
 import type { Dictionary } from '@/app/[lang]/dictionaries'
 import { ScrollReveal } from "@/components/animations/scroll-reveal"
 import { MSI_PLAZOS, MSI_PLAZO_EJEMPLO, montoDesde, msiEtiqueta } from '@/lib/msi'
+import { etiquetaDesde } from '@/config/precios'
 
 interface PricingSectionProps {
   dict: Dictionary
@@ -21,7 +22,7 @@ export function PricingSection({ dict, lang }: PricingSectionProps) {
       icon: '🌱',
       name: isEs ? 'Emprendedor' : 'Starter',
       slug: 'web-pages',
-      price: isEs ? 'Desde $5,000 MXN' : 'From $299 USD',
+      price: etiquetaDesde('landing', lang),
       description: isEs
         ? 'Para emprendedores que dan su primer paso digital sin complicaciones.'
         : 'For entrepreneurs taking their first digital step without the hassle.',
@@ -34,7 +35,7 @@ export function PricingSection({ dict, lang }: PricingSectionProps) {
       icon: '🖥️',
       name: isEs ? 'Páginas Web' : 'Web Pages',
       slug: 'web-pages',
-      price: isEs ? 'Desde $15,000 MXN' : 'From $800 USD',
+      price: etiquetaDesde('web-pages', lang),
       description: isEs
         ? 'Ideal para negocios que necesitan presencia digital profesional rápida.'
         : 'Ideal for businesses that need fast professional digital presence.',
@@ -44,29 +45,42 @@ export function PricingSection({ dict, lang }: PricingSectionProps) {
       highlight: false,
     },
     {
+      icon: '💻',
+      name: isEs ? 'Software a la Medida' : 'Custom Software',
+      slug: 'software-a-medida',
+      price: etiquetaDesde('software-a-medida', lang),
+      description: isEs
+        ? 'Para sacar tu operación de Excel y WhatsApp: un sistema hecho para cómo trabajas.'
+        : 'To get your operation out of spreadsheets and WhatsApp: a system built around how you work.',
+      features: isEs
+        ? ['Usuarios y roles para tu equipo', 'Portal donde tus clientes consultan su estatus', 'Código 100% tuyo, sin licencias', 'Soporte primer mes incluido']
+        : ['Users and roles for your team', 'Portal where clients check their status', '100% your code, no licenses', 'First month support included'],
+      highlight: true,
+    },
+    {
       icon: '🚀',
-      name: isEs ? 'MVP / Proyecto' : 'MVP / Project',
+      name: isEs ? 'Producto Digital / MVP' : 'Digital Product / MVP',
       slug: 'desarrollo-de-mvp',
-      price: isEs ? 'Desde $60,000 MXN' : 'From $3,000 USD',
+      price: etiquetaDesde('desarrollo-de-mvp', lang),
       description: isEs
         ? 'Para lanzar tu producto al mercado rápido y validar con usuarios reales.'
         : 'To launch your product to market fast and validate with real users.',
       features: isEs
-        ? ['Producto funcional en 6–8 semanas', 'Auth, pagos y admin incluidos', 'Arquitectura que escala sin reescribir', 'Soporte primer mes incluido']
-        : ['Functional product in 6–8 weeks', 'Auth, payments & admin included', 'Architecture that scales without rewriting', 'First month support included'],
-      highlight: true,
+        ? ['Producto funcional en 6–8 semanas', 'Registro, pagos y admin incluidos', 'Arquitectura que escala sin reescribir', 'Soporte primer mes incluido']
+        : ['Functional product in 6–8 weeks', 'Sign-up, payments & admin included', 'Architecture that scales without rewriting', 'First month support included'],
+      highlight: false,
     },
     {
-      icon: '💻',
-      name: isEs ? 'Software a Medida' : 'Custom Software',
+      icon: '🏢',
+      name: isEs ? 'Plataforma Completa' : 'Full Platform',
       slug: 'software-a-medida',
-      price: isEs ? 'Desde $150,000 MXN' : 'From $8,000 USD',
+      price: etiquetaDesde('plataforma-completa', lang),
       description: isEs
-        ? 'Plataformas complejas, SaaS y sistemas empresariales sin compromisos.'
-        : 'Complex platforms, SaaS and enterprise systems without compromises.',
+        ? 'SaaS y sistemas empresariales con varios roles y módulos, como JTP Logistics o Aduvanta.'
+        : 'SaaS and enterprise systems with multiple roles and modules, like JTP Logistics or Aduvanta.',
       features: isEs
-        ? ['Arquitectura a tu medida', 'IA integrada donde aplique', 'Código 100% tuyo, sin licencias', 'Roadmap y equipo dedicado']
-        : ['Architecture tailored to you', 'AI integrated where applicable', '100% your code, no licenses', 'Dedicated roadmap & team'],
+        ? ['Arquitectura a tu medida', 'IA integrada donde aplique', 'Varios paneles según el rol', 'Roadmap por etapas']
+        : ['Architecture tailored to you', 'AI integrated where applicable', 'Role-based dashboards', 'Staged roadmap'],
       highlight: false,
     },
   ]
@@ -105,7 +119,7 @@ export function PricingSection({ dict, lang }: PricingSectionProps) {
           )}
         </ScrollReveal>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {tiers.map((tier, i) => (
             <ScrollReveal key={tier.slug} direction="up" delay={i * 0.08}>
               <div

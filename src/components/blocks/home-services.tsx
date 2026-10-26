@@ -3,7 +3,7 @@ import { ArrowRight, Check } from 'lucide-react'
 import Image from '@/components/ui/image'
 import { Button } from '@/components/ui/button'
 import { ScrollReveal } from '@/components/animations/scroll-reveal'
-import { SERVICIOS_PRINCIPALES, casoIlustrado, serviciosDeMarketing, serviciosSecundarios } from '@/lib/servicios-principales'
+import { SERVICIOS_PRINCIPALES, casoIlustrado, desdeDe, serviciosDeMarketing, serviciosSecundarios } from '@/lib/servicios-principales'
 import type { Service } from '@/types/database'
 
 interface HomeServicesProps {
@@ -75,7 +75,7 @@ export function HomeServices({ lang, services, portfolio, title, subtitle }: Hom
                     </ul>
                     <div className="mt-auto flex flex-wrap items-center justify-between gap-3 border-t pt-4">
                       <p className="text-sm font-semibold">
-                        {s.desde ? s.desde[l] : es ? 'Precio fijo en 24 horas' : 'Fixed price in 24 hours'}
+                        {desdeDe(s, lang)}
                       </p>
                       <Link href={`/${lang}/services/${s.slug}`} className="text-sm font-medium text-primary hover:underline">
                         {es ? 'Ver detalles' : 'See details'}
