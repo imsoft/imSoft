@@ -20,7 +20,7 @@ export const MUNICIPIOS: Record<string, { nombre: string; lat: number; lng: numb
 export const GIROS: { clave: string; nombre: string; query: string; segmento: string }[] = [
   { clave: 'abastos', nombre: 'Mercado de Abastos y mayoristas', query: 'distribuidora mayorista abarrotes frutas verduras Mercado de Abastos', segmento: 'abastos' },
   // Las bodegas del Mercado de Abastos por tipo de producto; Places no las saca con la consulta general.
-  { clave: 'mayoristas', nombre: 'Bodegas mayoristas (cárnicos, lácteos, desechables)', query: 'bodega mayorista cárnicos lácteos desechables abarrotes', segmento: 'abastos' },
+  { clave: 'mayoristas', nombre: 'Bodegas mayoristas (cárnicos, lácteos, desechables)', query: 'distribuidora mayorista cárnicos lácteos desechables', segmento: 'abastos' },
   { clave: 'logistica', nombre: 'Logística y agencias aduanales', query: 'agencia aduanal empresa de logística transporte de carga', segmento: 'logistica' },
   { clave: 'abogados', nombre: 'Despachos de abogados', query: 'despacho de abogados bufete jurídico', segmento: 'abogados' },
   { clave: 'contabilidad', nombre: 'Despachos contables', query: 'despacho contable contadores públicos', segmento: 'contabilidad' },
