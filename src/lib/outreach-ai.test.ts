@@ -32,6 +32,13 @@ describe('gancho con IA', () => {
     expect(p).toContain('No hables de Excel');
     // Sin oferta, esa regla no aparece.
     expect(promptGancho({ nombre: '', empresa: 'X', segmento: null, sitio: null, notas: null, cargo: null })).not.toContain('su propia app');
+    // Mayorista: el pedido del cliente de tienda; joyería: cómo vende hoy, para su tienda en línea.
+    const m = promptGancho({ nombre: '', empresa: 'Fruvecas', segmento: 'abastos', sitio: null, notas: null, cargo: null, oferta: 'app' });
+    expect(m).toContain('mayorista');
+    expect(m).not.toContain('juntar puntos');
+    const j = promptGancho({ nombre: '', empresa: 'Malka', segmento: 'joyeria', sitio: null, notas: null, cargo: null, oferta: 'tienda' });
+    expect(j).toContain('joyería');
+    expect(j).toContain('tienda en línea');
   });
 
   it('para empresas grandes el prompt cambia el tipo de problema', () => {

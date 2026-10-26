@@ -19,13 +19,17 @@ export const MUNICIPIOS: Record<string, { nombre: string; lat: number; lng: numb
 /** Giros que suelen comprar software a la medida, con la consulta que mejor funciona en Places. */
 export const GIROS: { clave: string; nombre: string; query: string; segmento: string }[] = [
   { clave: 'abastos', nombre: 'Mercado de Abastos y mayoristas', query: 'distribuidora mayorista abarrotes frutas verduras Mercado de Abastos', segmento: 'abastos' },
+  // Las bodegas del Mercado de Abastos por tipo de producto; Places no las saca con la consulta general.
+  { clave: 'mayoristas', nombre: 'Bodegas mayoristas (cárnicos, lácteos, desechables)', query: 'bodega mayorista cárnicos lácteos desechables abarrotes', segmento: 'abastos' },
   { clave: 'logistica', nombre: 'Logística y agencias aduanales', query: 'agencia aduanal empresa de logística transporte de carga', segmento: 'logistica' },
   { clave: 'abogados', nombre: 'Despachos de abogados', query: 'despacho de abogados bufete jurídico', segmento: 'abogados' },
   { clave: 'contabilidad', nombre: 'Despachos contables', query: 'despacho contable contadores públicos', segmento: 'contabilidad' },
   { clave: 'salud', nombre: 'Hospitales y clínicas', query: 'hospital privado clínica de especialidades', segmento: 'salud' },
   { clave: 'dental', nombre: 'Clínicas dentales', query: 'clínica dental', segmento: 'salud' },
   { clave: 'restaurantes', nombre: 'Restaurantes', query: 'restaurante', segmento: 'restaurantes' },
-  { clave: 'ecommerce', nombre: 'Tiendas y boutiques (ecommerce)', query: 'boutique tienda de ropa calzado joyería', segmento: 'ecommerce' },
+  { clave: 'ecommerce', nombre: 'Tiendas y boutiques (ecommerce)', query: 'boutique tienda de ropa calzado', segmento: 'ecommerce' },
+  // Se concentran en el Centro Joyero y San Juan de Dios; su oferta es tienda en linea, no app.
+  { clave: 'joyeria', nombre: 'Joyerías y centros joyeros', query: 'joyería centro joyero', segmento: 'joyeria' },
   { clave: 'construccion', nombre: 'Constructoras', query: 'empresa constructora', segmento: 'construccion' },
   { clave: 'ferreteria', nombre: 'Ferreterías y distribuidores industriales', query: 'ferretería industrial distribuidor', segmento: 'ferreteria' },
   { clave: 'inmobiliaria', nombre: 'Inmobiliarias', query: 'inmobiliaria bienes raíces', segmento: 'inmobiliaria' },

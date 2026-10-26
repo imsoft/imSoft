@@ -142,6 +142,9 @@ describe('cola de redes', () => {
     expect(ofertaDe(['ecommerce'])).toBe('app')
     expect(ofertaDe(['ferreteria'])).toBeNull()
     expect(ofertaDe(null)).toBeNull()
+    // Mayoristas de abastos: app de pedidos para sus clientes de tienda; joyerías: tienda en línea.
+    expect(ofertaDe(['google-places', 'abastos'])).toBe('app')
+    expect(ofertaDe(['joyeria'])).toBe('tienda')
     // Una cadena grande con area de sistemas no recibe el mensaje de la app.
     expect(ofertaDe(['restaurantes', 'corporativo'])).toBeNull()
 
@@ -153,6 +156,13 @@ describe('cola de redes', () => {
     const g = renderMensajeRed('instagram', { nombre: '', empresa: 'Navi Gym', gancho: 'g', segmento: 'fitness-gdl', oferta: 'app' })
     expect(g).toContain('reservas de clases, membresías')
     expect(g).not.toContain('pedidos')
+    const m = renderMensajeRed('whatsapp', { nombre: '', empresa: 'Fruvecas', gancho: 'g', segmento: 'abastos', oferta: 'app' })
+    expect(m).toContain('para mayoristas')
+    expect(m).toContain('pedido desde su celular')
+    const j = renderMensajeRed('instagram', { nombre: '', empresa: 'Malka', gancho: 'g', segmento: 'joyeria', oferta: 'tienda' })
+    expect(j).toContain('tiendas en línea a la medida')
+    expect(j).toContain('joyerías')
+    expect(j).not.toContain('apps')
     // Sin oferta, el mensaje de siempre.
     expect(renderMensajeRed('instagram', { nombre: '', empresa: 'X', gancho: 'g' })).toContain('procesos a mano o en Excel')
   })

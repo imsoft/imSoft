@@ -276,6 +276,26 @@
     {
       "giro": "ecommerce",
       "municipio": "zmg"
+    },
+    {
+      "giro": "abastos",
+      "municipio": "zmg"
+    },
+    {
+      "giro": "mayoristas",
+      "municipio": "guadalajara"
+    },
+    {
+      "giro": "mayoristas",
+      "municipio": "zmg"
+    },
+    {
+      "giro": "joyeria",
+      "municipio": "guadalajara"
+    },
+    {
+      "giro": "joyeria",
+      "municipio": "zapopan"
     }
   ]
 }

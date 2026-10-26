@@ -89,16 +89,21 @@ export type MotivoDescarteRedes = keyof typeof MOTIVOS_DESCARTE_REDES
  * A esos no se les habla de Excel sino de su propia app (pedidos, puntos, promociones),
  * hecha a la medida. La idea salio de la app de Tukafe, en Puerta de Hierro (2026-10-09).
  */
-const GIROS_APP = ['restaurantes', 'fitness', 'ecommerce']
+const GIROS_APP = ['restaurantes', 'fitness', 'ecommerce', 'abastos']
+/** Giros que venden producto con foto: lo suyo es una tienda en linea con su marca (2026-10-26). */
+const GIROS_TIENDA = ['joyeria']
 
-export type Oferta = 'app'
+export type Oferta = 'app' | 'tienda'
+
+const tieneGiro = (lower: string[], giros: string[]) => giros.some((g) => lower.some((t) => t === g || t.startsWith(`${g}-`)))
 
 /** Que se le ofrece a este prospecto segun sus etiquetas; null = el mensaje de siempre. */
 export function ofertaDe(tags: string[] | null | undefined): Oferta | null {
   const lower = (tags ?? []).map((t) => t.toLowerCase())
   // Un corporativo tiene area de sistemas: su mensaje es otro aunque venda al publico.
   if (lower.some((t) => t === 'corporativo' || t.startsWith('corporativo-'))) return null
-  return GIROS_APP.some((g) => lower.some((t) => t === g || t.startsWith(`${g}-`))) ? 'app' : null
+  if (tieneGiro(lower, GIROS_TIENDA)) return 'tienda'
+  return tieneGiro(lower, GIROS_APP) ? 'app' : null
 }
 
 export interface MensajeVars {
@@ -110,9 +115,13 @@ export interface MensajeVars {
 }
 
 const presentacion = (segmento?: string | null, oferta?: Oferta | null) =>
-  oferta === 'app'
+  oferta === 'tienda'
+    ? 'Soy Brandon, de imSoft. Hacemos tiendas en línea a la medida en Guadalajara para joyerías: catálogo con fotos, apartado y pago a meses, con su propia marca.'
+    : oferta === 'app'
     ? segmento?.startsWith('fitness')
       ? 'Soy Brandon, de imSoft. Hacemos apps a la medida en Guadalajara para negocios con clientela que regresa: reservas de clases, membresías y promociones con su propia marca.'
+      : segmento?.startsWith('abastos')
+      ? 'Soy Brandon, de imSoft. Hacemos apps a la medida en Guadalajara para mayoristas: tus clientes de tienda levantan el pedido desde su celular, con su lista de precios, y tú ves qué sale a reparto.'
       : 'Soy Brandon, de imSoft. Hacemos apps a la medida en Guadalajara para negocios con clientela que regresa: pedidos, puntos y promociones con su propia marca, sin comisiones de terceros.'
     : segmento?.startsWith('logistica')
     ? 'Soy Brandon, de imSoft. Hacemos software a la medida en Guadalajara y varios de nuestros clientes son del sector aduanal y logístico.'
