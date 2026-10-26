@@ -125,6 +125,8 @@ const presentacion = (segmento?: string | null, oferta?: Oferta | null) =>
       : 'Soy Brandon, de imSoft. Hacemos apps a la medida en Guadalajara para negocios con clientela que regresa: pedidos, puntos y promociones con su propia marca, sin comisiones de terceros.'
     : segmento?.startsWith('logistica')
     ? 'Soy Brandon, de imSoft. Hacemos software a la medida en Guadalajara y varios de nuestros clientes son del sector aduanal y logístico.'
+    : segmento?.startsWith('agro')
+    ? 'Soy Brandon, de imSoft. Hacemos software a la medida en Guadalajara para empresas del campo y la agroindustria: lotes, pesajes y trazabilidad en un solo lugar, sin libretas ni Excel.'
     : 'Soy Brandon, de imSoft. Hacemos software a la medida en Guadalajara para negocios que ya operan bien pero cargan con procesos a mano o en Excel.'
 
 /** Texto listo para pegar en el chat del canal. */

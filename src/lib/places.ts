@@ -14,6 +14,8 @@ export const MUNICIPIOS: Record<string, { nombre: string; lat: number; lng: numb
   tlajomulco: { nombre: 'Tlajomulco de Zúñiga', lat: 20.4738, lng: -103.4433, radio: 12000 },
   elsalto: { nombre: 'El Salto', lat: 20.5199, lng: -103.1808, radio: 8000 },
   zmg: { nombre: 'Zona metropolitana de Guadalajara', lat: 20.6597, lng: -103.3496, radio: 30000 },
+  // Los Altos: capital nacional del huevo y del cerdo; a 80 km, pero sus granjas y empacadoras no estan en la ZMG.
+  tepatitlan: { nombre: 'Tepatitlán de Morelos', lat: 20.8167, lng: -102.7667, radio: 25000 },
 }
 
 /** Giros que suelen comprar software a la medida, con la consulta que mejor funciona en Places. */
@@ -31,6 +33,9 @@ export const GIROS: { clave: string; nombre: string; query: string; segmento: st
   // Se concentran en el Centro Joyero y San Juan de Dios; su oferta es tienda en linea, no app.
   { clave: 'joyeria', nombre: 'Joyerías y centros joyeros', query: 'joyería centro joyero', segmento: 'joyeria' },
   { clave: 'construccion', nombre: 'Constructoras', query: 'empresa constructora', segmento: 'construccion' },
+  // Agro: en la ZMG estan las oficinas, distribuidoras y empacadoras; las granjas, en Los Altos.
+  { clave: 'agro', nombre: 'Agroindustria, empacadoras y distribuidoras agrícolas', query: 'empacadora comercializadora agrícola distribuidora agroquímicos semillas forrajes', segmento: 'agro' },
+  { clave: 'granjas', nombre: 'Granjas avícolas y porcícolas', query: 'granja avícola huevo', segmento: 'agro' },
   { clave: 'ferreteria', nombre: 'Ferreterías y distribuidores industriales', query: 'ferretería industrial distribuidor', segmento: 'ferreteria' },
   { clave: 'inmobiliaria', nombre: 'Inmobiliarias', query: 'inmobiliaria bienes raíces', segmento: 'inmobiliaria' },
   { clave: 'fitness', nombre: 'Gimnasios', query: 'gimnasio', segmento: 'fitness' },

@@ -163,6 +163,9 @@ describe('cola de redes', () => {
     expect(j).toContain('tiendas en línea a la medida')
     expect(j).toContain('joyerías')
     expect(j).not.toContain('apps')
+    // Agro: software de operación (lotes, pesajes, trazabilidad), no app.
+    expect(ofertaDe(['agro'])).toBeNull()
+    expect(renderMensajeRed('whatsapp', { nombre: '', empresa: 'Agrofresh', gancho: 'g', segmento: 'agro' })).toContain('lotes, pesajes y trazabilidad')
     // Sin oferta, el mensaje de siempre.
     expect(renderMensajeRed('instagram', { nombre: '', empresa: 'X', gancho: 'g' })).toContain('procesos a mano o en Excel')
   })

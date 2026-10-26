@@ -41,6 +41,12 @@ describe('gancho con IA', () => {
     expect(j).toContain('tienda en línea');
   });
 
+  it('para agro el gancho va del campo y la bodega', () => {
+    const p = promptGancho({ nombre: '', empresa: 'Agrofresh', segmento: 'agro', sitio: null, notas: null, cargo: null });
+    expect(p).toContain('Si el sector es "agro"');
+    expect(p).toContain('trazabilidad');
+  });
+
   it('para empresas grandes el prompt cambia el tipo de problema', () => {
     const p = promptGancho({ nombre: 'Laura', empresa: 'Grupo Dalton', segmento: 'corporativo', sitio: null, notas: null, cargo: null });
     expect(p).toContain('Si el sector es "corporativo"');

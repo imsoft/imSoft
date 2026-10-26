@@ -296,6 +296,18 @@
     {
       "giro": "joyeria",
       "municipio": "zapopan"
+    },
+    {
+      "giro": "agro",
+      "municipio": "guadalajara"
+    },
+    {
+      "giro": "agro",
+      "municipio": "zmg"
+    },
+    {
+      "giro": "granjas",
+      "municipio": "tepatitlan"
     }
   ]
 }
