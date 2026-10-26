@@ -3,9 +3,18 @@ import type { ServicesSectionProps } from '@/types/components'
 import type { Service } from '@/types/database'
 import Link from 'next/link'
 import { ScrollReveal } from "@/components/animations/scroll-reveal"
+import { HomeServices } from './home-services'
 
 interface ServicesSectionClientProps extends ServicesSectionProps {
   services: Service[]
+  /**
+   * 'portada': cinco servicios principales con problema, entregables, precio y un caso del
+   * portafolio, y el resto en una lista compacta. 'completa' (por omision): la cuadricula
+   * con todos los servicios, que usan /services y las landings por ciudad.
+   */
+  variant?: 'portada' | 'completa'
+  /** Proyectos del portafolio, para ilustrar cada servicio principal en la portada. */
+  portfolio?: Array<{ slug?: string | null; image_url?: string | null }>
   /**
    * En /services esta seccion es el contenido principal, asi que su titulo debe ser el
    * h1 de la pagina. En el home y en las landings ya hay un h1 antes, y se queda en h2.
@@ -13,7 +22,10 @@ interface ServicesSectionClientProps extends ServicesSectionProps {
   headingLevel?: 'h1' | 'h2'
 }
 
-export function ServicesSection({ dict, lang, services, headingLevel = 'h2' }: ServicesSectionClientProps) {
+export function ServicesSection({ dict, lang, services, headingLevel = 'h2', variant = 'completa', portfolio = [] }: ServicesSectionClientProps) {
+  if (variant === 'portada') {
+    return <HomeServices lang={lang} services={services} portfolio={portfolio} title={dict.services.title} subtitle={dict.services.subtitle} />
+  }
   const SectionHeading = headingLevel
   const displayServices = services.map((service) => ({
     id: service.id,

@@ -172,7 +172,7 @@ export default async function Home({ params }: {
       <StructuredData data={faqStructuredData} id="faq-structured-data" />
       <div className="overflow-x-hidden w-full">
         <HeroSection dict={dict} lang={lang} companies={companies || []} portfolioProjects={projects} blogTitles={blogTitles} />
-        <ServicesSection dict={dict} lang={lang} services={services || []} />
+        <ServicesSection dict={dict} lang={lang} services={services || []} variant="portada" portfolio={portfolioData || []} />
         <ProcessSection lang={lang} />
         <PricingSection dict={dict} lang={lang} />
         <PortfolioSection dict={dict} lang={lang} projects={projects} />
