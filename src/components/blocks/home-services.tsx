@@ -93,22 +93,22 @@ export function HomeServices({ lang, services, portfolio, title, subtitle }: Hom
           })}
 
           <ScrollReveal direction="up" delay={0.4} className="h-full">
-            <div className="flex h-full flex-col justify-center rounded-2xl border border-primary-foreground/25 p-6">
+            <div className="flex h-full flex-col justify-center rounded-2xl bg-background p-6 text-foreground shadow-lg">
               <h3 className="text-xl font-bold">{es ? 'También hacemos' : 'We also do'}</h3>
-              <p className="mt-1 text-sm text-primary-foreground/75">
+              <p className="mt-1 text-sm text-muted-foreground">
                 {es ? 'Casi siempre como parte de un proyecto de los de arriba.' : 'Usually as part of one of the projects above.'}
               </p>
               <ul className="mt-4 flex flex-wrap gap-2">
                 {secundarios.map((s) => (
                   <li key={s.slug}>
-                    <Link href={`/${lang}/services/${s.slug}`} className="inline-flex items-center gap-1.5 rounded-full border border-primary-foreground/30 px-3 py-1 text-sm transition-colors hover:bg-primary-foreground hover:text-primary">
+                    <Link href={`/${lang}/services/${s.slug}`} className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/5 px-3 py-1 text-sm text-foreground transition-colors hover:bg-primary hover:text-primary-foreground">
                       {s.icono && <span aria-hidden>{s.icono}</span>}{s.titulo}
                     </Link>
                   </li>
                 ))}
               </ul>
               {marketing.length > 0 && (
-                <p className="mt-5 text-sm text-primary-foreground/75">
+                <p className="mt-5 text-sm text-muted-foreground">
                   {es ? 'Y marketing digital: ' : 'And digital marketing: '}
                   {marketing.map((m, i) => (
                     <span key={m.slug}>
@@ -118,7 +118,7 @@ export function HomeServices({ lang, services, portfolio, title, subtitle }: Hom
                   ))}.
                 </p>
               )}
-              <Link href={`/${lang}/services`} className="mt-5 inline-flex items-center gap-1 text-sm font-semibold hover:underline">
+              <Link href={`/${lang}/services`} className="mt-5 inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline">
                 {es ? 'Ver todos los servicios' : 'See all services'} <ArrowRight className="size-4" aria-hidden />
               </Link>
             </div>
