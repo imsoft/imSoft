@@ -26,10 +26,10 @@ describe('servicios principales de la portada', () => {
     const desde = Object.fromEntries(SERVICIOS_PRINCIPALES.map((s) => [s.slug, desdeDe(s, 'es')]))
     expect(desde['web-pages']).toBe('Desde $15,000 MXN')
     expect(desde['tiendas-en-linea']).toBe('Desde $30,000 MXN')
-    expect(desde['software-a-medida']).toBe('Desde $45,000 MXN')
-    expect(desde['aplicaciones-moviles']).toBe('Desde $60,000 MXN')
+    expect(desde['software-a-medida']).toBe('Desde $60,000 MXN')
+    expect(desde['aplicaciones-moviles']).toBe('Desde $90,000 MXN')
     expect(desde['desarrollo-de-mvp']).toBe('Desde $60,000 MXN')
-    expect(desdeDe(SERVICIOS_PRINCIPALES[0], 'en')).toBe('From $2,400 USD')
+    expect(desdeDe(SERVICIOS_PRINCIPALES[0], 'en')).toBe('From $3,200 USD')
     // Software a la medida ya no arranca en el nivel de las plataformas completas.
     expect(PISOS['software-a-medida'].mxn).toBeLessThan(PISOS['plataforma-completa'].mxn)
     expect(etiquetaDesde('plataforma-completa', 'es')).toBe('Desde $150,000 MXN')
