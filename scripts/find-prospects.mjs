@@ -10,7 +10,9 @@
  * GOOGLE_PLACES_API_KEY.
  *
  * Uso:
- *   node --env-file=.env --experimental-strip-types scripts/find-prospects.mjs [--max 80] [--busquedas 15] [--dry-run]
+ *   node --env-file=.env --experimental-strip-types scripts/find-prospects.mjs [--max 80] [--busquedas 15] [--giros joyeria,abastos] [--dry-run]
+ *
+ * --giros corre todas las busquedas de esos giros en vez del tramo del dia (para estrenar un giro sin esperar la rotacion).
  */
 import { readFileSync } from 'node:fs'
 import { createClient } from '@supabase/supabase-js'
@@ -37,8 +39,9 @@ const db = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABA
 
 // Cada corrida (lunes, miercoles y viernes) toma un tramo distinto de la lista.
 const corrida = numeroDeCorrida()
-const busquedas = tramoDeBusquedas(config.busquedas, corrida, POR_CORRIDA)
-console.log(`Corrida ${corrida}: ${busquedas.length} busquedas de ${config.busquedas.length}`)
+const soloGiros = typeof args.giros === 'string' ? args.giros.split(',') : null
+const busquedas = soloGiros ? config.busquedas.filter((b) => soloGiros.includes(b.giro)) : tramoDeBusquedas(config.busquedas, corrida, POR_CORRIDA)
+console.log(`Corrida ${corrida}: ${busquedas.length} busquedas de ${config.busquedas.length}${soloGiros ? ` (solo ${soloGiros.join(', ')})` : ''}`)
 
 const hoy = new Date().toISOString().slice(0, 10)
 let total = 0
