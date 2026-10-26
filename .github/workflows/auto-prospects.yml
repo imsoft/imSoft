@@ -2,8 +2,10 @@ name: Prospectos automáticos (Google Places)
 
 on:
   schedule:
-    # Lunes, miércoles y viernes 13:00 UTC (7:00 AM Guadalajara): prospectos nuevos antes de empezar el día.
-    - cron: "0 13 * * 1,3,5"
+    # Lunes, miércoles y viernes 9:17 UTC (3:17 AM Guadalajara). GitHub retrasa los cron
+    # de 4 a 8 horas, sobre todo los de hora en punto: a las 13:00 llegaban a mediodía y la
+    # tanda de la mañana salía sin prospectos. Así deberían estar listos antes de las 9 AM.
+    - cron: "17 9 * * 1,3,5"
   workflow_dispatch:
 
 jobs:
@@ -25,4 +27,4 @@ jobs:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           GOOGLE_PLACES_API_KEY: ${{ secrets.GOOGLE_PLACES_API_KEY }}
-        run: node --experimental-strip-types scripts/find-prospects.mjs --max 40
+        run: node --experimental-strip-types scripts/find-prospects.mjs --max 80

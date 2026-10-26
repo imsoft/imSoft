@@ -108,12 +108,29 @@ export function tramoDeBusquedas<T>(lista: T[], corrida: number, porCorrida: num
 }
 
 /**
- * Un candidato entra al CRM solo si hay por donde escribirle: correo, Instagram o el
- * WhatsApp que publica en su sitio. El telefono de Google solo no basta (decision de
- * Brandon, 23-sep-2026): suele ser fijo y los de puro telefono se quedaban sin contactar.
+ * El telefono de Google como posible WhatsApp (52 + 10 digitos). En Mexico no se distingue
+ * un fijo de un celular por el numero, asi que muchos no tendran WhatsApp: la tanda de
+ * redes los detecta al enviar y los descarta. Los 800/900 nunca son WhatsApp.
  */
-export function sePuedeEscribir(c: Pick<Candidato, 'correo' | 'instagram' | 'whatsapp'>): boolean {
-  return Boolean((c.correo ?? '').trim() || (c.instagram ?? '').trim() || (c.whatsapp ?? '').trim())
+export function telefonoParaWhatsApp(telefono: string | null | undefined): string | null {
+  let d = (telefono ?? '').replace(/\D/g, '')
+  if (d.length === 13 && d.startsWith('521')) d = d.slice(3)
+  else if (d.length === 12 && d.startsWith('52')) d = d.slice(2)
+  if (d.length !== 10) return null
+  if (/^(800|900|01)/.test(d)) return null
+  if (/^(\d)\1+$/.test(d) || d === '1234567890') return null
+  return `52${d}`
+}
+
+/**
+ * Un candidato entra al CRM si hay por donde escribirle: correo, Instagram, el WhatsApp que
+ * publica en su sitio o su telefono de Google. Antes el telefono solo no bastaba (23-sep-2026),
+ * pero asi entraban 10 de 214 negocios nuevos por corrida: casi ninguno publica contacto en su
+ * sitio. Desde el 26-oct-2026 el telefono cuenta (decision de Brandon) y la tanda de WhatsApp
+ * descarta los fijos al enviar.
+ */
+export function sePuedeEscribir(c: Pick<Candidato, 'correo' | 'instagram' | 'whatsapp'> & { telefono?: string | null }): boolean {
+  return Boolean((c.correo ?? '').trim() || (c.instagram ?? '').trim() || (c.whatsapp ?? '').trim() || telefonoParaWhatsApp(c.telefono))
 }
 
 const DOMINIOS_GENERICOS = ['facebook.com', 'instagram.com', 'wa.me', 'whatsapp.com', 'linktr.ee', 'google.com', 'goo.gl', 'business.site', 'negocio.site', 'tiktok.com', 'youtube.com', 'x.com', 'twitter.com']
@@ -238,12 +255,19 @@ export function extraerCorreo(html: string, dominio: string | null): string | nu
   return todos.sort((a, b) => puntaje(b) - puntaje(a))[0]
 }
 
+/**
+ * Rutas de instagram.com que no son el perfil del negocio. "instagram" es el icono generico
+ * que traen muchas plantillas de sitios: 7 de 24 prospectos llegaron con ese perfil el
+ * 23-oct-2026. Se toma el primer enlace que si sea un perfil.
+ */
+const RUTAS_INSTAGRAM_AJENAS = ['p', 'reel', 'reels', 'explore', 'accounts', 'share', 'stories', 'tv', 'instagram', 'about', 'legal', 'developer', 'direct', 'web']
+
 export function extraerInstagram(html: string): string | null {
-  const m = html.match(/https?:\/\/(?:www\.)?instagram\.com\/([a-z0-9_.]{2,30})\/?/i)
-  if (!m) return null
-  const u = m[1].toLowerCase()
-  if (['p', 'reel', 'explore', 'accounts', 'share', 'stories'].includes(u)) return null
-  return `https://instagram.com/${u}`
+  for (const m of html.matchAll(/https?:\/\/(?:www\.)?instagram\.com\/([a-z0-9_.]{2,30})\/?/gi)) {
+    const u = m[1].toLowerCase()
+    if (!RUTAS_INSTAGRAM_AJENAS.includes(u)) return `https://instagram.com/${u}`
+  }
+  return null
 }
 
 /** Numero de Mexico en formato de WhatsApp (52 + 10 digitos); otros paises se dejan como vienen. */

@@ -10,7 +10,7 @@
  * GOOGLE_PLACES_API_KEY.
  *
  * Uso:
- *   node --env-file=.env --experimental-strip-types scripts/find-prospects.mjs [--max 40] [--busquedas 15] [--dry-run]
+ *   node --env-file=.env --experimental-strip-types scripts/find-prospects.mjs [--max 80] [--busquedas 15] [--dry-run]
  */
 import { readFileSync } from 'node:fs'
 import { createClient } from '@supabase/supabase-js'
@@ -18,7 +18,9 @@ import { buscarProspectos, importarCandidatos } from '../src/lib/places-server.t
 import { deLaMarca, numeroDeCorrida, sePuedeEscribir, tramoDeBusquedas } from '../src/lib/places.ts'
 
 const args = Object.fromEntries(process.argv.slice(2).map((a, i, all) => (a.startsWith('--') ? [a.slice(2), all[i + 1]?.startsWith('--') || all[i + 1] === undefined ? true : all[i + 1]] : [])).filter((x) => x.length))
-const MAX = Number(args.max) || 40
+// Tope de altas por corrida. Con el telefono de Google contando como WhatsApp (26-oct-2026)
+// entran muchos mas por busqueda; 80 por corrida, tres por semana, alcanza para 15 diarios.
+const MAX = Number(args.max) || 80
 // Busquedas por corrida: cada una cuesta en Google, y con tres corridas por semana asi se recorre la lista completa en unas dos semanas.
 const POR_CORRIDA = Number(args.busquedas) || 15
 const dryRun = Boolean(args['dry-run'])

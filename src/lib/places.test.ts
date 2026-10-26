@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { candidatoDe, dominioDe, enlacesDeContacto, extraerCorreo, extraerInstagram, extraerWhatsApp, filaDesdeCandidato, formatoTelefono, giroDe, limpiarNombre, marcarExistentes, nombreNormalizado, sePuedeEscribir, sinRepetidos, numeroDeCorrida, tramoDeBusquedas, deLaMarca, zonaPremium, giroDe as giroDe2 } from './places'
+import { telefonoParaWhatsApp, candidatoDe, dominioDe, enlacesDeContacto, extraerCorreo, extraerInstagram, extraerWhatsApp, filaDesdeCandidato, formatoTelefono, giroDe, limpiarNombre, marcarExistentes, nombreNormalizado, sePuedeEscribir, sinRepetidos, numeroDeCorrida, tramoDeBusquedas, deLaMarca, zonaPremium, giroDe as giroDe2 } from './places'
 import { mapRowsToContacts } from './import-contacts'
 
 describe('buscador de prospectos (Places)', () => {
@@ -64,6 +64,9 @@ describe('buscador de prospectos (Places)', () => {
   it('saca el Instagram y los enlaces de contacto', () => {
     expect(extraerInstagram('<a href="https://www.instagram.com/roistom_despachocontable/">ig</a>')).toBe('https://instagram.com/roistom_despachocontable')
     expect(extraerInstagram('https://instagram.com/p/abc123')).toBeNull()
+    // El icono generico de la plantilla no es el perfil: se toma el siguiente enlace.
+    expect(extraerInstagram('<a href="https://instagram.com/instagram">ig</a> <a href="https://www.instagram.com/kinal_spa/">k</a>')).toBe('https://instagram.com/kinal_spa')
+    expect(extraerInstagram('<a href="https://www.instagram.com/instagram/">ig</a>')).toBeNull()
     const links = enlacesDeContacto('<a href="/contacto">c</a><a href="https://otro.com/contacto">x</a><a href="/blog">b</a><a href="nosotros.html">n</a>', 'https://negocio.mx/')
     expect(links).toEqual(['https://negocio.mx/contacto', 'https://negocio.mx/nosotros.html'])
   })
@@ -99,11 +102,26 @@ describe('buscador de prospectos (Places)', () => {
     expect(sePuedeEscribir({ whatsapp: '523312345678' })).toBe(true)
   })
 
-  it('solo entra al CRM quien tiene correo, Instagram o WhatsApp publicado; el telefono solo no basta', () => {
+  it('entra al CRM quien tiene correo, Instagram, WhatsApp publicado o un telefono que puede ser WhatsApp', () => {
     expect(sePuedeEscribir({ correo: 'a@b.mx', instagram: null })).toBe(true)
     expect(sePuedeEscribir({ correo: null, instagram: 'ferreteria' })).toBe(true)
     expect(sePuedeEscribir({ correo: ' ', instagram: '' })).toBe(false)
     expect(sePuedeEscribir({})).toBe(false)
+    // El telefono de Google cuenta (26-oct-2026); un 800 no.
+    expect(sePuedeEscribir({ telefono: '33 1234 5678' })).toBe(true)
+    expect(sePuedeEscribir({ telefono: '800 123 4567' })).toBe(false)
+  })
+
+  it('el telefono de Google se vuelve numero de WhatsApp de Mexico, salvo 800, 900 y numeros de relleno', () => {
+    expect(telefonoParaWhatsApp('33 1234 5678')).toBe('523312345678')
+    expect(telefonoParaWhatsApp('+52 1 33 1234 5678')).toBe('523312345678')
+    expect(telefonoParaWhatsApp('+52 33 1234 5678')).toBe('523312345678')
+    expect(telefonoParaWhatsApp('800 700 5346')).toBeNull()
+    expect(telefonoParaWhatsApp('01 800 123 4567')).toBeNull()
+    expect(telefonoParaWhatsApp('1234567890')).toBeNull()
+    expect(telefonoParaWhatsApp('3333333333')).toBeNull()
+    expect(telefonoParaWhatsApp('12345')).toBeNull()
+    expect(telefonoParaWhatsApp(null)).toBeNull()
   })
 
   it('cada corrida toma el tramo siguiente y entre varias recorren la lista completa', () => {

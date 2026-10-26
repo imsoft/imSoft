@@ -137,7 +137,7 @@ export function BuscarProspectos({ lang, configurado }: { lang: string; configur
                       {c.tipo && <p className="text-xs text-muted-foreground">{c.tipo}</p>}
                     </td>
                     <td className="p-3 align-top whitespace-nowrap">
-                      {c.correo ? <p>{c.correo}</p> : <p className="text-muted-foreground">{sePuedeEscribir(c) ? (es ? 'sin correo' : 'no email') : es ? 'sin correo, Instagram ni WhatsApp: no se agrega' : 'no email, Instagram or WhatsApp: not added'}</p>}
+                      {c.correo ? <p>{c.correo}</p> : <p className="text-muted-foreground">{sePuedeEscribir(c) ? (es ? 'sin correo' : 'no email') : es ? 'sin correo, Instagram, WhatsApp ni celular: no se agrega' : 'no email, Instagram, WhatsApp or mobile: not added'}</p>}
                       {c.telefono && <p className="text-xs text-muted-foreground">{c.telefono}</p>}
                       {c.instagram && <a className="text-xs text-primary underline-offset-4 hover:underline" href={c.instagram} target="_blank" rel="noreferrer">Instagram</a>}
                       {c.whatsapp && <a className="block text-xs text-primary underline-offset-4 hover:underline" href={`https://wa.me/${c.whatsapp}`} target="_blank" rel="noreferrer">WhatsApp +{c.whatsapp}</a>}
