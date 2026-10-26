@@ -15,7 +15,8 @@ import { Trash2, Plus } from 'lucide-react'
 import { CONDICIONES_DEFAULT } from '@/config/emisor'
 import { DESCUENTO_MAXIMO_RECOMENDADO_PCT, PROMOCIONES, descuentoValido, numMensualidades, textoMensualidades, featuresValidas, fechaVigencia, generarToken, hitosValidos, itemsDesdePrecio, mxn, plazoEntrega, porcentajeDescuento, precioProyecto, siguienteFolio, totales, type Hito, type QuoteDiscount, type QuoteTerms } from '@/lib/cotizaciones'
 import type { Quote } from '@/types/quotes'
-import type { AssistOutput } from '@/lib/quote-assist'
+import { textoIguala, type AssistOutput } from '@/lib/quote-assist'
+import { Badge } from '@/components/ui/badge'
 import { Sparkles, Loader2 } from 'lucide-react'
 
 const campo = 'border-2! border-border!'
@@ -89,7 +90,7 @@ export function QuoteForm({ lang, quote }: { lang: string; quote?: Quote }) {
       const r = await fetch('/api/quotes/assist', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, intro, features: features.filter((f) => f.trim()), precio, clientCompany: cliente.client_company, servicio: sv?.title_es ?? null, clienteRecurrente: Boolean(cliente.contact_id), descuentoActual: conDescuento ? descuento : null }),
+        body: JSON.stringify({ title, intro, features: features.filter((f) => f.trim()), precio, clientCompany: cliente.client_company, servicio: sv?.title_es ?? null, clienteRecurrente: Boolean(cliente.contact_id), descuentoActual: conDescuento ? descuento : null, quoteId: quote?.id ?? null }),
       })
       const j = await r.json().catch(() => ({}))
       if (!r.ok) throw new Error(j.error || r.statusText)
@@ -101,13 +102,21 @@ export function QuoteForm({ lang, quote }: { lang: string; quote?: Quote }) {
     }
   }
 
-  function agregarCaracteristica(texto: string) {
+  /** Agrega la caracteristica sugerida; con `sumar` tambien sube el precio del proyecto. */
+  function agregarCaracteristica(texto: string, sumar = 0) {
+    if (sumar > 0 && !features.some((f) => f.trim().toLowerCase() === texto.toLowerCase())) setPrecio((p) => (Number(p) || 0) + sumar)
     setFeatures((arr) => {
       const limpias = arr.map((f) => f.trim()).filter(Boolean)
       if (limpias.some((f) => f.toLowerCase() === texto.toLowerCase())) return arr
       return [...limpias, texto]
     })
     setAsistente((a) => (a ? { ...a, caracteristicas: a.caracteristicas.filter((c) => c.texto !== texto) } : a))
+  }
+
+  function agregarIgualaANotas() {
+    if (!asistente?.iguala) return
+    const parrafo = textoIguala(asistente.iguala)
+    setNotes((n) => (n.includes(parrafo) ? n : [n.trim(), parrafo].filter(Boolean).join('\n\n')))
   }
 
   function precargarServicio(slug: string) {
@@ -395,13 +404,16 @@ export function QuoteForm({ lang, quote }: { lang: string; quote?: Quote }) {
               {pensando ? <Loader2 className="size-4 mr-1 animate-spin" /> : <Sparkles className="size-4 mr-1" />}
               {pensando ? (es ? 'Revisando el proyecto…' : 'Reviewing the project…') : (es ? 'Pedir recomendaciones a la IA' : 'Ask AI for recommendations')}
             </Button>
-            <p className="text-xs text-muted-foreground">{es ? 'Revisa precio, características que suelen faltar, preguntas para el cliente y riesgos. Es una segunda opinión; tú decides.' : 'Reviews price, commonly missing features, questions for the client and risks. A second opinion; you decide.'}</p>
+            <p className="text-xs text-muted-foreground">{es ? 'Revisa precio contra tus cotizaciones anteriores, características que suelen faltar con su costo, iguala mensual, preguntas para el cliente y riesgos. Es una segunda opinión; tú decides.' : 'Reviews price against your past quotes, commonly missing features with their cost, monthly retainer, questions for the client and risks. A second opinion; you decide.'}</p>
             {asistente && (
               <div className="space-y-4 text-sm">
                 <p>{asistente.resumen}</p>
                 <div className="rounded-lg border bg-muted/40 p-3 space-y-2">
                   <p className="font-semibold">{es ? 'Precio sugerido' : 'Suggested price'}: <span className="font-mono tabular-nums">{mxn(asistente.precio.min)} – {mxn(asistente.precio.max)}</span></p>
                   <p className="text-muted-foreground">{asistente.precio.comentario}</p>
+                  {asistente.comparables_usados.length > 0 && (
+                    <p className="text-xs text-muted-foreground">{es ? 'Basado en tus cotizaciones' : 'Based on your quotes'}: <span className="font-mono">{asistente.comparables_usados.join(', ')}</span></p>
+                  )}
                   <div className="flex flex-wrap gap-2">
                     {[asistente.precio.min, Math.round((asistente.precio.min + asistente.precio.max) / 2 / 100) * 100, asistente.precio.max].map((v, i) => (
                       <Button key={i} type="button" size="sm" variant={precio === v ? 'default' : 'outline'} onClick={() => setPrecio(v)}>{es ? ['Usar mínimo', 'Usar medio', 'Usar máximo'][i] : ['Use min', 'Use mid', 'Use max'][i]}</Button>
@@ -423,11 +435,31 @@ export function QuoteForm({ lang, quote }: { lang: string; quote?: Quote }) {
                     <ul className="space-y-2">
                       {asistente.caracteristicas.map((c) => (
                         <li key={c.texto} className="flex items-start justify-between gap-2 rounded-lg border p-2">
-                          <div><p>{c.texto}</p><p className="text-xs text-muted-foreground">{c.motivo}</p></div>
-                          <Button type="button" size="sm" variant="outline" onClick={() => agregarCaracteristica(c.texto)}><Plus className="size-4" /></Button>
+                          <div className="space-y-1">
+                            <p>{c.texto}</p>
+                            <div className="flex flex-wrap items-center gap-1.5 text-xs">
+                              <Badge variant={c.prioridad === 'esencial' ? 'default' : c.prioridad === 'recomendada' ? 'secondary' : 'outline'}>{es ? c.prioridad : { esencial: 'essential', recomendada: 'recommended', opcional: 'optional' }[c.prioridad]}</Badge>
+                              <span className="font-mono tabular-nums text-muted-foreground">{c.precio_extra > 0 ? `+${mxn(c.precio_extra)}` : es ? 'sin costo extra' : 'no extra cost'}</span>
+                            </div>
+                            <p className="text-xs text-muted-foreground">{c.motivo}</p>
+                          </div>
+                          <div className="flex shrink-0 flex-col gap-1">
+                            <Button type="button" size="sm" variant="outline" title={es ? 'Agregar sin cambiar el precio' : 'Add without changing the price'} onClick={() => agregarCaracteristica(c.texto)}><Plus className="size-4" /></Button>
+                            {c.precio_extra > 0 && (
+                              <Button type="button" size="sm" variant="outline" title={es ? 'Agregar y sumar al precio' : 'Add and increase the price'} onClick={() => agregarCaracteristica(c.texto, c.precio_extra)}><Plus className="size-4" />$</Button>
+                            )}
+                          </div>
                         </li>
                       ))}
                     </ul>
+                  </div>
+                )}
+                {asistente.iguala && (
+                  <div className="rounded-lg border p-3 space-y-2">
+                    <p className="font-semibold">{es ? 'Iguala mensual sugerida' : 'Suggested monthly retainer'}: <span className="font-mono tabular-nums">{mxn(asistente.iguala.mensual)}</span> {es ? '/ mes + IVA' : '/ month + VAT'}</p>
+                    {asistente.iguala.incluye.length > 0 && <ul className="list-disc pl-5 space-y-1 text-muted-foreground">{asistente.iguala.incluye.map((x) => <li key={x}>{x}</li>)}</ul>}
+                    <p className="text-muted-foreground">{asistente.iguala.comentario}</p>
+                    <Button type="button" size="sm" variant="outline" onClick={agregarIgualaANotas}>{es ? 'Ofrecerla en las notas' : 'Offer it in the notes'}</Button>
                   </div>
                 )}
                 {asistente.preguntas.length > 0 && (
