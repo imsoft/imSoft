@@ -64,7 +64,7 @@ export default async function Image({ params }: { params: Promise<{ lang: string
           {short && <div style={{ fontSize: 26, lineHeight: 1.35, opacity: 0.9, maxWidth: 980 }}>{short}</div>}
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 22, opacity: 0.85 }}>
-          <span>{isEs ? 'Guadalajara, Jalisco · propuesta con precio fijo en 48 h' : 'Guadalajara, Mexico · fixed-price proposal in 48 h'}</span>
+          <span>{isEs ? 'Guadalajara, Jalisco · propuesta con precio fijo en 24 h' : 'Guadalajara, Mexico · fixed-price proposal in 24 h'}</span>
           <span>imsoft.io</span>
         </div>
       </div>

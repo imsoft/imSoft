@@ -141,7 +141,7 @@ export const GUIAS_PRECIO: Record<GuiaPrecioSlug, CityServiceContent> = {
     },
     cta: {
       title: '¿Cuánto costaría el software de tu empresa?',
-      description: `En una llamada de 15 minutos vemos qué proceso conviene resolver primero y en 48 horas te mandamos el precio fijo de esa etapa. ${HORARIO}`,
+      description: `En una llamada de 15 minutos vemos qué proceso conviene resolver primero y en 24 horas te mandamos el precio fijo de esa etapa. ${HORARIO}`,
       buttonText: 'Pedir cotización',
     },
   },
@@ -194,7 +194,7 @@ export const GUIAS_PRECIO: Record<GuiaPrecioSlug, CityServiceContent> = {
         {
           title: 'Precio fijo según tu catálogo',
           description:
-            'En una llamada de 15 minutos vemos cuántos productos tienes, cómo cobras y cómo envías. En 48 horas te mandamos el precio fijo por escrito, y no cambia durante el proyecto.',
+            'En una llamada de 15 minutos vemos cuántos productos tienes, cómo cobras y cómo envías. En 24 horas te mandamos el precio fijo por escrito, y no cambia durante el proyecto.',
         },
         {
           title: 'Tienda propia, sin comisión nuestra',
@@ -262,7 +262,7 @@ export const GUIAS_PRECIO: Record<GuiaPrecioSlug, CityServiceContent> = {
     },
     cta: {
       title: '¿Cuánto costaría tu tienda en línea?',
-      description: `Cuéntanos qué vendes y cuántos productos tienes, y en 48 horas te mandamos el precio fijo por escrito. ${HORARIO}`,
+      description: `Cuéntanos qué vendes y cuántos productos tienes, y en 24 horas te mandamos el precio fijo por escrito. ${HORARIO}`,
       buttonText: 'Pedir cotización',
     },
   },

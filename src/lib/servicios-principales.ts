@@ -6,7 +6,7 @@
  * una lista compacta. La pagina /services sigue mostrando todo.
  *
  * Los precios "desde" son los mismos de la seccion de referencia de precios; donde no hay
- * uno publicado se promete el precio fijo en 48 horas en lugar de inventar una cifra. Los
+ * uno publicado se promete el precio fijo en 24 horas en lugar de inventar una cifra. Los
  * ganchos usan el mismo lenguaje que los mensajes de prospeccion del CRM.
  */
 import type { Service } from '@/types/database'
@@ -18,7 +18,7 @@ export interface ServicioPrincipal {
   /** El problema del cliente, en una frase. */
   problema: { es: string; en: string }
   entregables: { es: [string, string, string]; en: [string, string, string] }
-  /** Precio "desde" publicado, o null para "precio fijo en 48 horas". */
+  /** Precio "desde" publicado, o null para "precio fijo en 24 horas". */
   desde: { es: string; en: string } | null
   /** Slug del proyecto del portafolio que ilustra el servicio, si hay uno. */
   caso: { slug: string; nombre: string } | null

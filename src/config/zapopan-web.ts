@@ -126,7 +126,7 @@ export const ZAPOPAN_FAQ: { title: string; items: Array<{ question: string; answ
     },
     {
       question: '¿Cuánto cuesta una página web en Zapopan?',
-      answer: 'Lo mismo que en el resto de la ZMG: una landing page desde $5,000 MXN y un sitio corporativo desde $15,000 MXN, a precio fijo. El precio cerrado depende de las secciones y funciones; te lo damos en 48 horas.',
+      answer: 'Lo mismo que en el resto de la ZMG: una landing page desde $5,000 MXN y un sitio corporativo desde $15,000 MXN, a precio fijo. El precio cerrado depende de las secciones y funciones; te lo damos en 24 horas.',
     },
     {
       question: '¿Cuánto tardan?',

@@ -75,7 +75,7 @@ const GUADALAJARA: Record<CityServiceSlug, CityServiceContent> = {
   'paginas-web': {
     seoTitle: 'Páginas web en Guadalajara para empresas y PyMEs | imSoft',
     seoDescription:
-      'Diseño y desarrollo de páginas web en Guadalajara: sitios rápidos, con SEO local y panel para editarlos tú. Precio fijo desde $15,000 MXN. Cotización en 48 h.',
+      'Diseño y desarrollo de páginas web en Guadalajara: sitios rápidos, con SEO local y panel para editarlos tú. Precio fijo desde $15,000 MXN. Cotización en 24 h.',
     h1: 'Páginas Web en Guadalajara',
     heroSubtitle:
       'Diseñamos y desarrollamos páginas web para empresas de Guadalajara que necesitan aparecer en Google y convertir visitas en llamadas, cotizaciones o citas. Precio fijo acordado antes de empezar, el sitio queda a tu nombre y lo editas sin depender de nadie.',
@@ -142,7 +142,7 @@ const GUADALAJARA: Record<CityServiceSlug, CityServiceContent> = {
         { name: 'Landing page', price: 'Desde $5,000 MXN', includes: 'Una página, formulario de contacto y entrega en una semana. Para validar una idea o una campaña.' },
         { name: 'Sitio web corporativo', price: 'Desde $15,000 MXN', includes: 'Varias secciones, diseño responsive, SEO técnico, dominio, hosting y SSL. Entrega en 2 a 3 semanas.' },
       ],
-      note: 'El precio final depende del número de secciones y de si necesitas catálogo, blog o integraciones. Te lo decimos en 48 horas después de una llamada de 15 minutos.',
+      note: 'El precio final depende del número de secciones y de si necesitas catálogo, blog o integraciones. Te lo decimos en 24 horas después de una llamada de 15 minutos.',
     },
     proof: {
       title: 'Páginas web que ya están en línea',
@@ -183,7 +183,7 @@ const GUADALAJARA: Record<CityServiceSlug, CityServiceContent> = {
     relatedPosts: ['cuanto-cuesta-una-pagina-web-en-mexico'],
     cta: {
       title: '¿Hablamos de tu página?',
-      description: `Cuéntanos qué tienes hoy y qué quieres que haga tu sitio. En 48 horas te decimos precio y tiempo, sin compromiso. ${HORARIO}`,
+      description: `Cuéntanos qué tienes hoy y qué quieres que haga tu sitio. En 24 horas te decimos precio y tiempo, sin compromiso. ${HORARIO}`,
       buttonText: 'Pedir cotización',
     },
   },
@@ -307,7 +307,7 @@ const GUADALAJARA: Record<CityServiceSlug, CityServiceContent> = {
   'tiendas-en-linea': {
     seoTitle: 'Tiendas en línea en Guadalajara: ecommerce a la medida | imSoft',
     seoDescription:
-      'Desarrollo de tiendas en línea en Guadalajara con pagos, envíos y facturación integrados. Sin comisiones por venta ni mensualidades. Cotización en 48 h.',
+      'Desarrollo de tiendas en línea en Guadalajara con pagos, envíos y facturación integrados. Sin comisiones por venta ni mensualidades. Cotización en 24 h.',
     h1: 'Tiendas en Línea en Guadalajara',
     heroSubtitle:
       'Desarrollamos tiendas en línea para negocios de Guadalajara que quieren vender más allá del mostrador y de las redes sociales: catálogo, pagos con tarjeta y transferencia, envíos, facturación y un panel para administrarlo todo. Sin comisión por venta ni renta mensual por usar tu propia tienda.',
@@ -387,7 +387,7 @@ const GUADALAJARA: Record<CityServiceSlug, CityServiceContent> = {
         },
         {
           question: '¿Cuánto cuesta una tienda en línea?',
-          answer: 'Depende del catálogo y de las integraciones. Una tienda con catálogo, pagos y envíos entra en el rango de un sitio corporativo con módulos adicionales; una con precios por cliente, inventario sincronizado y facturación automática se acerca a un sistema a la medida. Te damos el precio cerrado en 48 horas.',
+          answer: 'Depende del catálogo y de las integraciones. Una tienda con catálogo, pagos y envíos entra en el rango de un sitio corporativo con módulos adicionales; una con precios por cliente, inventario sincronizado y facturación automática se acerca a un sistema a la medida. Te damos el precio cerrado en 24 horas.',
         },
         {
           question: '¿Puedo cobrar con tarjeta y a meses sin intereses?',
@@ -410,7 +410,7 @@ const GUADALAJARA: Record<CityServiceSlug, CityServiceContent> = {
   'desarrollo-de-apps': {
     seoTitle: 'Desarrollo de apps en Guadalajara para empresas | imSoft',
     seoDescription:
-      'Desarrollo de apps en Guadalajara: aplicaciones web y móviles para tu equipo o tus clientes, a precio fijo y con el código a tu nombre. Cotización en 48 h.',
+      'Desarrollo de apps en Guadalajara: aplicaciones web y móviles para tu equipo o tus clientes, a precio fijo y con el código a tu nombre. Cotización en 24 h.',
     h1: 'Desarrollo de Apps en Guadalajara',
     heroSubtitle:
       'Desarrollamos aplicaciones para empresas de Guadalajara: herramientas para tu equipo en campo, portales para tus clientes y productos que quieres lanzar al mercado. Te decimos con honestidad cuándo conviene una app móvil y cuándo una aplicación web resuelve lo mismo por menos.',
@@ -596,7 +596,7 @@ const MONTERREY: Record<CityServiceSlug, CityServiceContent> = {
         { name: 'Landing page', price: 'Desde $5,000 MXN', includes: 'Una sola página con formulario, lista en una semana. Útil para una línea de producto o una campaña.' },
         { name: 'Sitio web corporativo', price: 'Desde $15,000 MXN', includes: 'Secciones de empresa, capacidades y contacto, SEO técnico, dominio, hosting y SSL. Entrega en 2 a 3 semanas.' },
       ],
-      note: 'Catálogos extensos, versión en inglés para clientes de Estados Unidos o integraciones con tu CRM se cotizan aparte. Te damos el precio cerrado en 48 horas.',
+      note: 'Catálogos extensos, versión en inglés para clientes de Estados Unidos o integraciones con tu CRM se cotizan aparte. Te damos el precio cerrado en 24 horas.',
     },
     proof: {
       title: 'Sitios corporativos que puedes revisar',
@@ -632,7 +632,7 @@ const MONTERREY: Record<CityServiceSlug, CityServiceContent> = {
     relatedPosts: ['cuanto-cuesta-una-pagina-web-en-mexico'],
     cta: {
       title: '¿Revisamos tu sitio actual?',
-      description: `Mándanos la dirección de tu sitio o cuéntanos qué necesitas. En 48 horas te decimos qué haríamos, cuánto costaría y cuándo estaría. ${HORARIO}`,
+      description: `Mándanos la dirección de tu sitio o cuéntanos qué necesitas. En 24 horas te decimos qué haríamos, cuánto costaría y cuándo estaría. ${HORARIO}`,
       buttonText: 'Pedir cotización',
     },
   },
@@ -830,7 +830,7 @@ const MONTERREY: Record<CityServiceSlug, CityServiceContent> = {
         },
         {
           question: '¿Cuánto cuesta una tienda en línea para Monterrey?',
-          answer: 'Una tienda con catálogo, pagos y envíos se cotiza en el rango de un sitio corporativo con módulos adicionales; una con precios por cliente, crédito, inventario sincronizado y facturación automática se acerca a un sistema a la medida. El precio cerrado te lo damos en 48 horas.',
+          answer: 'Una tienda con catálogo, pagos y envíos se cotiza en el rango de un sitio corporativo con módulos adicionales; una con precios por cliente, crédito, inventario sincronizado y facturación automática se acerca a un sistema a la medida. El precio cerrado te lo damos en 24 horas.',
         },
         {
           question: '¿Se puede conectar con nuestro sistema de inventario?',
@@ -1033,7 +1033,7 @@ const CDMX: Partial<Record<CityServiceSlug, CityServiceContent>> = {
         { name: 'Landing page', price: 'Desde $5,000 MXN', includes: 'Una página con formulario, lista en una semana. Para una campaña o un servicio específico.' },
         { name: 'Sitio web corporativo', price: 'Desde $15,000 MXN', includes: 'Secciones por servicio, diseño responsive, SEO técnico, dominio, hosting y SSL. Entrega en 2 a 3 semanas.' },
       ],
-      note: 'Sitios con varias sedes, agenda de citas en línea o blog se cotizan con módulos adicionales. Precio cerrado en 48 horas.',
+      note: 'Sitios con varias sedes, agenda de citas en línea o blog se cotizan con módulos adicionales. Precio cerrado en 24 horas.',
     },
     proof: {
       title: 'Sitios que puedes revisar',
@@ -1069,7 +1069,7 @@ const CDMX: Partial<Record<CityServiceSlug, CityServiceContent>> = {
     relatedPosts: ['cuanto-cuesta-una-pagina-web-en-mexico'],
     cta: {
       title: '¿Revisamos tu sitio?',
-      description: `Mándanos tu sitio actual o cuéntanos qué necesitas. En 48 horas te decimos qué haríamos, cuánto costaría y cuándo estaría. ${HORARIO}`,
+      description: `Mándanos tu sitio actual o cuéntanos qué necesitas. En 24 horas te decimos qué haríamos, cuánto costaría y cuándo estaría. ${HORARIO}`,
       buttonText: 'Pedir cotización',
     },
   },
@@ -1267,7 +1267,7 @@ const CDMX: Partial<Record<CityServiceSlug, CityServiceContent>> = {
         },
         {
           question: '¿Cuánto cuesta una tienda en línea en CDMX?',
-          answer: 'Una tienda con catálogo, pagos y envíos se cotiza como un sitio corporativo con módulos adicionales; una con precios por cliente, inventario sincronizado y facturación automática se acerca a un sistema a la medida. El precio cerrado te lo damos en 48 horas.',
+          answer: 'Una tienda con catálogo, pagos y envíos se cotiza como un sitio corporativo con módulos adicionales; una con precios por cliente, inventario sincronizado y facturación automática se acerca a un sistema a la medida. El precio cerrado te lo damos en 24 horas.',
         },
         {
           question: '¿Pueden migrar los productos de mi tienda actual?',
@@ -1359,7 +1359,7 @@ const QUERETARO: Record<CityServiceSlug, CityServiceContent> = {
         { name: 'Landing page', price: 'Desde $5,000 MXN', includes: 'Una página con formulario, lista en una semana. Para un servicio o una campaña.' },
         { name: 'Sitio web corporativo', price: 'Desde $15,000 MXN', includes: 'Secciones por servicio y zona, diseño responsive, SEO técnico, dominio, hosting y SSL. Entrega en 2 a 3 semanas.' },
       ],
-      note: 'Versión en inglés, catálogo o integración con tu CRM se cotizan como módulos. Precio cerrado en 48 horas.',
+      note: 'Versión en inglés, catálogo o integración con tu CRM se cotizan como módulos. Precio cerrado en 24 horas.',
     },
     proof: {
       title: 'Sitios nuestros que puedes revisar',
@@ -1395,7 +1395,7 @@ const QUERETARO: Record<CityServiceSlug, CityServiceContent> = {
     relatedPosts: ['cuanto-cuesta-una-pagina-web-en-mexico'],
     cta: {
       title: '¿Revisamos tu sitio?',
-      description: `Mándanos tu sitio actual o cuéntanos qué necesitas. En 48 horas te decimos qué haríamos, cuánto costaría y cuándo estaría. ${HORARIO}`,
+      description: `Mándanos tu sitio actual o cuéntanos qué necesitas. En 24 horas te decimos qué haríamos, cuánto costaría y cuándo estaría. ${HORARIO}`,
       buttonText: 'Pedir cotización',
     },
   },
@@ -1589,7 +1589,7 @@ const QUERETARO: Record<CityServiceSlug, CityServiceContent> = {
       items: [
         {
           question: '¿Cuánto cuesta una tienda en línea en Querétaro?',
-          answer: 'Con catálogo, pagos y envíos se cotiza como un sitio corporativo con módulos adicionales; con precios por cliente, inventario sincronizado y facturación automática se acerca a un sistema a la medida. Precio cerrado en 48 horas.',
+          answer: 'Con catálogo, pagos y envíos se cotiza como un sitio corporativo con módulos adicionales; con precios por cliente, inventario sincronizado y facturación automática se acerca a un sistema a la medida. Precio cerrado en 24 horas.',
         },
         {
           question: '¿Conviene tienda propia o Shopify?',
@@ -1796,7 +1796,7 @@ const PUEBLA: Record<CityServiceSlug, CityServiceContent> = {
         { name: 'Landing page', price: 'Desde $5,000 MXN', includes: 'Una página con formulario, lista en una semana. Para una campaña o un servicio.' },
         { name: 'Sitio web corporativo', price: 'Desde $15,000 MXN', includes: 'Secciones por servicio, diseño responsive, SEO técnico, dominio, hosting y SSL. Entrega en 2 a 3 semanas.' },
       ],
-      note: 'Reservaciones, agenda de citas, catálogo o versión en inglés se cotizan como módulos. Precio cerrado en 48 horas.',
+      note: 'Reservaciones, agenda de citas, catálogo o versión en inglés se cotizan como módulos. Precio cerrado en 24 horas.',
     },
     proof: {
       title: 'Sitios nuestros que puedes revisar',
@@ -1832,7 +1832,7 @@ const PUEBLA: Record<CityServiceSlug, CityServiceContent> = {
     relatedPosts: ['cuanto-cuesta-una-pagina-web-en-mexico'],
     cta: {
       title: '¿Revisamos tu sitio o tu página de Facebook?',
-      description: `Cuéntanos qué tienes hoy y qué quieres que haga tu sitio. En 48 horas te decimos precio y tiempo, sin compromiso. ${HORARIO}`,
+      description: `Cuéntanos qué tienes hoy y qué quieres que haga tu sitio. En 24 horas te decimos precio y tiempo, sin compromiso. ${HORARIO}`,
       buttonText: 'Pedir cotización',
     },
   },
@@ -2030,7 +2030,7 @@ const PUEBLA: Record<CityServiceSlug, CityServiceContent> = {
         },
         {
           question: '¿Cuánto cuesta una tienda en línea en Puebla?',
-          answer: 'Con catálogo, pagos y envíos se cotiza como un sitio corporativo con módulos adicionales; con menudeo y mayoreo, inventario sincronizado y facturación automática se acerca a un sistema a la medida. Precio cerrado en 48 horas.',
+          answer: 'Con catálogo, pagos y envíos se cotiza como un sitio corporativo con módulos adicionales; con menudeo y mayoreo, inventario sincronizado y facturación automática se acerca a un sistema a la medida. Precio cerrado en 24 horas.',
         },
         {
           question: '¿Trabajan a distancia con negocios de Puebla?',

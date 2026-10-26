@@ -22,8 +22,8 @@ export async function generateMetadata({
       ? 'Servicios de Desarrollo de Software en Guadalajara'
       : 'Software Development Services in Guadalajara, Mexico',
     description: lang === 'es'
-      ? 'Páginas web, aplicaciones móviles, software a medida y marketing digital para empresas de Guadalajara. Propuesta con precio fijo en 48 horas.'
-      : 'Websites, mobile apps, custom software and digital marketing for companies in Guadalajara, Mexico. Fixed-price proposal within 48 hours.',
+      ? 'Páginas web, aplicaciones móviles, software a medida y marketing digital para empresas de Guadalajara. Propuesta con precio fijo en 24 horas.'
+      : 'Websites, mobile apps, custom software and digital marketing for companies in Guadalajara, Mexico. Fixed-price proposal within 24 hours.',
     url: `${SITE_URL}/${lang}/services`,
     type: 'website',
     tags: lang === 'es'

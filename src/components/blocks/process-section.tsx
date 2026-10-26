@@ -17,7 +17,7 @@ const steps = {
       icon: FileText,
       number: '02',
       title: 'Propuesta con precio fijo',
-      description: 'En 48 horas recibes una propuesta detallada: alcance, entregables, cronograma y precio fijo. Sin sorpresas al final.',
+      description: 'En 24 horas recibes una propuesta detallada: alcance, entregables, cronograma y precio fijo. Sin sorpresas al final.',
     },
     {
       icon: Code2,
@@ -43,7 +43,7 @@ const steps = {
       icon: FileText,
       number: '02',
       title: 'Fixed-price proposal',
-      description: 'Within 48 hours you receive a detailed proposal: scope, deliverables, timeline and a fixed price. No surprises.',
+      description: 'Within 24 hours you receive a detailed proposal: scope, deliverables, timeline and a fixed price. No surprises.',
     },
     {
       icon: Code2,

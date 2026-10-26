@@ -116,7 +116,7 @@ ${blogSection}
 
 ## Pricing
 
-All projects receive a fixed-price proposal within 48 hours. No surprise charges.
+All projects receive a fixed-price proposal within 24 hours. No surprise charges.
 
 - Web pages: From $15,000 MXN / $800 USD
 - MVP / Product launch: From $60,000 MXN / $3,000 USD

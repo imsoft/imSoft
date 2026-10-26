@@ -26,7 +26,7 @@ describe('servicios principales de la portada', () => {
     expect(desde['web-pages']).toBe('Desde $15,000 MXN')
     expect(desde['desarrollo-de-mvp']).toBe('Desde $60,000 MXN')
     expect(desde['software-a-medida']).toBe('Desde $150,000 MXN')
-    // Donde no hay precio publicado no se inventa: se promete el precio fijo en 48 h.
+    // Donde no hay precio publicado no se inventa: se promete el precio fijo en 24 h.
     expect(desde['aplicaciones-moviles']).toBeNull()
     expect(desde['tiendas-en-linea']).toBeNull()
   })

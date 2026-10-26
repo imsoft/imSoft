@@ -75,7 +75,7 @@ export function HomeServices({ lang, services, portfolio, title, subtitle }: Hom
                     </ul>
                     <div className="mt-auto flex flex-wrap items-center justify-between gap-3 border-t pt-4">
                       <p className="text-sm font-semibold">
-                        {s.desde ? s.desde[l] : es ? 'Precio fijo en 48 horas' : 'Fixed price in 48 hours'}
+                        {s.desde ? s.desde[l] : es ? 'Precio fijo en 24 horas' : 'Fixed price in 24 hours'}
                       </p>
                       <Link href={`/${lang}/services/${s.slug}`} className="text-sm font-medium text-primary hover:underline">
                         {es ? 'Ver detalles' : 'See details'}

@@ -13,12 +13,12 @@ export function FinalCtaSection({ lang }: FinalCtaSectionProps) {
 
   const trust = isEs
     ? [
-        { icon: Clock, text: 'Respuesta en 48 horas' },
+        { icon: Clock, text: 'Respuesta en 24 horas' },
         { icon: Tag, text: 'Precio fijo, sin sorpresas' },
         { icon: Code2, text: 'El código es 100% tuyo' },
       ]
     : [
-        { icon: Clock, text: 'Reply within 48 hours' },
+        { icon: Clock, text: 'Reply within 24 hours' },
         { icon: Tag, text: 'Fixed price, no surprises' },
         { icon: Code2, text: 'You own 100% of the code' },
       ]
@@ -33,8 +33,8 @@ export function FinalCtaSection({ lang }: FinalCtaSectionProps) {
         </h2>
         <p className="text-muted-foreground text-lg max-w-2xl mx-auto mb-10 text-balance">
           {isEs
-            ? 'Agenda una llamada gratis. Sin compromiso: platicamos tu proyecto y te enviamos una propuesta con precio fijo en 48 horas.'
-            : 'Book a free call. No commitment: we’ll talk through your project and send you a fixed-price proposal within 48 hours.'}
+            ? 'Agenda una llamada gratis. Sin compromiso: platicamos tu proyecto y te enviamos una propuesta con precio fijo en 24 horas.'
+            : 'Book a free call. No commitment: we’ll talk through your project and send you a fixed-price proposal within 24 hours.'}
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
