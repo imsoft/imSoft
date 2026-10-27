@@ -95,6 +95,18 @@ const GIROS_TIENDA = ['joyeria']
 
 export type Oferta = 'app' | 'tienda'
 
+/**
+ * Giros con presentacion propia en redes. segmentoDe (outreach.ts) solo reconoce los
+ * que tienen plantilla de correo, y por eso la presentacion de gimnasios o agro nunca
+ * llegaba al mensaje: el segmento para redes se saca de aqui (2026-10-27).
+ */
+const GIROS_CON_PRESENTACION = ['logistica', 'fitness', 'abastos', 'agro']
+
+export function giroDeRedes(tags: string[] | null | undefined): string | null {
+  const lower = (tags ?? []).map((t) => t.toLowerCase())
+  return GIROS_CON_PRESENTACION.find((g) => lower.some((t) => t === g || t.startsWith(`${g}-`))) ?? null
+}
+
 const tieneGiro = (lower: string[], giros: string[]) => giros.some((g) => lower.some((t) => t === g || t.startsWith(`${g}-`)))
 
 /** Que se le ofrece a este prospecto segun sus etiquetas; null = el mensaje de siempre. */

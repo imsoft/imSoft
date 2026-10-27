@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { canalDeAsunto, canalesDe, colaDeRedes, TAG_REDES_DESCARTADO, conteoPorCanal, estadoDelTope, ETIQUETA_CANAL, numeroWhatsApp, ofertaDe, renderMensajeRed, TOPE_CANAL, TOPE_DIARIO_CANAL, urlDeRed } from './mensaje-red'
+import { canalDeAsunto, canalesDe, colaDeRedes, giroDeRedes, TAG_REDES_DESCARTADO, conteoPorCanal, estadoDelTope, ETIQUETA_CANAL, numeroWhatsApp, ofertaDe, renderMensajeRed, TOPE_CANAL, TOPE_DIARIO_CANAL, urlDeRed } from './mensaje-red'
 
 const v = { nombre: 'Héctor', empresa: 'Gil y Gil', gancho: 'Cada filial lleva sus pedimentos en su propio Excel.', segmento: 'logistica-gdl' }
 
@@ -163,6 +163,10 @@ describe('cola de redes', () => {
     expect(j).toContain('tiendas en línea a la medida')
     expect(j).toContain('joyerías')
     expect(j).not.toContain('apps')
+    // El giro para la presentación sale de las etiquetas, con o sin sufijo de ciudad.
+    expect(giroDeRedes(['google-places', 'agro'])).toBe('agro')
+    expect(giroDeRedes(['fitness-gdl'])).toBe('fitness')
+    expect(giroDeRedes(['dental'])).toBeNull()
     // Agro: software de operación (lotes, pesajes, trazabilidad), no app.
     expect(ofertaDe(['agro'])).toBeNull()
     expect(renderMensajeRed('whatsapp', { nombre: '', empresa: 'Agrofresh', gancho: 'g', segmento: 'agro' })).toContain('lotes, pesajes y trazabilidad')

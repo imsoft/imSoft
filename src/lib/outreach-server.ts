@@ -8,7 +8,7 @@ import { enviarRaw, estadoDelHilo, messageIdHeader, rebotesRecientes } from '@/l
 import { GANCHO_TOOL, ganchoDesdeNotas, limpiarGancho, promptGancho } from '@/lib/outreach-ai'
 import { estadoDeCorreo, fechaCorta, type FilaCorreo } from '@/lib/estado-correo'
 import { buzonNoComercial } from '@/lib/correo-invalido'
-import { colaDeRedes, conteoPorCanal, MOTIVOS_DESCARTE_REDES, ofertaDe, renderMensajeRed, TAG_REDES_DESCARTADO, TOPE_DIARIO_CANAL, type Canal, type MotivoDescarteRedes, type ContactoDeCola, type FilaCola, type Oferta } from '@/lib/mensaje-red'
+import { colaDeRedes, conteoPorCanal, giroDeRedes, MOTIVOS_DESCARTE_REDES, ofertaDe, renderMensajeRed, TAG_REDES_DESCARTADO, TOPE_DIARIO_CANAL, type Canal, type MotivoDescarteRedes, type ContactoDeCola, type FilaCola, type Oferta } from '@/lib/mensaje-red'
 import { dominioDeCorreo, construirMime, cuerpoDe, fechaSiguientePaso, renderDesdeCuerpo, renderOutreach, segmentoDe, topeDiario, type Step } from '@/lib/outreach'
 
 const TZ = 'America/Mexico_City'
@@ -81,7 +81,7 @@ export async function ganchoConIA(c: ContactoMin, oferta: Oferta | null = null):
     max_tokens: 300,
     tools: [GANCHO_TOOL],
     tool_choice: { type: 'tool', name: 'gancho' },
-    messages: [{ role: 'user', content: promptGancho({ nombre: nombreDe(c), empresa: c.company ?? '', segmento: segmentoDe(c.tags), sitio: c.website_url, notas: (c.notes ?? '').slice(0, 1500), cargo: c.job_title, oferta }) }],
+    messages: [{ role: 'user', content: promptGancho({ nombre: nombreDe(c), empresa: c.company ?? '', segmento: segmentoDe(c.tags) ?? giroDeRedes(c.tags), sitio: c.website_url, notas: (c.notes ?? '').slice(0, 1500), cargo: c.job_title, oferta }) }],
   })
   const tool = msg.content.find((b) => b.type === 'tool_use')
   return limpiarGancho(tool && tool.type === 'tool_use' ? tool.input : null)
@@ -211,7 +211,7 @@ export async function mensajeParaRed(db: SupabaseClient, contactId: string, cana
   const { data: previo } = await db.from('outreach_emails').select('gancho').eq('contact_id', contactId).eq('step', 1).not('gancho', 'is', null).maybeSingle()
   const oferta = ofertaDe(c.tags)
   const gancho = (oferta ? null : (previo?.gancho as string | null)) || ganchoDesdeNotas(c.notes) || (await ganchoConIA(c as ContactoMin, oferta))
-  return { texto: renderMensajeRed(canal, { nombre: nombreDe(c), empresa: c.company ?? '', gancho, segmento: segmentoDe(c.tags), oferta }), gancho }
+  return { texto: renderMensajeRed(canal, { nombre: nombreDe(c), empresa: c.company ?? '', gancho, segmento: segmentoDe(c.tags) ?? giroDeRedes(c.tags), oferta }), gancho }
 }
 
 /** Mensajes por redes registrados hoy (hora de Guadalajara) y en los ultimos 7 dias, por canal. */
