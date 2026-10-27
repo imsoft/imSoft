@@ -1,0 +1,436 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Demo de imSoft: sistema de clientes, órdenes y recordatorios para Taller Martín.">
+<link rel="icon" href="/logos/isotype-imsoft-blue.png">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font-family:system-ui,-apple-system,sans-serif;font-size:14px}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Taller Martín · Demo por imSoft</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: barra de taller arriba, pestañas de módulo, contenido en tarjetas de orden; cliente ve un rastreador de estatus tipo línea de proceso */
+:root{
+  --bg:#eef1f4; --surface:#ffffff; --surface-2:#f6f8fa; --line:#d5dbe2;
+  --fg:#17212b; --muted:#5b6876;
+  --brand:#14385c; --brand-fg:#ffffff;
+  --accent:#e08a00; --accent-soft:#fff1d6;
+  --ok:#1f8a4c; --ok-soft:#e1f4e8; --warn:#b86e00; --warn-soft:#fdf0d9; --bad:#c0392b; --bad-soft:#fbe4e1;
+  --plate:#fdfdfb; --plate-ink:#1a2a3a;
+  --f-display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --f-body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f161d; --surface:#17212b; --surface-2:#1d2935; --line:#2c3a48;
+  --fg:#e7edf3; --muted:#9aa8b6; --brand:#1d4a76; --brand-fg:#ffffff;
+  --accent:#f4a52a; --accent-soft:#3a2a10;
+  --ok:#4cc27e; --ok-soft:#14301f; --warn:#f0b04a; --warn-soft:#352812; --bad:#ef6b5c; --bad-soft:#3a1814;
+  --plate:#e9ece6; --plate-ink:#1a2a3a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f161d; --surface:#17212b; --surface-2:#1d2935; --line:#2c3a48;
+  --fg:#e7edf3; --muted:#9aa8b6; --brand:#1d4a76; --brand-fg:#ffffff;
+  --accent:#f4a52a; --accent-soft:#3a2a10;
+  --ok:#4cc27e; --ok-soft:#14301f; --warn:#f0b04a; --warn-soft:#352812; --bad:#ef6b5c; --bad-soft:#3a1814;
+  --plate:#e9ece6; --plate-ink:#1a2a3a; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.5}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+.demo-note{background:var(--accent-soft);color:var(--fg);font-size:13px}
+.demo-note .wrap{padding-block:8px;display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+.pkg{display:flex;gap:4px;align-items:center;flex-wrap:wrap}
+.pkg span{font-weight:600;margin-right:4px}
+.pkg button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:3px 12px;font-size:13px}
+.pkg button[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+
+header.top{background:var(--brand);color:var(--brand-fg)}
+header.top .wrap{padding-block:14px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:12px}
+.logo-mark{width:42px;height:42px;border-radius:10px;background:var(--accent);display:grid;place-items:center;color:#1a1200}
+.logo b{font-family:var(--f-display);font-size:24px;letter-spacing:.5px;line-height:1;display:block;text-transform:uppercase}
+.logo small{opacity:.8;font-size:13px}
+.views{display:flex;background:rgba(255,255,255,.12);border-radius:10px;padding:3px}
+.views button{background:none;border:0;color:inherit;padding:7px 14px;border-radius:8px;font-weight:600;font-size:14px}
+.views button[aria-pressed="true"]{background:var(--brand-fg);color:var(--brand)}
+
+nav.tabs{background:var(--surface);border-bottom:1px solid var(--line)}
+nav.tabs .wrap{display:flex;gap:2px;overflow-x:auto}
+nav.tabs button{background:none;border:0;border-bottom:3px solid transparent;padding:12px 14px;font-weight:600;color:var(--muted);white-space:nowrap;display:flex;gap:6px;align-items:center}
+nav.tabs button[aria-selected="true"]{color:var(--fg);border-bottom-color:var(--accent)}
+.lock{font-size:11px;background:var(--surface-2);border:1px solid var(--line);border-radius:4px;padding:0 5px;color:var(--muted);font-weight:500}
+
+main .wrap{padding-block:22px 48px}
+h1,h2,h3{font-family:var(--f-display);font-weight:700;letter-spacing:.3px;margin:0;text-wrap:balance}
+h1{font-size:30px}
+h2{font-size:22px}
+h3{font-size:18px}
+.sub{color:var(--muted);margin:2px 0 0}
+.head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+
+.btn{border:1px solid var(--line);background:var(--surface);padding:8px 14px;border-radius:8px;font-weight:600;font-size:14px;display:inline-flex;gap:6px;align-items:center}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#1a1200}
+.btn.small{padding:5px 10px;font-size:13px}
+.btn.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:20px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.kpi .n{font-family:var(--f-display);font-size:32px;font-weight:700;line-height:1.1;font-variant-numeric:tabular-nums}
+.kpi .l{color:var(--muted);font-size:13px}
+
+.board{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.col{background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:10px;min-width:0}
+.col-h{display:flex;justify-content:space-between;align-items:center;padding:2px 4px 10px;font-family:var(--f-display);font-size:17px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.col-h .c{font-family:var(--f-body);font-size:12px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:0 8px}
+.cards{display:grid;gap:10px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px;display:grid;gap:8px}
+.card .car{font-weight:600}
+.card .meta{color:var(--muted);font-size:13px}
+.card .row{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.empty{color:var(--muted);font-size:13px;padding:6px 4px}
+
+.plate{font-family:var(--f-mono);font-weight:700;font-size:12px;letter-spacing:1px;background:var(--plate);color:var(--plate-ink);border:1.5px solid var(--plate-ink);border-radius:4px;padding:1px 6px;display:inline-flex;flex-direction:column;align-items:center;line-height:1.15}
+.plate i{font-style:normal;font-size:7px;letter-spacing:1.5px;font-weight:500;font-family:var(--f-body)}
+
+.pill{font-size:12px;font-weight:600;border-radius:999px;padding:2px 9px;white-space:nowrap}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}
+.pill.warn{background:var(--warn-soft);color:var(--warn)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+.pill.info{background:var(--surface-2);color:var(--muted);border:1px solid var(--line)}
+
+.split{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:16px;align-items:start}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.panel-b{padding:16px}
+.search{width:100%;border:1px solid var(--line);background:var(--surface-2);border-radius:8px;padding:9px 12px}
+.list{display:grid}
+.list button{display:grid;grid-template-columns:1fr auto;gap:2px 8px;text-align:left;background:none;border:0;border-top:1px solid var(--line);padding:12px 16px}
+.list button[aria-current="true"]{background:var(--accent-soft)}
+.list .nm{font-weight:600}
+.list .ph{color:var(--muted);font-size:13px;font-family:var(--f-mono)}
+
+.veh{border:1px solid var(--line);border-radius:10px;padding:14px;display:grid;gap:12px;background:var(--surface-2)}
+.veh-h{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:space-between}
+.due{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px}
+.due div{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:13px}
+.due b{display:block;font-size:14px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);font-weight:600;padding:6px 8px;border-bottom:1px solid var(--line)}
+td{padding:8px;border-bottom:1px solid var(--line);vertical-align:top}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+.tbl{overflow-x:auto}
+
+.rem{display:grid;gap:10px}
+.rem-i{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center}
+.msg{background:var(--ok-soft);border-radius:10px;padding:10px 12px;font-size:14px;white-space:pre-wrap;margin-top:8px}
+.switch{display:flex;gap:10px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:14px}
+
+.locked{background:var(--surface);border:1px dashed var(--line);border-radius:12px;padding:36px 20px;text-align:center;display:grid;gap:8px;justify-items:center}
+.locked p{max-width:52ch;color:var(--muted);margin:0}
+
+/* Cliente */
+.client{max-width:720px;margin:0 auto;display:grid;gap:16px}
+.lookup{display:flex;gap:8px;flex-wrap:wrap}
+.lookup input{flex:1;min-width:0;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:10px 12px;font-family:var(--f-mono);text-transform:uppercase}
+.track{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin:8px 0 4px}
+.step{display:grid;justify-items:center;text-align:center;gap:6px;position:relative;font-size:13px}
+.step::before{content:"";position:absolute;top:13px;left:-50%;right:50%;height:3px;background:var(--line)}
+.step:first-child::before{display:none}
+.step.done::before,.step.now::before{background:var(--ok)}
+.dot{width:28px;height:28px;border-radius:50%;background:var(--surface);border:3px solid var(--line);display:grid;place-items:center;position:relative;z-index:1;font-size:13px;font-weight:700}
+.step.done .dot{background:var(--ok);border-color:var(--ok);color:#fff}
+.step.now .dot{border-color:var(--accent);background:var(--accent-soft)}
+.step small{color:var(--muted)}
+.notes{display:grid;gap:8px}
+.note{border-left:3px solid var(--accent);padding:4px 0 4px 12px;font-size:14px}
+.note time{display:block;color:var(--muted);font-size:12px}
+.photos{display:flex;gap:8px;flex-wrap:wrap}
+.photo{width:110px;aspect-ratio:4/3;max-width:100%;border-radius:8px;background:var(--surface-2);border:1px solid var(--line);display:grid;place-items:center;color:var(--muted);font-size:11px;text-align:center;padding:4px}
+.quote-box{border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.quote-box .tot{display:flex;justify-content:space-between;padding:10px 12px;background:var(--surface-2);font-weight:700}
+
+.modal-bg{position:fixed;inset:0;background:rgba(10,16,22,.55);display:grid;place-items:center;padding:16px;z-index:20}
+.modal{background:var(--surface);border-radius:14px;max-width:460px;width:100%;padding:20px;display:grid;gap:12px;max-height:90vh;overflow:auto}
+.field{display:grid;gap:4px;font-size:13px;font-weight:600}
+.field input,.field select,.field textarea{border:1px solid var(--line);background:var(--surface-2);border-radius:8px;padding:8px 10px;font-weight:400;font-size:14px}
+.actions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:14px;z-index:30}
+
+.cal{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.day{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px;display:grid;gap:6px;align-content:start;min-width:0}
+.day h4{margin:0;font-family:var(--f-display);font-size:16px}
+.slot{font-size:13px;border-radius:6px;padding:5px 8px;background:var(--surface-2);border:1px solid var(--line)}
+.slot.taken{background:var(--accent-soft);border-color:transparent}
+.bars{display:grid;gap:8px}
+.bar{display:grid;grid-template-columns:110px minmax(0,1fr) 80px;gap:10px;align-items:center;font-size:13px}
+.bar .t{height:14px;border-radius:4px;background:var(--surface-2);overflow:hidden}
+.bar .t span{display:block;height:100%;background:var(--brand)}
+
+@media (max-width:900px){.board{grid-template-columns:repeat(2,minmax(0,1fr))}.split{grid-template-columns:minmax(0,1fr)}.cal{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.board,.kpis{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.board{grid-template-columns:minmax(0,1fr)}.rem-i{grid-template-columns:minmax(0,1fr)}.track{font-size:11px}.bar{grid-template-columns:80px minmax(0,1fr) 70px}h1{font-size:26px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="demo-note"><div class="wrap">
+  <div><b>Demo con datos de ejemplo.</b> Cambia de paquete para ver qué incluye cada uno.</div>
+  <div class="pkg" role="group" aria-label="Paquete">
+    <span>Paquete:</span>
+    <button id="pk-1" data-pkg="1">Básico</button>
+    <button id="pk-2" data-pkg="2">Pro</button>
+    <button id="pk-3" data-pkg="3">Total</button>
+  </div>
+</div></div>
+
+<header class="top"><div class="wrap">
+  <div class="logo">
+    <div class="logo-mark" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/></svg></div>
+    <div><b>Taller Martín</b><small>Experiencia y Confianza</small></div>
+  </div>
+  <div class="views" role="group" aria-label="Vista">
+    <button id="v-taller" data-view="taller">Vista del taller</button>
+    <button id="v-cliente" data-view="cliente">Vista del cliente</button>
+  </div>
+</div></header>
+
+<nav class="tabs" id="tabs" aria-label="Módulos"><div class="wrap" id="tabs-in"></div></nav>
+<main><div class="wrap" id="app"></div></main>
+<div id="layer"></div>
+
+<script>
+const TODAY = new Date(2026,9,27);
+const PKG_NAME = {1:"Básico",2:"Pro",3:"Total"};
+const STATUSES = ["Recibido","Diagnóstico","En reparación","Listo para entregar"];
+
+const state = {
+  pkg: 2, view:"taller", tab:"tablero", selClient:"c1", autoRem:true, clientPlate:"JKS-482-B", approved:false,
+  clients:[
+    {id:"c1",name:"Roberto Hernández",phone:"33 1234 5678"},
+    {id:"c2",name:"Lucía Ramírez",phone:"33 2345 6789"},
+    {id:"c3",name:"Fernando Ochoa",phone:"33 3456 7890"},
+    {id:"c4",name:"Mariana Torres",phone:"33 4567 8901"},
+    {id:"c5",name:"Jorge Villaseñor",phone:"33 5678 9012"},
+    {id:"c6",name:"Patricia Gómez",phone:"33 6789 0123"}
+  ],
+  vehicles:[
+    {plate:"JKS-482-B",client:"c1",car:"Nissan Versa 2019",km:68400,lastTune:"2026-04-18",lastOil:"2026-08-02"},
+    {plate:"JMR-913-A",client:"c2",car:"Chevrolet Aveo 2017",km:112300,lastTune:"2025-10-20",lastOil:"2026-06-11"},
+    {plate:"JNA-207-C",client:"c3",car:"Volkswagen Jetta 2015",km:154800,lastTune:"2026-02-03",lastOil:"2026-09-28"},
+    {plate:"JLF-655-D",client:"c4",car:"Toyota Corolla 2021",km:41200,lastTune:"2026-05-30",lastOil:"2026-05-30"},
+    {plate:"JHT-330-E",client:"c5",car:"Ford Ranger 2018",km:131900,lastTune:"2025-11-02",lastOil:"2026-07-15"},
+    {plate:"JPC-118-F",client:"c5",car:"Nissan March 2020",km:58700,lastTune:"2026-03-12",lastOil:"2026-09-01"},
+    {plate:"JRB-764-G",client:"c6",car:"Honda CR-V 2016",km:139500,lastTune:"2025-09-25",lastOil:"2026-04-04"}
+  ],
+  orders:[
+    {id:1042,plate:"JKS-482-B",job:"Ruido en suspensión delantera",status:2,in:"2026-10-26 09:15",mech:"Don Martín",
+      notes:[["2026-10-26 09:15","Recibimos el auto. Cliente reporta golpeteo al pasar topes."],["2026-10-26 12:40","Diagnóstico: bujes de horquilla y un amortiguador delantero dañados."],["2026-10-27 10:05","Refacciones llegaron. Iniciamos el cambio."]],
+      quote:[["Bujes de horquilla (par)",780],["Amortiguador delantero",1450],["Mano de obra",1200],["Alineación",450]]},
+    {id:1043,plate:"JMR-913-A",job:"Afinación mayor",status:3,in:"2026-10-25 16:30",mech:"Luis",notes:[["2026-10-25 16:30","Recibido para afinación mayor."],["2026-10-27 11:20","Afinación terminada. Listo para recoger."]],quote:[["Afinación mayor",2350]]},
+    {id:1044,plate:"JHT-330-E",job:"Revisión de frenos",status:1,in:"2026-10-27 08:50",mech:"Don Martín",notes:[["2026-10-27 08:50","Cliente comenta que el pedal se siente esponjoso."]],quote:[]},
+    {id:1045,plate:"JRB-764-G",job:"Check engine encendido",status:0,in:"2026-10-27 10:40",mech:"Luis",notes:[["2026-10-27 10:40","Recibido. Pendiente escaneo."]],quote:[]}
+  ],
+  history:{
+    "JKS-482-B":[["2026-08-02","Cambio de aceite y filtro",68400-3100,890],["2026-04-18","Afinación menor",61200,1650],["2025-12-09","Balatas delanteras",57300,1380]],
+    "JMR-913-A":[["2026-06-11","Cambio de aceite",109000,850],["2025-10-20","Afinación menor",104100,1590]],
+    "JNA-207-C":[["2026-09-28","Cambio de aceite y filtro",154100,920],["2026-02-03","Afinación mayor y bandas",148700,3980]],
+    "JLF-655-D":[["2026-05-30","Servicio de 40,000 km",40100,2900]],
+    "JHT-330-E":[["2026-07-15","Cambio de aceite",129500,1100],["2025-11-02","Afinación mayor",121800,2950]],
+    "JPC-118-F":[["2026-09-01","Cambio de aceite",58200,780],["2026-03-12","Afinación menor",54300,1450]],
+    "JRB-764-G":[["2026-04-04","Cambio de aceite",136200,960],["2025-09-25","Afinación mayor",131300,3400]]
+  },
+  appts:{"Mar 28":["9:00 Lucía R. · recoger Aveo","12:00 Patricia G. · revisión"],"Mié 29":["10:00 Fernando O. · frenos"],"Jue 30":[],"Vie 31":["9:00 Mariana T. · servicio 45,000 km"],"Sáb 1":["10:00 Jorge V. · afinación March"]}
+};
+
+const $ = s=>document.querySelector(s);
+const esc = s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const money = n=>"$"+n.toLocaleString("es-MX");
+const parse = d=>{const [y,m,dd]=d.split(" ")[0].split("-").map(Number);return new Date(y,m-1,dd)};
+const fmtDate = d=>parse(d).toLocaleDateString("es-MX",{day:"numeric",month:"short",year:"numeric"});
+const fmtDT = d=>{const t=d.split(" ")[1]||"";return parse(d).toLocaleDateString("es-MX",{day:"numeric",month:"short"})+(t?" · "+t:"")};
+const addMonths=(d,m)=>{const x=new Date(d);x.setMonth(x.getMonth()+m);return x};
+const days=(a,b)=>Math.round((a-b)/864e5);
+const plate = p=>`<span class="plate"><i>JALISCO</i>${esc(p)}</span>`;
+const clientOf = id=>state.clients.find(c=>c.id===id);
+const veh = p=>state.vehicles.find(v=>v.plate===p);
+const first = n=>n.split(" ")[0];
+
+function dueInfo(v){
+  // Afinación cada 6 meses, aceite cada 4 meses (uso urbano GDL)
+  const tune=addMonths(parse(v.lastTune),6), oil=addMonths(parse(v.lastOil),4);
+  const mk=(label,date)=>{const d=days(date,TODAY);const cls=d<0?"bad":d<=21?"warn":"ok";const txt=d<0?`Vencido hace ${-d} días`:d===0?"Hoy":`En ${d} días`;return {label,date,d,cls,txt}};
+  return [mk("Afinación",tune),mk("Cambio de aceite",oil)];
+}
+
+const FEATURES = { tablero:1, clientes:1, recordatorios:1, citas:3, reportes:3 };
+const TABS = [["tablero","Órdenes en proceso"],["clientes","Clientes y autos"],["recordatorios","Recordatorios"],["citas","Citas en línea"],["reportes","Reportes"]];
+
+function toast(t){const el=document.createElement("div");el.className="toast";el.textContent=t;document.body.appendChild(el);setTimeout(()=>el.remove(),2400)}
+
+function render(){
+  document.querySelectorAll("[data-pkg]").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.pkg===state.pkg));
+  document.querySelectorAll("[data-view]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.view===state.view));
+  const tabs=$("#tabs");
+  tabs.hidden = state.view!=="taller";
+  $("#tabs-in").innerHTML = TABS.map(([k,l])=>`<button role="tab" id="t-${k}" data-tab="${k}" aria-selected="${state.tab===k}">${l}${FEATURES[k]>state.pkg?`<span class="lock">${PKG_NAME[FEATURES[k]]}</span>`:""}</button>`).join("");
+  $("#app").innerHTML = state.view==="cliente" ? (state.pkg<2 ? locked("Portal para tus clientes",2,"Tus clientes consultan con su placa en qué proceso va su auto, ven fotos y notas del mecánico, y cuándo les toca su próximo servicio. Sin llamar al taller.") : viewClient()) : (FEATURES[state.tab]>state.pkg ? lockedFor(state.tab) : ({tablero:viewBoard,clientes:viewClients,recordatorios:viewReminders,citas:viewAppts,reportes:viewReports}[state.tab])());
+}
+function locked(title,p,txt){return `<div class="locked"><span class="pill info">Incluido desde el paquete ${PKG_NAME[p]}</span><h2>${title}</h2><p>${txt}</p><button class="btn primary" data-pkg="${p}">Ver con paquete ${PKG_NAME[p]}</button></div>`}
+function lockedFor(t){
+  if(t==="citas") return locked("Citas en línea",3,"Tus clientes apartan un horario desde su celular y el taller ve la agenda de la semana. Menos llamadas, menos autos llegando a la misma hora.");
+  return locked("Reportes del taller",3,"Cuánto entró por semana, qué servicios se piden más y qué clientes no han vuelto. Para decidir con números.");
+}
+
+function viewBoard(){
+  const o=state.orders, ready=o.filter(x=>x.status===3).length;
+  const dueSoon=state.vehicles.flatMap(dueInfo).filter(d=>d.d<=21).length;
+  const cols=STATUSES.map((s,i)=>{
+    const list=o.filter(x=>x.status===i);
+    return `<section class="col"><div class="col-h">${s}<span class="c">${list.length}</span></div><div class="cards">${list.length?list.map(card).join(""):`<div class="empty">Sin autos aquí</div>`}</div></section>`}).join("");
+  return `<div class="head"><div><h1>Órdenes en proceso</h1><p class="sub">Martes 27 de octubre · ${o.length} autos en el taller</p></div><button class="btn primary" id="new-order" data-act="new">+ Recibir auto</button></div>
+  <div class="kpis">
+    <div class="kpi"><div class="n">${o.length}</div><div class="l">Autos en el taller</div></div>
+    <div class="kpi"><div class="n">${ready}</div><div class="l">Listos para entregar</div></div>
+    <div class="kpi"><div class="n">${state.clients.length}</div><div class="l">Clientes registrados</div></div>
+    <div class="kpi"><div class="n">${dueSoon}</div><div class="l">Servicios por vencer</div></div>
+  </div>
+  <div class="board">${cols}</div>`;
+}
+function card(x){
+  const v=veh(x.plate), c=clientOf(v.client);
+  const notify = state.pkg>=2 ? `<span class="pill ok" title="El cliente ve este estatus en su portal">Cliente notificado</span>` : "";
+  return `<article class="card">
+    <div class="row">${plate(x.plate)}<span class="meta">#${x.id}</span></div>
+    <div><div class="car">${esc(v.car)}</div><div class="meta">${esc(c.name)} · ${esc(x.job)}</div></div>
+    <div class="row"><span class="meta">${esc(x.mech)} · ${fmtDT(x.in)}</span>${notify}</div>
+    <div class="row">${x.status<3?`<button class="btn small" data-act="adv" data-id="${x.id}">Pasar a ${STATUSES[x.status+1]} →</button>`:`<button class="btn small ok" data-act="deliver" data-id="${x.id}">Entregar auto</button>`}</div>
+  </article>`;
+}
+
+function viewClients(){
+  const c=clientOf(state.selClient), vs=state.vehicles.filter(v=>v.client===c.id);
+  const list=state.clients.map(x=>{const n=state.vehicles.filter(v=>v.client===x.id).length;return `<button data-act="sel" data-id="${x.id}" aria-current="${x.id===c.id}"><span class="nm">${esc(x.name)}</span><span class="pill info">${n} auto${n>1?"s":""}</span><span class="ph">${esc(x.phone)}</span></button>`}).join("");
+  const vehicles=vs.map(v=>{
+    const h=state.history[v.plate]||[];
+    return `<div class="veh">
+      <div class="veh-h"><div style="display:flex;gap:10px;align-items:center">${plate(v.plate)}<b>${esc(v.car)}</b></div><span class="meta" style="font-family:var(--f-mono);font-size:13px">${v.km.toLocaleString("es-MX")} km</span></div>
+      <div class="due">${dueInfo(v).map(d=>`<div><span class="pill ${d.cls}">${d.txt}</span><b>${d.label}</b>${d.date.toLocaleDateString("es-MX",{day:"numeric",month:"long"})}</div>`).join("")}</div>
+      <div class="tbl"><table><thead><tr><th>Fecha</th><th>Servicio</th><th class="num">Km</th><th class="num">Importe</th></tr></thead><tbody>
+      ${h.map(r=>`<tr><td>${fmtDate(r[0])}</td><td>${esc(r[1])}</td><td class="num">${r[2].toLocaleString("es-MX")}</td><td class="num">${money(r[3])}</td></tr>`).join("")}
+      </tbody></table></div></div>`}).join("");
+  return `<div class="head"><div><h1>Clientes y autos</h1><p class="sub">Historial de lo que se le ha hecho a cada auto y cuándo le toca su siguiente servicio</p></div><button class="btn primary" data-act="new">+ Recibir auto</button></div>
+  <div class="split">
+    <div class="panel"><div class="panel-b"><input class="search" id="q" placeholder="Buscar por nombre o teléfono" aria-label="Buscar cliente"></div><div class="list" id="clist">${list}</div></div>
+    <div class="panel"><div class="panel-b" style="display:grid;gap:14px">
+      <div><h2>${esc(c.name)}</h2><p class="sub" style="font-family:var(--f-mono)">${esc(c.phone)}</p></div>
+      ${vehicles}
+    </div></div>
+  </div>`;
+}
+
+function remMsg(v,d){const c=clientOf(v.client);return `Hola ${first(c.name)}, te saludamos de Taller Martín. A tu ${v.car} (${v.plate}) le toca ${d.label.toLowerCase()} ${d.d<0?"desde el "+d.date.toLocaleDateString("es-MX",{day:"numeric",month:"long"}):"el "+d.date.toLocaleDateString("es-MX",{day:"numeric",month:"long"})}. ¿Te apartamos un lugar esta semana?`}
+function viewReminders(){
+  const items=state.vehicles.flatMap(v=>dueInfo(v).map(d=>({v,d}))).filter(x=>x.d.d<=45).sort((a,b)=>a.d.d-b.d.d);
+  const auto = state.pkg>=2
+    ? `<label class="switch"><input type="checkbox" id="auto" ${state.autoRem?"checked":""}><span><b>Recordatorios automáticos por WhatsApp</b><br><span class="sub">${state.autoRem?"Se envían solos 7 días antes de cada servicio. No tienes que hacer nada.":"Desactivados. Envía cada recordatorio a mano."}</span></span></label>`
+    : `<div class="switch"><span class="pill info">Pro</span><span class="sub">En el paquete Básico copias el mensaje y lo mandas tú. Desde Pro se envían solos.</span></div>`;
+  return `<div class="head"><div><h1>Recordatorios</h1><p class="sub">Servicios vencidos o por vencer en las próximas 6 semanas</p></div></div>
+  ${auto}
+  <div class="rem">${items.map((x,i)=>{const c=clientOf(x.v.client);return `<div class="rem-i">
+    <span class="pill ${x.d.cls}">${x.d.txt}</span>
+    <div style="min-width:0"><b>${esc(x.d.label)}</b> · ${esc(x.v.car)} ${plate(x.v.plate)}<div class="sub">${esc(c.name)} · <span style="font-family:var(--f-mono)">${esc(c.phone)}</span></div>
+      <div class="msg" id="m-${i}" hidden>${esc(remMsg(x.v,x.d))}</div></div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap">${state.pkg>=2&&state.autoRem&&x.d.d>=7?`<span class="pill ok">Programado</span>`:""}<button class="btn small" data-act="msg" data-i="${i}">Ver mensaje</button><button class="btn small" data-act="copy" data-text="${esc(remMsg(x.v,x.d))}">Copiar</button></div>
+  </div>`}).join("")}</div>`;
+}
+
+function viewAppts(){
+  return `<div class="head"><div><h1>Citas en línea</h1><p class="sub">Semana del 28 de octubre · los clientes apartan desde su portal</p></div></div>
+  <div class="cal">${Object.entries(state.appts).map(([d,list])=>`<div class="day"><h4>${d}</h4>${["9:00","10:00","12:00","16:00"].map(h=>{const t=list.find(x=>x.startsWith(h+" "));return `<div class="slot ${t?"taken":""}">${t?esc(t):h+" · Libre"}</div>`}).join("")}</div>`).join("")}</div>`;
+}
+function viewReports(){
+  const svc=[["Cambio de aceite",34],["Afinación",21],["Frenos",14],["Suspensión",9],["Diagnóstico",12]], max=34;
+  return `<div class="head"><div><h1>Reportes</h1><p class="sub">Octubre 2026 · datos de ejemplo</p></div></div>
+  <div class="kpis">
+    <div class="kpi"><div class="n">$148,600</div><div class="l">Ingresos del mes</div></div>
+    <div class="kpi"><div class="n">90</div><div class="l">Servicios realizados</div></div>
+    <div class="kpi"><div class="n">$1,651</div><div class="l">Ticket promedio</div></div>
+    <div class="kpi"><div class="n">68%</div><div class="l">Clientes que regresaron</div></div>
+  </div>
+  <div class="panel"><div class="panel-b" style="display:grid;gap:12px"><h3>Servicios más pedidos</h3><div class="bars">${svc.map(([n,v])=>`<div class="bar"><span>${n}</span><div class="t"><span style="width:${v/max*100}%"></span></div><span class="num" style="text-align:right">${v} servicios</span></div>`).join("")}</div></div></div>`;
+}
+
+function viewClient(){
+  const v=veh(state.clientPlate);
+  const top=`<div class="client"><div><h1>Consulta tu auto</h1><p class="sub">Escribe tu placa para ver en qué va tu servicio</p></div>
+    <form class="lookup" id="lookup"><input id="plate-in" value="${esc(state.clientPlate)}" aria-label="Placa"><button class="btn primary">Consultar</button></form>
+    <p class="sub" style="font-size:13px;margin:0">Prueba con: ${["JKS-482-B","JMR-913-A","JLF-655-D"].map(p=>`<button class="btn small" data-act="try" data-p="${p}">${p}</button>`).join(" ")}</p>`;
+  if(!v) return top+`<div class="locked"><h3>No encontramos esa placa</h3><p>Revisa que esté bien escrita, con guiones. Si es tu primera visita, el taller te registra cuando dejes tu auto.</p></div></div>`;
+  const c=clientOf(v.client), o=state.orders.find(x=>x.plate===v.plate), h=state.history[v.plate]||[];
+  let cur="";
+  if(o){
+    const total=o.quote.reduce((a,b)=>a+b[1],0);
+    cur=`<div class="panel"><div class="panel-b" style="display:grid;gap:14px">
+      <div class="veh-h"><div><h2>Hola, ${esc(first(c.name))}</h2><p class="sub">${esc(v.car)} · Orden #${o.id} · ${esc(o.job)}</p></div>${plate(v.plate)}</div>
+      <div class="track">${STATUSES.map((s,i)=>`<div class="step ${i<o.status?"done":i===o.status?"now":""}"><span class="dot">${i<o.status?"✓":i+1}</span><span>${s}</span></div>`).join("")}</div>
+      <div class="notes">${o.notes.slice().reverse().map(n=>`<div class="note"><time>${fmtDT(n[0])}</time>${esc(n[1])}</div>`).join("")}</div>
+      <div><h3 style="margin-bottom:8px">Fotos del mecánico</h3><div class="photos">${["Amortiguador dañado","Bujes desgastados","Pieza nueva instalada"].slice(0,o.status>=1?3:1).map(t=>`<div class="photo"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="6" width="18" height="14" rx="2"/><circle cx="12" cy="13" r="3.5"/><path d="M8 6l1.5-2h5L16 6"/></svg>${t}</div>`).join("")}</div></div>
+      ${o.quote.length? (state.pkg>=3 ? `<div><h3 style="margin-bottom:8px">Presupuesto</h3><div class="quote-box"><div class="tbl"><table><tbody>${o.quote.map(q=>`<tr><td>${esc(q[0])}</td><td class="num">${money(q[1])}</td></tr>`).join("")}</tbody></table></div><div class="tot"><span>Total</span><span>${money(total)}</span></div></div>
+        <div class="actions" style="margin-top:10px">${state.approved?`<span class="pill ok">Aprobado por ti · el taller ya fue avisado</span>`:`<button class="btn">Tengo una duda</button><button class="btn ok" data-act="approve">Aprobar presupuesto</button>`}</div></div>`
+        : `<div class="switch"><span class="pill info">Total</span><span class="sub">Con el paquete Total el cliente ve y aprueba el presupuesto desde aquí.</span></div>`) : ""}
+    </div></div>`;
+  } else {
+    cur=`<div class="panel"><div class="panel-b"><div class="veh-h"><div><h2>Hola, ${esc(first(c.name))}</h2><p class="sub">${esc(v.car)} · sin servicio en curso</p></div>${plate(v.plate)}</div></div></div>`;
+  }
+  const due=`<div class="panel"><div class="panel-b" style="display:grid;gap:10px"><h3>Tu próximo servicio</h3><div class="due">${dueInfo(v).map(d=>`<div><span class="pill ${d.cls}">${d.txt}</span><b>${d.label}</b>${d.date.toLocaleDateString("es-MX",{day:"numeric",month:"long"})}</div>`).join("")}</div>
+    ${state.pkg>=3?`<div class="actions"><button class="btn primary" data-act="book">Agendar cita</button></div>`:""}</div></div>`;
+  const hist=`<div class="panel"><div class="panel-b"><h3 style="margin-bottom:8px">Historial de tu auto</h3><div class="tbl"><table><thead><tr><th>Fecha</th><th>Servicio</th><th class="num">Km</th></tr></thead><tbody>${h.map(r=>`<tr><td>${fmtDate(r[0])}</td><td>${esc(r[1])}</td><td class="num">${r[2].toLocaleString("es-MX")}</td></tr>`).join("")}</tbody></table></div></div></div>`;
+  return top+cur+due+hist+`</div>`;
+}
+
+function modalNew(){
+  $("#layer").innerHTML=`<div class="modal-bg" data-act="close"><form class="modal" id="nf" role="dialog" aria-label="Recibir auto">
+    <h2>Recibir auto</h2>
+    <label class="field">Cliente<select id="nf-c">${state.clients.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join("")}</select></label>
+    <label class="field">Auto<select id="nf-v"></select></label>
+    <label class="field">¿Qué le pasa?<input id="nf-j" value="Cambio de aceite y revisión general"></label>
+    <label class="field">Mecánico<select id="nf-m"><option>Don Martín</option><option>Luis</option></select></label>
+    <div class="actions"><button type="button" class="btn" data-act="close">Cancelar</button><button class="btn primary">Registrar orden</button></div>
+  </form></div>`;
+  const fill=()=>{$("#nf-v").innerHTML=state.vehicles.filter(v=>v.client===$("#nf-c").value).map(v=>`<option value="${v.plate}">${esc(v.car)} · ${v.plate}</option>`).join("")};
+  $("#nf-c").onchange=fill; fill();
+  $("#nf").onsubmit=e=>{e.preventDefault();const id=Math.max(...state.orders.map(o=>o.id))+1;
+    state.orders.push({id,plate:$("#nf-v").value,job:$("#nf-j").value||"Revisión",status:0,in:"2026-10-27 "+new Date().toTimeString().slice(0,5),mech:$("#nf-m").value,notes:[["2026-10-27","Auto recibido en el taller."]],quote:[]});
+    $("#layer").innerHTML="";state.tab="tablero";render();toast(`Orden #${id} registrada`+(state.pkg>=2?" · el cliente ya puede consultarla":""));};
+}
+
+document.addEventListener("click",e=>{
+  const t=e.target.closest("[data-pkg],[data-view],[data-tab],[data-act]"); if(!t) return;
+  if(t.dataset.pkg){state.pkg=+t.dataset.pkg;render();return}
+  if(t.dataset.view){state.view=t.dataset.view;render();return}
+  if(t.dataset.tab){state.tab=t.dataset.tab;render();return}
+  const a=t.dataset.act;
+  if(a==="close"){if(e.target===t){$("#layer").innerHTML=""}return}
+  if(a==="new") return modalNew();
+  if(a==="sel"){state.selClient=t.dataset.id;render();return}
+  if(a==="adv"){const o=state.orders.find(x=>x.id==t.dataset.id);o.status++;o.notes.push(["2026-10-27 "+new Date().toTimeString().slice(0,5),"Estatus actualizado: "+STATUSES[o.status]+"."]);render();toast(`#${o.id} → ${STATUSES[o.status]}`+(state.pkg>=2?" · cliente notificado":""));return}
+  if(a==="deliver"){const o=state.orders.find(x=>x.id==t.dataset.id);state.orders=state.orders.filter(x=>x!==o);(state.history[o.plate]=state.history[o.plate]||[]).unshift(["2026-10-27",o.job,veh(o.plate).km,o.quote.reduce((s,q)=>s+q[1],0)]);render();toast(`Auto ${o.plate} entregado y guardado en su historial`);return}
+  if(a==="msg"){const m=$("#m-"+t.dataset.i);m.hidden=!m.hidden;t.textContent=m.hidden?"Ver mensaje":"Ocultar";return}
+  if(a==="copy"){const txt=t.dataset.text;(navigator.clipboard?.writeText(txt)||Promise.reject()).then(()=>toast("Mensaje copiado. Pégalo en WhatsApp.")).catch(()=>toast("No se pudo copiar. Abre 'Ver mensaje' y selecciónalo."));return}
+  if(a==="try"){state.clientPlate=t.dataset.p;render();return}
+  if(a==="approve"){state.approved=true;render();toast("Presupuesto aprobado. Avisamos al taller.");return}
+  if(a==="book"){toast("Cita apartada: miércoles 29, 16:00");state.appts["Mié 29"].push("16:00 "+first(clientOf(veh(state.clientPlate).client).name)+" · servicio");return}
+});
+document.addEventListener("submit",e=>{if(e.target.id==="lookup"){e.preventDefault();state.clientPlate=$("#plate-in").value.trim().toUpperCase();render()}});
+document.addEventListener("input",e=>{if(e.target.id==="q"){const q=e.target.value.toLowerCase().replace(/\s/g,"");document.querySelectorAll("#clist button").forEach(b=>{b.hidden=!b.textContent.toLowerCase().replace(/\s/g,"").includes(q)})}});
+document.addEventListener("change",e=>{if(e.target.id==="auto"){state.autoRem=e.target.checked;render();toast(state.autoRem?"Recordatorios automáticos activados":"Recordatorios automáticos desactivados")}});
+render();
+</script>
+
+</body>
+</html>
