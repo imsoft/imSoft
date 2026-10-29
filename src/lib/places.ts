@@ -80,6 +80,10 @@ export interface Candidato {
   instagram?: string | null
   /** Numero del enlace de WhatsApp que el negocio publica en su sitio (52 + 10 digitos). */
   whatsapp?: string | null
+  /** Pagina de Facebook hallada por busqueda web (fuente de telefono y correo, no canal). */
+  facebook?: string | null
+  /** Directivo hallado en LinkedIn (solo corporativos). */
+  contacto?: ContactoLinkedIn | null
 }
 
 /**
@@ -287,28 +291,101 @@ export function fichasDelNombre(nombre: string): string[] {
 const SENAS_LOCALES = /\b(guadalajara|gdl|zapopan|tlaquepaque|tonala|tlajomulco|el salto|jalisco|zmg|tepatitlan|los altos)\b/
 const SUFIJOS_AJENOS = /(\.|_)(cl|co|ar|pe|ec|uy|ve|es|us|cr|gt|bo|py|do)$/
 
-export function instagramDeResultados(nombre: string, resultados: Array<{ link: string; title?: string | null; description?: string | null }>, ciudad?: string): string | null {
+interface ResultadoWeb { link: string; title?: string | null; description?: string | null }
+
+/**
+ * Si un resultado de busqueda corresponde al negocio: alguna palabra distintiva del nombre
+ * en el usuario o el titulo, y ademas seña de la zona en el texto o un usuario casi igual
+ * al nombre (si sobra mucho tras quitar el nombre, es otro negocio parecido).
+ */
+function cuadraConElNegocio(nombre: string, usuario: string, r: ResultadoWeb, ciudad?: string): boolean {
   const fichas = fichasDelNombre(nombre)
-  if (!fichas.length) return null
+  if (!fichas.length) return false
   const genericas = nombreNormalizado(nombre).split(' ').filter((t) => !fichas.includes(t))
+  const plano = usuario.toLowerCase().replace(/[._-]/g, '')
+  const titulo = nombreNormalizado(r.title ?? '').replace(/ /g, '')
+  if (!fichas.some((f) => plano.includes(f) || titulo.includes(f))) return false
+  let resto = plano
+  for (const t of [...fichas, ...genericas]) resto = resto.replace(t, '')
+  resto = resto.replace(/(mx|gdl|oficial|official|mexico|\d+)/g, '')
+  const texto = nombreNormalizado(`${r.title ?? ''} ${r.description ?? ''} ${usuario.replace(/[._-]/g, ' ')}`)
+  const local = SENAS_LOCALES.test(texto) || (ciudad ? texto.includes(nombreNormalizado(ciudad)) : false)
+  return local || resto.length <= 3
+}
+
+export function instagramDeResultados(nombre: string, resultados: ResultadoWeb[], ciudad?: string): string | null {
   for (const r of resultados) {
     const m = /^https?:\/\/(?:www\.)?instagram\.com\/([a-z0-9_.]{2,30})\/?(?:[?#].*)?$/i.exec(r.link ?? '')
     if (!m) continue
     const usuario = m[1].toLowerCase()
     if (RUTAS_INSTAGRAM_AJENAS.includes(usuario) || SUFIJOS_AJENOS.test(usuario)) continue
-    const plano = usuario.replace(/[._]/g, '')
-    const titulo = nombreNormalizado(r.title ?? '')
-    const coincide = fichas.some((f) => plano.includes(f) || titulo.replace(/ /g, '').includes(f))
-    if (!coincide) continue
-    // Lo que sobra del usuario tras quitar el nombre: si es mucho, es otro negocio parecido.
-    let resto = plano
-    for (const t of [...fichas, ...genericas]) resto = resto.replace(t, '')
-    resto = resto.replace(/(mx|gdl|oficial|official|mexico|\d+)/g, '')
-    const texto = nombreNormalizado(`${r.title ?? ''} ${r.description ?? ''} ${usuario.replace(/[._]/g, ' ')}`)
-    const local = SENAS_LOCALES.test(texto) || (ciudad ? texto.includes(nombreNormalizado(ciudad)) : false)
-    if (local || resto.length <= 3) return `https://instagram.com/${usuario}`
+    if (cuadraConElNegocio(nombre, usuario, r, ciudad)) return `https://instagram.com/${usuario}`
   }
   return null
+}
+
+const RUTAS_FACEBOOK_AJENAS = ['people', 'groups', 'events', 'pages', 'public', 'profile.php', 'login', 'share', 'watch', 'reel', 'marketplace', 'hashtag', 'search']
+
+/**
+ * Pagina de Facebook del negocio y, si el resumen de la busqueda los trae, su telefono y
+ * correo. Facebook no es canal de prospeccion (no se escribe por Messenger); es la fuente
+ * de datos para los negocios sin sitio que de otro modo quedarian fuera (2026-10-29).
+ */
+export function facebookDeResultados(nombre: string, resultados: ResultadoWeb[], ciudad?: string): { url: string; telefono: string | null; correo: string | null } | null {
+  for (const r of resultados) {
+    const m = /^https?:\/\/(?:www\.|m\.|es-la\.)?facebook\.com\/(?:p\/)?([A-Za-z0-9_.-]{2,80})\/?(?:[?#].*)?$/i.exec(r.link ?? '')
+    if (!m) continue
+    const slug = m[1]
+    if (RUTAS_FACEBOOK_AJENAS.includes(slug.toLowerCase())) continue
+    // "/p/Maroffa-Restaurante-61557672856757" trae el nombre; una pagina numerica solo trae el id.
+    const usuario = /^\d+$/.test(slug) ? nombreNormalizado(r.title ?? '').replace(/ /g, '') : slug.replace(/-?\d{8,}$/, '')
+    if (!cuadraConElNegocio(nombre, usuario, r, ciudad)) continue
+    const desc = r.description ?? ''
+    const tel = desc.match(/(?:\+?52\s?)?(?:\(?\d{2,3}\)?[\s.-]?)\d{3,4}[\s.-]?\d{4}\b/g)?.map((t) => t.replace(/\D/g, '')).map((d) => (d.length === 12 && d.startsWith('52') ? d.slice(2) : d)).find((d) => d.length === 10) ?? null
+    return { url: `https://facebook.com/${slug}`, telefono: tel ? formatoTelefono(tel) : null, correo: extraerCorreo(desc, null) }
+  }
+  return null
+}
+
+export interface ContactoLinkedIn { nombre: string; apellido: string; cargo: string; url: string }
+
+/** Cargos que deciden una compra de software, del mas al menos decisivo. */
+const CARGOS_DECISION: RegExp[] = [
+  /\b(director|directora|dueñ[oa]|propietari[oa]|fundador|fundadora|founder|ceo|presidente|administrador general|administradora general)\b/,
+  /\b(gerente general|general manager|coo|cfo|cto|cio)\b/,
+  /\b(gerente|jefe|jefa|coordinador|coordinadora|head)\b.*\b(sistemas|ti|it|tecnolog|operaciones|administraci|finanzas)/,
+  /\b(gerente|subdirector|subdirectora|socio|socia)\b/,
+]
+
+/**
+ * Directivo de la empresa a partir de los titulos de LinkedIn ("Nombre - Cargo - Empresa |
+ * LinkedIn"). Solo para corporativos: ahi el correo generico no llega a nadie y el nombre
+ * del director si. No se escribe por LinkedIn; se usa para el correo o la llamada.
+ */
+export function contactoLinkedInDeResultados(empresa: string, resultados: ResultadoWeb[]): ContactoLinkedIn | null {
+  const fichas = fichasDelNombre(empresa)
+  if (!fichas.length) return null
+  let mejor: { rango: number; c: ContactoLinkedIn } | null = null
+  for (const r of resultados) {
+    if (!/^https?:\/\/([a-z]{2}\.)?linkedin\.com\/in\//i.test(r.link ?? '')) continue
+    const titulo = (r.title ?? '').replace(/\s*[|·-]\s*LinkedIn\s*$/i, '').trim()
+    const partes = titulo.split(/\s+[-–]\s+/).map((x) => x.trim()).filter(Boolean)
+    if (partes.length < 2) continue
+    const persona = partes[0]
+    const cargo = partes.length >= 3 ? partes.slice(1, -1).join(' - ') : ''
+    const empresaTitulo = partes[partes.length - 1]
+    const texto = nombreNormalizado(`${empresaTitulo} ${r.description ?? ''}`).replace(/ /g, '')
+    if (!fichas.some((f) => texto.includes(f))) continue
+    const cargoNorm = nombreNormalizado(cargo)
+    const rango = CARGOS_DECISION.findIndex((re) => re.test(cargoNorm))
+    if (rango < 0) continue
+    if (/\b(driver|operador|chofer|auxiliar|practicante|becario|intern|asistente)\b/.test(cargoNorm)) continue
+    if (!mejor || rango < mejor.rango) {
+      const [nombre, ...resto] = persona.split(/\s+/)
+      mejor = { rango, c: { nombre, apellido: resto.join(' '), cargo, url: r.link.replace(/\?.*$/, '') } }
+    }
+  }
+  return mejor?.c ?? null
 }
 
 export function extraerInstagram(html: string): string | null {
@@ -374,10 +451,15 @@ export function zonaPremium(direccion: string | null | undefined): boolean {
 export function filaDesdeCandidato(c: Candidato, segmento: string): CsvRow {
   return {
     empresa: c.nombre,
+    nombre: c.contacto?.nombre ?? '',
+    apellido: c.contacto?.apellido ?? '',
+    puesto: c.contacto?.cargo ?? '',
+    linkedin: c.contacto?.url ?? '',
     email: c.correo ?? '',
     telefono: c.telefono ?? '',
     instagram: c.instagram ?? '',
     whatsapp: c.whatsapp ?? '',
+    facebook: c.facebook ?? '',
     sitio: c.sitio ?? '',
     segmento,
     zona: zonaPremium(c.direccion) ? 'zona-premium' : '',

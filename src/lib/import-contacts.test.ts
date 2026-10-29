@@ -61,6 +61,7 @@ describe('mapRowsToContacts', () => {
       tags: ['aduanal'],
       website_url: null,
       instagram_url: null,
+      linkedin_url: null,
       social_links: null,
       notes: 'Sin portal de seguimiento',
     })

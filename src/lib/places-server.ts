@@ -4,7 +4,7 @@
  */
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { mapRowsToContacts } from './import-contacts.ts'
-import { MUNICIPIOS, candidatoDe, enlacesDeContacto, extraerCorreo, extraerInstagram, extraerWhatsApp, filaDesdeCandidato, giroDe, instagramDeResultados, marcarExistentes, sePuedeEscribir, sinRepetidos, type Candidato, type ContactoExistente, type PlaceResult } from './places.ts'
+import { MUNICIPIOS, candidatoDe, contactoLinkedInDeResultados, enlacesDeContacto, extraerCorreo, extraerInstagram, extraerWhatsApp, facebookDeResultados, filaDesdeCandidato, giroDe, instagramDeResultados, marcarExistentes, telefonoParaWhatsApp, sePuedeEscribir, sinRepetidos, type Candidato, type ContactoExistente, type PlaceResult } from './places.ts'
 
 const FIELD_MASK = 'places.id,places.displayName,places.formattedAddress,places.websiteUri,places.nationalPhoneNumber,places.rating,places.userRatingCount,places.primaryTypeDisplayName,places.googleMapsUri,nextPageToken'
 
@@ -103,9 +103,17 @@ export function busquedaWebConfigurada(): boolean {
 }
 
 let avisoBusquedaWeb = false
-/** Tope de busquedas web por proceso: con 3 corridas por semana cabe en los $5 USD gratis de Brave al mes. */
-const TOPE_BUSQUEDAS_WEB = Number(process.env.TOPE_BUSQUEDAS_WEB) || 70
-let busquedasWebHechas = 0
+/**
+ * Topes de busquedas web por proceso y por uso: con 3 corridas por semana, ~80 por corrida
+ * caben en los $5 USD gratis de Brave al mes (1,000 busquedas).
+ */
+const TOPES_BUSQUEDA = { instagram: Number(process.env.TOPE_BUSQUEDAS_WEB) || 55, facebook: 15, linkedin: 8 }
+const busquedasHechas = { instagram: 0, facebook: 0, linkedin: 0 }
+function hayCupo(uso: keyof typeof TOPES_BUSQUEDA): boolean {
+  if (!busquedaWebConfigurada() || busquedasHechas[uso] >= TOPES_BUSQUEDA[uso]) return false
+  busquedasHechas[uso] += 1
+  return true
+}
 
 async function resultadosWeb(consulta: string): Promise<Array<{ link: string; title?: string; description?: string }>> {
   const ctrl = new AbortController()
@@ -137,16 +145,27 @@ async function resultadosWeb(consulta: string): Promise<Array<{ link: string; ti
 }
 
 export async function instagramPorGoogle(nombre: string, ciudad: string): Promise<string | null> {
-  if (!busquedaWebConfigurada() || busquedasWebHechas >= TOPE_BUSQUEDAS_WEB) return null
-  busquedasWebHechas += 1
+  if (!hayCupo('instagram')) return null
   return instagramDeResultados(nombre, await resultadosWeb(`"${nombre}" ${ciudad} site:instagram.com`), ciudad)
+}
+
+/** Pagina de Facebook (y telefono o correo si el resumen los trae) de un negocio sin otro contacto. */
+export async function facebookPorBusqueda(nombre: string, ciudad: string) {
+  if (!hayCupo('facebook')) return null
+  return facebookDeResultados(nombre, await resultadosWeb(`"${nombre}" ${ciudad} site:facebook.com`), ciudad)
+}
+
+/** Directivo de una empresa grande en LinkedIn: nombre y cargo para dirigir el correo. */
+export async function linkedinPorBusqueda(empresa: string) {
+  if (!hayCupo('linkedin')) return null
+  return contactoLinkedInDeResultados(empresa, await resultadosWeb(`"${empresa}" (director OR gerente OR dueño) Guadalajara site:linkedin.com/in`))
 }
 
 /**
  * Enriquece en paralelo (de 5 en 5): correo, Instagram y WhatsApp del sitio, y para los
  * que se quedan sin Instagram, una busqueda web por nombre y ciudad.
  */
-export async function enriquecer(candidatos: Candidato[], ciudad = 'Guadalajara'): Promise<Candidato[]> {
+export async function enriquecer(candidatos: Candidato[], ciudad = 'Guadalajara', opts: { linkedin?: boolean } = {}): Promise<Candidato[]> {
   const out = [...candidatos]
   const indices = out.map((c, i) => (c.sitio && !c.enCrm ? i : -1)).filter((i) => i >= 0)
   for (let k = 0; k < indices.length; k += 5) {
@@ -167,6 +186,27 @@ export async function enriquecer(candidatos: Candidato[], ciudad = 'Guadalajara'
         }),
       )
     }
+    // Sin correo, Instagram ni WhatsApp el candidato se descarta: Facebook es el ultimo recurso.
+    const sinNada = out.map((c, i) => (!c.enCrm && !c.correo && !c.instagram && !c.whatsapp && !telefonoParaWhatsApp(c.telefono) ? i : -1)).filter((i) => i >= 0)
+    for (let k = 0; k < sinNada.length; k += 5) {
+      await Promise.all(
+        sinNada.slice(k, k + 5).map(async (i) => {
+          const fb = await facebookPorBusqueda(out[i].nombre, ciudad)
+          if (fb) out[i] = { ...out[i], facebook: fb.url, correo: out[i].correo ?? fb.correo, telefono: out[i].telefono ?? fb.telefono }
+        }),
+      )
+    }
+    if (opts.linkedin) {
+      const grandes = out.map((c, i) => (!c.enCrm ? i : -1)).filter((i) => i >= 0)
+      for (let k = 0; k < grandes.length; k += 4) {
+        await Promise.all(
+          grandes.slice(k, k + 4).map(async (i) => {
+            const contacto = await linkedinPorBusqueda(out[i].nombre)
+            if (contacto) out[i] = { ...out[i], contacto }
+          }),
+        )
+      }
+    }
   }
   return out
 }
@@ -178,7 +218,7 @@ export async function buscarProspectos(db: SupabaseClient, giroClave: string, mu
   if (!query) throw new Error('Giro desconocido')
   const [lugares, existentes] = await Promise.all([buscarLugares(query, municipio, opts.max ?? 60), contactosExistentes(db)])
   let candidatos = marcarExistentes(lugares, existentes)
-  if (opts.correos) candidatos = await enriquecer(candidatos, (MUNICIPIOS[municipio] ?? MUNICIPIOS.zmg).nombre.replace(/^Zona metropolitana de /, ''))
+  if (opts.correos) candidatos = await enriquecer(candidatos, (MUNICIPIOS[municipio] ?? MUNICIPIOS.zmg).nombre.replace(/^Zona metropolitana de /, ''), { linkedin: giroClave === 'corporativo' })
   return { candidatos, segmento: giro?.segmento ?? 'otros', nuevos: candidatos.filter((c) => !c.enCrm).length }
 }
 
