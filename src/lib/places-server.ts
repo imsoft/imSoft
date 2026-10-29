@@ -93,38 +93,49 @@ export async function contactoDelSitio(sitio: string): Promise<{ correo: string 
 }
 
 /**
- * Busqueda web (Google Programmable Search) para hallar el Instagram de un negocio sin
- * sitio. Usa GOOGLE_CSE_ID y GOOGLE_SEARCH_API_KEY (o la llave de Places si esa tiene
- * habilitada la Custom Search API). Sin esas variables no hace nada.
+ * Busqueda web para hallar el Instagram de un negocio sin sitio. Proveedores, en orden:
+ * Brave Search API (BRAVE_SEARCH_API_KEY; 2,000 consultas gratis al mes) y Google
+ * Programmable Search (GOOGLE_CSE_ID + llave), que Google ya cerro a clientes nuevos
+ * (oct-2026) pero se deja por si el proyecto lo tuviera. Sin llaves no hace nada.
  */
 export function busquedaWebConfigurada(): boolean {
-  return Boolean(process.env.GOOGLE_CSE_ID && (process.env.GOOGLE_SEARCH_API_KEY || process.env.GOOGLE_PLACES_API_KEY))
+  return Boolean(process.env.BRAVE_SEARCH_API_KEY) || Boolean(process.env.GOOGLE_CSE_ID && (process.env.GOOGLE_SEARCH_API_KEY || process.env.GOOGLE_PLACES_API_KEY))
 }
 
 let avisoBusquedaWeb = false
 
-export async function instagramPorGoogle(nombre: string, ciudad: string): Promise<string | null> {
-  if (!busquedaWebConfigurada()) return null
-  const key = process.env.GOOGLE_SEARCH_API_KEY || process.env.GOOGLE_PLACES_API_KEY
-  const q = new URLSearchParams({ key: key!, cx: process.env.GOOGLE_CSE_ID!, q: `"${nombre}" ${ciudad} instagram`, siteSearch: 'instagram.com', siteSearchFilter: 'i', num: '5' })
+async function resultadosWeb(consulta: string): Promise<Array<{ link: string; title?: string }>> {
   const ctrl = new AbortController()
   const t = setTimeout(() => ctrl.abort(), 8000)
   try {
-    const r = await fetch(`https://www.googleapis.com/customsearch/v1?${q}`, { signal: ctrl.signal })
-    if (!r.ok) {
-      if (!avisoBusquedaWeb) {
-        avisoBusquedaWeb = true
-        console.warn(`Busqueda web de Instagram: HTTP ${r.status} ${(await r.text()).slice(0, 200)}`)
-      }
-      return null
+    let r: Response
+    if (process.env.BRAVE_SEARCH_API_KEY) {
+      const q = new URLSearchParams({ q: consulta, count: '5', country: 'MX', search_lang: 'es' })
+      r = await fetch(`https://api.search.brave.com/res/v1/web/search?${q}`, { signal: ctrl.signal, headers: { Accept: 'application/json', 'X-Subscription-Token': process.env.BRAVE_SEARCH_API_KEY } })
+      if (!r.ok) throw new Error(`Brave HTTP ${r.status} ${(await r.text()).slice(0, 200)}`)
+      const j = (await r.json()) as { web?: { results?: Array<{ url: string; title?: string }> } }
+      return (j.web?.results ?? []).map((x) => ({ link: x.url, title: x.title }))
     }
+    const key = process.env.GOOGLE_SEARCH_API_KEY || process.env.GOOGLE_PLACES_API_KEY
+    const q = new URLSearchParams({ key: key!, cx: process.env.GOOGLE_CSE_ID!, q: consulta, siteSearch: 'instagram.com', siteSearchFilter: 'i', num: '5' })
+    r = await fetch(`https://www.googleapis.com/customsearch/v1?${q}`, { signal: ctrl.signal })
+    if (!r.ok) throw new Error(`Google HTTP ${r.status} ${(await r.text()).slice(0, 200)}`)
     const j = (await r.json()) as { items?: Array<{ link: string; title?: string }> }
-    return instagramDeResultados(nombre, j.items ?? [])
-  } catch {
-    return null
+    return j.items ?? []
+  } catch (err) {
+    if (!avisoBusquedaWeb) {
+      avisoBusquedaWeb = true
+      console.warn(`Busqueda web de Instagram: ${err instanceof Error ? err.message : String(err)}`)
+    }
+    return []
   } finally {
     clearTimeout(t)
   }
+}
+
+export async function instagramPorGoogle(nombre: string, ciudad: string): Promise<string | null> {
+  if (!busquedaWebConfigurada()) return null
+  return instagramDeResultados(nombre, await resultadosWeb(`"${nombre}" ${ciudad} site:instagram.com`))
 }
 
 /**
