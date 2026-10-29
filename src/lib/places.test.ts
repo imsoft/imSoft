@@ -15,6 +15,15 @@ describe('Instagram por búsqueda web', () => {
     expect(instagramDeResultados('Rievsa Ferretería', [{ link: 'https://instagram.com/ferreteriagdl/', title: 'Ferretería GDL' }])).toBeNull()
   })
 
+  it('rechaza perfiles de otra ciudad o país aunque el nombre coincida', () => {
+    expect(instagramDeResultados('Bianca Aldama Boutique', [{ link: 'https://instagram.com/biancaaldamaboutiquemochis/', title: 'Bianca Aldama Boutique Mochis', description: 'Boutique en Los Mochis, Sinaloa' }])).toBeNull()
+    expect(instagramDeResultados('Clínica Dental Smile Clinic', [{ link: 'https://instagram.com/clinicasmile.cl/', title: 'Clínica Smile' }])).toBeNull()
+    expect(instagramDeResultados('SONRÍE', [{ link: 'https://instagram.com/sonrieeneldesayuno/', title: 'Sonríe en el desayuno' }])).toBeNull()
+    // Con seña de la zona en la descripción sí pasa aunque el usuario traiga más cosas.
+    expect(instagramDeResultados('Clínica Dental Díaz', [{ link: 'https://instagram.com/clinicadentaldiazlopezcadiz/', title: 'Clínica Dental Díaz', description: 'Odontología integral en Tlaquepaque, Jalisco' }], 'Tlaquepaque')).toBe('https://instagram.com/clinicadentaldiazlopezcadiz')
+    expect(instagramDeResultados('Hocre Inmobiliaria', [{ link: 'https://instagram.com/hocreinmobiliaria/', title: 'HOCRE Inmobiliaria' }])).toBe('https://instagram.com/hocreinmobiliaria')
+  })
+
   it('no acepta nombres sin palabras distintivas ni rutas que no son perfil', () => {
     expect(instagramDeResultados('Taller Mecánico Zapopan', [{ link: 'https://instagram.com/tallermecanicozapopan/', title: 'Taller Mecánico Zapopan' }])).toBeNull()
     expect(instagramDeResultados('Maroffa', [{ link: 'https://instagram.com/explore/tags/maroffa/', title: 'maroffa' }])).toBeNull()

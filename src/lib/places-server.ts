@@ -107,7 +107,7 @@ let avisoBusquedaWeb = false
 const TOPE_BUSQUEDAS_WEB = Number(process.env.TOPE_BUSQUEDAS_WEB) || 70
 let busquedasWebHechas = 0
 
-async function resultadosWeb(consulta: string): Promise<Array<{ link: string; title?: string }>> {
+async function resultadosWeb(consulta: string): Promise<Array<{ link: string; title?: string; description?: string }>> {
   const ctrl = new AbortController()
   const t = setTimeout(() => ctrl.abort(), 8000)
   try {
@@ -116,15 +116,15 @@ async function resultadosWeb(consulta: string): Promise<Array<{ link: string; ti
       const q = new URLSearchParams({ q: consulta, count: '5', country: 'MX', search_lang: 'es' })
       r = await fetch(`https://api.search.brave.com/res/v1/web/search?${q}`, { signal: ctrl.signal, headers: { Accept: 'application/json', 'X-Subscription-Token': process.env.BRAVE_SEARCH_API_KEY } })
       if (!r.ok) throw new Error(`Brave HTTP ${r.status} ${(await r.text()).slice(0, 200)}`)
-      const j = (await r.json()) as { web?: { results?: Array<{ url: string; title?: string }> } }
-      return (j.web?.results ?? []).map((x) => ({ link: x.url, title: x.title }))
+      const j = (await r.json()) as { web?: { results?: Array<{ url: string; title?: string; description?: string }> } }
+      return (j.web?.results ?? []).map((x) => ({ link: x.url, title: x.title, description: x.description }))
     }
     const key = process.env.GOOGLE_SEARCH_API_KEY || process.env.GOOGLE_PLACES_API_KEY
     const q = new URLSearchParams({ key: key!, cx: process.env.GOOGLE_CSE_ID!, q: consulta, siteSearch: 'instagram.com', siteSearchFilter: 'i', num: '5' })
     r = await fetch(`https://www.googleapis.com/customsearch/v1?${q}`, { signal: ctrl.signal })
     if (!r.ok) throw new Error(`Google HTTP ${r.status} ${(await r.text()).slice(0, 200)}`)
-    const j = (await r.json()) as { items?: Array<{ link: string; title?: string }> }
-    return j.items ?? []
+    const j = (await r.json()) as { items?: Array<{ link: string; title?: string; snippet?: string }> }
+    return (j.items ?? []).map((x) => ({ link: x.link, title: x.title, description: x.snippet }))
   } catch (err) {
     if (!avisoBusquedaWeb) {
       avisoBusquedaWeb = true
@@ -139,7 +139,7 @@ async function resultadosWeb(consulta: string): Promise<Array<{ link: string; ti
 export async function instagramPorGoogle(nombre: string, ciudad: string): Promise<string | null> {
   if (!busquedaWebConfigurada() || busquedasWebHechas >= TOPE_BUSQUEDAS_WEB) return null
   busquedasWebHechas += 1
-  return instagramDeResultados(nombre, await resultadosWeb(`"${nombre}" ${ciudad} site:instagram.com`))
+  return instagramDeResultados(nombre, await resultadosWeb(`"${nombre}" ${ciudad} site:instagram.com`), ciudad)
 }
 
 /**

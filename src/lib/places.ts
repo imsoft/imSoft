@@ -284,16 +284,29 @@ export function fichasDelNombre(nombre: string): string[] {
   return nombreNormalizado(nombre).split(' ').filter((t) => t.length >= 4 && !PALABRAS_GENERICAS.has(t))
 }
 
-export function instagramDeResultados(nombre: string, resultados: Array<{ link: string; title?: string | null }>): string | null {
+const SENAS_LOCALES = /\b(guadalajara|gdl|zapopan|tlaquepaque|tonala|tlajomulco|el salto|jalisco|zmg|tepatitlan|los altos)\b/
+const SUFIJOS_AJENOS = /(\.|_)(cl|co|ar|pe|ec|uy|ve|es|us|cr|gt|bo|py|do)$/
+
+export function instagramDeResultados(nombre: string, resultados: Array<{ link: string; title?: string | null; description?: string | null }>, ciudad?: string): string | null {
   const fichas = fichasDelNombre(nombre)
   if (!fichas.length) return null
+  const genericas = nombreNormalizado(nombre).split(' ').filter((t) => !fichas.includes(t))
   for (const r of resultados) {
     const m = /^https?:\/\/(?:www\.)?instagram\.com\/([a-z0-9_.]{2,30})\/?(?:[?#].*)?$/i.exec(r.link ?? '')
     if (!m) continue
     const usuario = m[1].toLowerCase()
-    if (RUTAS_INSTAGRAM_AJENAS.includes(usuario)) continue
-    const pajar = `${usuario.replace(/[._]/g, '')} ${nombreNormalizado(r.title ?? '').replace(/ /g, '')}`
-    if (fichas.some((f) => pajar.includes(f))) return `https://instagram.com/${usuario}`
+    if (RUTAS_INSTAGRAM_AJENAS.includes(usuario) || SUFIJOS_AJENOS.test(usuario)) continue
+    const plano = usuario.replace(/[._]/g, '')
+    const titulo = nombreNormalizado(r.title ?? '')
+    const coincide = fichas.some((f) => plano.includes(f) || titulo.replace(/ /g, '').includes(f))
+    if (!coincide) continue
+    // Lo que sobra del usuario tras quitar el nombre: si es mucho, es otro negocio parecido.
+    let resto = plano
+    for (const t of [...fichas, ...genericas]) resto = resto.replace(t, '')
+    resto = resto.replace(/(mx|gdl|oficial|official|mexico|\d+)/g, '')
+    const texto = nombreNormalizado(`${r.title ?? ''} ${r.description ?? ''} ${usuario.replace(/[._]/g, ' ')}`)
+    const local = SENAS_LOCALES.test(texto) || (ciudad ? texto.includes(nombreNormalizado(ciudad)) : false)
+    if (local || resto.length <= 3) return `https://instagram.com/${usuario}`
   }
   return null
 }
