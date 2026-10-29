@@ -381,7 +381,7 @@ export function contactoLinkedInDeResultados(empresa: string, resultados: Result
     if (rango < 0) continue
     if (/\b(driver|operador|chofer|auxiliar|practicante|becario|intern|asistente)\b/.test(cargoNorm)) continue
     if (!mejor || rango < mejor.rango) {
-      const [nombre, ...resto] = persona.split(/\s+/)
+      const [nombre, ...resto] = persona.replace(/^(lic|ing|arq|dr|dra|mtro|mtra|c\.?p|lae|mba)\.?\s+/i, '').split(/\s+/)
       mejor = { rango, c: { nombre, apellido: resto.join(' '), cargo, url: r.link.replace(/\?.*$/, '') } }
     }
   }

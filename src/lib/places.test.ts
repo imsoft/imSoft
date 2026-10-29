@@ -53,6 +53,8 @@ describe('Facebook y LinkedIn por búsqueda web', () => {
     // Sin directivo con cargo de decisión, no inventa.
     expect(contactoLinkedInDeResultados('JTP Logistics', r.slice(1, 2))).toBeNull()
     expect(contactoLinkedInDeResultados('JTP Logistics', [{ link: 'https://linkedin.com/company/jtp', title: 'JTP Logistics | LinkedIn' }])).toBeNull()
+    // Los títulos profesionales no son el nombre.
+    expect(contactoLinkedInDeResultados('GCPI Grupo Constructor', [{ link: 'https://www.linkedin.com/in/gccorporativo/', title: 'Lic. José Alberto Guerrero Luna - Director legal - GCPI | LinkedIn' }])?.nombre).toBe('José')
   })
 })
 
