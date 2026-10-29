@@ -47,9 +47,9 @@ describe('Facebook y LinkedIn por búsqueda web', () => {
       { link: 'https://mx.linkedin.com/in/maribel-ramirez-557238161', title: 'Maribel Ramirez - Jefe de logística - JTP LOGISTICS', description: '' },
       { link: 'https://www.linkedin.com/in/theodus-penn-962700206/', title: 'theodus penn - Truck Driver at JTP LOGISTICS', description: 'Atlanta' },
       { link: 'https://mx.linkedin.com/in/jose-tirado-b3766691?trk=x', title: 'Jose Tirado - Gerente comercial superior - JTP logistics | LinkedIn', description: 'Zapopan, JAL' },
-      { link: 'https://mx.linkedin.com/in/ana-lopez-1', title: 'Ana López - Directora General - JTP Logistics | LinkedIn', description: 'Guadalajara' },
+      { link: 'https://www.linkedin.com/in/ana-lopez-1/', title: 'Ana López - Directora General - JTP Logistics | LinkedIn', description: 'Guadalajara' },
     ]
-    expect(contactoLinkedInDeResultados('JTP Logistics', r)).toEqual({ nombre: 'Ana', apellido: 'López', cargo: 'Directora General', url: 'https://mx.linkedin.com/in/ana-lopez-1' })
+    expect(contactoLinkedInDeResultados('JTP Logistics', r)).toEqual({ nombre: 'Ana', apellido: 'López', cargo: 'Directora General', url: 'https://www.linkedin.com/in/ana-lopez-1/' })
     // Sin directivo con cargo de decisión, no inventa.
     expect(contactoLinkedInDeResultados('JTP Logistics', r.slice(1, 2))).toBeNull()
     expect(contactoLinkedInDeResultados('JTP Logistics', [{ link: 'https://linkedin.com/company/jtp', title: 'JTP Logistics | LinkedIn' }])).toBeNull()

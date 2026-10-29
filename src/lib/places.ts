@@ -367,7 +367,7 @@ export function contactoLinkedInDeResultados(empresa: string, resultados: Result
   if (!fichas.length) return null
   let mejor: { rango: number; c: ContactoLinkedIn } | null = null
   for (const r of resultados) {
-    if (!/^https?:\/\/([a-z]{2}\.)?linkedin\.com\/in\//i.test(r.link ?? '')) continue
+    if (!/^https?:\/\/(?:[a-z]{2,3}\.)?linkedin\.com\/in\//i.test(r.link ?? '')) continue
     const titulo = (r.title ?? '').replace(/\s*[|·-]\s*LinkedIn\s*$/i, '').trim()
     const partes = titulo.split(/\s+[-–]\s+/).map((x) => x.trim()).filter(Boolean)
     if (partes.length < 2) continue
