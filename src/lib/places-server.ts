@@ -103,6 +103,9 @@ export function busquedaWebConfigurada(): boolean {
 }
 
 let avisoBusquedaWeb = false
+/** Tope de busquedas web por proceso: con 3 corridas por semana cabe en los $5 USD gratis de Brave al mes. */
+const TOPE_BUSQUEDAS_WEB = Number(process.env.TOPE_BUSQUEDAS_WEB) || 70
+let busquedasWebHechas = 0
 
 async function resultadosWeb(consulta: string): Promise<Array<{ link: string; title?: string }>> {
   const ctrl = new AbortController()
@@ -134,7 +137,8 @@ async function resultadosWeb(consulta: string): Promise<Array<{ link: string; ti
 }
 
 export async function instagramPorGoogle(nombre: string, ciudad: string): Promise<string | null> {
-  if (!busquedaWebConfigurada()) return null
+  if (!busquedaWebConfigurada() || busquedasWebHechas >= TOPE_BUSQUEDAS_WEB) return null
+  busquedasWebHechas += 1
   return instagramDeResultados(nombre, await resultadosWeb(`"${nombre}" ${ciudad} site:instagram.com`))
 }
 
