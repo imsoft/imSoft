@@ -4,7 +4,7 @@
  */
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { mapRowsToContacts } from './import-contacts.ts'
-import { MUNICIPIOS, candidatoDe, enlacesDeContacto, extraerCorreo, extraerInstagram, extraerWhatsApp, filaDesdeCandidato, giroDe, marcarExistentes, sePuedeEscribir, sinRepetidos, type Candidato, type ContactoExistente, type PlaceResult } from './places.ts'
+import { MUNICIPIOS, candidatoDe, enlacesDeContacto, extraerCorreo, extraerInstagram, extraerWhatsApp, filaDesdeCandidato, giroDe, instagramDeResultados, marcarExistentes, sePuedeEscribir, sinRepetidos, type Candidato, type ContactoExistente, type PlaceResult } from './places.ts'
 
 const FIELD_MASK = 'places.id,places.displayName,places.formattedAddress,places.websiteUri,places.nationalPhoneNumber,places.rating,places.userRatingCount,places.primaryTypeDisplayName,places.googleMapsUri,nextPageToken'
 
@@ -92,8 +92,46 @@ export async function contactoDelSitio(sitio: string): Promise<{ correo: string 
   return { correo, instagram, whatsapp }
 }
 
-/** Enriquece en paralelo (de 5 en 5) los candidatos con sitio. */
-export async function enriquecer(candidatos: Candidato[]): Promise<Candidato[]> {
+/**
+ * Busqueda web (Google Programmable Search) para hallar el Instagram de un negocio sin
+ * sitio. Usa GOOGLE_CSE_ID y GOOGLE_SEARCH_API_KEY (o la llave de Places si esa tiene
+ * habilitada la Custom Search API). Sin esas variables no hace nada.
+ */
+export function busquedaWebConfigurada(): boolean {
+  return Boolean(process.env.GOOGLE_CSE_ID && (process.env.GOOGLE_SEARCH_API_KEY || process.env.GOOGLE_PLACES_API_KEY))
+}
+
+let avisoBusquedaWeb = false
+
+export async function instagramPorGoogle(nombre: string, ciudad: string): Promise<string | null> {
+  if (!busquedaWebConfigurada()) return null
+  const key = process.env.GOOGLE_SEARCH_API_KEY || process.env.GOOGLE_PLACES_API_KEY
+  const q = new URLSearchParams({ key: key!, cx: process.env.GOOGLE_CSE_ID!, q: `"${nombre}" ${ciudad} instagram`, siteSearch: 'instagram.com', siteSearchFilter: 'i', num: '5' })
+  const ctrl = new AbortController()
+  const t = setTimeout(() => ctrl.abort(), 8000)
+  try {
+    const r = await fetch(`https://www.googleapis.com/customsearch/v1?${q}`, { signal: ctrl.signal })
+    if (!r.ok) {
+      if (!avisoBusquedaWeb) {
+        avisoBusquedaWeb = true
+        console.warn(`Busqueda web de Instagram: HTTP ${r.status} ${(await r.text()).slice(0, 200)}`)
+      }
+      return null
+    }
+    const j = (await r.json()) as { items?: Array<{ link: string; title?: string }> }
+    return instagramDeResultados(nombre, j.items ?? [])
+  } catch {
+    return null
+  } finally {
+    clearTimeout(t)
+  }
+}
+
+/**
+ * Enriquece en paralelo (de 5 en 5): correo, Instagram y WhatsApp del sitio, y para los
+ * que se quedan sin Instagram, una busqueda web por nombre y ciudad.
+ */
+export async function enriquecer(candidatos: Candidato[], ciudad = 'Guadalajara'): Promise<Candidato[]> {
   const out = [...candidatos]
   const indices = out.map((c, i) => (c.sitio && !c.enCrm ? i : -1)).filter((i) => i >= 0)
   for (let k = 0; k < indices.length; k += 5) {
@@ -103,6 +141,17 @@ export async function enriquecer(candidatos: Candidato[]): Promise<Candidato[]> 
         out[i] = { ...out[i], correo, instagram, whatsapp }
       }),
     )
+  }
+  if (busquedaWebConfigurada()) {
+    const sinIg = out.map((c, i) => (!c.enCrm && !c.instagram ? i : -1)).filter((i) => i >= 0)
+    for (let k = 0; k < sinIg.length; k += 5) {
+      await Promise.all(
+        sinIg.slice(k, k + 5).map(async (i) => {
+          const instagram = await instagramPorGoogle(out[i].nombre, ciudad)
+          if (instagram) out[i] = { ...out[i], instagram }
+        }),
+      )
+    }
   }
   return out
 }
@@ -114,7 +163,7 @@ export async function buscarProspectos(db: SupabaseClient, giroClave: string, mu
   if (!query) throw new Error('Giro desconocido')
   const [lugares, existentes] = await Promise.all([buscarLugares(query, municipio, opts.max ?? 60), contactosExistentes(db)])
   let candidatos = marcarExistentes(lugares, existentes)
-  if (opts.correos) candidatos = await enriquecer(candidatos)
+  if (opts.correos) candidatos = await enriquecer(candidatos, (MUNICIPIOS[municipio] ?? MUNICIPIOS.zmg).nombre.replace(/^Zona metropolitana de /, ''))
   return { candidatos, segmento: giro?.segmento ?? 'otros', nuevos: candidatos.filter((c) => !c.enCrm).length }
 }
 

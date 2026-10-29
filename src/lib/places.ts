@@ -271,6 +271,33 @@ export function extraerCorreo(html: string, dominio: string | null): string | nu
  */
 const RUTAS_INSTAGRAM_AJENAS = ['p', 'reel', 'reels', 'explore', 'accounts', 'share', 'stories', 'tv', 'instagram', 'about', 'legal', 'developer', 'direct', 'web']
 
+/**
+ * Instagram del negocio a partir de los resultados de una busqueda web ("Nombre Ciudad
+ * instagram"). La mayoria de los negocios chicos no tiene sitio, asi que extraerInstagram
+ * no les encuentra nada; Google si suele tener su perfil indexado (2026-10-29). Se acepta
+ * un resultado solo si es un perfil (no un post) y su usuario o su titulo contienen alguna
+ * palabra distintiva del nombre; "clinica" o "taller" solas no cuentan.
+ */
+const PALABRAS_GENERICAS = new Set(['clinica', 'dental', 'consultorio', 'taller', 'mecanico', 'automotriz', 'refaccionaria', 'restaurante', 'restaurant', 'cafe', 'cafeteria', 'ferreteria', 'ferretera', 'grupo', 'servicio', 'servicios', 'centro', 'casa', 'bienes', 'raices', 'inmobiliaria', 'constructora', 'construccion', 'construcciones', 'despacho', 'abogados', 'contadores', 'contable', 'spa', 'gym', 'fitness', 'estetica', 'belleza', 'salon', 'tienda', 'boutique', 'joyeria', 'distribuidora', 'comercializadora', 'guadalajara', 'zapopan', 'tlaquepaque', 'tonala', 'tlajomulco', 'jalisco', 'mexico', 'sucursal', 'plaza', 'oficial', 'the', 'and', 'para', 'con', 'del', 'los', 'las', 'una', 'por'])
+
+export function fichasDelNombre(nombre: string): string[] {
+  return nombreNormalizado(nombre).split(' ').filter((t) => t.length >= 4 && !PALABRAS_GENERICAS.has(t))
+}
+
+export function instagramDeResultados(nombre: string, resultados: Array<{ link: string; title?: string | null }>): string | null {
+  const fichas = fichasDelNombre(nombre)
+  if (!fichas.length) return null
+  for (const r of resultados) {
+    const m = /^https?:\/\/(?:www\.)?instagram\.com\/([a-z0-9_.]{2,30})\/?(?:[?#].*)?$/i.exec(r.link ?? '')
+    if (!m) continue
+    const usuario = m[1].toLowerCase()
+    if (RUTAS_INSTAGRAM_AJENAS.includes(usuario)) continue
+    const pajar = `${usuario.replace(/[._]/g, '')} ${nombreNormalizado(r.title ?? '').replace(/ /g, '')}`
+    if (fichas.some((f) => pajar.includes(f))) return `https://instagram.com/${usuario}`
+  }
+  return null
+}
+
 export function extraerInstagram(html: string): string | null {
   for (const m of html.matchAll(/https?:\/\/(?:www\.)?instagram\.com\/([a-z0-9_.]{2,30})\/?/gi)) {
     const u = m[1].toLowerCase()

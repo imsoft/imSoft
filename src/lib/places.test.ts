@@ -1,6 +1,26 @@
 import { describe, expect, it } from 'vitest'
-import { telefonoParaWhatsApp, candidatoDe, dominioDe, enlacesDeContacto, extraerCorreo, extraerInstagram, extraerWhatsApp, filaDesdeCandidato, formatoTelefono, giroDe, limpiarNombre, marcarExistentes, nombreNormalizado, sePuedeEscribir, sinRepetidos, numeroDeCorrida, tramoDeBusquedas, deLaMarca, zonaPremium, giroDe as giroDe2 } from './places'
+import { telefonoParaWhatsApp, candidatoDe, fichasDelNombre, instagramDeResultados, dominioDe, enlacesDeContacto, extraerCorreo, extraerInstagram, extraerWhatsApp, filaDesdeCandidato, formatoTelefono, giroDe, limpiarNombre, marcarExistentes, nombreNormalizado, sePuedeEscribir, sinRepetidos, numeroDeCorrida, tramoDeBusquedas, deLaMarca, zonaPremium, giroDe as giroDe2 } from './places'
 import { mapRowsToContacts } from './import-contacts'
+
+describe('Instagram por búsqueda web', () => {
+  it('toma el perfil cuyo usuario o título trae una palabra distintiva del nombre', () => {
+    expect(fichasDelNombre('Clínica Dental Díaz Sucursal Carrillo Puerto')).toEqual(['diaz', 'carrillo', 'puerto'])
+    const r = [
+      { link: 'https://www.instagram.com/p/C1abc/', title: 'Clínica Dental Díaz en Instagram' },
+      { link: 'https://www.instagram.com/clinicadentaldiaz/', title: 'Clínica Dental Díaz (@clinicadentaldiaz) • Instagram' },
+    ]
+    expect(instagramDeResultados('Clínica Dental Díaz', r)).toBe('https://instagram.com/clinicadentaldiaz')
+    // El usuario no se parece pero el título sí.
+    expect(instagramDeResultados('Levy Fit', [{ link: 'https://instagram.com/levy.fit.gdl/', title: 'LEVY FIT' }])).toBe('https://instagram.com/levy.fit.gdl')
+    expect(instagramDeResultados('Rievsa Ferretería', [{ link: 'https://instagram.com/ferreteriagdl/', title: 'Ferretería GDL' }])).toBeNull()
+  })
+
+  it('no acepta nombres sin palabras distintivas ni rutas que no son perfil', () => {
+    expect(instagramDeResultados('Taller Mecánico Zapopan', [{ link: 'https://instagram.com/tallermecanicozapopan/', title: 'Taller Mecánico Zapopan' }])).toBeNull()
+    expect(instagramDeResultados('Maroffa', [{ link: 'https://instagram.com/explore/tags/maroffa/', title: 'maroffa' }])).toBeNull()
+    expect(instagramDeResultados('Maroffa', [])).toBeNull()
+  })
+})
 
 describe('buscador de prospectos (Places)', () => {
   it('normaliza dominio, teléfono y nombre', () => {
