@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { telefonoParaWhatsApp, candidatoDe, contactoLinkedInDeResultados, facebookDeResultados, fichasDelNombre, instagramDeResultados, dominioDe, enlacesDeContacto, extraerCorreo, extraerInstagram, extraerWhatsApp, filaDesdeCandidato, formatoTelefono, giroDe, limpiarNombre, marcarExistentes, nombreNormalizado, sePuedeEscribir, sinRepetidos, numeroDeCorrida, tramoDeBusquedas, deLaMarca, zonaPremium, giroDe as giroDe2 } from './places'
+import { telefonoParaWhatsApp, candidatoDe, fueraDePerfil, contactoLinkedInDeResultados, facebookDeResultados, fichasDelNombre, instagramDeResultados, dominioDe, enlacesDeContacto, extraerCorreo, extraerInstagram, extraerWhatsApp, filaDesdeCandidato, formatoTelefono, giroDe, limpiarNombre, marcarExistentes, nombreNormalizado, sePuedeEscribir, sinRepetidos, numeroDeCorrida, tramoDeBusquedas, deLaMarca, zonaPremium, giroDe as giroDe2 } from './places'
 import { mapRowsToContacts } from './import-contacts'
 
 describe('Instagram por búsqueda web', () => {
@@ -106,6 +106,14 @@ describe('buscador de prospectos (Places)', () => {
     expect(limpiarNombre('SYD Constructores, la constructora en Guadalajara')).toBe('SYD Constructores')
     expect(extraerCorreo('escribe a usuario@dominio.com', 'ikal.mx')).toBeNull()
     expect(extraerCorreo('correo@ejemplo.com o ventas@ikal.mx', 'ikal.mx')).toBe('ventas@ikal.mx')
+    // Relleno de plantilla y texto pegado: rebotaron el 28-oct-2026.
+    expect(extraerCorreo('Email: sample@mail.com', null)).toBeNull()
+    expect(extraerCorreo('visita placejoys.com@gmail.com', null)).toBeNull()
+    expect(extraerCorreo('tel 3312345678@hotmail.com', null)).toBeNull()
+    // Notarías y bufetes gratuitos salen de la cola aunque Places los traiga.
+    expect(fueraDePerfil('Notaría Pública no 21')).toBe(true)
+    expect(fueraDePerfil('Bufete Jurídico Gratuito ITESO')).toBe(true)
+    expect(fueraDePerfil('BD Abogados')).toBe(false)
   })
 
   it('elige el mejor correo de un sitio', () => {

@@ -46,6 +46,13 @@ export const GIROS: { clave: string; nombre: string; query: string; segmento: st
   { clave: 'corporativo', nombre: 'Empresas grandes y corporativos', query: 'corporativo oficinas corporativas', segmento: 'corporativo' },
 ]
 
+/** Negocios que salen en las busquedas pero no compran software a la medida (notarias, bufetes gratuitos, dependencias). */
+const NOMBRES_FUERA = /\b(notar[ií]a|notario|bufete jur[ií]dico gratuito|defensor[ií]a|procuradur[ií]a|juzgado|tribunal|iteso|universidad|udg|imss|issste|secretar[ií]a de)\b/i
+
+export function fueraDePerfil(nombre: string): boolean {
+  return NOMBRES_FUERA.test(nombre)
+}
+
 export function giroDe(clave: string) {
   return GIROS.find((g) => g.clave === clave) ?? null
 }
@@ -246,7 +253,7 @@ export function sinRepetidos(candidatos: Candidato[]): Candidato[] {
 }
 
 const EMAIL_RE = /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/gi
-const CORREOS_BASURA = /(noreply|no-reply|donotreply|example|sentry|wixpress|godaddy|squarespace|shopify|wordpress|@2x|\.png$|\.jpg$|\.svg$|\.webp$|\.gif$|^(usuario|correo|email|nombre|tu-?correo|tu-?email|ejemplo|test|john\.?doe|jane\.?doe|lorem|ipsum|your-?name|your-?email|someone|user|username|mail)@|@(dominio|tudominio|ejemplo|correo|email|test|sitio|demoagency|yourdomain|yoursite|yourcompany|domain|company|mysite|website)\.)/i
+const CORREOS_BASURA = /(noreply|no-reply|donotreply|example|sentry|wixpress|godaddy|squarespace|shopify|wordpress|@2x|\.png$|\.jpg$|\.svg$|\.webp$|\.gif$|^(usuario|correo|email|nombre|tu-?correo|tu-?email|ejemplo|test|john\.?doe|jane\.?doe|lorem|ipsum|your-?name|your-?email|someone|user|username|mail|sample|demo|name|your-?mail|prueba|placeholder|abc|xyz|first\.?last|firstname\.?lastname)@|@(dominio|tudominio|ejemplo|correo|email|test|sitio|demoagency|yourdomain|yoursite|yourcompany|domain|company|mysite|website)\.)/i
 const PREFERIDOS = ['contacto', 'ventas', 'info', 'hola', 'informes', 'atencion', 'admin', 'direccion', 'gerencia']
 
 /** Mejor correo de un HTML: del mismo dominio primero, luego el de prefijo mas util. */
@@ -254,7 +261,9 @@ export function extraerCorreo(html: string, dominio: string | null): string | nu
   // Un mailto con espacio codificado ("mailto:%20ventas@x.mx") dejaba el %20 pegado al correo
   // y el envio rebotaba (Piso Siete, 2026-10-08).
   const texto = html.replace(/%20/gi, ' ').replace(/&#64;|&commat;/g, '@').replace(/\s*\[at\]\s*|\s*\(at\)\s*/gi, '@').replace(/\s*\[dot\]\s*|\s*\(dot\)\s*/gi, '.')
-  const todos = [...new Set((texto.match(EMAIL_RE) ?? []).map((e) => e.toLowerCase()))].filter((e) => !CORREOS_BASURA.test(e) && !buzonNoComercial(e) && e.length < 80)
+  // "placejoys.com@gmail.com" o "33123456@..." son texto pegado, no buzones (rebotes del 28-oct-2026).
+  const localRara = (e: string) => /\.(com|mx|net|org|io)@/.test(e) || /^\d+@/.test(e)
+  const todos = [...new Set((texto.match(EMAIL_RE) ?? []).map((e) => e.toLowerCase()))].filter((e) => !CORREOS_BASURA.test(e) && !buzonNoComercial(e) && !localRara(e) && e.length < 80)
   if (todos.length === 0) return null
   const puntaje = (e: string) => {
     const [local, dom] = e.split('@')
