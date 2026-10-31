@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { requireAdmin, serviceClient } from '@/lib/quotes/server'
-import { totales } from '@/lib/cotizaciones'
+import { opcionesDePago, totales } from '@/lib/cotizaciones'
 
 /** Crea el proyecto a partir de la cotizacion aceptada y lo enlaza. */
 export async function POST(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -14,6 +14,11 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
   if (q.project_id) return NextResponse.json({ id: q.project_id, existed: true })
 
   const t = totales(q)
+  // El proyecto se cobra por lo que el cliente eligio al aceptar: con transferencia es
+  // menos que la lista, con MSI o plan es mas (ver opcionesDePago). Sin eleccion, la lista.
+  const elegida = opcionesDePago(q).find((o) => o.clave === q.accepted_payment_option)
+  const totalACobrar = elegida?.total ?? t.total
+  const conMsi = elegida ? elegida.clave === 'msi6' || elegida.clave === 'msi12' : Boolean(q.payment?.msi)
   const { data: proyecto, error } = await db
     .from('projects')
     .insert({
@@ -25,11 +30,11 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
       company_id: q.company_id ?? null,
       status: 'planning',
       start_date: new Date().toISOString().slice(0, 10),
-      total_price: t.total,
+      total_price: totalACobrar,
       currency: q.currency,
-      // La cotizacion decide si el proyecto se puede pagar a meses sin intereses.
-      stripe_enable_installments: Boolean(q.payment?.msi),
-      stripe_installment_options: q.payment?.msi ? JSON.stringify([3, 6, 12]) : null,
+      // Los MSI solo si el cliente eligio pagar asi (o, sin eleccion, si la cotizacion los ofrecia).
+      stripe_enable_installments: conMsi,
+      stripe_installment_options: conMsi ? JSON.stringify(elegida?.clave === 'msi6' ? [6] : elegida?.clave === 'msi12' ? [12] : [3, 6, 12]) : null,
     })
     .select('id')
     .single()

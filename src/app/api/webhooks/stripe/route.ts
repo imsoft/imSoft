@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { avisarAlCliente, avisoPago } from '@/lib/notificaciones'
 import { headers } from 'next/headers'
 import Stripe from 'stripe'
-import { serviceClient } from '@/lib/quotes/server'
+import { ADMIN_EMAIL, enviarCorreo, serviceClient } from '@/lib/quotes/server'
 import { stripe } from '@/lib/stripe'
+import { datosDeSuscripcion, etiquetaCobroPlan, mensualidadesCobradas, planLiquidado } from '@/lib/plan-mensual'
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET
 
@@ -114,6 +115,8 @@ export async function POST(request: NextRequest) {
     switch (event.type) {
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session
+        // El plan mensual se registra por factura (invoice.paid): anticipo y cada mensualidad.
+        if (session.mode === 'subscription') break
         
         // Obtener el project_id del metadata
         const projectId = session.metadata?.project_id
@@ -277,6 +280,51 @@ export async function POST(request: NextRequest) {
           errorMessage,
         })
 
+        break
+      }
+
+      case 'invoice.paid': {
+        // Plan mensual: la primera factura es el anticipo (la mensualidad arranca tras el
+        // periodo de gracia) y las siguientes, una mensualidad cada una.
+        const invoice = event.data.object as Stripe.Invoice
+        const { subscriptionId, metadata, billingReason } = datosDeSuscripcion(invoice)
+        const projectId = metadata.project_id
+        if (!subscriptionId || metadata.plan !== '1' || !projectId) break
+        const meses = Number(metadata.meses) || 0
+        const amount = (invoice.amount_paid ?? 0) / 100
+        if (amount <= 0) break
+        const { data: previos } = await supabase.from('project_payments').select('notes').eq('project_id', projectId)
+        const cobradas = mensualidadesCobradas((previos ?? []).map((p) => p.notes))
+        const esAnticipo = billingReason === 'subscription_create'
+        const notes = etiquetaCobroPlan({ esAnticipo, numero: cobradas + 1, meses, invoiceId: invoice.id ?? '' })
+        if ((previos ?? []).some((p) => (p.notes ?? '').includes(`Stripe Invoice ${invoice.id}`))) break
+        const { error: e } = await supabase.from('project_payments').insert({ project_id: projectId, amount, currency: (invoice.currency ?? 'mxn').toUpperCase(), payment_method: 'card', payment_date: new Date().toISOString().split('T')[0], status: 'completed', notes })
+        if (e) { console.error('[Stripe Webhook] plan: no se registró el cobro', e); break }
+        await avisarAlCliente(supabase, projectId, (proyecto) => avisoPago({ proyecto, monto: amount, moneda: (invoice.currency ?? 'mxn').toUpperCase(), status: 'completed', proyectoId: projectId }))
+        // Con la ultima mensualidad, la suscripcion termina sola.
+        if (!esAnticipo && meses > 0 && planLiquidado(cobradas + 1, meses)) {
+          await stripe.subscriptions.update(subscriptionId, { cancel_at_period_end: true }).catch((err) => console.error('[Stripe Webhook] plan: no se pudo cerrar la suscripción', err))
+          await enviarCorreo({ to: ADMIN_EMAIL, subject: `Plan liquidado · proyecto ${projectId}`, html: `<p>Se cobró la última mensualidad (${cobradas + 1} de ${meses}) del plan. Toca transferir el código al cliente y ofrecerle la mensualidad de hosting y soporte.</p>` }).catch(() => {})
+        }
+        break
+      }
+
+      case 'invoice.payment_failed': {
+        const invoice = event.data.object as Stripe.Invoice
+        const { subscriptionId, metadata } = datosDeSuscripcion(invoice)
+        const projectId = metadata.project_id
+        if (!subscriptionId || metadata.plan !== '1' || !projectId) break
+        const amount = (invoice.amount_due ?? 0) / 100
+        await supabase.from('project_payments').insert({ project_id: projectId, amount, currency: (invoice.currency ?? 'mxn').toUpperCase(), payment_method: 'card', payment_date: new Date().toISOString().split('T')[0], status: 'cancelled', notes: `Plan mensual · Cobro rechazado · Stripe Invoice ${invoice.id}` })
+        // Stripe reintenta solo; aqui se avisa para suspender el acceso si no se regulariza (clausula Segunda).
+        await enviarCorreo({ to: ADMIN_EMAIL, subject: `Mensualidad rechazada · proyecto ${projectId}`, html: `<p>Stripe no pudo cobrar la mensualidad de ${amount} ${(invoice.currency ?? 'mxn').toUpperCase()} del plan (suscripción ${subscriptionId}). Stripe reintentará; si pasan 10 días sin pago, el contrato permite suspender el acceso.</p>` }).catch(() => {})
+        break
+      }
+
+      case 'customer.subscription.deleted': {
+        const sub = event.data.object as Stripe.Subscription
+        if (sub.metadata?.plan !== '1' || !sub.metadata?.project_id) break
+        await enviarCorreo({ to: ADMIN_EMAIL, subject: `Suscripción del plan terminada · proyecto ${sub.metadata.project_id}`, html: `<p>La suscripción ${sub.id} del plan mensual terminó (${sub.cancellation_details?.reason ?? 'sin motivo registrado'}). Revisa si fue por liquidación o por impago.</p>` }).catch(() => {})
         break
       }
 

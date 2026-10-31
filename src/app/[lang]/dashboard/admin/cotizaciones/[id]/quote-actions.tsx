@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
-import { Copy, ExternalLink, FileSignature, FolderPlus, Mail, MessageCircle, Pencil, Printer, Send } from 'lucide-react'
+import { CalendarClock, Copy, ExternalLink, FileSignature, FolderPlus, Mail, MessageCircle, Pencil, Printer, Send } from 'lucide-react'
 import type { Contract, Quote } from '@/types/quotes'
 import { DeleteQuoteButton } from '@/components/documents/delete-quote-button'
 import { CardPaymentDialog } from '@/components/documents/card-payment-dialog'
@@ -84,6 +84,12 @@ export function QuoteActions({ lang, quote, contract, publicUrl }: { lang: strin
           </div>
         )}
         <CardPaymentDialog quoteId={quote.id} folio={quote.folio} clientName={quote.client_name} lang={lang} msiDefault={Boolean(quote.payment?.msi)} montoSugerido={importesHitos(totales(quote).total, quote.payment?.hitos ?? [])[0]?.importe ?? 0} />
+        {quote.accepted_payment_option === 'plan' && quote.project_id && (
+          <Button size="sm" variant="outline" className={btn} disabled={ocupado !== null} title={es ? 'Checkout de Stripe: cobra el anticipo hoy y deja la mensualidad programada' : 'Stripe Checkout: charges the deposit now and schedules the monthly fee'} onClick={async () => {
+            const j = await llamar(`/api/quotes/${quote.id}/plan-link`, 'plan', es ? 'Enlace del plan listo y copiado' : 'Plan link ready and copied')
+            if (j?.url) { await navigator.clipboard.writeText(j.url).catch(() => {}); window.open(`https://wa.me/?text=${encodeURIComponent(es ? `Hola ${quote.client_name}, aquí está el enlace para activar el plan mensual de "${quote.title}" (cotización ${quote.folio}): se cobra el anticipo hoy y la primera mensualidad en ${j.diasPrimeraMensualidad} días: ${j.url}` : `Hi ${quote.client_name}, here is the link to start the monthly plan for "${quote.title}" (quote ${quote.folio}): the deposit is charged today and the first monthly fee in ${j.diasPrimeraMensualidad} days: ${j.url}`)}`, '_blank') }
+          }}><CalendarClock className="size-4 mr-1.5" />{es ? 'Enlace del plan' : 'Plan link'}</Button>
+        )}
         {contract && (
           <Button size="sm" variant="outline" className={btn} asChild><Link href={`/${lang}/dashboard/admin/cotizaciones/${quote.id}/contrato`}><FileSignature className="size-4 mr-1.5" />{es ? 'Contrato' : 'Contract'} · {contract.folio}</Link></Button>
         )}
