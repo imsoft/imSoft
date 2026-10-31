@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { telefonoParaWhatsApp, candidatoDe, fueraDePerfil, contactoLinkedInDeResultados, facebookDeResultados, fichasDelNombre, instagramDeResultados, dominioDe, enlacesDeContacto, extraerCorreo, extraerInstagram, extraerWhatsApp, filaDesdeCandidato, formatoTelefono, giroDe, limpiarNombre, marcarExistentes, nombreNormalizado, sePuedeEscribir, sinRepetidos, numeroDeCorrida, tramoDeBusquedas, deLaMarca, zonaPremium, giroDe as giroDe2 } from './places'
+import { telefonoParaWhatsApp, candidatoDe, fichaGoogle, fueraDePerfil, contactoLinkedInDeResultados, facebookDeResultados, fichasDelNombre, instagramDeResultados, dominioDe, enlacesDeContacto, extraerCorreo, extraerInstagram, extraerWhatsApp, filaDesdeCandidato, formatoTelefono, giroDe, limpiarNombre, marcarExistentes, nombreNormalizado, sePuedeEscribir, sinRepetidos, numeroDeCorrida, tramoDeBusquedas, deLaMarca, zonaPremium, giroDe as giroDe2 } from './places'
 import { mapRowsToContacts } from './import-contacts'
 
 describe('Instagram por búsqueda web', () => {
@@ -114,6 +114,9 @@ describe('buscador de prospectos (Places)', () => {
     expect(fueraDePerfil('Notaría Pública no 21')).toBe(true)
     expect(fueraDePerfil('Bufete Jurídico Gratuito ITESO')).toBe(true)
     expect(fueraDePerfil('BD Abogados')).toBe(false)
+    // La ficha de Google va a las notas para que el primer mensaje hable de algo real.
+    expect(fichaGoogle({ rating: 4.8, resenas: 198, tipo: 'Clínica dental', direccion: 'Av. Cruz del Sur 3973, 44950 Guadalajara, Jal., México' })).toBe('Google Maps: 4.8 estrellas (198 reseñas) · Clínica dental · Av. Cruz del Sur 3973, Guadalajara, Jal.')
+    expect(fichaGoogle({ rating: null, resenas: 0, tipo: null, direccion: '' })).toBeNull()
   })
 
   it('elige el mejor correo de un sitio', () => {

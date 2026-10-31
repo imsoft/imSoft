@@ -100,11 +100,33 @@ export type Oferta = 'app' | 'tienda'
  * que tienen plantilla de correo, y por eso la presentacion de gimnasios o agro nunca
  * llegaba al mensaje: el segmento para redes se saca de aqui (2026-10-27).
  */
-const GIROS_CON_PRESENTACION = ['logistica', 'fitness', 'abastos', 'agro']
+const GIROS_CON_PRESENTACION = ['logistica', 'fitness', 'abastos', 'agro', 'joyeria', 'dental', 'salud', 'ferreteria', 'restaurantes', 'automotriz', 'inmobiliaria', 'construccion', 'escuelas', 'abogados', 'contabilidad', 'ecommerce', 'corporativo']
 
 export function giroDeRedes(tags: string[] | null | undefined): string | null {
   const lower = (tags ?? []).map((t) => t.toLowerCase())
   return GIROS_CON_PRESENTACION.find((g) => lower.some((t) => t === g || t.startsWith(`${g}-`))) ?? null
+}
+
+/** "hacemos … en Guadalajara": la presentacion de una linea del primer mensaje, por giro. */
+export function queHacemos(segmento?: string | null, oferta?: Oferta | null): string {
+  const g = (segmento ?? '').toLowerCase()
+  if (oferta === 'tienda') return 'tiendas en línea para joyerías'
+  if (g.startsWith('abastos')) return 'apps de pedidos para mayoristas'
+  if (g.startsWith('fitness')) return 'apps para gimnasios'
+  if (g.startsWith('restaurantes')) return 'apps para restaurantes y cafeterías'
+  if (oferta === 'app') return 'apps y tiendas en línea para comercios'
+  if (g.startsWith('dental')) return 'software para consultorios dentales'
+  if (g.startsWith('salud')) return 'software para clínicas y consultorios'
+  if (g.startsWith('ferreteria')) return 'software para ferreterías y distribuidoras'
+  if (g.startsWith('automotriz')) return 'software para talleres y refaccionarias'
+  if (g.startsWith('inmobiliaria')) return 'software para inmobiliarias'
+  if (g.startsWith('construccion')) return 'software para constructoras'
+  if (g.startsWith('logistica')) return 'software para agencias aduanales y logística'
+  if (g.startsWith('agro')) return 'software para el campo y la agroindustria'
+  if (g.startsWith('escuelas')) return 'software para colegios'
+  if (g.startsWith('abogados')) return 'software para despachos jurídicos'
+  if (g.startsWith('contabilidad')) return 'software para despachos contables'
+  return 'software a la medida para negocios'
 }
 
 const tieneGiro = (lower: string[], giros: string[]) => giros.some((g) => lower.some((t) => t === g || t.startsWith(`${g}-`)))
@@ -141,7 +163,12 @@ const presentacion = (segmento?: string | null, oferta?: Oferta | null) =>
     ? 'Soy Brandon, de imSoft. Hacemos software a la medida en Guadalajara para empresas del campo y la agroindustria: lotes, pesajes y trazabilidad en un solo lugar, sin libretas ni Excel.'
     : 'Soy Brandon, de imSoft. Hacemos software a la medida en Guadalajara para negocios que ya operan bien pero cargan con procesos a mano o en Excel.'
 
-/** Texto listo para pegar en el chat del canal. */
+/**
+ * Texto listo para pegar en el chat del canal. Desde el 30-oct-2026 el primer mensaje de
+ * WhatsApp e Instagram es corto: la apertura (observacion + pregunta, que viene en
+ * `gancho`) y una linea de quien escribe. Sin pitch, sin llamada, sin enlace: eso va en
+ * el segundo toque. LinkedIn conserva el formato largo.
+ */
 export function renderMensajeRed(canal: Canal, v: MensajeVars): string {
   const saludo = v.nombre ? `Hola ${v.nombre}, ` : 'Hola, '
   const gancho = v.gancho.trim()
@@ -151,12 +178,11 @@ export function renderMensajeRed(canal: Canal, v: MensajeVars): string {
     case 'linkedin':
       partes.push(`${saludo}vi el perfil de ${v.empresa || 'tu empresa'} y te escribo directo.`, presentacion(v.segmento, v.oferta), gancho, 'Trabajamos a precio fijo y el código queda 100 % de ustedes.', cierre)
       break
-    case 'whatsapp':
-      partes.push(`${saludo}${presentacion(v.segmento, v.oferta).replace(/^Soy/, 'soy')}`, gancho, cierre)
-      break
-    default:
-      // Instagram, Facebook, TikTok y X: un DM corto; el detalle va en la llamada.
-      partes.push(`${saludo}${presentacion(v.segmento, v.oferta).replace(/^Soy/, 'soy')}`, gancho, '¿Te doy 15 minutos esta semana para platicarlo? Si no es para ustedes, te lo digo de frente.')
+    default: {
+      // La apertura ya empieza con "Hola"; si viene un gancho viejo (sin saludo), se lo ponemos.
+      const apertura = /^hola/i.test(gancho) ? gancho : `${saludo}${gancho.charAt(0).toLowerCase()}${gancho.slice(1)}`
+      partes.push(apertura, `Soy Brandon, de imSoft; hacemos ${queHacemos(v.segmento, v.oferta)} en Guadalajara.`)
+    }
   }
   const texto = partes.filter((p) => p.trim()).join('\n\n')
   return texto.length > TOPE_CANAL[canal] ? texto.slice(0, TOPE_CANAL[canal] - 1).replace(/\s+\S*$/, '') + '…' : texto

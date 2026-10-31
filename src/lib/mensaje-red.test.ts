@@ -1,23 +1,34 @@
 import { describe, expect, it } from 'vitest'
-import { canalDeAsunto, canalesDe, colaDeRedes, giroDeRedes, TAG_REDES_DESCARTADO, conteoPorCanal, estadoDelTope, ETIQUETA_CANAL, numeroWhatsApp, ofertaDe, renderMensajeRed, TOPE_CANAL, TOPE_DIARIO_CANAL, urlDeRed } from './mensaje-red'
+import { canalDeAsunto, canalesDe, colaDeRedes, giroDeRedes, queHacemos, TAG_REDES_DESCARTADO, conteoPorCanal, estadoDelTope, ETIQUETA_CANAL, numeroWhatsApp, ofertaDe, renderMensajeRed, TOPE_CANAL, TOPE_DIARIO_CANAL, urlDeRed } from './mensaje-red'
 
 const v = { nombre: 'Héctor', empresa: 'Gil y Gil', gancho: 'Cada filial lleva sus pedimentos en su propio Excel.', segmento: 'logistica-gdl' }
 
 describe('mensaje para redes', () => {
-  it('lleva saludo, presentacion, el mismo gancho del correo y la propuesta de 15 minutos', () => {
-    const t = renderMensajeRed('instagram', v)
-    expect(t.startsWith('Hola Héctor, soy Brandon, de imSoft.')).toBe(true)
-    expect(t).toContain('aduanal y logístico')
-    expect(t).toContain(v.gancho)
-    expect(t).toContain('15 minutos')
-    // Nada de correo: sin asunto, sin firma, sin enlaces.
-    expect(t).not.toMatch(/asunto|https?:\/\/|saludos/i)
+  it('el primer mensaje es la apertura (observación + pregunta) y una línea de quién escribe, sin pitch ni llamada', () => {
+    const apertura = 'Hola, vi que tienen 4.8 en Google con 200 reseñas. Pregunta rápida: ¿las confirmaciones de cita las hacen a mano o ya tienen algo que las mande solas?'
+    const t = renderMensajeRed('whatsapp', { nombre: '', empresa: 'Dental Díaz', gancho: apertura, segmento: 'dental' })
+    expect(t).toBe(`${apertura}\n\nSoy Brandon, de imSoft; hacemos software para consultorios dentales en Guadalajara.`)
+    expect(t).not.toMatch(/15 minutos|precio|https?:\/\/|Excel/i)
+    expect(t.split(' ').length).toBeLessThan(60)
   })
 
-  it('sin nombre saluda igual, y fuera de logistica usa la presentacion general', () => {
-    const t = renderMensajeRed('facebook', { ...v, nombre: '', segmento: null })
-    expect(t.startsWith('Hola, soy Brandon')).toBe(true)
-    expect(t).toContain('procesos a mano o en Excel')
+  it('un gancho viejo sin saludo se envuelve con "Hola" y, si hay nombre, con el nombre', () => {
+    const t = renderMensajeRed('instagram', { ...v, segmento: 'logistica' })
+    expect(t.startsWith('Hola Héctor, ')).toBe(true)
+    expect(t).toContain('agencias aduanales y logística')
+    const sin = renderMensajeRed('facebook', { ...v, nombre: '', segmento: null })
+    expect(sin.startsWith('Hola, ')).toBe(true)
+    expect(sin).toContain('software a la medida para negocios')
+  })
+
+  it('la línea de presentación cambia por giro y oferta', () => {
+    expect(queHacemos('ferreteria')).toBe('software para ferreterías y distribuidoras')
+    expect(queHacemos('restaurantes', 'app')).toBe('apps para restaurantes y cafeterías')
+    expect(queHacemos('fitness-gdl', 'app')).toBe('apps para gimnasios')
+    expect(queHacemos('abastos', 'app')).toBe('apps de pedidos para mayoristas')
+    expect(queHacemos('joyeria', 'tienda')).toBe('tiendas en línea para joyerías')
+    expect(queHacemos('agro')).toBe('software para el campo y la agroindustria')
+    expect(queHacemos(null)).toBe('software a la medida para negocios')
   })
 
   it('LinkedIn es mas largo y menciona precio fijo; Instagram no', () => {
@@ -148,30 +159,18 @@ describe('cola de redes', () => {
     // Una cadena grande con area de sistemas no recibe el mensaje de la app.
     expect(ofertaDe(['restaurantes', 'corporativo'])).toBeNull()
 
-    const t = renderMensajeRed('instagram', { nombre: '', empresa: 'Tukafe', gancho: 'Sus clientes frecuentes piden por WhatsApp y nadie los premia.', oferta: 'app' })
-    expect(t).toContain('apps a la medida')
-    expect(t).toContain('pedidos, puntos y promociones')
+    const t = renderMensajeRed('instagram', { nombre: '', empresa: 'Tukafe', gancho: 'Hola, vi que tienen 4.7 en Google. ¿Sus clientes frecuentes piden por WhatsApp o por app?', segmento: 'restaurantes', oferta: 'app' })
+    expect(t).toContain('apps para restaurantes')
     expect(t).not.toContain('Excel')
-    // En un gimnasio no hay "pedidos": habla de clases y membresías.
-    const g = renderMensajeRed('instagram', { nombre: '', empresa: 'Navi Gym', gancho: 'g', segmento: 'fitness-gdl', oferta: 'app' })
+    // LinkedIn conserva la presentación larga por giro.
+    const g = renderMensajeRed('linkedin', { nombre: '', empresa: 'Navi Gym', gancho: 'g', segmento: 'fitness-gdl', oferta: 'app' })
     expect(g).toContain('reservas de clases, membresías')
-    expect(g).not.toContain('pedidos')
-    const m = renderMensajeRed('whatsapp', { nombre: '', empresa: 'Fruvecas', gancho: 'g', segmento: 'abastos', oferta: 'app' })
-    expect(m).toContain('para mayoristas')
-    expect(m).toContain('pedido desde su celular')
-    const j = renderMensajeRed('instagram', { nombre: '', empresa: 'Malka', gancho: 'g', segmento: 'joyeria', oferta: 'tienda' })
-    expect(j).toContain('tiendas en línea a la medida')
-    expect(j).toContain('joyerías')
-    expect(j).not.toContain('apps')
     // El giro para la presentación sale de las etiquetas, con o sin sufijo de ciudad.
     expect(giroDeRedes(['google-places', 'agro'])).toBe('agro')
     expect(giroDeRedes(['fitness-gdl'])).toBe('fitness')
-    expect(giroDeRedes(['dental'])).toBeNull()
-    // Agro: software de operación (lotes, pesajes, trazabilidad), no app.
+    expect(giroDeRedes(['google-places', 'dental'])).toBe('dental')
+    expect(giroDeRedes(['zona-premium'])).toBeNull()
     expect(ofertaDe(['agro'])).toBeNull()
-    expect(renderMensajeRed('whatsapp', { nombre: '', empresa: 'Agrofresh', gancho: 'g', segmento: 'agro' })).toContain('lotes, pesajes y trazabilidad')
-    // Sin oferta, el mensaje de siempre.
-    expect(renderMensajeRed('instagram', { nombre: '', empresa: 'X', gancho: 'g' })).toContain('procesos a mano o en Excel')
   })
 
   it('con teléfono e Instagram da los dos canales, WhatsApp primero', () => {

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { ganchoDesdeNotas, limpiarGancho, promptGancho } from './outreach-ai';
+import { fichaDeNotas, ganchoDesdeNotas, limpiarApertura, limpiarGancho, notasSinFicha, preguntaPorDefecto, promptApertura, promptGancho } from './outreach-ai';
 
 describe('gancho con IA', () => {
   it('el prompt lleva los datos del prospecto y las reglas', () => {
@@ -24,6 +24,12 @@ describe('gancho con IA', () => {
     expect(ganchoDesdeNotas('Agenda aquí https://wa.me/1')).toBeNull();
     expect(ganchoDesdeNotas('x'.repeat(400))).toBeNull();
     expect(ganchoDesdeNotas(null)).toBeNull();
+    // La ficha de Google que guarda el buscador no es un gancho.
+    const notas = 'Google Maps: 4.8 estrellas (198 reseñas) · Clínica dental · Av. Cruz del Sur 3973, Guadalajara';
+    expect(ganchoDesdeNotas(notas)).toBeNull();
+    expect(fichaDeNotas(notas)).toBe(notas);
+    expect(ganchoDesdeNotas(`Sus pacientes cancelan por WhatsApp.\n${notas}`)).toBe('Sus pacientes cancelan por WhatsApp.');
+    expect(notasSinFicha(`${notas}\nHablé con el dueño`)).toBe('Hablé con el dueño');
   });
 
   it('con oferta de app propia el gancho habla del cliente final, no del Excel', () => {
@@ -45,6 +51,21 @@ describe('gancho con IA', () => {
     const p = promptGancho({ nombre: '', empresa: 'Agrofresh', segmento: 'agro', sitio: null, notas: null, cargo: null });
     expect(p).toContain('Si el sector es "agro"');
     expect(p).toContain('trazabilidad');
+  });
+
+  it('la apertura de redes pide observación real, pregunta corta, usted y nada de venta', () => {
+    const p = promptApertura({ empresa: 'Clínica Dental Díaz', segmento: 'dental', datos: 'Google Maps: 4.8 estrellas (198 reseñas) · Clínica dental', notas: null });
+    expect(p).toContain('4.8 estrellas (198 reseñas)');
+    expect(p).toContain('Empieza con "Hola, vi que"');
+    expect(p).toContain('Trato de usted');
+    expect(p).toContain('sin proponer llamada');
+    expect(p).toContain('agenda y confirmaciones');
+    expect(promptApertura({ empresa: 'Fruvecas', segmento: 'abastos', oferta: 'app' })).toContain('clientes de tienda y ruta');
+    expect(promptApertura({ empresa: 'Malka', segmento: 'joyeria', oferta: 'tienda' })).toContain('piezas por foto');
+    // La apertura no se recorta a dos frases (la pregunta suele ser la tercera) y hay pregunta de respaldo por giro.
+    expect(limpiarApertura({ gancho: '"Hola, vi que están en Av. Hidalgo. Una duda: ¿las citas las confirman a mano o ya tienen algo?"' })).toBe('Hola, vi que están en Av. Hidalgo. Una duda: ¿las citas las confirman a mano o ya tienen algo?');
+    expect(preguntaPorDefecto('ferreteria')).toMatch(/cotizaciones/);
+    expect(preguntaPorDefecto('restaurantes', 'app')).toMatch(/clientes frecuentes/);
   });
 
   it('para empresas grandes el prompt cambia el tipo de problema', () => {

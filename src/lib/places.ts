@@ -457,6 +457,21 @@ export function zonaPremium(direccion: string | null | undefined): boolean {
   return ZONAS_PREMIUM.test(direccion ?? '')
 }
 
+/**
+ * Lo que Google sabe del negocio, en una linea, para que el primer mensaje hable de algo
+ * real suyo ("4.8 con 200 reseñas", "dos sucursales") y no de una plantilla. Va en las
+ * notas del contacto con el prefijo FICHA_GOOGLE; ganchoDesdeNotas la ignora.
+ */
+export const FICHA_GOOGLE = 'Google Maps:'
+
+export function fichaGoogle(c: Pick<Candidato, 'rating' | 'resenas' | 'tipo' | 'direccion'>): string | null {
+  const partes: string[] = []
+  if (c.rating) partes.push(`${c.rating} estrellas (${c.resenas} reseñas)`)
+  if (c.tipo) partes.push(c.tipo)
+  if (c.direccion) partes.push(c.direccion.replace(/, M[ée]xico$/, '').replace(/\d{5}\s*/, ''))
+  return partes.length ? `${FICHA_GOOGLE} ${partes.join(' · ')}` : null
+}
+
 export function filaDesdeCandidato(c: Candidato, segmento: string): CsvRow {
   return {
     empresa: c.nombre,
@@ -472,6 +487,6 @@ export function filaDesdeCandidato(c: Candidato, segmento: string): CsvRow {
     sitio: c.sitio ?? '',
     segmento,
     zona: zonaPremium(c.direccion) ? 'zona-premium' : '',
-    gancho: '',
+    gancho: fichaGoogle(c) ?? '',
   }
 }

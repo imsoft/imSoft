@@ -5,9 +5,11 @@ import Anthropic from '@anthropic-ai/sdk'
 import { resolveMx } from 'node:dns/promises'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { enviarRaw, estadoDelHilo, messageIdHeader, rebotesRecientes } from '@/lib/gmail/server'
-import { GANCHO_TOOL, ganchoDesdeNotas, limpiarGancho, promptGancho } from '@/lib/outreach-ai'
+import { GANCHO_TOOL, fichaDeNotas, ganchoDesdeNotas, limpiarApertura, limpiarGancho, notasSinFicha, preguntaPorDefecto, promptApertura, promptGancho } from '@/lib/outreach-ai'
 import { estadoDeCorreo, fechaCorta, type FilaCorreo } from '@/lib/estado-correo'
 import { buzonNoComercial } from '@/lib/correo-invalido'
+import { buscarLugares, placesConfigurado } from '@/lib/places-server'
+import { fichaGoogle, nombreNormalizado } from '@/lib/places'
 import { colaDeRedes, conteoPorCanal, giroDeRedes, MOTIVOS_DESCARTE_REDES, ofertaDe, renderMensajeRed, TAG_REDES_DESCARTADO, TOPE_DIARIO_CANAL, type Canal, type MotivoDescarteRedes, type ContactoDeCola, type FilaCola, type Oferta } from '@/lib/mensaje-red'
 import { dominioDeCorreo, construirMime, cuerpoDe, fechaSiguientePaso, renderDesdeCuerpo, renderOutreach, segmentoDe, topeDiario, type Step } from '@/lib/outreach'
 
@@ -199,19 +201,54 @@ export async function marcarEnviadoAMano(db: SupabaseClient, userId: string, id:
   return { siguiente: row.step < 3 ? fechaSiguientePaso(ahora, (row.step + 1) as 2 | 3) : null }
 }
 
+/** Apertura (observacion real + pregunta) con Claude, a partir de la ficha de Google y las notas. */
+export async function aperturaConIA(c: ContactoMin, datos: string | null, oferta: Oferta | null): Promise<string> {
+  const client = new Anthropic()
+  const msg = await client.messages.create({
+    model: 'claude-opus-5',
+    max_tokens: 200,
+    tools: [GANCHO_TOOL],
+    tool_choice: { type: 'tool', name: 'gancho' },
+    messages: [{ role: 'user', content: promptApertura({ empresa: c.company ?? '', segmento: segmentoDe(c.tags) ?? giroDeRedes(c.tags), datos, notas: notasSinFicha(c.notes).slice(0, 600), oferta }) }],
+  })
+  const tool = msg.content.find((b) => b.type === 'tool_use')
+  const texto = limpiarApertura(tool && tool.type === 'tool_use' ? tool.input : null)
+  // Sin pregunta no hay conversacion: se agrega la del giro.
+  return /\?\s*$/.test(texto) ? texto : `${texto.replace(/\.?\s*$/, '.')} ${preguntaPorDefecto(segmentoDe(c.tags) ?? giroDeRedes(c.tags), oferta)}`
+}
+
 /**
- * Mensaje de prospeccion para una red social. El gancho es el mismo del correo: si ya
- * hay uno guardado en outreach_emails se reutiliza; si no, notas del CRM o la IA.
- * Con oferta de app propia no se reutiliza el del correo: ese habla de procesos internos
- * y aqui el mensaje va del lado del cliente final.
+ * Si el contacto no trae la ficha de Google (prospectos de antes del 30-oct-2026), la
+ * busca en Places por nombre y ciudad y la guarda en las notas para la proxima vez.
+ */
+async function fichaGoogleDe(db: SupabaseClient, c: ContactoMin): Promise<string | null> {
+  const guardada = fichaDeNotas(c.notes)
+  if (guardada || !placesConfigurado() || !c.company) return guardada
+  try {
+    const candidatos = await buscarLugares(c.company, 'zmg', 5)
+    const k = nombreNormalizado(c.company)
+    const hit = candidatos.find((x) => nombreNormalizado(x.nombre).includes(k) || k.includes(nombreNormalizado(x.nombre)))
+    const ficha = hit ? fichaGoogle(hit) : null
+    if (ficha) await db.from('contacts').update({ notes: [c.notes?.trim(), ficha].filter(Boolean).join('\n'), updated_at: new Date().toISOString() }).eq('id', c.id)
+    return ficha
+  } catch {
+    return null
+  }
+}
+
+/**
+ * Primer mensaje de prospeccion para una red social: apertura con un dato real del
+ * negocio y una pregunta, mas una linea de presentacion (ver renderMensajeRed). Si
+ * Brandon dejo un gancho a mano en las notas, se usa ese.
  */
 export async function mensajeParaRed(db: SupabaseClient, contactId: string, canal: Canal) {
   const { data: c } = await db.from('contacts').select(CONTACTO_COLS).eq('id', contactId).maybeSingle()
   if (!c) throw new Error('Contacto no encontrado')
-  const { data: previo } = await db.from('outreach_emails').select('gancho').eq('contact_id', contactId).eq('step', 1).not('gancho', 'is', null).maybeSingle()
   const oferta = ofertaDe(c.tags)
-  const gancho = (oferta ? null : (previo?.gancho as string | null)) || ganchoDesdeNotas(c.notes) || (await ganchoConIA(c as ContactoMin, oferta))
-  return { texto: renderMensajeRed(canal, { nombre: nombreDe(c), empresa: c.company ?? '', gancho, segmento: segmentoDe(c.tags) ?? giroDeRedes(c.tags), oferta }), gancho }
+  const segmento = segmentoDe(c.tags) ?? giroDeRedes(c.tags)
+  const ficha = await fichaGoogleDe(db, c as ContactoMin)
+  const gancho = ganchoDesdeNotas(c.notes) || (await aperturaConIA(c as ContactoMin, ficha, oferta))
+  return { texto: renderMensajeRed(canal, { nombre: nombreDe(c), empresa: c.company ?? '', gancho, segmento, oferta }), gancho }
 }
 
 /** Mensajes por redes registrados hoy (hora de Guadalajara) y en los ultimos 7 dias, por canal. */
