@@ -1,27 +1,27 @@
 /**
- * Paginas "cuanto cuesta": responden las busquedas de precio que el autocompletado de Google
- * sugiere en Mexico (26-sep-2026). Pagina web y app ya las responden dos articulos del blog
- * (el de apps ya estaba en la posicion 15): una guia nueva con la misma pregunta les
- * quitaria fuerza, asi que ahi se enlaza al articulo. "Cuanto cuesta un software para una
- * empresa" y "cuanto cuesta una tienda en linea en mexico" no tenian pagina y tienen guia.
+ * "Cuanto cuesta" pages: they answer the price searches Google autocomplete suggests in
+ * Mexico (2026-09-26). Web page and app are already answered by two blog posts (the app
+ * one was already at position 15): a new guide with the same question would take strength
+ * away from them, so those link to the post. "Cuanto cuesta un software para una empresa"
+ * and "cuanto cuesta una tienda en linea en mexico" had no page and get a guide.
  *
- * Tienda en linea: minimo de $9,999 MXN fijado por Brandon (28-sep-2026) para una tienda
- * basica con plantilla; las tres completas del portafolio fueron de $19,000 a $60,000 MXN.
- * Se publica el rango, sin decir cuanto pago cada cliente.
+ * Online store: $9,999 MXN minimum set by Brandon (2026-09-28) for a basic store from a
+ * template; the three full stores in the portfolio were $19,000 to $60,000 MXN. The range
+ * is published, without saying what each client paid.
  *
- * Reglas: solo precios publicados en el sitio (seccion de precios), proyectos reales del
- * portafolio y nada de cifras del mercado sin fuente. Reutilizan el formato de las
- * landings de ciudad (CityServiceContent) y su componente.
+ * Rules: only prices published on the site (pricing section), real portfolio projects and
+ * no market figures without a source. They reuse the city landing format
+ * (CityServiceContent) and its component.
  */
 import type { CityServiceContent, CityServiceSlug } from './city-services';
 
-export type GuiaPrecioSlug = 'software-a-la-medida' | 'tienda-en-linea';
+export type PriceGuideSlug = 'software-a-la-medida' | 'tienda-en-linea';
 
-export const GUIA_PRECIO_SLUGS: GuiaPrecioSlug[] = ['software-a-la-medida', 'tienda-en-linea'];
+export const PRICE_GUIDE_SLUGS: PriceGuideSlug[] = ['software-a-la-medida', 'tienda-en-linea'];
 
-const HORARIO = 'Atendemos de lunes a sábado de 9:00 a 18:00, y los domingos de 9:00 a 13:00.';
+const OPENING_HOURS = 'Atendemos de lunes a sábado de 9:00 a 18:00, y los domingos de 9:00 a 13:00.';
 
-export const GUIAS_PRECIO: Record<GuiaPrecioSlug, CityServiceContent> = {
+export const PRICE_GUIDES: Record<PriceGuideSlug, CityServiceContent> = {
   'software-a-la-medida': {
     seoTitle: '¿Cuánto cuesta un software a la medida para una empresa?',
     seoDescription:
@@ -141,7 +141,7 @@ export const GUIAS_PRECIO: Record<GuiaPrecioSlug, CityServiceContent> = {
     },
     cta: {
       title: '¿Cuánto costaría el software de tu empresa?',
-      description: `En una llamada de 15 minutos vemos qué proceso conviene resolver primero y en 24 horas te mandamos el precio fijo de esa etapa. ${HORARIO}`,
+      description: `En una llamada de 15 minutos vemos qué proceso conviene resolver primero y en 24 horas te mandamos el precio fijo de esa etapa. ${OPENING_HOURS}`,
       buttonText: 'Pedir cotización',
     },
   },
@@ -262,28 +262,28 @@ export const GUIAS_PRECIO: Record<GuiaPrecioSlug, CityServiceContent> = {
     },
     cta: {
       title: '¿Cuánto costaría tu tienda en línea?',
-      description: `Cuéntanos qué vendes y cuántos productos tienes, y en 24 horas te mandamos el precio fijo por escrito. ${HORARIO}`,
+      description: `Cuéntanos qué vendes y cuántos productos tienes, y en 24 horas te mandamos el precio fijo por escrito. ${OPENING_HOURS}`,
       buttonText: 'Pedir cotización',
     },
   },
 };
 
-export function guiaPrecio(slug: string): CityServiceContent | null {
-  return (GUIAS_PRECIO as Record<string, CityServiceContent>)[slug] ?? null;
+export function priceGuide(slug: string): CityServiceContent | null {
+  return (PRICE_GUIDES as Record<string, CityServiceContent>)[slug] ?? null;
 }
 
-export function guiaPrecioHref(lang: string, slug: GuiaPrecioSlug): string {
+export function priceGuideHref(lang: string, slug: PriceGuideSlug): string {
   return `/${lang}/cuanto-cuesta/${slug}`;
 }
 
-/** Pagina que responde "cuanto cuesta" para cada servicio de las landings de ciudad. */
-export const PRECIO_DE_SERVICIO: Record<CityServiceSlug, { name: string; href: string }> = {
+/** Page that answers "cuanto cuesta" for each city-landing service. */
+export const SERVICE_PRICE_GUIDE: Record<CityServiceSlug, { name: string; href: string }> = {
   'paginas-web': { name: '¿Cuánto cuesta una página web en México?', href: '/es/blog/cuanto-cuesta-una-pagina-web-en-mexico' },
   'desarrollo-de-apps': { name: '¿Cuánto cuesta desarrollar una app en México?', href: '/es/blog/cuanto-cuesta-desarrollar-una-app-en-mexico' },
   'empresas-de-software': { name: '¿Cuánto cuesta un software a la medida para una empresa?', href: '/es/cuanto-cuesta/software-a-la-medida' },
   'tiendas-en-linea': { name: '¿Cuánto cuesta una tienda en línea en México?', href: '/es/cuanto-cuesta/tienda-en-linea' },
 };
 
-export function precioDeServicio(slug: CityServiceSlug): { name: string; href: string } | null {
-  return PRECIO_DE_SERVICIO[slug] ?? null;
+export function servicePriceGuide(slug: CityServiceSlug): { name: string; href: string } | null {
+  return SERVICE_PRICE_GUIDE[slug] ?? null;
 }

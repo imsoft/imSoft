@@ -2,10 +2,10 @@
  * Pure quote and contract logic: totals, document numbers, validity, milestones and the
  * contract template. No I/O; the admin pages and routes use it.
  */
-import { IVA, MSI_EXTRA } from './simulador-cobros';
-import { msiEtiqueta, MSI_MINIMO_MXN } from './msi';
+import { VAT_RATE, INSTALLMENT_EXTRA } from './fee-simulator';
+import { installmentsLabel, INSTALLMENTS_MIN_MXN } from './installments';
 import { ISSUER } from '@/config/issuer';
-import { DESCUENTO_TRANSFERENCIA_PCT } from '@/config/precios';
+import { TRANSFER_DISCOUNT_PCT } from '@/config/pricing';
 
 export interface QuoteItem {
   name: string;
@@ -40,7 +40,7 @@ export const DEFAULT_PLAN: MonthlyPlan = { months: 24, deposit_pct: 30, surcharg
 export interface QuotePayment {
   milestones: Milestone[];
   card_installments: boolean;
-  /** Bank-transfer discount (%). When missing, the one in src/config/precios.ts. */
+  /** Bank-transfer discount (%). When missing, the one in src/config/pricing.ts. */
   transfer_discount_pct?: number;
   /** Monthly plan offered; null or missing = not offered. */
   plan?: MonthlyPlan | null;
@@ -66,7 +66,7 @@ export function validatePlan(plan: MonthlyPlan | null | undefined): string | nul
 
 export function transferDiscountPct(p: Pick<QuotePayment, 'transfer_discount_pct'>): number {
   const v = Number(p.transfer_discount_pct);
-  return Number.isFinite(v) && v >= 0 && v <= 20 ? v : DESCUENTO_TRANSFERENCIA_PCT;
+  return Number.isFinite(v) && v >= 0 && v <= 20 ? v : TRANSFER_DISCOUNT_PCT;
 }
 
 /** What the plan costs: deposit, total and monthly fee, over the total with VAT. */
@@ -79,7 +79,7 @@ export function planAmounts(total: number, plan: MonthlyPlan) {
 
 /** Card total over N interest-free months: the cost of the term (Stripe + VAT) goes into the price. */
 export function totalWithInstallments(total: number, months: 6 | 12): number {
-  return round2(total * (1 + (MSI_EXTRA[String(months) as '6' | '12'] ?? 0) * (1 + IVA)));
+  return round2(total * (1 + (INSTALLMENT_EXTRA[String(months) as '6' | '12'] ?? 0) * (1 + VAT_RATE)));
 }
 
 /**
@@ -95,7 +95,7 @@ export function paymentOptions(q: Pick<QuoteLike, 'items' | 'apply_iva' | 'payme
   const transferTotal = round2(total * (1 - discountPct / 100));
   out.push({ key: 'transfer', title: 'Transferencia bancaria', total: transferTotal, summary: discountPct > 0 ? `${discountPct} % de descuento: ${formatMoney(transferTotal, c)} en total` : `${formatMoney(total, c)} en total` });
   out.push({ key: 'card', title: 'Tarjeta en una sola exhibición', total, summary: `${formatMoney(total, c)} en total, por enlace de pago seguro` });
-  if (q.payment.card_installments && c === 'MXN' && total >= MSI_MINIMO_MXN) {
+  if (q.payment.card_installments && c === 'MXN' && total >= INSTALLMENTS_MIN_MXN) {
     for (const m of [6, 12] as const) {
       const t = totalWithInstallments(total, m);
       out.push({ key: m === 6 ? 'installments_6' : 'installments_12', title: `Tarjeta a ${m} meses sin intereses`, total: t, summary: `${m} pagos de ${formatMoney(t / m, c)}; ${formatMoney(t, c)} en total` });
@@ -251,7 +251,7 @@ export function quoteTotals(q: Pick<QuoteLike, 'items' | 'apply_iva'> & { discou
   const listPrice = subtotal(q.items);
   const discount = discountAmount(listPrice, q.discount);
   const sub = round2(listPrice - discount);
-  const vat = q.apply_iva ? round2(sub * IVA) : 0;
+  const vat = q.apply_iva ? round2(sub * VAT_RATE) : 0;
   return { listPrice, discount, subtotal: sub, vat, total: round2(sub + vat) };
 }
 
@@ -355,8 +355,8 @@ export function paymentTermsText(q: Pick<QuoteLike, 'items' | 'apply_iva' | 'pay
   if (milestones.some((m) => monthlyPaymentCount(m) > 1)) lines.push('Las mensualidades son pagos por transferencia bancaria, sin intereses: la primera vence al cumplirse el hito y las siguientes cada mes.');
   const discountPct = transferDiscountPct(q.payment);
   if (discountPct > 0) lines.push(`Pagando por transferencia bancaria, ${discountPct} % de descuento: ${formatMoney(round2(total * (1 - discountPct / 100)), q.currency)} en total.`);
-  if (q.payment.card_installments && q.currency === 'MXN' && total >= MSI_MINIMO_MXN) {
-    const six = msiEtiqueta(totalWithInstallments(total, 6), 6);
+  if (q.payment.card_installments && q.currency === 'MXN' && total >= INSTALLMENTS_MIN_MXN) {
+    const six = installmentsLabel(totalWithInstallments(total, 6), 6);
     lines.push(`Con tarjeta de crédito a 6 o 12 meses sin intereses con bancos participantes; el costo del plazo va en el total: a 6 meses ${formatMoney(totalWithInstallments(total, 6), q.currency)}${six ? ` (${six.replace(/^o /, '')})` : ''} y a 12 meses ${formatMoney(totalWithInstallments(total, 12), q.currency)}.`);
   }
   if (q.payment.plan && !validatePlan(q.payment.plan)) {

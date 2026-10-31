@@ -5,11 +5,11 @@
  * servicios principales con problema, entregables, precio y un caso real, y el resto en
  * una lista compacta. La pagina /services sigue mostrando todo.
  *
- * Los precios "desde" salen de src/config/precios.ts, la misma fuente que la referencia de
+ * Los precios "desde" salen de src/config/pricing.ts, la misma fuente que la referencia de
  * precios. Los ganchos usan el mismo lenguaje que los mensajes de prospeccion del CRM.
  */
 import type { Service } from '@/types/database'
-import { etiquetaDesde, type ClaveDePrecio } from '@/config/precios'
+import { startingPriceLabel, type PriceKey } from '@/config/pricing'
 
 export interface ServicioPrincipal {
   /** Slug del servicio en la tabla `services` (enlace a /services/<slug>). */
@@ -18,8 +18,8 @@ export interface ServicioPrincipal {
   /** El problema del cliente, en una frase. */
   problema: { es: string; en: string }
   entregables: { es: [string, string, string]; en: [string, string, string] }
-  /** Clave del piso de precio en src/config/precios.ts. */
-  precio: ClaveDePrecio
+  /** Clave del piso de precio en src/config/pricing.ts. */
+  precio: PriceKey
   /** Slug del proyecto del portafolio que ilustra el servicio, si hay uno. */
   caso: { slug: string; nombre: string } | null
 }
@@ -99,7 +99,7 @@ export const SERVICIOS_PRINCIPALES: ServicioPrincipal[] = [
 
 /** Etiqueta "Desde $X" del servicio en el idioma pedido. */
 export function desdeDe(servicio: ServicioPrincipal, lang: string): string {
-  return etiquetaDesde(servicio.precio, lang)
+  return startingPriceLabel(servicio.precio, lang)
 }
 
 export interface CasoIlustrado {

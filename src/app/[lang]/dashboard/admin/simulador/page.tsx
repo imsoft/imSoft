@@ -1,8 +1,8 @@
 import { getDictionary, hasLocale } from '../../../dictionaries'
 import { notFound } from 'next/navigation'
-import { Simulador } from './simulador'
+import { FeeSimulator } from './fee-simulator'
 
-export default async function AdminSimuladorPage({ params }: { params: Promise<{ lang: string }> }) {
+export default async function AdminFeeSimulatorPage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params
   if (!hasLocale(lang)) notFound()
   const dict = await getDictionary(lang)
@@ -17,7 +17,7 @@ export default async function AdminSimuladorPage({ params }: { params: Promise<{
             : 'Cuánto paga el cliente, cuánto se queda Stripe, cuánto va al SAT y cuánto te queda, por hito y por forma de pago.'}
         </p>
       </div>
-      <Simulador lang={lang} />
+      <FeeSimulator lang={lang} />
     </div>
   )
 }

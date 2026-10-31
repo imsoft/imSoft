@@ -5,8 +5,8 @@ import Link from 'next/link'
 import { Check, ArrowRight } from 'lucide-react'
 import type { Dictionary } from '@/app/[lang]/dictionaries'
 import { ScrollReveal } from "@/components/animations/scroll-reveal"
-import { MSI_PLAZOS, MSI_PLAZO_EJEMPLO, montoDesde, msiEtiqueta } from '@/lib/msi'
-import { etiquetaDesde } from '@/config/precios'
+import { INSTALLMENT_TERMS, INSTALLMENTS_SAMPLE_TERM, amountFromPrice, installmentsLabel } from '@/lib/installments'
+import { startingPriceLabel } from '@/config/pricing'
 
 interface PricingSectionProps {
   dict: Dictionary
@@ -15,14 +15,14 @@ interface PricingSectionProps {
 
 export function PricingSection({ dict, lang }: PricingSectionProps) {
   const isEs = lang === 'es'
-  const [plazo, setPlazo] = useState<number>(MSI_PLAZO_EJEMPLO)
+  const [term, setTerm] = useState<number>(INSTALLMENTS_SAMPLE_TERM)
 
   const tiers = [
     {
       icon: '🌱',
       name: isEs ? 'Emprendedor' : 'Starter',
       slug: 'web-pages',
-      price: etiquetaDesde('landing', lang),
+      price: startingPriceLabel('landing', lang),
       description: isEs
         ? 'Para emprendedores que dan su primer paso digital sin complicaciones.'
         : 'For entrepreneurs taking their first digital step without the hassle.',
@@ -35,7 +35,7 @@ export function PricingSection({ dict, lang }: PricingSectionProps) {
       icon: '🖥️',
       name: isEs ? 'Páginas Web' : 'Web Pages',
       slug: 'web-pages',
-      price: etiquetaDesde('web-pages', lang),
+      price: startingPriceLabel('web-pages', lang),
       description: isEs
         ? 'Ideal para negocios que necesitan presencia digital profesional rápida.'
         : 'Ideal for businesses that need fast professional digital presence.',
@@ -48,7 +48,7 @@ export function PricingSection({ dict, lang }: PricingSectionProps) {
       icon: '💻',
       name: isEs ? 'Software a la Medida' : 'Custom Software',
       slug: 'software-a-medida',
-      price: etiquetaDesde('software-a-medida', lang),
+      price: startingPriceLabel('software-a-medida', lang),
       description: isEs
         ? 'Para sacar tu operación de Excel y WhatsApp: un sistema hecho para cómo trabajas.'
         : 'To get your operation out of spreadsheets and WhatsApp: a system built around how you work.',
@@ -61,7 +61,7 @@ export function PricingSection({ dict, lang }: PricingSectionProps) {
       icon: '🚀',
       name: isEs ? 'Producto Digital / MVP' : 'Digital Product / MVP',
       slug: 'desarrollo-de-mvp',
-      price: etiquetaDesde('desarrollo-de-mvp', lang),
+      price: startingPriceLabel('desarrollo-de-mvp', lang),
       description: isEs
         ? 'Para lanzar tu producto al mercado rápido y validar con usuarios reales.'
         : 'To launch your product to market fast and validate with real users.',
@@ -74,7 +74,7 @@ export function PricingSection({ dict, lang }: PricingSectionProps) {
       icon: '🏢',
       name: isEs ? 'Plataforma Completa' : 'Full Platform',
       slug: 'software-a-medida',
-      price: etiquetaDesde('plataforma-completa', lang),
+      price: startingPriceLabel('plataforma-completa', lang),
       description: isEs
         ? 'SaaS y sistemas empresariales con varios roles y módulos, como JTP Logistics o Aduvanta.'
         : 'SaaS and enterprise systems with multiple roles and modules, like JTP Logistics or Aduvanta.',
@@ -101,17 +101,17 @@ export function PricingSection({ dict, lang }: PricingSectionProps) {
             <div className="mt-6 inline-flex flex-wrap items-center justify-center gap-2 rounded-full bg-primary-foreground/10 px-3 py-2 text-sm">
               <span className="px-1 font-medium">Paga a meses sin intereses con tarjeta de crédito:</span>
               <div role="group" aria-label="Plazo de meses sin intereses" className="flex gap-1">
-                {MSI_PLAZOS.map((meses) => (
+                {INSTALLMENT_TERMS.map((months) => (
                   <button
-                    key={meses}
+                    key={months}
                     type="button"
-                    aria-pressed={plazo === meses}
-                    onClick={() => setPlazo(meses)}
+                    aria-pressed={term === months}
+                    onClick={() => setTerm(months)}
                     className={`rounded-full px-3 py-1 font-semibold transition-colors ${
-                      plazo === meses ? 'bg-primary-foreground text-primary' : 'text-primary-foreground/80 hover:bg-primary-foreground/15'
+                      term === months ? 'bg-primary-foreground text-primary' : 'text-primary-foreground/80 hover:bg-primary-foreground/15'
                     }`}
                   >
-                    {meses} MSI
+                    {months} MSI
                   </button>
                 ))}
               </div>
@@ -154,11 +154,11 @@ export function PricingSection({ dict, lang }: PricingSectionProps) {
                     {tier.price}
                   </div>
                   {(() => {
-                    // Solo en pesos: los MSI son de tarjetas mexicanas. Bajo el minimo no se anuncia.
-                    const monto = isEs ? montoDesde(tier.price) : null;
-                    const msi = monto !== null ? msiEtiqueta(monto, plazo) : null;
-                    return msi ? (
-                      <p className={`mt-1 text-sm font-medium ${tier.highlight ? 'text-muted-foreground' : 'text-primary-foreground/80'}`}>{msi}</p>
+                    // Pesos only: interest-free installments are for Mexican cards. Not advertised below the minimum.
+                    const amount = isEs ? amountFromPrice(tier.price) : null;
+                    const installments = amount !== null ? installmentsLabel(amount, term) : null;
+                    return installments ? (
+                      <p className={`mt-1 text-sm font-medium ${tier.highlight ? 'text-muted-foreground' : 'text-primary-foreground/80'}`}>{installments}</p>
                     ) : null;
                   })()}
                 </div>

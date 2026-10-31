@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { SITE_URL, requireAdmin, serviceClient } from '@/lib/quotes/server'
 import { stripe } from '@/lib/stripe'
 import { planAmounts, validatePlan, quoteTotals } from '@/lib/quotes'
-import { DIAS_PRIMERA_MENSUALIDAD, lineasDelPlan, metadataDelPlan } from '@/lib/plan-mensual'
+import { FIRST_MONTHLY_FEE_DAYS, planLineItems, planMetadata } from '@/lib/monthly-plan'
 
 /**
  * Stripe Checkout link for the monthly plan of a quote accepted with that option and
@@ -16,7 +16,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   if (!stripe) return NextResponse.json({ error: 'Falta STRIPE_SECRET_KEY en el entorno.' }, { status: 500 })
   const { id } = await params
   const body = await req.json().catch(() => ({}))
-  const firstPaymentDays = Number.isFinite(Number(body.firstPaymentDays)) ? Math.min(90, Math.max(0, Math.round(Number(body.firstPaymentDays)))) : DIAS_PRIMERA_MENSUALIDAD
+  const firstPaymentDays = Number.isFinite(Number(body.firstPaymentDays)) ? Math.min(90, Math.max(0, Math.round(Number(body.firstPaymentDays)))) : FIRST_MONTHLY_FEE_DAYS
 
   const { data: q } = await serviceClient().from('quotes').select('*').eq('id', id).maybeSingle()
   if (!q) return NextResponse.json({ error: 'Cotización no encontrada' }, { status: 404 })
@@ -33,16 +33,17 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     mode: 'subscription',
     payment_method_types: ['card'],
     locale: lang === 'en' ? 'en' : 'es-419',
-    line_items: lineasDelPlan({ titulo: q.title, currency: q.currency || 'MXN', anticipo: deposit, mensualidad: monthlyFee, months: plan.months }),
+    line_items: planLineItems({ title: q.title, currency: q.currency || 'MXN', deposit, monthlyFee, months: plan.months }),
     ...(q.client_email ? { customer_email: q.client_email } : {}),
-    metadata: { ...metadataDelPlan({ projectId: q.project_id, quoteId: q.id, plan }), quote_number: q.number },
+    metadata: { ...planMetadata({ projectId: q.project_id, quoteId: q.id, plan }), quote_number: q.number },
     subscription_data: {
-      metadata: metadataDelPlan({ projectId: q.project_id, quoteId: q.id, plan }),
+      metadata: planMetadata({ projectId: q.project_id, quoteId: q.id, plan }),
       description: `${q.number} · ${q.title} · plan a ${plan.months} meses`,
       ...(firstPaymentDays > 0 ? { trial_period_days: firstPaymentDays } : {}),
     },
     success_url: `${returnUrl}?plan=ok`,
-    cancel_url: `${returnUrl}?plan=cancelado`,
+    // Nothing reads this value; before 2026-10-31 it was `cancelado`.
+    cancel_url: `${returnUrl}?plan=cancelled`,
   })
   return NextResponse.json({ url: session.url, deposit, monthlyFee, months: plan.months, firstPaymentDays })
 }

@@ -4,7 +4,7 @@ import { headers } from 'next/headers'
 import Stripe from 'stripe'
 import { ADMIN_EMAIL, sendEmail, serviceClient } from '@/lib/quotes/server'
 import { stripe } from '@/lib/stripe'
-import { datosDeSuscripcion, etiquetaCobroPlan, mensualidadesCobradas, planLiquidado } from '@/lib/plan-mensual'
+import { monthlyFeesCharged, planChargeLabel, planMonths, planPaidOff, subscriptionFromInvoice } from '@/lib/monthly-plan'
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET
 
@@ -16,35 +16,35 @@ if (!webhookSecret) {
 
 
 /**
- * Enlaces por hito: el enlace lleva payment_id y el webhook marca esa fila como
- * completada. Devuelve true si la manejo (o ya estaba completada); false si el evento
- * es de un enlace antiguo sin payment_id y hay que seguir por la via anterior.
+ * Milestone links: the link carries payment_id and the webhook marks that row as
+ * completed. Returns true if it handled it (or it was already completed); false if the
+ * event comes from an old link without payment_id and the previous path must be followed.
  */
-async function completarPagoPendiente(
+async function completePendingPayment(
   supabase: ReturnType<typeof serviceClient>,
   paymentId: string | undefined,
-  referencia: string,
+  reference: string,
 ): Promise<boolean> {
   if (!paymentId) return false
-  const { data: fila } = await supabase
+  const { data: row } = await supabase
     .from('project_payments')
     .select('id, status, notes')
     .eq('id', paymentId)
     .maybeSingle()
-  if (!fila) return false
-  if (fila.status === 'completed') return true
+  if (!row) return false
+  if (row.status === 'completed') return true
   const { error } = await supabase
     .from('project_payments')
     .update({
       status: 'completed',
       payment_date: new Date().toISOString().split('T')[0],
-      notes: `${fila.notes ?? ''} · ${referencia}`.trim(),
+      notes: `${row.notes ?? ''} · ${reference}`.trim(),
     })
     .eq('id', paymentId)
-  if (error) console.error('[Stripe Webhook] Error completando pago pendiente:', error)
+  if (error) console.error('[Stripe Webhook] Error completing pending payment:', error)
   if (!error) {
-    const { data: pago } = await supabase.from('project_payments').select('project_id, amount, currency').eq('id', paymentId).maybeSingle()
-    if (pago) await notifyClient(supabase, pago.project_id, (project) => paymentNotice({ project, amount: Number(pago.amount), currency: pago.currency, status: 'completed', projectId: pago.project_id }))
+    const { data: payment } = await supabase.from('project_payments').select('project_id, amount, currency').eq('id', paymentId).maybeSingle()
+    if (payment) await notifyClient(supabase, payment.project_id, (project) => paymentNotice({ project, amount: Number(payment.amount), currency: payment.currency, status: 'completed', projectId: payment.project_id }))
   }
   return !error
 }
@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
 
     let event: Stripe.Event
 
-    // Verificar el webhook si tenemos el secret
+    // Verify the webhook when the secret is set
     if (webhookSecret) {
       try {
         event = stripe.webhooks.constructEvent(body, signature, webhookSecret)
@@ -83,42 +83,42 @@ export async function POST(request: NextRequest) {
         )
       }
     } else {
-      // En desarrollo, parsear sin verificación (NO usar en producción)
+      // In development, parse without verification (NEVER in production)
       event = JSON.parse(body) as Stripe.Event
       if (process.env.NODE_ENV === 'development') {
         console.warn('Webhook verification disabled. This should only happen in development.')
       }
     }
 
-    // Llave de servicio: el webhook no trae sesion de usuario y, con las reglas de la
-    // base, sin ella no podia registrar ni completar pagos.
+    // Service key: the webhook has no user session and, with the database rules, it
+    // couldn't record or complete payments without it.
     const supabase = serviceClient()
 
-    // Control de Idempotencia: Verificar si el evento ya fue procesado
+    // Idempotency: check whether the event was already processed
     const { error: idempotencyError } = await supabase
       .from('processed_stripe_events')
       .insert({ id: event.id })
 
     if (idempotencyError) {
-      // 23505 = duplicate key (ya fue procesado)
+      // 23505 = duplicate key (already processed)
       if (idempotencyError.code === '23505') {
-        console.log(`[Stripe Webhook] Evento duplicado omitido: ${event.id}`)
+        console.log(`[Stripe Webhook] Duplicate event skipped: ${event.id}`)
         return NextResponse.json({ received: true, duplicate: true })
       }
-      // Si el error no es 42P01 (tabla no existe), registrar en consola
+      // Unless it's 42P01 (table missing), log it
       if (idempotencyError.code !== '42P01') {
-        console.error('[Stripe Webhook] Error registrando idempotencia:', idempotencyError)
+        console.error('[Stripe Webhook] Error recording idempotency:', idempotencyError)
       }
     }
 
-    // Manejar diferentes tipos de eventos
+    // Handle each event type
     switch (event.type) {
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session
-        // El plan mensual se registra por factura (invoice.paid): anticipo y cada mensualidad.
+        // The monthly plan is recorded per invoice (invoice.paid): deposit and each monthly fee.
         if (session.mode === 'subscription') break
         
-        // Obtener el project_id del metadata
+        // project_id from the metadata
         const projectId = session.metadata?.project_id
 
         if (!projectId) {
@@ -126,11 +126,11 @@ export async function POST(request: NextRequest) {
           break
         }
 
-        if (await completarPagoPendiente(supabase, session.metadata?.payment_id, `Stripe Session ${session.id}`)) {
+        if (await completePendingPayment(supabase, session.metadata?.payment_id, `Stripe Session ${session.id}`)) {
           break
         }
 
-        // Enlaces antiguos (sin payment_id): se registra como antes, una sola vez.
+        // Old links (without payment_id): recorded as before, only once.
         const { data: existingPayment } = await supabase
           .from('project_payments')
           .select('id')
@@ -144,12 +144,12 @@ export async function POST(request: NextRequest) {
           break
         }
 
-        // Obtener información del pago
+        // Payment details
         const amount = session.amount_total ? session.amount_total / 100 : 0
         const currency = session.currency?.toUpperCase() || 'MXN'
         const paymentDate = new Date().toISOString().split('T')[0]
 
-        // Crear registro de pago
+        // Create the payment record
         const { error: paymentError } = await supabase
           .from('project_payments')
           .insert({
@@ -179,15 +179,15 @@ export async function POST(request: NextRequest) {
       case 'payment_intent.succeeded': {
         const paymentIntent = event.data.object as Stripe.PaymentIntent
         
-        // Si el payment intent tiene metadata con project_id
+        // When the payment intent has a project_id in its metadata
         const projectId = paymentIntent.metadata?.project_id
 
         if (projectId) {
-          if (await completarPagoPendiente(supabase, paymentIntent.metadata?.payment_id, `Stripe PaymentIntent ${paymentIntent.id}`)) {
+          if (await completePendingPayment(supabase, paymentIntent.metadata?.payment_id, `Stripe PaymentIntent ${paymentIntent.id}`)) {
             break
           }
-          // Enlaces antiguos: checkout.session.completed ya registro este mismo cobro,
-          // asi que aqui solo se inserta si no hay ningun pago con tarjeta completado.
+          // Old links: checkout.session.completed already recorded this same charge, so
+          // here it's only inserted when there's no completed card payment.
           const { data: existingPayment } = await supabase
             .from('project_payments')
             .select('id')
@@ -221,7 +221,7 @@ export async function POST(request: NextRequest) {
       case 'checkout.session.async_payment_failed':
       case 'payment_intent.payment_failed':
       case 'charge.failed': {
-        // Manejar eventos de pago fallido
+        // Failed payment events
         let projectId: string | undefined
         let paymentId: string | undefined
         let amount = 0
@@ -254,7 +254,7 @@ export async function POST(request: NextRequest) {
           }
         }
 
-        // Registrar el pago fallido si tenemos project_id
+        // Record the failed payment when there's a project_id
         if (projectId) {
           const paymentDate = new Date().toISOString().split('T')[0]
 
@@ -271,7 +271,7 @@ export async function POST(request: NextRequest) {
             })
         }
 
-        // Log del error para debugging
+        // Log the error for debugging
         console.error('Payment failed event:', {
           type: event.type,
           projectId,
@@ -284,40 +284,40 @@ export async function POST(request: NextRequest) {
       }
 
       case 'invoice.paid': {
-        // Plan mensual: la primera factura es el anticipo (la mensualidad arranca tras el
-        // periodo de gracia) y las siguientes, una mensualidad cada una.
+        // Monthly plan: the first invoice is the deposit (the monthly fee starts after the
+        // grace period) and each later one is a monthly fee.
         const invoice = event.data.object as Stripe.Invoice
-        const { subscriptionId, metadata, billingReason } = datosDeSuscripcion(invoice)
+        const { subscriptionId, metadata, billingReason } = subscriptionFromInvoice(invoice)
         const projectId = metadata.project_id
         if (!subscriptionId || metadata.plan !== '1' || !projectId) break
-        // `meses`: subscriptions created before the English rename (2026-11).
-        const months = Number(metadata.months ?? metadata.meses) || 0
+        // Reads `months`, or `meses` on subscriptions created before the English rename.
+        const months = planMonths(metadata)
         const amount = (invoice.amount_paid ?? 0) / 100
         if (amount <= 0) break
-        const { data: previos } = await supabase.from('project_payments').select('notes').eq('project_id', projectId)
-        const cobradas = mensualidadesCobradas((previos ?? []).map((p) => p.notes))
-        const esAnticipo = billingReason === 'subscription_create'
-        const notes = etiquetaCobroPlan({ esAnticipo, numero: cobradas + 1, months, invoiceId: invoice.id ?? '' })
-        if ((previos ?? []).some((p) => (p.notes ?? '').includes(`Stripe Invoice ${invoice.id}`))) break
+        const { data: previous } = await supabase.from('project_payments').select('notes').eq('project_id', projectId)
+        const charged = monthlyFeesCharged((previous ?? []).map((p) => p.notes))
+        const isDeposit = billingReason === 'subscription_create'
+        const notes = planChargeLabel({ isDeposit, number: charged + 1, months, invoiceId: invoice.id ?? '' })
+        if ((previous ?? []).some((p) => (p.notes ?? '').includes(`Stripe Invoice ${invoice.id}`))) break
         const { error: e } = await supabase.from('project_payments').insert({ project_id: projectId, amount, currency: (invoice.currency ?? 'mxn').toUpperCase(), payment_method: 'card', payment_date: new Date().toISOString().split('T')[0], status: 'completed', notes })
-        if (e) { console.error('[Stripe Webhook] plan: no se registró el cobro', e); break }
+        if (e) { console.error('[Stripe Webhook] plan: charge not recorded', e); break }
         await notifyClient(supabase, projectId, (project) => paymentNotice({ project, amount: amount, currency: (invoice.currency ?? 'mxn').toUpperCase(), status: 'completed', projectId }))
-        // Con la ultima mensualidad, la suscripcion termina sola.
-        if (!esAnticipo && months > 0 && planLiquidado(cobradas + 1, months)) {
-          await stripe.subscriptions.update(subscriptionId, { cancel_at_period_end: true }).catch((err) => console.error('[Stripe Webhook] plan: no se pudo cerrar la suscripción', err))
-          await sendEmail({ to: ADMIN_EMAIL, subject: `Plan liquidado · proyecto ${projectId}`, html: `<p>Se cobró la última mensualidad (${cobradas + 1} de ${months}) del plan. Toca transferir el código al cliente y ofrecerle la mensualidad de hosting y soporte.</p>` }).catch(() => {})
+        // With the last monthly fee, the subscription ends by itself.
+        if (!isDeposit && months > 0 && planPaidOff(charged + 1, months)) {
+          await stripe.subscriptions.update(subscriptionId, { cancel_at_period_end: true }).catch((err) => console.error('[Stripe Webhook] plan: could not close the subscription', err))
+          await sendEmail({ to: ADMIN_EMAIL, subject: `Plan liquidado · proyecto ${projectId}`, html: `<p>Se cobró la última mensualidad (${charged + 1} de ${months}) del plan. Toca transferir el código al cliente y ofrecerle la mensualidad de hosting y soporte.</p>` }).catch(() => {})
         }
         break
       }
 
       case 'invoice.payment_failed': {
         const invoice = event.data.object as Stripe.Invoice
-        const { subscriptionId, metadata } = datosDeSuscripcion(invoice)
+        const { subscriptionId, metadata } = subscriptionFromInvoice(invoice)
         const projectId = metadata.project_id
         if (!subscriptionId || metadata.plan !== '1' || !projectId) break
         const amount = (invoice.amount_due ?? 0) / 100
         await supabase.from('project_payments').insert({ project_id: projectId, amount, currency: (invoice.currency ?? 'mxn').toUpperCase(), payment_method: 'card', payment_date: new Date().toISOString().split('T')[0], status: 'cancelled', notes: `Plan mensual · Cobro rechazado · Stripe Invoice ${invoice.id}` })
-        // Stripe reintenta solo; aqui se avisa para suspender el acceso si no se regulariza (clausula Segunda).
+        // Stripe retries by itself; this warns so access can be suspended if it isn't settled (clause Two).
         await sendEmail({ to: ADMIN_EMAIL, subject: `Mensualidad rechazada · proyecto ${projectId}`, html: `<p>Stripe no pudo cobrar la mensualidad de ${amount} ${(invoice.currency ?? 'mxn').toUpperCase()} del plan (suscripción ${subscriptionId}). Stripe reintentará; si pasan 10 días sin pago, el contrato permite suspender el acceso.</p>` }).catch(() => {})
         break
       }
@@ -344,7 +344,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Stripe requiere GET para verificar el endpoint
+// Stripe needs GET to verify the endpoint
 export async function GET() {
   return NextResponse.json({ message: 'Stripe webhook endpoint' })
 }

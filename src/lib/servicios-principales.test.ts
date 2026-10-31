@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { SERVICIOS_PRINCIPALES, casoIlustrado, desdeDe, serviciosDeMarketing, serviciosSecundarios } from './servicios-principales'
-import { PISOS, conDescuentoTransferencia, etiquetaDesde } from '@/config/precios'
+import { PRICE_FLOORS, withTransferDiscount, startingPriceLabel } from '@/config/pricing'
 
 const servicios = [
   { id: '1', slug: 'web-pages', title_es: 'Páginas Web', title_en: 'Web Pages', icon: '🖥️', category: 'technology' },
@@ -31,10 +31,10 @@ describe('servicios principales de la portada', () => {
     expect(desde['aplicaciones-moviles']).toBe('Desde $95,000 MXN')
     expect(desde['desarrollo-de-mvp']).toBe('Desde $63,000 MXN')
     expect(desdeDe(SERVICIOS_PRINCIPALES[0], 'en')).toBe('From $3,400 USD')
-    expect(conDescuentoTransferencia(PISOS['software-a-medida'].mxn)).toBe(59850)
+    expect(withTransferDiscount(PRICE_FLOORS['software-a-medida'].mxn)).toBe(59850)
     // Software a la medida ya no arranca en el nivel de las plataformas completas.
-    expect(PISOS['software-a-medida'].mxn).toBeLessThan(PISOS['plataforma-completa'].mxn)
-    expect(etiquetaDesde('plataforma-completa', 'es')).toBe('Desde $158,000 MXN')
+    expect(PRICE_FLOORS['software-a-medida'].mxn).toBeLessThan(PRICE_FLOORS['plataforma-completa'].mxn)
+    expect(startingPriceLabel('plataforma-completa', 'es')).toBe('Desde $158,000 MXN')
   })
 
   it('toma la imagen del caso desde el portafolio y no truena si el proyecto no está', () => {

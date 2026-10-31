@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createPaymentLink } from '@/lib/stripe'
-import { notasEnlace, validarMontoEnlace } from '@/lib/payment-links'
+import { linkNotes, validateLinkAmount } from '@/lib/payment-links'
 import { rolDe } from '@/lib/roles'
 
 export async function POST(
@@ -18,13 +18,13 @@ export async function POST(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Verificar que el usuario es admin
+    // Admins only
     const userRole = rolDe(user)
     if (userRole !== 'admin') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
-    // Obtener el proyecto
+    // Load the project
     const { data: project, error: projectError } = await supabase
       .from('projects')
       .select('*')
@@ -47,21 +47,21 @@ export async function POST(
     const amount = Number(body.amount ?? project.total_price)
     const label: string = String(body.label ?? '').trim() || 'Pago'
 
-    // El monto no puede pasar de lo que falta por cobrar (completado + ya enlazado).
-    const { data: pagosProyecto } = await supabase
+    // The amount can't exceed what's left to collect (completed + already linked).
+    const { data: projectPayments } = await supabase
       .from('project_payments')
       .select('amount, status')
       .eq('project_id', id)
-    const invalido = validarMontoEnlace(amount, Number(project.total_price), pagosProyecto ?? [])
-    if (invalido) {
-      return NextResponse.json({ error: invalido }, { status: 400 })
+    const invalid = validateLinkAmount(amount, Number(project.total_price), projectPayments ?? [])
+    if (invalid) {
+      return NextResponse.json({ error: invalid }, { status: 400 })
     }
 
     const projectName = project.title_en || project.title_es || project.title || 'Project Payment'
     const currency = project.currency || 'MXN'
 
-    // 1) Fila pendiente: es lo que el webhook marcara como completado.
-    const { data: pago, error: pagoError } = await supabase
+    // 1) Pending row: what the webhook will mark as completed.
+    const { data: pendingPayment, error: pendingError } = await supabase
       .from('project_payments')
       .insert({
         project_id: id,
@@ -74,12 +74,12 @@ export async function POST(
       })
       .select('id')
       .single()
-    if (pagoError || !pago) {
-      console.error('Error creating pending payment:', pagoError)
+    if (pendingError || !pendingPayment) {
+      console.error('Error creating pending payment:', pendingError)
       return NextResponse.json({ error: 'Failed to create pending payment' }, { status: 500 })
     }
 
-    // 2) Enlace de Stripe atado a esa fila.
+    // 2) Stripe link tied to that row.
     let paymentLinkId: string
     let paymentLinkUrl: string
     try {
@@ -88,22 +88,22 @@ export async function POST(
         currency,
         projectId: project.id,
         projectName,
-        paymentId: pago.id,
+        paymentId: pendingPayment.id,
         label,
         enableInstallments,
         installmentOptions,
       }))
     } catch (err) {
-      await supabase.from('project_payments').delete().eq('id', pago.id)
+      await supabase.from('project_payments').delete().eq('id', pendingPayment.id)
       throw err
     }
 
-    // 3) La URL queda en las notas del pago pendiente (se copia desde la lista) y el
-    //    proyecto guarda el ultimo enlace, como antes.
+    // 3) The URL goes into the pending payment's notes (copied from the list) and the
+    //    project keeps the latest link, as before.
     await supabase
       .from('project_payments')
-      .update({ notes: notasEnlace(label, paymentLinkUrl) })
-      .eq('id', pago.id)
+      .update({ notes: linkNotes(label, paymentLinkUrl) })
+      .eq('id', pendingPayment.id)
 
     const { error: updateError } = await supabase
       .from('projects')
@@ -121,7 +121,7 @@ export async function POST(
     return NextResponse.json({
       paymentLinkId,
       paymentLinkUrl,
-      paymentId: pago.id,
+      paymentId: pendingPayment.id,
       amount,
       label,
     })
@@ -148,7 +148,7 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Obtener el proyecto
+    // Load the project
     const { data: project, error: projectError } = await supabase
       .from('projects')
       .select('stripe_payment_link_id, stripe_payment_link_url, stripe_enable_installments, stripe_installment_options')

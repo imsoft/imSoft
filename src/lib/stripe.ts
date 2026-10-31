@@ -1,6 +1,6 @@
 import Stripe from 'stripe'
 
-// Solo inicializar Stripe si la clave está disponible (en runtime, no en build time)
+// Only initialize Stripe when the key is available (at runtime, not at build time)
 export const stripe = process.env.STRIPE_SECRET_KEY
   ? new Stripe(process.env.STRIPE_SECRET_KEY, {
       apiVersion: '2026-06-24.dahlia',
@@ -17,9 +17,9 @@ export interface CreatePaymentLinkParams {
   currency: string
   projectId: string
   projectName: string
-  /** Fila de project_payments (status pending) que este enlace liquida. */
+  /** project_payments row (status pending) this link settles. */
   paymentId?: string
-  /** "Anticipo (50%)", "Liquidación"... aparece en la pantalla de pago. */
+  /** "Anticipo (50%)", "Liquidación"... shown on the payment screen. */
   label?: string
   enableInstallments?: boolean
   installmentOptions?: number[]
@@ -40,7 +40,7 @@ export async function createPaymentLink({
   }
   
   try {
-    // Convertir amount a centavos (Stripe usa la menor unidad de moneda)
+    // Amount in cents (Stripe uses the smallest currency unit)
     const amountInCents = Math.round(amount * 100)
     const metadata: Record<string, string> = { project_id: projectId }
     if (paymentId) metadata.payment_id = paymentId
@@ -58,18 +58,18 @@ export async function createPaymentLink({
           quantity: 1,
         },
       ],
-      // En la sesion de Checkout y tambien en el PaymentIntent: el webhook recibe los
-      // dos eventos y con payment_id marca la misma fila, sin duplicar el pago.
+      // On the Checkout session and on the PaymentIntent too: the webhook gets both events
+      // and with payment_id marks the same row, without duplicating the payment.
       metadata,
       payment_intent_data: { metadata },
-      // Un hito se cobra una vez: el enlace se desactiva tras el primer pago.
+      // A milestone is charged once: the link deactivates after the first payment.
       restrictions: { completed_sessions: { limit: 1 } },
     }
 
-    // Meses sin intereses: para Payment Links los planes y minimos los gobierna la
-    // configuracion de metodos de pago del Dashboard de Stripe (activada el
-    // 13-sep-2026), no este parametro. Aqui solo se limita el enlace a tarjeta para
-    // que la pantalla de pago muestre los plazos al capturar una tarjeta mexicana.
+    // Interest-free installments: for Payment Links the plans and minimums are governed by
+    // the payment methods settings in the Stripe Dashboard (enabled 2026-09-13), not by
+    // this parameter. Here the link is only limited to cards so the payment screen shows
+    // the terms when a Mexican card is entered.
     if (enableInstallments && installmentOptions.length > 0) {
       paymentLinkData.payment_method_types = ['card']
     }

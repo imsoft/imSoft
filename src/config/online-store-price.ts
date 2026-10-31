@@ -1,10 +1,10 @@
 /**
- * Precio de tienda en linea. Minimo fijado por Brandon el 28-sep-2026: $9,999 MXN, para una
- * tienda basica con plantilla. Las tres tiendas completas del portafolio costaron de $19,000 a
- * $60,000 MXN; se publica ese rango, no el precio de cada cliente.
- * Archivo aparte para que city-services y guias-precio lo compartan sin importarse entre si.
+ * Online store price. Minimum set by Brandon on 2026-09-28: $9,999 MXN, for a basic store
+ * from a template. The three full stores in the portfolio cost $19,000 to $60,000 MXN; that
+ * range is published, not each client's price.
+ * Separate file so city-services and price-guides can share it without importing each other.
  */
-export const PRECIO_TIENDA_EN_LINEA = {
+export const ONLINE_STORE_PRICE = {
   title: 'Cuánto cuesta una tienda en línea',
   description: 'Precio de referencia publicado; el precio final se fija por escrito antes de empezar.',
   items: [{ name: 'Tienda en línea básica', price: 'Desde $9,999 MXN', includes: 'Tienda básica con plantilla personalizada: catálogo por categorías, carrito, pago en línea y panel para administrar productos y pedidos.' }],

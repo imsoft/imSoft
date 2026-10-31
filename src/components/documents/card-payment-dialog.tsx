@@ -8,10 +8,10 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { NumberInput } from '@/components/ui/number-input'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { comisionStripe, montoConRecargo, netoTrasStripe, recargoQueCubreStripe, validarCobro } from '@/lib/cobro-tarjeta'
+import { netAfterStripe, stripeFee, surchargeToCoverStripe, validateCharge, withSurcharge } from '@/lib/card-charge'
 import { formatMoney } from '@/lib/quotes'
-import { PLAZOS, type Plazo } from '@/lib/enlace-pago'
-import { etiquetaPlazo } from '@/lib/pagar-plazo'
+import { TERMS, type Term } from '@/lib/payment-link-token'
+import { termLabel } from '@/lib/pay-term'
 
 /**
  * Creates a card payment link from the quote: free amount, surcharge and a fixed term.
@@ -23,13 +23,13 @@ export function CardPaymentDialog({ quoteId, number, clientName, lang, installme
   const [amount, setAmount] = useState(suggestedAmount)
   const [surcharge, setSurcharge] = useState(0)
   const [label, setLabel] = useState(es ? 'Anticipo' : 'Deposit')
-  const [term, setTerm] = useState<Plazo>(installmentsByDefault ? 6 : 0)
+  const [term, setTerm] = useState<Term>(installmentsByDefault ? 6 : 0)
   const [busy, setBusy] = useState(false)
   const [url, setUrl] = useState<string | null>(null)
 
-  const charge = useMemo(() => montoConRecargo(amount, surcharge), [amount, surcharge])
-  const minimum = useMemo(() => recargoQueCubreStripe(amount, term), [amount, term])
-  const error = validarCobro(amount, surcharge)
+  const charge = useMemo(() => withSurcharge(amount, surcharge), [amount, surcharge])
+  const minimum = useMemo(() => surchargeToCoverStripe(amount, term), [amount, term])
+  const error = validateCharge(amount, surcharge)
 
   async function generate() {
     if (error) return toast.error(error)
@@ -85,7 +85,7 @@ export function CardPaymentDialog({ quoteId, number, clientName, lang, installme
             <div className="space-y-1.5">
               <Label>{es ? 'Plazo que acepta el enlace' : 'Plan the link accepts'}</Label>
               <div className="flex flex-wrap gap-2">
-                {PLAZOS.map((p) => (
+                {TERMS.map((p) => (
                   <Button key={p} type="button" size="sm" variant={term === p ? 'default' : 'outline'} onClick={() => { setTerm(p); setUrl(null) }}>
                     {p ? `${p} MSI` : (es ? 'Una exhibición' : 'Single payment')}
                   </Button>
@@ -96,9 +96,9 @@ export function CardPaymentDialog({ quoteId, number, clientName, lang, installme
             {!error && (
               <div className="rounded-lg border bg-muted/40 p-3 text-sm space-y-1">
                 <div className="flex justify-between font-semibold"><span>{es ? 'El cliente paga' : 'Client pays'}</span><span className="font-mono tabular-nums">{formatMoney(charge)}</span></div>
-                {term > 0 && <div className="flex justify-between text-muted-foreground"><span>{etiquetaPlazo(term, es)}</span><span className="font-mono tabular-nums">{term} × {formatMoney(charge / term)}</span></div>}
-                <div className="flex justify-between text-muted-foreground"><span>{es ? 'Comisión de Stripe (con IVA)' : 'Stripe fee (incl. VAT)'}</span><span className="font-mono tabular-nums">−{formatMoney(comisionStripe(charge, term))}</span></div>
-                <div className="flex justify-between"><span>{es ? 'Te llega' : 'You receive'}</span><span className={`font-mono tabular-nums ${netoTrasStripe(charge, term) < amount ? 'text-amber-600' : 'text-emerald-700'}`}>{formatMoney(netoTrasStripe(charge, term))}</span></div>
+                {term > 0 && <div className="flex justify-between text-muted-foreground"><span>{termLabel(term, es)}</span><span className="font-mono tabular-nums">{term} × {formatMoney(charge / term)}</span></div>}
+                <div className="flex justify-between text-muted-foreground"><span>{es ? 'Comisión de Stripe (con IVA)' : 'Stripe fee (incl. VAT)'}</span><span className="font-mono tabular-nums">−{formatMoney(stripeFee(charge, term))}</span></div>
+                <div className="flex justify-between"><span>{es ? 'Te llega' : 'You receive'}</span><span className={`font-mono tabular-nums ${netAfterStripe(charge, term) < amount ? 'text-amber-600' : 'text-emerald-700'}`}>{formatMoney(netAfterStripe(charge, term))}</span></div>
                 <p className="border-t pt-2 text-xs text-muted-foreground">{term ? (es ? `El cliente solo podrá pagar a ${term} meses sin intereses; si su tarjeta no lo admite, se le avisa y no se le cobra.` : `The client can only pay in ${term} interest-free months; if the card does not support it, nothing is charged.`) : (es ? 'El cliente solo verá pago en una exhibición.' : 'The client will only see a single payment.')}</p>
               </div>
             )}

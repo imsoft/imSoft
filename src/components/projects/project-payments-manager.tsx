@@ -38,7 +38,7 @@ import {
   FormMessage
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { etiquetaSugerida, hitoSugerido, saldoPendiente, urlDeNotas } from '@/lib/payment-links'
+import { pendingBalance, suggestedLabel, suggestedMilestone, urlFromNotes } from '@/lib/payment-links'
 import { Textarea } from '@/components/ui/textarea'
 import {
   Select,
@@ -153,8 +153,8 @@ export function ProjectPaymentsManager({ projectId, projectCurrency = 'MXN', pro
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          amount: Number(linkAmount) || hitoSugerido(projectTotalPrice, payments),
-          label: linkLabel.trim() || etiquetaSugerida(payments, lang),
+          amount: Number(linkAmount) || suggestedMilestone(projectTotalPrice, payments),
+          label: linkLabel.trim() || suggestedLabel(payments, lang),
           enableInstallments,
           installmentOptions: installmentOptions.length > 0 ? installmentOptions : [3, 6, 12],
         }),
@@ -393,8 +393,8 @@ export function ProjectPaymentsManager({ projectId, projectCurrency = 'MXN', pro
           ) : (
             <div className="space-y-3">
               {(() => {
-                const saldo = saldoPendiente(projectTotalPrice, payments)
-                const sugerido = hitoSugerido(projectTotalPrice, payments)
+                const saldo = pendingBalance(projectTotalPrice, payments)
+                const sugerido = suggestedMilestone(projectTotalPrice, payments)
                 return (
                   <p className="text-sm text-muted-foreground">
                     {lang === 'en'
@@ -410,7 +410,7 @@ export function ProjectPaymentsManager({ projectId, projectCurrency = 'MXN', pro
                     type="number"
                     min={1}
                     step="0.01"
-                    placeholder={String(hitoSugerido(projectTotalPrice, payments))}
+                    placeholder={String(suggestedMilestone(projectTotalPrice, payments))}
                     value={linkAmount}
                     onChange={(e) => setLinkAmount(e.target.value)}
                     className="border-2! border-border!"
@@ -420,7 +420,7 @@ export function ProjectPaymentsManager({ projectId, projectCurrency = 'MXN', pro
                   <label className="text-sm font-medium">{lang === 'en' ? 'Label' : 'Concepto'}</label>
                   <Input
                     type="text"
-                    placeholder={etiquetaSugerida(payments, lang)}
+                    placeholder={suggestedLabel(payments, lang)}
                     value={linkLabel}
                     onChange={(e) => setLinkLabel(e.target.value)}
                     className="border-2! border-border!"
@@ -708,12 +708,12 @@ export function ProjectPaymentsManager({ projectId, projectCurrency = 'MXN', pro
                     {payment.notes && (
                       <div className="text-xs flex items-center gap-2 flex-wrap">
                         <span>{payment.notes}</span>
-                        {payment.status === 'pending' && urlDeNotas(payment.notes) && (
+                        {payment.status === 'pending' && urlFromNotes(payment.notes) && (
                           <Button
                             variant="outline"
                             size="sm"
                             className="h-6 px-2 text-xs"
-                            onClick={() => copyToClipboard(urlDeNotas(payment.notes) as string)}
+                            onClick={() => copyToClipboard(urlFromNotes(payment.notes) as string)}
                           >
                             {lang === 'en' ? 'Copy link' : 'Copiar enlace'}
                           </Button>

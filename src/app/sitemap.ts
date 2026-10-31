@@ -4,7 +4,7 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { hreflangLanguageAlternates } from '@/lib/seo';
 import { LANDING_CITIES, LANDING_INDUSTRIES } from '@/config/landing-pages-index';
 import { cityServicePages } from '@/config/city-services';
-import { GUIA_PRECIO_SLUGS } from '@/config/guias-precio';
+import { PRICE_GUIDE_SLUGS } from '@/config/price-guides';
 import { hasEnglishLanding } from '@/config/landing-pages-i18n';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io';
@@ -174,7 +174,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
 
   // Guias "cuanto cuesta": busquedas de precio en Mexico, solo en español.
-  for (const slug of GUIA_PRECIO_SLUGS) {
+  for (const slug of PRICE_GUIDE_SLUGS) {
     routes.push({ url: `${SITE_URL}/es/cuanto-cuesta/${slug}`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 });
   }
 

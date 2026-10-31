@@ -7,13 +7,13 @@ import { StructuredData } from '@/components/seo/structured-data';
 import { HeroHeader } from '@/components/blocks/hero-section';
 import { FooterSection } from '@/components/blocks/footer-section';
 import { CityServiceLanding } from '@/components/landing/city-service-landing';
-import { GUIA_PRECIO_SLUGS, PRECIO_DE_SERVICIO, guiaPrecio, type GuiaPrecioSlug } from '@/config/guias-precio';
+import { PRICE_GUIDE_SLUGS, SERVICE_PRICE_GUIDE, priceGuide, type PriceGuideSlug } from '@/config/price-guides';
 import { cityServiceHref, cityServiceTitle } from '@/config/city-services';
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io';
 
 /** Landing de ciudad que corresponde a cada guia: quien pregunta el precio suele ser de GDL. */
-const LANDING_DE_GUIA: Record<GuiaPrecioSlug, 'empresas-de-software' | 'tiendas-en-linea'> = {
+const LANDING_DE_GUIA: Record<PriceGuideSlug, 'empresas-de-software' | 'tiendas-en-linea'> = {
   'software-a-la-medida': 'empresas-de-software',
   'tienda-en-linea': 'tiendas-en-linea',
 };
@@ -21,12 +21,12 @@ const LANDING_DE_GUIA: Record<GuiaPrecioSlug, 'empresas-de-software' | 'tiendas-
 // Solo en español: son busquedas de Mexico ("cuanto cuesta una pagina web en mexico").
 export const dynamicParams = false;
 export function generateStaticParams() {
-  return GUIA_PRECIO_SLUGS.map((slug) => ({ lang: 'es', slug }));
+  return PRICE_GUIDE_SLUGS.map((slug) => ({ lang: 'es', slug }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ lang: string; slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const g = guiaPrecio(slug);
+  const g = priceGuide(slug);
   if (!g) return {};
   const url = `${SITE}/es/cuanto-cuesta/${slug}`;
   return {
@@ -40,7 +40,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
 
 export default async function GuiaPrecio({ params }: { params: Promise<{ lang: string; slug: string }> }) {
   const { lang, slug } = await params;
-  const g = guiaPrecio(slug);
+  const g = priceGuide(slug);
   if (lang !== 'es' || !g) notFound();
   const dict = await getDictionary('es');
   const supabase = await createClient();
@@ -53,11 +53,11 @@ export default async function GuiaPrecio({ params }: { params: Promise<{ lang: s
     data: { items: [{ name: 'Inicio', url: `${SITE}/es` }, { name: 'Servicios', url: `${SITE}/es/services` }, { name: g.h1, url }] },
   });
 
-  const s = slug as GuiaPrecioSlug;
+  const s = slug as PriceGuideSlug;
   const related = [
     { name: cityServiceTitle('guadalajara', LANDING_DE_GUIA[s]), href: cityServiceHref('es', 'guadalajara', LANDING_DE_GUIA[s]) },
     // Las otras preguntas de precio.
-    ...Object.values(PRECIO_DE_SERVICIO).filter((p) => p.href !== `/es/cuanto-cuesta/${s}`),
+    ...Object.values(SERVICE_PRICE_GUIDE).filter((p) => p.href !== `/es/cuanto-cuesta/${s}`),
   ];
 
   return (

@@ -1,57 +1,58 @@
 /**
- * Cobro por hitos con enlaces de pago de Stripe.
+ * Milestone billing with Stripe payment links.
  *
- * Antes el panel generaba un unico enlace por el total del proyecto. Cobrar por hitos
- * (anticipo y liquidacion, o mas) necesita un enlace por monto, y cada enlace queda
- * registrado como un pago "pendiente" que el webhook marca como completado.
+ * The dashboard used to generate a single link for the project total. Billing by milestone
+ * (deposit and final payment, or more) needs one link per amount, and each link is stored
+ * as a "pending" payment that the webhook marks as completed.
  */
 
-export interface PagoResumen {
+export interface PaymentSummary {
   amount: number;
   status: 'pending' | 'completed' | 'cancelled';
 }
 
-/** Lo que falta por cobrar: total menos lo completado y lo ya enlazado (pendiente). */
-export function saldoPendiente(total: number, pagos: PagoResumen[]): number {
-  const comprometido = pagos
+/** What is left to collect: total minus completed and already-linked (pending) payments. */
+export function pendingBalance(total: number, payments: PaymentSummary[]): number {
+  const committed = payments
     .filter((p) => p.status === 'completed' || p.status === 'pending')
     .reduce((s, p) => s + (Number(p.amount) || 0), 0);
-  return Math.max(0, redondear(total - comprometido));
+  return Math.max(0, round(total - committed));
 }
 
-/** Primer hito: la mitad. Despues: lo que falte. */
-export function hitoSugerido(total: number, pagos: PagoResumen[]): number {
-  const saldo = saldoPendiente(total, pagos);
-  const hayCobros = pagos.some((p) => p.status === 'completed' || p.status === 'pending');
-  return hayCobros ? saldo : redondear(total / 2);
+/** First milestone: half. After that: whatever is left. */
+export function suggestedMilestone(total: number, payments: PaymentSummary[]): number {
+  const balance = pendingBalance(total, payments);
+  const hasCharges = payments.some((p) => p.status === 'completed' || p.status === 'pending');
+  return hasCharges ? balance : round(total / 2);
 }
 
-export function etiquetaSugerida(pagos: PagoResumen[], lang: string): string {
-  const hayCobros = pagos.some((p) => p.status === 'completed' || p.status === 'pending');
-  if (lang === 'en') return hayCobros ? 'Final payment' : 'Deposit (50%)';
-  return hayCobros ? 'Liquidación' : 'Anticipo (50%)';
+export function suggestedLabel(payments: PaymentSummary[], lang: string): string {
+  const hasCharges = payments.some((p) => p.status === 'completed' || p.status === 'pending');
+  if (lang === 'en') return hasCharges ? 'Final payment' : 'Deposit (50%)';
+  return hasCharges ? 'Liquidación' : 'Anticipo (50%)';
 }
 
-const MARCA_URL = 'Enlace Stripe: ';
+/** Marker stored in project_payments.notes (visible, already saved text: keep it as is). */
+const URL_MARKER = 'Enlace Stripe: ';
 
-/** Notas del pago pendiente: etiqueta + URL, para poder copiarla desde la lista. */
-export function notasEnlace(etiqueta: string, url: string): string {
-  return `${etiqueta.trim()} · ${MARCA_URL}${url}`;
+/** Notes of the pending payment: label + URL, so it can be copied from the list. */
+export function linkNotes(label: string, url: string): string {
+  return `${label.trim()} · ${URL_MARKER}${url}`;
 }
 
-export function urlDeNotas(notes: string | null | undefined): string | null {
+export function urlFromNotes(notes: string | null | undefined): string | null {
   const m = (notes ?? '').match(/Enlace Stripe: (https:\/\/\S+)/);
   return m ? m[1] : null;
 }
 
-/** Valida el monto que pide el admin para un enlace nuevo. */
-export function validarMontoEnlace(monto: number, total: number, pagos: PagoResumen[]): string | null {
-  if (!Number.isFinite(monto) || monto <= 0) return 'El monto debe ser mayor a cero.';
-  const saldo = saldoPendiente(total, pagos);
-  if (monto > saldo + 0.005) return `El monto supera lo que falta por cobrar (${saldo.toFixed(2)}).`;
+/** Validates the amount the admin asks for a new link. */
+export function validateLinkAmount(amount: number, total: number, payments: PaymentSummary[]): string | null {
+  if (!Number.isFinite(amount) || amount <= 0) return 'El monto debe ser mayor a cero.';
+  const balance = pendingBalance(total, payments);
+  if (amount > balance + 0.005) return `El monto supera lo que falta por cobrar (${balance.toFixed(2)}).`;
   return null;
 }
 
-function redondear(n: number): number {
+function round(n: number): number {
   return Math.round(n * 100) / 100;
 }

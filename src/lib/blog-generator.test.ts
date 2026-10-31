@@ -11,7 +11,7 @@ import {
   normalizarHtml,
 } from './blog-generator';
 import cola from '../../content/blog-queue.json';
-import { GUIAS_PRECIO, GUIA_PRECIO_SLUGS } from '../config/guias-precio';
+import { PRICE_GUIDES, PRICE_GUIDE_SLUGS } from '../config/price-guides';
 
 const tema = (slug_es: string, slug_en = `${slug_es}-en`): QueueTopic => ({
   slug_es,
@@ -66,8 +66,8 @@ describe('la cola no compite con las guias de precio', () => {
     // El 15-sep y el 1-oct-2026 el blog intento publicar "cuanto cuesta una tienda en linea
     // en mexico", que ya responde la guia: dos paginas para la misma busqueda se estorban.
     const temas = (cola as { temas: QueueTopic[] }).temas;
-    for (const slug of GUIA_PRECIO_SLUGS) {
-      const pregunta = slugify(GUIAS_PRECIO[slug].h1);
+    for (const slug of PRICE_GUIDE_SLUGS) {
+      const pregunta = slugify(PRICE_GUIDES[slug].h1);
       for (const t of temas) {
         expect(t.slug_es.startsWith(pregunta) || pregunta.startsWith(t.slug_es), `${t.slug_es} repite la guia ${slug}`).toBe(false);
       }
