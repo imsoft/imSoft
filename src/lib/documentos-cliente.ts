@@ -22,7 +22,7 @@ export async function cotizacionesDelCliente(db: Db, user: Cliente, sitio: strin
   if (!o) return []
   const { data, error } = await db
     .from('quotes')
-    .select('id, folio, title, status, items, apply_iva, discount, currency, valid_until, token, lang')
+    .select('id, folio, title, status, items, apply_iva, discount, currency, valid_until, token, lang, payment, accepted_payment_option')
     .or(o)
     .order('created_at', { ascending: false })
   if (error) throw error
