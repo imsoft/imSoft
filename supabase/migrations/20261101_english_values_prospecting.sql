@@ -37,57 +37,24 @@ BEGIN
   END IF;
 END $$;
 
--- 2) Old -> new value map (tags, industry keys, segments, campaigns).
-DROP TABLE IF EXISTS pg_temp.value_map;
-CREATE TEMP TABLE value_map (old text PRIMARY KEY, new text NOT NULL) ON COMMIT DROP;
-INSERT INTO value_map (old, new) VALUES
-  ('salud', 'health'),
-  ('escuelas', 'schools'),
-  ('construccion', 'construction'),
-  ('restaurantes', 'restaurants'),
-  ('inmobiliaria', 'real-estate'),
-  ('ferreteria', 'hardware-stores'),
-  ('contabilidad', 'accounting'),
-  ('abogados', 'law-firms'),
-  ('automotriz', 'automotive'),
-  ('corporativo', 'corporate'),
-  ('empresa-grande', 'large-company'),
-  ('abastos', 'wholesale-market'),
-  ('mayoristas', 'wholesalers'),
-  ('granjas', 'farms'),
-  ('talleres', 'auto-repair-shops'),
-  ('clinicas-estetica', 'aesthetic-clinics'),
-  ('logistica', 'logistics'),
-  ('logistica-gdl', 'logistics-gdl'),
-  ('aduanal', 'customs-brokers'),
-  ('joyeria', 'jewelry'),
-  ('ropa', 'clothing'),
-  ('transportista', 'carrier'),
-  ('duplicado-empresa', 'duplicate-company'),
-  ('otros', 'other'),
-  ('redes-descartado', 'social-discarded'),
-  ('correo-invalido', 'invalid-email'),
-  ('zona-premium', 'premium-zone'),
-  ('auto-semanal', 'auto-weekly'),
-  ('pymes-zmg', 'smb-zmg'),
-  ('campana-sep-2026', 'campaign-sep-2026');
--- Monthly campaign tags ("campana-2026-10") are handled by pattern below.
+-- 2) Old -> new value map (tags, industry keys, segments, campaigns), inline as JSON so it
+--    works in the Supabase SQL editor (temp tables don't survive between its statements).
+--    Monthly campaign tags ("campana-2026-10") are handled by pattern.
 
 -- 3) contacts.tags: translate, deduplicate, keep the original order.
 UPDATE public.contacts c
 SET tags = (
   SELECT array_agg(x.tag ORDER BY x.pos)
   FROM (
-    SELECT COALESCE(m.new, regexp_replace(u.tag, '^campana-', 'campaign-')) AS tag, min(u.pos) AS pos
+    SELECT COALESCE('{"salud": "health", "escuelas": "schools", "construccion": "construction", "restaurantes": "restaurants", "inmobiliaria": "real-estate", "ferreteria": "hardware-stores", "contabilidad": "accounting", "abogados": "law-firms", "automotriz": "automotive", "corporativo": "corporate", "empresa-grande": "large-company", "abastos": "wholesale-market", "mayoristas": "wholesalers", "granjas": "farms", "talleres": "auto-repair-shops", "clinicas-estetica": "aesthetic-clinics", "logistica": "logistics", "logistica-gdl": "logistics-gdl", "aduanal": "customs-brokers", "joyeria": "jewelry", "ropa": "clothing", "transportista": "carrier", "duplicado-empresa": "duplicate-company", "otros": "other", "redes-descartado": "social-discarded", "correo-invalido": "invalid-email", "zona-premium": "premium-zone", "auto-semanal": "auto-weekly", "pymes-zmg": "smb-zmg", "campana-sep-2026": "campaign-sep-2026"}'::jsonb ->> u.tag, regexp_replace(u.tag, '^campana-', 'campaign-')) AS tag, min(u.pos) AS pos
     FROM unnest(c.tags) WITH ORDINALITY AS u(tag, pos)
-    LEFT JOIN value_map m ON m.old = u.tag
     GROUP BY 1
   ) x
 )
 WHERE c.tags IS NOT NULL
   AND EXISTS (
     SELECT 1 FROM unnest(c.tags) AS t(tag)
-    WHERE t.tag IN (SELECT old FROM value_map) OR t.tag LIKE 'campana-%'
+    WHERE '{"salud": "health", "escuelas": "schools", "construccion": "construction", "restaurantes": "restaurants", "inmobiliaria": "real-estate", "ferreteria": "hardware-stores", "contabilidad": "accounting", "abogados": "law-firms", "automotriz": "automotive", "corporativo": "corporate", "empresa-grande": "large-company", "abastos": "wholesale-market", "mayoristas": "wholesalers", "granjas": "farms", "talleres": "auto-repair-shops", "clinicas-estetica": "aesthetic-clinics", "logistica": "logistics", "logistica-gdl": "logistics-gdl", "aduanal": "customs-brokers", "joyeria": "jewelry", "ropa": "clothing", "transportista": "carrier", "duplicado-empresa": "duplicate-company", "otros": "other", "redes-descartado": "social-discarded", "correo-invalido": "invalid-email", "zona-premium": "premium-zone", "auto-semanal": "auto-weekly", "pymes-zmg": "smb-zmg", "campana-sep-2026": "campaign-sep-2026"}'::jsonb ? t.tag OR t.tag LIKE 'campana-%'
   );
 
 -- 4) contacts.source: only the generated "Google Places[ semanal] - <industry> - <date>".
@@ -98,18 +65,16 @@ WITH parsed AS (
 )
 UPDATE public.contacts c
 SET source = 'Google Places' || CASE WHEN parsed.p[1] IS NOT NULL THEN ' weekly' ELSE '' END
-          || ' - ' || COALESCE(m.new, parsed.p[2]) || ' - ' || parsed.p[3]
+          || ' - ' || COALESCE('{"salud": "health", "escuelas": "schools", "construccion": "construction", "restaurantes": "restaurants", "inmobiliaria": "real-estate", "ferreteria": "hardware-stores", "contabilidad": "accounting", "abogados": "law-firms", "automotriz": "automotive", "corporativo": "corporate", "empresa-grande": "large-company", "abastos": "wholesale-market", "mayoristas": "wholesalers", "granjas": "farms", "talleres": "auto-repair-shops", "clinicas-estetica": "aesthetic-clinics", "logistica": "logistics", "logistica-gdl": "logistics-gdl", "aduanal": "customs-brokers", "joyeria": "jewelry", "ropa": "clothing", "transportista": "carrier", "duplicado-empresa": "duplicate-company", "otros": "other", "redes-descartado": "social-discarded", "correo-invalido": "invalid-email", "zona-premium": "premium-zone", "auto-semanal": "auto-weekly", "pymes-zmg": "smb-zmg", "campana-sep-2026": "campaign-sep-2026"}'::jsonb ->> parsed.p[2], parsed.p[2]) || ' - ' || parsed.p[3]
 FROM parsed
-LEFT JOIN value_map m ON m.old = parsed.p[2]
 WHERE c.id = parsed.id
   AND parsed.p IS NOT NULL
-  AND (parsed.p[1] IS NOT NULL OR m.new IS NOT NULL);
+  AND (parsed.p[1] IS NOT NULL OR '{"salud": "health", "escuelas": "schools", "construccion": "construction", "restaurantes": "restaurants", "inmobiliaria": "real-estate", "ferreteria": "hardware-stores", "contabilidad": "accounting", "abogados": "law-firms", "automotriz": "automotive", "corporativo": "corporate", "empresa-grande": "large-company", "abastos": "wholesale-market", "mayoristas": "wholesalers", "granjas": "farms", "talleres": "auto-repair-shops", "clinicas-estetica": "aesthetic-clinics", "logistica": "logistics", "logistica-gdl": "logistics-gdl", "aduanal": "customs-brokers", "joyeria": "jewelry", "ropa": "clothing", "transportista": "carrier", "duplicado-empresa": "duplicate-company", "otros": "other", "redes-descartado": "social-discarded", "correo-invalido": "invalid-email", "zona-premium": "premium-zone", "auto-semanal": "auto-weekly", "pymes-zmg": "smb-zmg", "campana-sep-2026": "campaign-sep-2026"}'::jsonb ? parsed.p[2]);
 
 -- 5) outreach_emails.campaign (the segment of the contact: logistica, corporativo...).
-UPDATE public.outreach_emails o
-SET campaign = m.new
-FROM value_map m
-WHERE o.campaign = m.old;
+UPDATE public.outreach_emails
+SET campaign = '{"salud": "health", "escuelas": "schools", "construccion": "construction", "restaurantes": "restaurants", "inmobiliaria": "real-estate", "ferreteria": "hardware-stores", "contabilidad": "accounting", "abogados": "law-firms", "automotriz": "automotive", "corporativo": "corporate", "empresa-grande": "large-company", "abastos": "wholesale-market", "mayoristas": "wholesalers", "granjas": "farms", "talleres": "auto-repair-shops", "clinicas-estetica": "aesthetic-clinics", "logistica": "logistics", "logistica-gdl": "logistics-gdl", "aduanal": "customs-brokers", "joyeria": "jewelry", "ropa": "clothing", "transportista": "carrier", "duplicado-empresa": "duplicate-company", "otros": "other", "redes-descartado": "social-discarded", "correo-invalido": "invalid-email", "zona-premium": "premium-zone", "auto-semanal": "auto-weekly", "pymes-zmg": "smb-zmg", "campana-sep-2026": "campaign-sep-2026"}'::jsonb ->> campaign
+WHERE '{"salud": "health", "escuelas": "schools", "construccion": "construction", "restaurantes": "restaurants", "inmobiliaria": "real-estate", "ferreteria": "hardware-stores", "contabilidad": "accounting", "abogados": "law-firms", "automotriz": "automotive", "corporativo": "corporate", "empresa-grande": "large-company", "abastos": "wholesale-market", "mayoristas": "wholesalers", "granjas": "farms", "talleres": "auto-repair-shops", "clinicas-estetica": "aesthetic-clinics", "logistica": "logistics", "logistica-gdl": "logistics-gdl", "aduanal": "customs-brokers", "joyeria": "jewelry", "ropa": "clothing", "transportista": "carrier", "duplicado-empresa": "duplicate-company", "otros": "other", "redes-descartado": "social-discarded", "correo-invalido": "invalid-email", "zona-premium": "premium-zone", "auto-semanal": "auto-weekly", "pymes-zmg": "smb-zmg", "campana-sep-2026": "campaign-sep-2026"}'::jsonb ? campaign;
 
 -- 6) technologies.category (jsonb array; a legacy row may still hold a plain string).
 UPDATE public.technologies t

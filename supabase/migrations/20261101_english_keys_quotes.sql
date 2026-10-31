@@ -14,8 +14,9 @@ BEGIN
   END IF;
 END $$;
 
--- 2. Helper: renames the keys of a JSON object following a {old: new} map.
-CREATE OR REPLACE FUNCTION pg_temp.rename_keys(o jsonb, m jsonb) RETURNS jsonb
+-- 2. Helper: renames the keys of a JSON object following a {old: new} map. A regular
+--    function (dropped at the end): the Supabase SQL editor does not keep pg_temp objects.
+CREATE OR REPLACE FUNCTION public.tmp_rename_keys(o jsonb, m jsonb) RETURNS jsonb
 LANGUAGE sql IMMUTABLE AS $$
   SELECT CASE
     WHEN o IS NULL OR jsonb_typeof(o) <> 'object' THEN o
@@ -26,35 +27,35 @@ $$;
 -- 3. items: [{concepto, descripcion, cantidad, precio}] -> [{name, description, quantity, price}]
 UPDATE public.quotes
 SET items = (
-  SELECT COALESCE(jsonb_agg(pg_temp.rename_keys(i, '{"concepto":"name","descripcion":"description","cantidad":"quantity","precio":"price"}')), '[]'::jsonb)
+  SELECT COALESCE(jsonb_agg(public.tmp_rename_keys(i, '{"concepto":"name","descripcion":"description","cantidad":"quantity","precio":"price"}')), '[]'::jsonb)
   FROM jsonb_array_elements(items) AS i
 )
 WHERE jsonb_typeof(items) = 'array';
 
 -- 4. payment: {hitos[{label, pct, mensualidades}], msi, descuento_transferencia_pct, plan{meses, anticipo_pct, recargo_pct}}
 UPDATE public.quotes
-SET payment = pg_temp.rename_keys(payment, '{"hitos":"milestones","msi":"card_installments","descuento_transferencia_pct":"transfer_discount_pct"}')
+SET payment = public.tmp_rename_keys(payment, '{"hitos":"milestones","msi":"card_installments","descuento_transferencia_pct":"transfer_discount_pct"}')
 WHERE jsonb_typeof(payment) = 'object';
 
 UPDATE public.quotes
 SET payment = jsonb_set(payment, '{milestones}', (
-  SELECT COALESCE(jsonb_agg(pg_temp.rename_keys(h, '{"mensualidades":"monthly_payments"}')), '[]'::jsonb)
+  SELECT COALESCE(jsonb_agg(public.tmp_rename_keys(h, '{"mensualidades":"monthly_payments"}')), '[]'::jsonb)
   FROM jsonb_array_elements(payment -> 'milestones') AS h
 ))
 WHERE jsonb_typeof(payment -> 'milestones') = 'array';
 
 UPDATE public.quotes
-SET payment = jsonb_set(payment, '{plan}', pg_temp.rename_keys(payment -> 'plan', '{"meses":"months","anticipo_pct":"deposit_pct","recargo_pct":"surcharge_pct"}'))
+SET payment = jsonb_set(payment, '{plan}', public.tmp_rename_keys(payment -> 'plan', '{"meses":"months","anticipo_pct":"deposit_pct","recargo_pct":"surcharge_pct"}'))
 WHERE jsonb_typeof(payment -> 'plan') = 'object';
 
 -- 5. terms
 UPDATE public.quotes
-SET terms = pg_temp.rename_keys(terms, '{"garantia_dias":"warranty_days","soporte":"support","propiedad":"ownership","cambios_alcance":"scope_changes","penalizacion_dia":"daily_penalty","fecha_limite":"deadline","entrega_semanas":"delivery_weeks"}')
+SET terms = public.tmp_rename_keys(terms, '{"garantia_dias":"warranty_days","soporte":"support","propiedad":"ownership","cambios_alcance":"scope_changes","penalizacion_dia":"daily_penalty","fecha_limite":"deadline","entrega_semanas":"delivery_weeks"}')
 WHERE jsonb_typeof(terms) = 'object';
 
 -- 6. discount: {tipo: pct|monto, valor, motivo} -> {type: pct|amount, value, reason}
 UPDATE public.quotes
-SET discount = pg_temp.rename_keys(discount, '{"tipo":"type","valor":"value","motivo":"reason"}')
+SET discount = public.tmp_rename_keys(discount, '{"tipo":"type","valor":"value","motivo":"reason"}')
 WHERE jsonb_typeof(discount) = 'object';
 
 UPDATE public.quotes
@@ -71,6 +72,8 @@ SET accepted_payment_option = CASE accepted_payment_option
   ELSE accepted_payment_option
 END
 WHERE accepted_payment_option IN ('transferencia', 'tarjeta', 'msi6', 'msi12');
+
+DROP FUNCTION public.tmp_rename_keys(jsonb, jsonb);
 
 COMMIT;
 
