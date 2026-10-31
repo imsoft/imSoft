@@ -49,7 +49,7 @@ notificaciones push y modo sin conexión. Se agregan cuando se vea qué usan los
   Pendiente: el revisor de Apple no puede recibir el código por correo; hace falta una forma
   de entrar para esa cuenta (por ejemplo un código fijo configurado en el servidor).
 - **Capturas desde la terminal:** las compilaciones de desarrollo aceptan variables
-  (`IMSOFT_DEBUG_EMAIL`/`IMSOFT_DEBUG_CODIGO`/`IMSOFT_DEBUG_PESTANA` en iOS vía `SIMCTL_CHILD_`,
+  (`IMSOFT_DEBUG_EMAIL`/`IMSOFT_DEBUG_CODE`/`IMSOFT_DEBUG_TAB` en iOS vía `SIMCTL_CHILD_`,
   extras `email`/`codigo`/`pestana` en Android vía `am start`) para abrirse ya con sesión. El
   código se obtiene con `pnpm app:codigo` (usa `auth.admin.generateLink`, `properties.email_otp`).
 

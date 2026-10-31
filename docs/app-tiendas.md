@@ -1,7 +1,7 @@
 # Ficha de la app en App Store y Google Play
 
 Textos y respuestas listos para pegar. Las capturas están en cada repositorio de la app
-(`tienda/capturas/`): iPhone 6.9" (1320×2868) y Android (1280×2856). Android tiene además
+(`store/screenshots/` en iOS): iPhone 6.9" (1320×2868) y Android (1280×2856). Android tiene además
 `tienda/icono-512.png` y `tienda/grafico-destacado-1024x500.png`.
 
 ## Datos comunes
