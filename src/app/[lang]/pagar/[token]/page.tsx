@@ -27,7 +27,7 @@ export default async function Pagar({ params, searchParams }: { params: Promise<
   const d = leerEnlace(token, secretoDeEnlaces(process.env.STRIPE_SECRET_KEY))
   if (!d) return <Aviso titulo={es ? 'Enlace no válido' : 'Invalid link'} texto={es ? 'Revisa que el enlace esté completo o pide uno nuevo.' : 'Check the link is complete or ask for a new one.'} />
 
-  const { data: q } = await serviceClient().from('quotes').select('folio, title, currency, token, client_email').eq('id', d.quoteId).maybeSingle()
+  const { data: q } = await serviceClient().from('quotes').select('number, title, currency, token, client_email').eq('id', d.quoteId).maybeSingle()
   if (!q) return <Aviso titulo={es ? 'Enlace no válido' : 'Invalid link'} texto={es ? 'La cotización de este enlace ya no existe.' : 'The quote for this link no longer exists.'} />
 
   const cobro = montoConRecargo(d.monto, d.recargoPct)
@@ -36,7 +36,7 @@ export default async function Pagar({ params, searchParams }: { params: Promise<
   const pagado = await stripe.paymentIntents.search({ query: consultaPagado(d.id), limit: 1 })
   if (pagado.data.length) {
     const pi = pagado.data[0]
-    const r = resumenPagoHecho({ recien: pago === 'ok', cobro: pi.amount / 100, etiqueta: d.etiqueta, folio: q.folio, fecha: new Date(pi.created * 1000), currency: pi.currency.toUpperCase(), plazo: d.plazo }, es)
+    const r = resumenPagoHecho({ recien: pago === 'ok', cobro: pi.amount / 100, etiqueta: d.etiqueta, folio: q.number, fecha: new Date(pi.created * 1000), currency: pi.currency.toUpperCase(), plazo: d.plazo }, es)
     return <Aviso titulo={r.titulo} texto={r.texto} detalle={r.detalle} enlace={{ href: volverA, texto: es ? 'Ver la cotización' : 'View the quote' }} exito={pago === 'ok'} />
   }
   // Volvio de Stripe con ?pago=ok pero el cobro aun no aparece en la busqueda (tarda unos segundos).
@@ -44,20 +44,20 @@ export default async function Pagar({ params, searchParams }: { params: Promise<
   // Con plazo fijo el cobro se hace aqui: el cliente solo puede pagar con el plan acordado.
   const pk = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
   if (d.plazo !== undefined && pk) {
-    return <PagarTarjeta token={token} lang={lang} publishableKey={pk} concepto={`${q.title} · ${d.etiqueta}`} folio={q.folio} cobro={cobro} currency={String(q.currency || 'MXN')} plazo={d.plazo} volver={`${aqui}?pago=ok`} />
+    return <PagarTarjeta token={token} lang={lang} publishableKey={pk} concepto={`${q.title} · ${d.etiqueta}`} folio={q.number} cobro={cobro} currency={String(q.currency || 'MXN')} plazo={d.plazo} volver={`${aqui}?pago=ok`} />
   }
-  const metadata = { enlace: d.id, quote_id: d.quoteId, folio: q.folio, monto_base: String(d.monto), recargo_pct: String(d.recargoPct), msi: d.msi ? '1' : '0' }
+  const metadata = { enlace: d.id, quote_id: d.quoteId, folio: q.number, monto_base: String(d.monto), recargo_pct: String(d.recargoPct), msi: d.msi ? '1' : '0' }
   const volver = volverA
   const session = await stripe.checkout.sessions.create({
     mode: 'payment',
     locale: es ? 'es-419' : 'en',
-    line_items: [{ price_data: { currency: String(q.currency || 'MXN').toLowerCase(), product_data: { name: `${q.title} · ${d.etiqueta}`, description: `Cotización ${q.folio}` }, unit_amount: Math.round(cobro * 100) }, quantity: 1 }],
+    line_items: [{ price_data: { currency: String(q.currency || 'MXN').toLowerCase(), product_data: { name: `${q.title} · ${d.etiqueta}`, description: `Cotización ${q.number}` }, unit_amount: Math.round(cobro * 100) }, quantity: 1 }],
     payment_method_types: ['card'],
     ...(q.client_email ? { customer_email: q.client_email } : {}),
     // Lo que el enlace de Stripe no permitia: MSI solo si la cotizacion los ofrece.
     payment_method_options: { card: { installments: { enabled: d.msi } } },
     metadata,
-    payment_intent_data: { metadata, description: `${q.folio} · ${d.etiqueta}`, ...(q.client_email ? { receipt_email: q.client_email } : {}) },
+    payment_intent_data: { metadata, description: `${q.number} · ${d.etiqueta}`, ...(q.client_email ? { receipt_email: q.client_email } : {}) },
     // De regreso cae en esta misma pagina, que ya sabe que se pago y se lo confirma.
     success_url: `${aqui}?pago=ok`,
     cancel_url: volver,

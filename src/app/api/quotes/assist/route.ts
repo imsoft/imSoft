@@ -11,7 +11,7 @@ async function cargarComparables(excluirId: string | null | undefined): Promise<
   const supabase = await createClient()
   const { data, error } = await supabase
     .from('quotes')
-    .select('id, folio, status, title, items, features, discount, created_at')
+    .select('id, number, status, title, items, features, discount, created_at')
     .neq('status', 'draft')
     .order('created_at', { ascending: false })
     .limit(60)

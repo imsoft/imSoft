@@ -19,7 +19,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   const error = validarCobro(monto, recargoPct)
   if (error) return NextResponse.json({ error }, { status: 400 })
 
-  const { data: q } = await serviceClient().from('quotes').select('id, folio, lang').eq('id', id).maybeSingle()
+  const { data: q } = await serviceClient().from('quotes').select('id, number, lang').eq('id', id).maybeSingle()
   if (!q) return NextResponse.json({ error: 'Cotización no encontrada' }, { status: 404 })
 
   const cobro = montoConRecargo(monto, recargoPct)

@@ -18,7 +18,7 @@ export interface AppQuote {
 
 export type QuoteRow = Pick<QuoteLike, 'items' | 'apply_iva' | 'discount' | 'valid_until' | 'accepted_payment_option'> & Partial<Pick<QuoteLike, 'payment'>> & {
   id: string
-  folio: string
+  number: string
   title: string
   status: QuoteStatus
   currency?: string | null
@@ -37,7 +37,7 @@ export function quotesForApp(rows: QuoteRow[], site: string, today = new Date())
         : undefined
       return {
         id: q.id,
-        number: q.folio,
+        number: q.number,
         title: q.title,
         status: appStatus(q, today),
         total: chosen?.total ?? totales(q).total,

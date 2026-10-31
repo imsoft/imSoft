@@ -33,7 +33,7 @@ export function ContractEditor({ lang, quote, contract, publicUrl, huella }: { l
   }
 
   const estado = { draft: es ? 'Borrador' : 'Draft', sent: es ? 'Enviado' : 'Sent', signed: es ? 'Aceptado' : 'Signed', cancelled: es ? 'Cancelado' : 'Cancelled' }[contract.status]
-  const whatsapp = `https://wa.me/?text=${encodeURIComponent(es ? `Hola ${quote.client_name}, aquí está el contrato ${contract.folio} de imSoft para "${quote.title}". Lo puedes leer y aceptar en línea: ${publicUrl}` : `Hi ${quote.client_name}, here is the contract ${contract.folio}: ${publicUrl}`)}`
+  const whatsapp = `https://wa.me/?text=${encodeURIComponent(es ? `Hola ${quote.client_name}, aquí está el contrato ${contract.number} de imSoft para "${quote.title}". Lo puedes leer y aceptar en línea: ${publicUrl}` : `Hi ${quote.client_name}, here is the contract ${contract.number}: ${publicUrl}`)}`
 
   return (
     <div className="space-y-6">

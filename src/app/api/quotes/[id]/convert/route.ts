@@ -18,7 +18,7 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
   // menos que la lista, con MSI o plan es mas (ver opcionesDePago). Sin eleccion, la lista.
   const elegida = opcionesDePago(q).find((o) => o.clave === q.accepted_payment_option)
   const totalACobrar = elegida?.total ?? t.total
-  const conMsi = elegida ? elegida.clave === 'msi6' || elegida.clave === 'msi12' : Boolean(q.payment?.msi)
+  const conMsi = elegida ? elegida.clave === 'installments_6' || elegida.clave === 'installments_12' : Boolean(q.payment?.card_installments)
   const { data: proyecto, error } = await db
     .from('projects')
     .insert({
@@ -34,7 +34,7 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
       currency: q.currency,
       // Los MSI solo si el cliente eligio pagar asi (o, sin eleccion, si la cotizacion los ofrecia).
       stripe_enable_installments: conMsi,
-      stripe_installment_options: conMsi ? JSON.stringify(elegida?.clave === 'msi6' ? [6] : elegida?.clave === 'msi12' ? [12] : [3, 6, 12]) : null,
+      stripe_installment_options: conMsi ? JSON.stringify(elegida?.clave === 'installments_6' ? [6] : elegida?.clave === 'installments_12' ? [12] : [3, 6, 12]) : null,
     })
     .select('id')
     .single()

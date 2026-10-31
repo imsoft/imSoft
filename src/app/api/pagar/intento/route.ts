@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
     currency: String(q.currency || 'MXN').toLowerCase(),
     payment_method: body.paymentMethodId,
     payment_method_types: ['card'],
-    description: `${q.folio} · ${d.etiqueta}`,
+    description: `${q.number} · ${d.etiqueta}`,
     ...(q.client_email ? { receipt_email: q.client_email } : {}),
     metadata,
     payment_method_options: { card: { installments: { enabled: d.plazo > 0 } } },

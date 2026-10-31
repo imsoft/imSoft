@@ -22,8 +22,8 @@ export default async function ContractPage({ params }: { params: Promise<{ lang:
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold"><span className="font-mono">{contract.folio}</span> <span className="text-muted-foreground text-xl">· {quote.title}</span></h1>
-        <p className="text-muted-foreground">{lang === 'en' ? 'Contract from quote' : 'Contrato de la cotización'} {quote.folio}</p>
+        <h1 className="text-3xl font-bold"><span className="font-mono">{contract.number}</span> <span className="text-muted-foreground text-xl">· {quote.title}</span></h1>
+        <p className="text-muted-foreground">{lang === 'en' ? 'Contract from quote' : 'Contrato de la cotización'} {quote.number}</p>
       </div>
       <ContractEditor lang={lang} quote={quote as Quote} contract={contract as Contract} publicUrl={`${siteUrl}/${contract.lang}/contrato/${contract.token}`} huella={huella} />
     </div>

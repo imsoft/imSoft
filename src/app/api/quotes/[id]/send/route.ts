@@ -15,10 +15,10 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
 
   const url = `${SITE_URL}/${q.lang}/cotizacion/${q.token}`
   const t = totales(q)
-  const whatsapp = `https://wa.me/523325365558?text=${encodeURIComponent(`Hola Brandon, tengo una duda sobre la cotización ${q.folio}.`)}`
+  const whatsapp = `https://wa.me/523325365558?text=${encodeURIComponent(`Hola Brandon, tengo una duda sobre la cotización ${q.number}.`)}`
   const correo = correoCotizacionAlCliente({
     cliente: q.client_name,
-    folio: q.folio,
+    folio: q.number,
     titulo: q.title,
     total: mxn(t.total, q.currency),
     ivaIncluido: Boolean(q.apply_iva),

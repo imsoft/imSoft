@@ -45,14 +45,14 @@ describe('asistente de cotizacion', () => {
     expect(si.descuento).toEqual({ conviene: true, pct: 20, motivo: 'Cliente recurrente', comentario: 'ok' });
     const no = normalizarOutput({ resumen: 'x', precio: { min: 1, max: 2, comentario: 'c' }, descuento: { conviene: false, pct: 10, motivo: '', comentario: 'va bajo' }, caracteristicas: [], preguntas: [], riesgos: [] });
     expect(no.descuento).toEqual({ conviene: false, pct: 0, motivo: '', comentario: 'va bajo' });
-    expect(buildPrompt({ title: 'Web', features: [], precio: 0, clienteRecurrente: true, descuentoActual: { motivo: 'Referido', tipo: 'pct', valor: 5 } })).toContain('5 % por "Referido"');
+    expect(buildPrompt({ title: 'Web', features: [], precio: 0, clienteRecurrente: true, descuentoActual: { reason: 'Referido', type: 'pct', value: 5 } })).toContain('5 % por "Referido"');
   });
 
   it('arma comparables: sin borradores ni la cotizacion actual, precio con descuento, cerradas primero', () => {
-    const row = (id: string, status: string, precio: number, created_at: string, extra = {}) => ({ id, folio: `COT-${id}`, status, title: `Proyecto ${id}`, items: [{ concepto: 'x', cantidad: 1, precio }], features: ['SEO', ' ', 'Blog'], created_at, ...extra });
+    const row = (id: string, status: string, precio: number, created_at: string, extra = {}) => ({ id, number: `COT-${id}`, status, title: `Proyecto ${id}`, items: [{ name: 'x', quantity: 1, price: precio }], features: ['SEO', ' ', 'Blog'], created_at, ...extra });
     const cs = comparablesDesdeQuotes([
       row('1', 'sent', 40000, '2026-10-01T00:00:00Z'),
-      row('2', 'accepted', 50000, '2026-08-01T00:00:00Z', { discount: { motivo: 'Referido', tipo: 'pct', valor: 10 } }),
+      row('2', 'accepted', 50000, '2026-08-01T00:00:00Z', { discount: { reason: 'Referido', type: 'pct', value: 10 } }),
       row('3', 'draft', 30000, '2026-10-10T00:00:00Z'),
       row('4', 'rejected', 90000, '2026-09-01T00:00:00Z'),
       row('5', 'accepted', 0, '2026-09-02T00:00:00Z'),

@@ -12,9 +12,9 @@ import type { Quote } from '@/types/quotes'
 export const dynamic = 'force-dynamic'
 export async function generateMetadata({ params }: { params: Promise<{ lang: string; token: string }> }): Promise<Metadata> {
   const { lang, token } = await params
-  const { data } = await serviceClient().from('quotes').select('folio, title, client_name, client_company, valid_until').eq('token', token).maybeSingle()
+  const { data } = await serviceClient().from('quotes').select('number, title, client_name, client_company, valid_until').eq('token', token).maybeSingle()
   if (!data) return { title: 'Cotización · imSoft', robots: { index: false, follow: false } }
-  const title = `Cotización ${data.folio} · ${data.title} · imSoft`
+  const title = `Cotización ${data.number} · ${data.title} · imSoft`
   const description = `Para ${String(data.client_company || data.client_name).replace(/\.$/, '')}. Vigente hasta el ${fechaLarga(data.valid_until)}. Revísala y acéptala en línea.`
   return {
     title,

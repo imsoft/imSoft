@@ -10,14 +10,14 @@ import { FIRMA_PRESTADOR, SignatureBlock } from './signature-block'
 export function QuoteDocument({ quote }: { quote: QuoteLike & { created_at?: string | null } }) {
   const t = totales(quote)
   const plazo = plazoEntrega(quote)
-  const hitos = importesHitos(t.total, quote.payment.hitos)
+  const hitos = importesHitos(t.total, quote.payment.milestones)
   const formaPago = textoFormaDePago(quote)
   const opciones = opcionesDePago(quote)
   return (
     <article className="doc mx-auto max-w-3xl bg-white text-neutral-900 p-8 md:p-12 rounded-xl shadow-sm print:shadow-none print:p-0 print:max-w-none">
       <DocumentHeader
         tipo="Cotización"
-        folio={quote.folio}
+        folio={quote.number}
         extra={<p className="text-sm text-neutral-600 mt-2">Vigente hasta el {fechaLarga(quote.valid_until)}</p>}
       />
 
@@ -53,7 +53,7 @@ export function QuoteDocument({ quote }: { quote: QuoteLike & { created_at?: str
           {t.descuento > 0 ? (
             <>
               <div className="flex justify-between"><span className="text-neutral-600">Precio de lista</span><span className="tabular-nums line-through text-neutral-500">{mxn(t.lista, quote.currency)}</span></div>
-              <div className="flex justify-between gap-3 text-emerald-700"><span>Descuento · {quote.discount?.motivo}{quote.discount?.tipo === 'pct' ? ` (−${quote.discount.valor} %)` : ''}</span><span className="tabular-nums shrink-0">−{mxn(t.descuento, quote.currency)}</span></div>
+              <div className="flex justify-between gap-3 text-emerald-700"><span>Descuento · {quote.discount?.reason}{quote.discount?.type === 'pct' ? ` (−${quote.discount.value} %)` : ''}</span><span className="tabular-nums shrink-0">−{mxn(t.descuento, quote.currency)}</span></div>
               <div className="flex justify-between"><span className="text-neutral-600">Precio con descuento</span><span className="tabular-nums">{mxn(t.subtotal, quote.currency)}</span></div>
             </>
           ) : (
@@ -95,11 +95,11 @@ export function QuoteDocument({ quote }: { quote: QuoteLike & { created_at?: str
           <p className="text-xs uppercase tracking-widest text-neutral-500 mb-2">Condiciones</p>
           <ul className="space-y-1 text-neutral-700">
             <li>Entrega: a más tardar el {plazo.texto}.</li>
-            <li>Garantía de {quote.terms.garantia_dias} días naturales tras la entrega.</li>
-            <li>{quote.terms.soporte}</li>
-            <li>{quote.terms.propiedad}</li>
-            <li>{quote.terms.cambios_alcance}</li>
-            {quote.terms.penalizacion_dia > 0 && <li>Retrasos del cliente en insumos: {mxn(quote.terms.penalizacion_dia, quote.currency)} por día hábil a partir del quinto.</li>}
+            <li>Garantía de {quote.terms.warranty_days} días naturales tras la entrega.</li>
+            <li>{quote.terms.support}</li>
+            <li>{quote.terms.ownership}</li>
+            <li>{quote.terms.scope_changes}</li>
+            {quote.terms.daily_penalty > 0 && <li>Retrasos del cliente en insumos: {mxn(quote.terms.daily_penalty, quote.currency)} por día hábil a partir del quinto.</li>}
             <li>Precio fijo: no hay cobros adicionales sobre lo aquí cotizado.</li>
           </ul>
         </div>

@@ -3,8 +3,8 @@ import { contractsForApp, type ContractRow } from './contracts'
 import { legacyContract } from './legacy'
 
 const row = (extra: Partial<ContractRow>): ContractRow => ({
-  id: 'c1', folio: 'CON-2026-001', status: 'sent', token: 'tok', lang: 'es', signed_at: null, signed_name: null,
-  quotes: { title: 'Plataforma de avalúos', folio: 'COT-2026-001' },
+  id: 'c1', number: 'CON-2026-001', status: 'sent', token: 'tok', lang: 'es', signed_at: null, signed_name: null,
+  quotes: { title: 'Plataforma de avalúos', number: 'COT-2026-001' },
   ...extra,
 })
 

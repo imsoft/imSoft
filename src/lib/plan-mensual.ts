@@ -21,22 +21,22 @@ export interface LineaPlan {
 }
 
 /** Lineas del Checkout: anticipo (unico) y mensualidad (recurrente). Montos en centavos. */
-export function lineasDelPlan(o: { titulo: string; currency: string; anticipo: number; mensualidad: number; meses: number }): LineaPlan[] {
+export function lineasDelPlan(o: { titulo: string; currency: string; anticipo: number; mensualidad: number; months: number }): LineaPlan[] {
   const currency = o.currency.toLowerCase()
   return [
     { price_data: { currency, product_data: { name: `${o.titulo} · Anticipo del plan` }, unit_amount: Math.round(o.anticipo * 100) }, quantity: 1 },
-    { price_data: { currency, product_data: { name: `${o.titulo} · Plan mensual`, description: `${o.meses} mensualidades con hosting y soporte incluidos; el código se transfiere al cubrir la última.` }, unit_amount: Math.round(o.mensualidad * 100), recurring: { interval: 'month' } }, quantity: 1 },
+    { price_data: { currency, product_data: { name: `${o.titulo} · Plan mensual`, description: `${o.months} mensualidades con hosting y soporte incluidos; el código se transfiere al cubrir la última.` }, unit_amount: Math.round(o.mensualidad * 100), recurring: { interval: 'month' } }, quantity: 1 },
   ]
 }
 
 /** Metadata que viaja en la suscripcion para que el webhook sepa de que proyecto y cuantas mensualidades son. */
 export function metadataDelPlan(o: { projectId: string; quoteId: string; plan: PlanMensual }): Record<string, string> {
-  return { project_id: o.projectId, quote_id: o.quoteId, plan: '1', meses: String(o.plan.meses) }
+  return { project_id: o.projectId, quote_id: o.quoteId, plan: '1', months: String(o.plan.months) }
 }
 
 /** Etiqueta con que se registra cada cobro del plan en project_payments. */
-export function etiquetaCobroPlan(o: { esAnticipo: boolean; numero: number; meses: number; invoiceId: string }): string {
-  return o.esAnticipo ? `Plan mensual · Anticipo · Stripe Invoice ${o.invoiceId}` : `Plan mensual · Mensualidad ${o.numero}/${o.meses} · Stripe Invoice ${o.invoiceId}`
+export function etiquetaCobroPlan(o: { esAnticipo: boolean; numero: number; months: number; invoiceId: string }): string {
+  return o.esAnticipo ? `Plan mensual · Anticipo · Stripe Invoice ${o.invoiceId}` : `Plan mensual · Mensualidad ${o.numero}/${o.months} · Stripe Invoice ${o.invoiceId}`
 }
 
 /** Cuantas mensualidades ya se cobraron, contando las notas de los pagos del proyecto. */
@@ -45,8 +45,8 @@ export function mensualidadesCobradas(notas: Array<string | null | undefined>): 
 }
 
 /** Con la ultima mensualidad cobrada, la suscripcion debe terminar. */
-export function planLiquidado(cobradas: number, meses: number): boolean {
-  return cobradas >= meses
+export function planLiquidado(cobradas: number, months: number): boolean {
+  return cobradas >= months
 }
 
 /** Lo que trae la factura de Stripe sobre su suscripcion, en cualquier version del API. */

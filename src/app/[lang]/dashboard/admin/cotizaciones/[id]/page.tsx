@@ -24,7 +24,7 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ la
     <div className="space-y-6">
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-3xl font-bold flex items-center gap-3"><span className="font-mono">{q.folio}</span> <EstadoBadge quote={q} lang={lang} /></h1>
+          <h1 className="text-3xl font-bold flex items-center gap-3"><span className="font-mono">{q.number}</span> <EstadoBadge quote={q} lang={lang} /></h1>
           <p className="text-muted-foreground">{q.client_name}{q.client_company ? ` · ${q.client_company}` : ''} · {q.title}</p>
         </div>
       </div>

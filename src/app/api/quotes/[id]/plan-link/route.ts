@@ -33,16 +33,16 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     mode: 'subscription',
     payment_method_types: ['card'],
     locale: lang === 'en' ? 'en' : 'es-419',
-    line_items: lineasDelPlan({ titulo: q.title, currency: q.currency || 'MXN', anticipo, mensualidad, meses: plan.meses }),
+    line_items: lineasDelPlan({ titulo: q.title, currency: q.currency || 'MXN', anticipo, mensualidad, months: plan.months }),
     ...(q.client_email ? { customer_email: q.client_email } : {}),
-    metadata: { ...metadataDelPlan({ projectId: q.project_id, quoteId: q.id, plan }), folio: q.folio },
+    metadata: { ...metadataDelPlan({ projectId: q.project_id, quoteId: q.id, plan }), quote_number: q.number },
     subscription_data: {
       metadata: metadataDelPlan({ projectId: q.project_id, quoteId: q.id, plan }),
-      description: `${q.folio} · ${q.title} · plan a ${plan.meses} meses`,
+      description: `${q.number} · ${q.title} · plan a ${plan.months} meses`,
       ...(dias > 0 ? { trial_period_days: dias } : {}),
     },
     success_url: `${vuelta}?plan=ok`,
     cancel_url: `${vuelta}?plan=cancelado`,
   })
-  return NextResponse.json({ url: session.url, anticipo, mensualidad, meses: plan.meses, diasPrimeraMensualidad: dias })
+  return NextResponse.json({ url: session.url, anticipo, mensualidad, months: plan.months, diasPrimeraMensualidad: dias })
 }

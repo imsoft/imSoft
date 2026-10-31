@@ -12,10 +12,10 @@ import { huellaContrato } from '@/lib/huella-contrato'
 export const dynamic = 'force-dynamic'
 export async function generateMetadata({ params }: { params: Promise<{ lang: string; token: string }> }): Promise<Metadata> {
   const { lang, token } = await params
-  const { data } = await serviceClient().from('contracts').select('folio, status, quotes(title, client_name, client_company)').eq('token', token).maybeSingle()
+  const { data } = await serviceClient().from('contracts').select('number, status, quotes(title, client_name, client_company)').eq('token', token).maybeSingle()
   const q = (data as { quotes?: { title?: string; client_name?: string; client_company?: string | null } } | null)?.quotes
   if (!data) return { title: 'Contrato · imSoft', robots: { index: false, follow: false } }
-  const title = `Contrato ${data.folio} · ${q?.title ?? ''} · imSoft`.replace(' ·  ·', ' ·')
+  const title = `Contrato ${data.number} · ${q?.title ?? ''} · imSoft`.replace(' ·  ·', ' ·')
   const description = `Para ${String(q?.client_company || q?.client_name || 'el cliente').replace(/\.$/, '')}. ${data.status === 'signed' ? 'Firmado en línea.' : 'Revísalo y fírmalo en línea.'}`
   return {
     title,

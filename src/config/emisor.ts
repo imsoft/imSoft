@@ -20,15 +20,15 @@ export const EMISOR = {
 /** Valores por defecto del formulario; todos se pueden cambiar por cotizacion. */
 export const CONDICIONES_DEFAULT = {
   vigencia_dias: 15,
-  hitos: [
+  milestones: [
     { label: 'Anticipo', pct: 50 },
     { label: 'Liquidación contra entrega', pct: 50 },
   ],
-  msi: true,
-  garantia_dias: 30,
-  soporte: 'Primer mes de soporte incluido después de la entrega. A partir del segundo mes, mediante iguala mensual cotizada por separado.',
-  propiedad: 'El código fuente, los diseños y todos los entregables son propiedad del cliente desde el momento en que quedan pagados en su totalidad.',
-  cambios_alcance: 'Los cambios que amplíen el alcance acordado se cotizan por separado antes de realizarse y no modifican las fechas ni el precio de lo ya contratado.',
-  penalizacion_dia: 200,
-  entrega_semanas: 4,
+  card_installments: true,
+  warranty_days: 30,
+  support: 'Primer mes de soporte incluido después de la entrega. A partir del segundo mes, mediante iguala mensual cotizada por separado.',
+  ownership: 'El código fuente, los diseños y todos los entregables son propiedad del cliente desde el momento en que quedan pagados en su totalidad.',
+  scope_changes: 'Los cambios que amplíen el alcance acordado se cotizan por separado antes de realizarse y no modifican las fechas ni el precio de lo ya contratado.',
+  daily_penalty: 200,
+  delivery_weeks: 4,
 } as const;

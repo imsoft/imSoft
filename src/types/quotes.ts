@@ -2,7 +2,7 @@ import type { OpcionPagoClave, QuoteDiscount, QuoteItem, QuotePayment, QuoteStat
 
 export interface Quote {
   id: string
-  folio: string
+  number: string
   status: QuoteStatus
   lang: string
   contact_id?: string | null
@@ -42,7 +42,7 @@ export type ContractStatus = 'draft' | 'sent' | 'signed' | 'cancelled'
 export interface Contract {
   id: string
   quote_id: string
-  folio: string
+  number: string
   status: ContractStatus
   lang: string
   body_html: string

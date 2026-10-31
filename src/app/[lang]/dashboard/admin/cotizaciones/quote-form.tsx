@@ -49,19 +49,19 @@ export function QuoteForm({ lang, quote }: { lang: string; quote?: Quote }) {
   const [features, setFeatures] = useState<string[]>(quote?.features?.length ? quote.features : [''])
   const [applyIva, setApplyIva] = useState(quote?.apply_iva ?? true)
   const [conDescuento, setConDescuento] = useState(Boolean(quote?.discount))
-  const [descuento, setDescuento] = useState<QuoteDiscount>(quote?.discount ?? { motivo: '', tipo: 'pct', valor: 10 })
-  const [hitos, setHitos] = useState<Hito[]>(quote?.payment?.hitos ?? CONDICIONES_DEFAULT.hitos.map((h) => ({ ...h })))
-  const [msi, setMsi] = useState(quote?.payment?.msi ?? CONDICIONES_DEFAULT.msi)
+  const [descuento, setDescuento] = useState<QuoteDiscount>(quote?.discount ?? { reason: '', type: 'pct', value: 10 })
+  const [hitos, setHitos] = useState<Hito[]>(quote?.payment?.milestones ?? CONDICIONES_DEFAULT.milestones.map((h) => ({ ...h })))
+  const [msi, setMsi] = useState(quote?.payment?.card_installments ?? CONDICIONES_DEFAULT.card_installments)
   const [dtoTransferencia, setDtoTransferencia] = useState<number>(quote?.payment ? descuentoTransferenciaPct(quote.payment) : descuentoTransferenciaPct({}))
   const [plan, setPlan] = useState<PlanMensual | null>(quote?.payment?.plan ?? null)
   const [terms, setTerms] = useState<QuoteTerms>(quote?.terms ?? {
-    garantia_dias: CONDICIONES_DEFAULT.garantia_dias,
-    soporte: CONDICIONES_DEFAULT.soporte,
-    propiedad: CONDICIONES_DEFAULT.propiedad,
-    cambios_alcance: CONDICIONES_DEFAULT.cambios_alcance,
-    penalizacion_dia: CONDICIONES_DEFAULT.penalizacion_dia,
-    entrega_semanas: CONDICIONES_DEFAULT.entrega_semanas,
-    fecha_limite: fechaVigencia(CONDICIONES_DEFAULT.entrega_semanas * 7),
+    warranty_days: CONDICIONES_DEFAULT.warranty_days,
+    support: CONDICIONES_DEFAULT.support,
+    ownership: CONDICIONES_DEFAULT.ownership,
+    scope_changes: CONDICIONES_DEFAULT.scope_changes,
+    daily_penalty: CONDICIONES_DEFAULT.daily_penalty,
+    delivery_weeks: CONDICIONES_DEFAULT.delivery_weeks,
+    deadline: fechaVigencia(CONDICIONES_DEFAULT.delivery_weeks * 7),
   })
   const plazo = plazoEntrega({ terms, created_at: quote?.created_at ?? null })
   const [validUntil, setValidUntil] = useState(quote?.valid_until ?? fechaVigencia(CONDICIONES_DEFAULT.vigencia_dias))
@@ -172,9 +172,9 @@ export function QuoteForm({ lang, quote }: { lang: string; quote?: Quote }) {
       features: features.map((f) => f.trim()).filter(Boolean),
       currency: 'MXN',
       apply_iva: applyIva,
-      discount: conDescuento ? { motivo: descuento.motivo.trim(), tipo: descuento.tipo, valor: Number(descuento.valor) } : null,
-      payment: { hitos: hitos.map((h) => ({ label: h.label.trim(), pct: Number(h.pct), ...(numMensualidades(h) > 1 ? { mensualidades: numMensualidades(h) } : {}) })), msi, descuento_transferencia_pct: dtoTransferencia, plan },
-      terms: { ...terms, garantia_dias: Number(terms.garantia_dias), penalizacion_dia: Number(terms.penalizacion_dia), entrega_semanas: plazo.semanas, fecha_limite: terms.fecha_limite || plazo.fechaLimite },
+      discount: conDescuento ? { reason: descuento.reason.trim(), type: descuento.type, value: Number(descuento.value) } : null,
+      payment: { milestones: hitos.map((h) => ({ label: h.label.trim(), pct: Number(h.pct), ...(numMensualidades(h) > 1 ? { monthly_payments: numMensualidades(h) } : {}) })), card_installments: msi, transfer_discount_pct: dtoTransferencia, plan },
+      terms: { ...terms, warranty_days: Number(terms.warranty_days), daily_penalty: Number(terms.daily_penalty), delivery_weeks: plazo.semanas, deadline: terms.deadline || plazo.fechaLimite },
       notes: notes.trim() || null,
       valid_until: validUntil,
       updated_at: new Date().toISOString(),
@@ -186,11 +186,11 @@ export function QuoteForm({ lang, quote }: { lang: string; quote?: Quote }) {
         toast.success(es ? 'Cotización guardada' : 'Quote saved')
         router.push(`/${lang}/dashboard/admin/cotizaciones/${quote.id}`)
       } else {
-        const { data: ultimo } = await supabase.from('quotes').select('folio').like('folio', 'COT-%').order('created_at', { ascending: false }).limit(1).maybeSingle()
-        const folio = siguienteFolio('COT', ultimo?.folio)
+        const { data: ultimo } = await supabase.from('quotes').select('number').like('number', 'COT-%').order('created_at', { ascending: false }).limit(1).maybeSingle()
+        const folio = siguienteFolio('COT', ultimo?.number)
         const token = generarToken(crypto.getRandomValues(new Uint8Array(24)))
         const { data: { user } } = await supabase.auth.getUser()
-        const { data, error } = await supabase.from('quotes').insert({ ...datos, folio, token, status: 'draft', created_by: user?.id ?? null }).select('id').single()
+        const { data, error } = await supabase.from('quotes').insert({ ...datos, number: folio, token, status: 'draft', created_by: user?.id ?? null }).select('id').single()
         if (error) throw error
         toast.success(`${es ? 'Cotización creada' : 'Quote created'}: ${folio}`)
         router.push(`/${lang}/dashboard/admin/cotizaciones/${data.id}`)
@@ -258,24 +258,24 @@ export function QuoteForm({ lang, quote }: { lang: string; quote?: Quote }) {
                 <div className="space-y-3">
                   <div className="flex flex-wrap gap-2">
                     {PROMOCIONES.map((p) => (
-                      <Button key={p.clave} type="button" size="sm" variant={descuento.motivo === p.motivo ? 'default' : 'outline'} onClick={() => setDescuento({ motivo: p.motivo, tipo: p.tipo, valor: p.valor })}>{p.motivo.split(':')[0]}</Button>
+                      <Button key={p.clave} type="button" size="sm" variant={descuento.reason === p.reason ? 'default' : 'outline'} onClick={() => setDescuento({ reason: p.reason, type: p.type, value: p.value })}>{p.reason.split(':')[0]}</Button>
                     ))}
                   </div>
                   <div className="grid gap-3 sm:grid-cols-[1fr_130px_140px]">
                     <div className="space-y-1.5">
                       <Label htmlFor="q-desc-motivo">{es ? 'Motivo (lo ve el cliente)' : 'Reason (client sees it)'}</Label>
-                      <Input id="q-desc-motivo" className={campo} value={descuento.motivo} onChange={(e) => setDescuento((d) => ({ ...d, motivo: e.target.value }))} placeholder={es ? 'Cliente desde 2023' : 'Client since 2023'} />
+                      <Input id="q-desc-motivo" className={campo} value={descuento.reason} onChange={(e) => setDescuento((d) => ({ ...d, reason: e.target.value }))} placeholder={es ? 'Cliente desde 2023' : 'Client since 2023'} />
                     </div>
                     <div className="space-y-1.5">
                       <Label htmlFor="q-desc-tipo">{es ? 'Tipo' : 'Type'}</Label>
-                      <select id="q-desc-tipo" className="h-10 w-full rounded-md border-2 border-border bg-background px-3 text-sm" value={descuento.tipo} onChange={(e) => setDescuento((d) => ({ ...d, tipo: e.target.value as QuoteDiscount['tipo'] }))}>
+                      <select id="q-desc-tipo" className="h-10 w-full rounded-md border-2 border-border bg-background px-3 text-sm" value={descuento.type} onChange={(e) => setDescuento((d) => ({ ...d, type: e.target.value as QuoteDiscount['type'] }))}>
                         <option value="pct">{es ? 'Porcentaje' : 'Percent'}</option>
                         <option value="monto">{es ? 'Monto fijo' : 'Fixed amount'}</option>
                       </select>
                     </div>
                     <div className="space-y-1.5">
-                      <Label htmlFor="q-desc-valor">{descuento.tipo === 'pct' ? '%' : 'MXN'}</Label>
-                      <NumberInput id="q-desc-valor" className={campo} value={descuento.valor} onValueChange={(v) => setDescuento((d) => ({ ...d, valor: v }))} placeholder={descuento.tipo === 'pct' ? '10' : '2000'} />
+                      <Label htmlFor="q-desc-valor">{descuento.type === 'pct' ? '%' : 'MXN'}</Label>
+                      <NumberInput id="q-desc-valor" className={campo} value={descuento.value} onValueChange={(v) => setDescuento((d) => ({ ...d, value: v }))} placeholder={descuento.type === 'pct' ? '10' : '2000'} />
                     </div>
                   </div>
                   {errorDescuento && <p className="text-xs text-destructive">{errorDescuento}</p>}
@@ -330,7 +330,7 @@ export function QuoteForm({ lang, quote }: { lang: string; quote?: Quote }) {
                 <div key={i} className="grid gap-2 grid-cols-[1fr_90px_120px_40px] items-center">
                   <Input className={campo} value={h.label} onChange={(e) => setHito(i, { label: e.target.value })} placeholder={es ? 'Nombre del hito' : 'Milestone'} />
                   <div className="relative"><NumberInput className={`${campo} pr-7`} value={h.pct} onValueChange={(n) => setHito(i, { pct: n })} aria-label="%" /><span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">%</span></div>
-                  <div className="relative"><NumberInput className={`${campo} pr-14`} value={numMensualidades(h)} onValueChange={(n) => setHito(i, { mensualidades: Math.max(1, Math.round(n) || 1) })} aria-label={es ? 'Mensualidades' : 'Monthly payments'} /><span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">{es ? 'pagos' : 'pmts'}</span></div>
+                  <div className="relative"><NumberInput className={`${campo} pr-14`} value={numMensualidades(h)} onValueChange={(n) => setHito(i, { monthly_payments: Math.max(1, Math.round(n) || 1) })} aria-label={es ? 'Mensualidades' : 'Monthly payments'} /><span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">{es ? 'pagos' : 'pmts'}</span></div>
                   <Button type="button" variant="ghost" size="icon" aria-label={es ? 'Quitar hito' : 'Remove milestone'} onClick={() => setHitos((arr) => arr.filter((_, idx) => idx !== i))} disabled={hitos.length === 1}><Trash2 className="size-4" /></Button>
                 </div>
               ))}
@@ -368,9 +368,9 @@ export function QuoteForm({ lang, quote }: { lang: string; quote?: Quote }) {
               </div>
               {plan && (
                 <div className="grid grid-cols-3 gap-2">
-                  <div className="space-y-1"><Label className="text-xs">{es ? 'Meses' : 'Months'}</Label><NumberInput className={campo} value={plan.meses} onValueChange={(n) => setPlan({ ...plan, meses: Math.round(n) || 0 })} /></div>
-                  <div className="space-y-1"><Label className="text-xs">{es ? 'Anticipo %' : 'Deposit %'}</Label><NumberInput className={campo} value={plan.anticipo_pct} onValueChange={(n) => setPlan({ ...plan, anticipo_pct: n || 0 })} /></div>
-                  <div className="space-y-1"><Label className="text-xs">{es ? 'Recargo %' : 'Surcharge %'}</Label><NumberInput className={campo} value={plan.recargo_pct} onValueChange={(n) => setPlan({ ...plan, recargo_pct: n || 0 })} /></div>
+                  <div className="space-y-1"><Label className="text-xs">{es ? 'Meses' : 'Months'}</Label><NumberInput className={campo} value={plan.months} onValueChange={(n) => setPlan({ ...plan, months: Math.round(n) || 0 })} /></div>
+                  <div className="space-y-1"><Label className="text-xs">{es ? 'Anticipo %' : 'Deposit %'}</Label><NumberInput className={campo} value={plan.deposit_pct} onValueChange={(n) => setPlan({ ...plan, deposit_pct: n || 0 })} /></div>
+                  <div className="space-y-1"><Label className="text-xs">{es ? 'Recargo %' : 'Surcharge %'}</Label><NumberInput className={campo} value={plan.surcharge_pct} onValueChange={(n) => setPlan({ ...plan, surcharge_pct: n || 0 })} /></div>
                   {errorPlan && <p className="col-span-3 text-xs text-destructive">{errorPlan}</p>}
                 </div>
               )}
@@ -383,14 +383,14 @@ export function QuoteForm({ lang, quote }: { lang: string; quote?: Quote }) {
           <CardContent className="grid gap-4 sm:grid-cols-3">
             <div className="space-y-1.5">
               <Label htmlFor="q-limite">{es ? 'Fecha límite del proyecto' : 'Project deadline'}</Label>
-              <Input id="q-limite" className={campo} type="date" value={terms.fecha_limite ?? ''} onChange={(e) => setTerms((v) => ({ ...v, fecha_limite: e.target.value || null }))} />
+              <Input id="q-limite" className={campo} type="date" value={terms.deadline ?? ''} onChange={(e) => setTerms((v) => ({ ...v, deadline: e.target.value || null }))} />
               <p className="text-xs text-muted-foreground">{es ? `${plazo.semanas} ${plazo.semanas === 1 ? 'semana' : 'semanas'} (${plazo.dias} días) desde ${quote ? 'la creación de la cotización' : 'hoy'}.` : `${plazo.semanas} weeks (${plazo.dias} days) from ${quote ? 'the quote date' : 'today'}.`}</p>
             </div>
-            <div className="space-y-1.5"><Label htmlFor="q-garantia">{es ? 'Garantía (días)' : 'Warranty (days)'}</Label><NumberInput id="q-garantia" className={campo} value={terms.garantia_dias} onValueChange={(n) => setTerms((v) => ({ ...v, garantia_dias: n }))} /></div>
-            <div className="space-y-1.5"><Label htmlFor="q-penal">{es ? 'Penalización por día de retraso del cliente (MXN)' : 'Client delay penalty per day (MXN)'}</Label><NumberInput id="q-penal" className={campo} value={terms.penalizacion_dia} onValueChange={(n) => setTerms((v) => ({ ...v, penalizacion_dia: n }))} /></div>
-            <div className="space-y-1.5 sm:col-span-3"><Label htmlFor="q-soporte">{es ? 'Soporte' : 'Support'}</Label><Textarea id="q-soporte" className={campo} rows={2} value={terms.soporte} onChange={(e) => setTerms((v) => ({ ...v, soporte: e.target.value }))} /></div>
-            <div className="space-y-1.5 sm:col-span-3"><Label htmlFor="q-propiedad">{es ? 'Propiedad del código' : 'Code ownership'}</Label><Textarea id="q-propiedad" className={campo} rows={2} value={terms.propiedad} onChange={(e) => setTerms((v) => ({ ...v, propiedad: e.target.value }))} /></div>
-            <div className="space-y-1.5 sm:col-span-3"><Label htmlFor="q-cambios">{es ? 'Cambios de alcance' : 'Scope changes'}</Label><Textarea id="q-cambios" className={campo} rows={2} value={terms.cambios_alcance} onChange={(e) => setTerms((v) => ({ ...v, cambios_alcance: e.target.value }))} /></div>
+            <div className="space-y-1.5"><Label htmlFor="q-garantia">{es ? 'Garantía (días)' : 'Warranty (days)'}</Label><NumberInput id="q-garantia" className={campo} value={terms.warranty_days} onValueChange={(n) => setTerms((v) => ({ ...v, warranty_days: n }))} /></div>
+            <div className="space-y-1.5"><Label htmlFor="q-penal">{es ? 'Penalización por día de retraso del cliente (MXN)' : 'Client delay penalty per day (MXN)'}</Label><NumberInput id="q-penal" className={campo} value={terms.daily_penalty} onValueChange={(n) => setTerms((v) => ({ ...v, daily_penalty: n }))} /></div>
+            <div className="space-y-1.5 sm:col-span-3"><Label htmlFor="q-soporte">{es ? 'Soporte' : 'Support'}</Label><Textarea id="q-soporte" className={campo} rows={2} value={terms.support} onChange={(e) => setTerms((v) => ({ ...v, support: e.target.value }))} /></div>
+            <div className="space-y-1.5 sm:col-span-3"><Label htmlFor="q-propiedad">{es ? 'Propiedad del código' : 'Code ownership'}</Label><Textarea id="q-propiedad" className={campo} rows={2} value={terms.ownership} onChange={(e) => setTerms((v) => ({ ...v, ownership: e.target.value }))} /></div>
+            <div className="space-y-1.5 sm:col-span-3"><Label htmlFor="q-cambios">{es ? 'Cambios de alcance' : 'Scope changes'}</Label><Textarea id="q-cambios" className={campo} rows={2} value={terms.scope_changes} onChange={(e) => setTerms((v) => ({ ...v, scope_changes: e.target.value }))} /></div>
             <div className="space-y-1.5"><Label htmlFor="q-vigencia">{es ? 'Vigente hasta' : 'Valid until'}</Label><Input id="q-vigencia" className={campo} type="date" value={validUntil} onChange={(e) => setValidUntil(e.target.value)} /></div>
             <div className="space-y-1.5 sm:col-span-3"><Label htmlFor="q-notes">{es ? 'Notas para el cliente (opcional)' : 'Notes for the client (optional)'}</Label><Textarea id="q-notes" className={campo} rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} /></div>
           </CardContent>
@@ -427,7 +427,7 @@ export function QuoteForm({ lang, quote }: { lang: string; quote?: Quote }) {
             <div className="flex justify-between"><span>{es ? 'Tarjeta, una exhibición' : 'Card, one payment'}</span><span className="font-mono tabular-nums">{mxn(t.total)}</span></div>
             {msi && <div className="flex justify-between"><span>6 MSI</span><span className="font-mono tabular-nums">{mxn(totalConMsi(t.total, 6))}</span></div>}
             {msi && <div className="flex justify-between"><span>12 MSI</span><span className="font-mono tabular-nums">{mxn(totalConMsi(t.total, 12))}</span></div>}
-            {plan && !errorPlan && (() => { const ip = importesPlan(t.total, plan); return <div className="flex justify-between"><span>{es ? `Plan ${plan.meses} m` : `${plan.meses}-mo plan`}</span><span className="font-mono tabular-nums">{mxn(ip.anticipo)} + {plan.meses} × {mxn(ip.mensualidad)}</span></div> })()}
+            {plan && !errorPlan && (() => { const ip = importesPlan(t.total, plan); return <div className="flex justify-between"><span>{es ? `Plan ${plan.months} m` : `${plan.months}-mo plan`}</span><span className="font-mono tabular-nums">{mxn(ip.anticipo)} + {plan.months} × {mxn(ip.mensualidad)}</span></div> })()}
           </div>
           <Button className="w-full mt-2" onClick={guardar} disabled={guardando}>
             {guardando ? (es ? 'Guardando…' : 'Saving…') : quote ? (es ? 'Guardar cambios' : 'Save changes') : (es ? 'Crear cotización' : 'Create quote')}
@@ -460,7 +460,7 @@ export function QuoteForm({ lang, quote }: { lang: string; quote?: Quote }) {
                     <p className="font-semibold">{es ? 'Descuento' : 'Discount'}: {asistente.descuento.conviene ? `${asistente.descuento.pct} %` : es ? 'no conviene' : 'not advised'}</p>
                     <p className="text-muted-foreground">{asistente.descuento.comentario}</p>
                     {asistente.descuento.conviene && asistente.descuento.pct > 0 && (
-                      <Button type="button" size="sm" variant="outline" onClick={() => { setConDescuento(true); setDescuento({ motivo: asistente.descuento!.motivo, tipo: 'pct', valor: asistente.descuento!.pct }) }}>{es ? 'Aplicar este descuento' : 'Apply this discount'}</Button>
+                      <Button type="button" size="sm" variant="outline" onClick={() => { setConDescuento(true); setDescuento({ reason: asistente.descuento!.motivo, type: 'pct', value: asistente.descuento!.pct }) }}>{es ? 'Aplicar este descuento' : 'Apply this discount'}</Button>
                     )}
                   </div>
                 )}

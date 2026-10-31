@@ -4,8 +4,8 @@ import { quotesForApp } from './quotes'
 
 const TODAY = new Date('2026-10-06T12:00:00Z')
 const row = (extra: Record<string, unknown>) => ({
-  id: 'q1', folio: 'COT-2026-001', title: 'Tienda en línea', status: 'sent', token: 'tok', lang: 'es', currency: 'MXN',
-  items: [{ concepto: 'Tienda', descripcion: '', cantidad: 1, precio: 10000 }], apply_iva: true, discount: null, valid_until: '2026-10-20',
+  id: 'q1', number: 'COT-2026-001', title: 'Tienda en línea', status: 'sent', token: 'tok', lang: 'es', currency: 'MXN',
+  items: [{ name: 'Tienda', description: '', quantity: 1, price: 10000 }], apply_iva: true, discount: null, valid_until: '2026-10-20',
   ...extra,
 })
 
@@ -30,11 +30,11 @@ describe('quotes for the app', () => {
   })
 
   it('once accepted, the total is the one of the payment option the client chose', () => {
-    const payment = { hitos: [{ label: 'Anticipo', pct: 50 }, { label: 'Liquidación', pct: 50 }], msi: true, descuento_transferencia_pct: 5 }
-    const [t] = quotesForApp([row({ status: 'accepted', payment, accepted_payment_option: 'transferencia', items: [{ concepto: 'x', cantidad: 1, precio: 50000 }] })] as never, 'https://x', TODAY)
+    const payment = { milestones: [{ label: 'Anticipo', pct: 50 }, { label: 'Liquidación', pct: 50 }], card_installments: true, transfer_discount_pct: 5 }
+    const [t] = quotesForApp([row({ status: 'accepted', payment, accepted_payment_option: 'transfer', items: [{ name: 'x', quantity: 1, price: 50000 }] })] as never, 'https://x', TODAY)
     expect(t.total).toBe(55100)
     expect(t.paymentOption).toBe('Transferencia bancaria')
-    const [m] = quotesForApp([row({ status: 'accepted', payment, accepted_payment_option: 'msi12', items: [{ concepto: 'x', cantidad: 1, precio: 50000 }] })] as never, 'https://x', TODAY)
+    const [m] = quotesForApp([row({ status: 'accepted', payment, accepted_payment_option: 'installments_12', items: [{ name: 'x', quantity: 1, price: 50000 }] })] as never, 'https://x', TODAY)
     expect(m.paymentOption).toBe('Tarjeta a 12 meses sin intereses')
     expect(m.total).toBeGreaterThan(58000)
     // Sent (no choice yet): list price and no payment option.
@@ -43,7 +43,7 @@ describe('quotes for the app', () => {
   })
 
   it('without VAT and with a discount uses the same math as the document', () => {
-    const [q] = quotesForApp([row({ apply_iva: false, discount: { tipo: 'pct', valor: 10, motivo: 'promo' } })] as never, 'https://x', TODAY)
+    const [q] = quotesForApp([row({ apply_iva: false, discount: { type: 'pct', value: 10, reason: 'promo' } })] as never, 'https://x', TODAY)
     expect(q.total).toBe(9000)
     expect(q.vatIncluded).toBe(false)
   })

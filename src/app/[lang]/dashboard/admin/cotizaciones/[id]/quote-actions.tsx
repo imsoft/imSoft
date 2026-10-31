@@ -46,7 +46,7 @@ export function QuoteActions({ lang, quote, contract, publicUrl }: { lang: strin
   }
 
   const copiar = async () => { await navigator.clipboard.writeText(publicUrl); toast.success(es ? 'Enlace copiado' : 'Link copied') }
-  const whatsapp = `https://wa.me/?text=${encodeURIComponent(es ? `Hola ${quote.client_name}, aquí está la cotización ${quote.folio} de imSoft para "${quote.title}". La puedes revisar y aceptar en línea: ${publicUrl}` : `Hi ${quote.client_name}, here is imSoft's quote ${quote.folio} for "${quote.title}": ${publicUrl}`)}`
+  const whatsapp = `https://wa.me/?text=${encodeURIComponent(es ? `Hola ${quote.client_name}, aquí está la cotización ${quote.number} de imSoft para "${quote.title}". La puedes revisar y aceptar en línea: ${publicUrl}` : `Hi ${quote.client_name}, here is imSoft's quote ${quote.number} for "${quote.title}": ${publicUrl}`)}`
 
   const btn = 'h-9'
   const principal = quote.status === 'draft' ? (
@@ -83,15 +83,15 @@ export function QuoteActions({ lang, quote, contract, publicUrl }: { lang: strin
             <Button size="sm" variant="outline" className={btn} disabled={!quote.client_email || ocupado !== null} onClick={() => llamar(`/api/quotes/${quote.id}/send`, 'mail', es ? 'Correo enviado al cliente' : 'Email sent to the client')}><Mail className="size-4 mr-1.5" />{es ? 'Correo' : 'Email'}</Button>
           </div>
         )}
-        <CardPaymentDialog quoteId={quote.id} folio={quote.folio} clientName={quote.client_name} lang={lang} msiDefault={Boolean(quote.payment?.msi)} montoSugerido={importesHitos(totales(quote).total, quote.payment?.hitos ?? [])[0]?.importe ?? 0} />
+        <CardPaymentDialog quoteId={quote.id} folio={quote.number} clientName={quote.client_name} lang={lang} msiDefault={Boolean(quote.payment?.card_installments)} montoSugerido={importesHitos(totales(quote).total, quote.payment?.milestones ?? [])[0]?.importe ?? 0} />
         {quote.accepted_payment_option === 'plan' && quote.project_id && (
           <Button size="sm" variant="outline" className={btn} disabled={ocupado !== null} title={es ? 'Checkout de Stripe: cobra el anticipo hoy y deja la mensualidad programada' : 'Stripe Checkout: charges the deposit now and schedules the monthly fee'} onClick={async () => {
             const j = await llamar(`/api/quotes/${quote.id}/plan-link`, 'plan', es ? 'Enlace del plan listo y copiado' : 'Plan link ready and copied')
-            if (j?.url) { await navigator.clipboard.writeText(j.url).catch(() => {}); window.open(`https://wa.me/?text=${encodeURIComponent(es ? `Hola ${quote.client_name}, aquí está el enlace para activar el plan mensual de "${quote.title}" (cotización ${quote.folio}): se cobra el anticipo hoy y la primera mensualidad en ${j.diasPrimeraMensualidad} días: ${j.url}` : `Hi ${quote.client_name}, here is the link to start the monthly plan for "${quote.title}" (quote ${quote.folio}): the deposit is charged today and the first monthly fee in ${j.diasPrimeraMensualidad} days: ${j.url}`)}`, '_blank') }
+            if (j?.url) { await navigator.clipboard.writeText(j.url).catch(() => {}); window.open(`https://wa.me/?text=${encodeURIComponent(es ? `Hola ${quote.client_name}, aquí está el enlace para activar el plan mensual de "${quote.title}" (cotización ${quote.number}): se cobra el anticipo hoy y la primera mensualidad en ${j.diasPrimeraMensualidad} días: ${j.url}` : `Hi ${quote.client_name}, here is the link to start the monthly plan for "${quote.title}" (quote ${quote.number}): the deposit is charged today and the first monthly fee in ${j.diasPrimeraMensualidad} days: ${j.url}`)}`, '_blank') }
           }}><CalendarClock className="size-4 mr-1.5" />{es ? 'Enlace del plan' : 'Plan link'}</Button>
         )}
         {contract && (
-          <Button size="sm" variant="outline" className={btn} asChild><Link href={`/${lang}/dashboard/admin/cotizaciones/${quote.id}/contrato`}><FileSignature className="size-4 mr-1.5" />{es ? 'Contrato' : 'Contract'} · {contract.folio}</Link></Button>
+          <Button size="sm" variant="outline" className={btn} asChild><Link href={`/${lang}/dashboard/admin/cotizaciones/${quote.id}/contrato`}><FileSignature className="size-4 mr-1.5" />{es ? 'Contrato' : 'Contract'} · {contract.number}</Link></Button>
         )}
         {quote.project_id && (
           <Button size="sm" variant="outline" className={btn} asChild><Link href={`/${lang}/dashboard/admin/projects/${quote.project_id}`}><FolderPlus className="size-4 mr-1.5" />{es ? 'Ver proyecto' : 'View project'}</Link></Button>
@@ -101,7 +101,7 @@ export function QuoteActions({ lang, quote, contract, publicUrl }: { lang: strin
             <Button size="sm" variant="ghost" className={btn} asChild><Link href={`/${lang}/dashboard/admin/cotizaciones/${quote.id}/edit`}><Pencil className="size-4 mr-1.5" />{es ? 'Editar' : 'Edit'}</Link></Button>
           )}
           {!quote.project_id && contract?.status !== 'signed' && (
-            <DeleteQuoteButton id={quote.id} folio={quote.folio} lang={lang} redirectTo={`/${lang}/dashboard/admin/cotizaciones`} />
+            <DeleteQuoteButton id={quote.id} folio={quote.number} lang={lang} redirectTo={`/${lang}/dashboard/admin/cotizaciones`} />
           )}
         </div>
       </div>

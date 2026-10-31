@@ -19,7 +19,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ tok
   if (motivo) return NextResponse.json({ error: motivo }, { status: 400 })
 
   const db = serviceClient()
-  const { data: c } = await db.from('contracts').select('*, quotes(id, folio, title, client_name)').eq('token', token).maybeSingle()
+  const { data: c } = await db.from('contracts').select('*, quotes(id, number, title, client_name)').eq('token', token).maybeSingle()
   if (!c) return NextResponse.json({ error: 'Contrato no encontrado' }, { status: 404 })
   if (c.status === 'signed') return NextResponse.json({ error: 'Este contrato ya fue aceptado.' }, { status: 409 })
   if (c.status !== 'sent') return NextResponse.json({ error: 'Este contrato todavía no se ha enviado.' }, { status: 409 })
@@ -42,8 +42,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ tok
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
   try {
-    const q = c.quotes as { id: string; folio: string; title: string } | null
-    await enviarCorreo({ to: ADMIN_EMAIL, ...correoContratoFirmado({ nombre, folio: c.folio, titulo: q?.title, cotizacionFolio: q?.folio, quoteId: q?.id, fecha: new Date(ahora) }) })
+    const q = c.quotes as { id: string; number: string; title: string } | null
+    await enviarCorreo({ to: ADMIN_EMAIL, ...correoContratoFirmado({ nombre, folio: c.number, titulo: q?.title, cotizacionFolio: q?.number, quoteId: q?.id, fecha: new Date(ahora) }) })
   } catch (e) {
     console.error('[contracts] aviso no enviado:', e)
   }

@@ -19,13 +19,13 @@ export interface AppContract {
 
 export interface ContractRow {
   id: string
-  folio: string
+  number: string
   status: ContractStatus
   token: string
   lang?: string | null
   signed_at?: string | null
   signed_name?: string | null
-  quotes: { title: string; folio: string } | null
+  quotes: { title: string; number: string } | null
 }
 
 /** Turns database rows into what the client sees. Drafts and cancelled contracts don't go out. */
@@ -36,9 +36,9 @@ export function contractsForApp(rows: ContractRow[], site: string): AppContract[
       const signed = c.status === 'signed'
       return {
         id: c.id,
-        number: c.folio,
+        number: c.number,
         title: c.quotes?.title ?? '',
-        quoteNumber: c.quotes?.folio ?? '',
+        quoteNumber: c.quotes?.number ?? '',
         status: signed ? 'signed' : 'sent',
         signedOn: signed && c.signed_at ? c.signed_at.slice(0, 10) : null,
         signedBy: signed ? c.signed_name ?? null : null,

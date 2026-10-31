@@ -16,23 +16,23 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   const { data: q } = await db.from('quotes').select('*').eq('id', id).maybeSingle()
   if (!q) return NextResponse.json({ error: 'Cotización no encontrada' }, { status: 404 })
   if (q.status !== 'accepted') return NextResponse.json({ error: 'El contrato se genera cuando la cotización está aceptada' }, { status: 400 })
-  const { data: existente } = await db.from('contracts').select('id, folio, status').eq('quote_id', id).maybeSingle()
+  const { data: existente } = await db.from('contracts').select('id, number, status').eq('quote_id', id).maybeSingle()
   if (existente) {
     const body = await req.json().catch(() => ({}))
     if (body?.regenerar !== true) return NextResponse.json({ id: existente.id, existed: true })
     if (existente.status !== 'draft') return NextResponse.json({ error: 'Solo se regenera un contrato en borrador' }, { status: 400 })
-    const { error } = await db.from('contracts').update({ body_html: renderContrato(q, existente.folio), updated_at: new Date().toISOString() }).eq('id', existente.id)
+    const { error } = await db.from('contracts').update({ body_html: renderContrato(q, existente.number), updated_at: new Date().toISOString() }).eq('id', existente.id)
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-    return NextResponse.json({ id: existente.id, folio: existente.folio, regenerated: true })
+    return NextResponse.json({ id: existente.id, number: existente.number, regenerated: true })
   }
 
-  const { data: ultimo } = await db.from('contracts').select('folio').like('folio', 'CON-%').order('created_at', { ascending: false }).limit(1).maybeSingle()
-  const folio = siguienteFolio('CON', ultimo?.folio)
+  const { data: ultimo } = await db.from('contracts').select('number').like('number', 'CON-%').order('created_at', { ascending: false }).limit(1).maybeSingle()
+  const folio = siguienteFolio('CON', ultimo?.number)
   const { data, error } = await db
     .from('contracts')
-    .insert({ quote_id: id, folio, status: 'draft', lang: q.lang, body_html: renderContrato(q, folio), token: generarToken(randomBytes(24)) })
+    .insert({ quote_id: id, number: folio, status: 'draft', lang: q.lang, body_html: renderContrato(q, folio), token: generarToken(randomBytes(24)) })
     .select('id')
     .single()
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-  return NextResponse.json({ id: data.id, folio })
+  return NextResponse.json({ id: data.id, number: folio })
 }

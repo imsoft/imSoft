@@ -31,7 +31,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ tok
 
   try {
     const elegida = opciones.find((o) => o.clave === (formaDePago ?? opciones[0]?.clave))
-    const correo = correoCotizacionAceptada({ nombre, folio: q.folio, titulo: q.title, cliente: q.client_name, empresa: q.client_company, total: `${mxn(totales(q).total, q.currency)}${elegida ? ` · ${elegida.titulo}: ${elegida.resumen}` : ''}`, quoteId: q.id, fecha: new Date(ahora) })
+    const correo = correoCotizacionAceptada({ nombre, folio: q.number, titulo: q.title, cliente: q.client_name, empresa: q.client_company, total: `${mxn(totales(q).total, q.currency)}${elegida ? ` · ${elegida.titulo}: ${elegida.resumen}` : ''}`, quoteId: q.id, fecha: new Date(ahora) })
     await enviarCorreo({ to: ADMIN_EMAIL, ...correo })
   } catch (e) {
     console.error('[quotes] aviso de aceptación no enviado:', e)

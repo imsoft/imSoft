@@ -44,13 +44,13 @@ export function QuotesTable({ quotes, lang }: { quotes: Quote[]; lang: string })
         <tbody>
           {quotes.map((q) => (
             <tr key={q.id} className="border-t hover:bg-muted/30">
-              <td className="p-3 font-mono"><Link className="underline underline-offset-4" href={`/${lang}/dashboard/admin/cotizaciones/${q.id}`}>{q.folio}</Link></td>
+              <td className="p-3 font-mono"><Link className="underline underline-offset-4" href={`/${lang}/dashboard/admin/cotizaciones/${q.id}`}>{q.number}</Link></td>
               <td className="p-3">{q.client_name}{q.client_company ? <span className="text-muted-foreground"> · {q.client_company}</span> : null}</td>
               <td className="p-3">{q.title}</td>
               <td className="p-3 text-right font-mono tabular-nums">{mxn(totales(q).total, q.currency)}</td>
               <td className="p-3">{q.valid_until}</td>
               <td className="p-3"><EstadoBadge quote={q} lang={lang} /></td>
-              <td className="p-3 text-right"><DeleteQuoteButton id={q.id} folio={q.folio} lang={lang} compact /></td>
+              <td className="p-3 text-right"><DeleteQuoteButton id={q.id} folio={q.number} lang={lang} compact /></td>
             </tr>
           ))}
         </tbody>

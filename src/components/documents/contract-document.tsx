@@ -16,7 +16,7 @@ export function ContractDocument({ contract, clientName, clientCompany, huella }
   const firmado = Boolean(contract.signed_at)
   return (
     <article className="doc mx-auto max-w-3xl bg-white text-neutral-900 p-8 md:p-12 rounded-xl shadow-sm print:shadow-none print:p-0 print:max-w-none">
-      <DocumentHeader tipo="Contrato" folio={contract.folio} />
+      <DocumentHeader tipo="Contrato" folio={contract.number} />
       <div className="contrato mt-8" dangerouslySetInnerHTML={{ __html: contract.body_html }} />
       <SignatureBlock
         leyenda="Firman de conformidad las partes, por duplicado, en la fecha indicada."

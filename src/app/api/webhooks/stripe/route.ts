@@ -290,21 +290,22 @@ export async function POST(request: NextRequest) {
         const { subscriptionId, metadata, billingReason } = datosDeSuscripcion(invoice)
         const projectId = metadata.project_id
         if (!subscriptionId || metadata.plan !== '1' || !projectId) break
-        const meses = Number(metadata.meses) || 0
+        // `meses`: subscriptions created before the English rename (2026-11).
+        const months = Number(metadata.months ?? metadata.meses) || 0
         const amount = (invoice.amount_paid ?? 0) / 100
         if (amount <= 0) break
         const { data: previos } = await supabase.from('project_payments').select('notes').eq('project_id', projectId)
         const cobradas = mensualidadesCobradas((previos ?? []).map((p) => p.notes))
         const esAnticipo = billingReason === 'subscription_create'
-        const notes = etiquetaCobroPlan({ esAnticipo, numero: cobradas + 1, meses, invoiceId: invoice.id ?? '' })
+        const notes = etiquetaCobroPlan({ esAnticipo, numero: cobradas + 1, months, invoiceId: invoice.id ?? '' })
         if ((previos ?? []).some((p) => (p.notes ?? '').includes(`Stripe Invoice ${invoice.id}`))) break
         const { error: e } = await supabase.from('project_payments').insert({ project_id: projectId, amount, currency: (invoice.currency ?? 'mxn').toUpperCase(), payment_method: 'card', payment_date: new Date().toISOString().split('T')[0], status: 'completed', notes })
         if (e) { console.error('[Stripe Webhook] plan: no se registró el cobro', e); break }
         await notifyClient(supabase, projectId, (project) => paymentNotice({ project, amount: amount, currency: (invoice.currency ?? 'mxn').toUpperCase(), status: 'completed', projectId }))
         // Con la ultima mensualidad, la suscripcion termina sola.
-        if (!esAnticipo && meses > 0 && planLiquidado(cobradas + 1, meses)) {
+        if (!esAnticipo && months > 0 && planLiquidado(cobradas + 1, months)) {
           await stripe.subscriptions.update(subscriptionId, { cancel_at_period_end: true }).catch((err) => console.error('[Stripe Webhook] plan: no se pudo cerrar la suscripción', err))
-          await enviarCorreo({ to: ADMIN_EMAIL, subject: `Plan liquidado · proyecto ${projectId}`, html: `<p>Se cobró la última mensualidad (${cobradas + 1} de ${meses}) del plan. Toca transferir el código al cliente y ofrecerle la mensualidad de hosting y soporte.</p>` }).catch(() => {})
+          await enviarCorreo({ to: ADMIN_EMAIL, subject: `Plan liquidado · proyecto ${projectId}`, html: `<p>Se cobró la última mensualidad (${cobradas + 1} de ${months}) del plan. Toca transferir el código al cliente y ofrecerle la mensualidad de hosting y soporte.</p>` }).catch(() => {})
         }
         break
       }

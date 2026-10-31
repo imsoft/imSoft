@@ -24,7 +24,7 @@ export async function clientQuotes(db: SupabaseClient, user: Client, site: strin
   if (!filter) return []
   const { data, error } = await db
     .from('quotes')
-    .select('id, folio, title, status, items, apply_iva, discount, currency, valid_until, token, lang, payment, accepted_payment_option')
+    .select('id, number, title, status, items, apply_iva, discount, currency, valid_until, token, lang, payment, accepted_payment_option')
     .or(filter)
     .order('created_at', { ascending: false })
   if (error) throw error
@@ -39,7 +39,7 @@ export async function clientContracts(db: SupabaseClient, user: Client, site: st
   if (!ids.length) return []
   const { data, error } = await db
     .from('contracts')
-    .select('id, folio, status, token, lang, signed_at, signed_name, quotes(title, folio)')
+    .select('id, number, status, token, lang, signed_at, signed_name, quotes(title, number)')
     .in('quote_id', ids)
     .order('created_at', { ascending: false })
   if (error) throw error

@@ -18,7 +18,7 @@ export interface AssistInput {
   servicio?: string | null;
   /** Ya existe como contacto en el CRM (cliente o prospecto trabajado). */
   clienteRecurrente?: boolean;
-  descuentoActual?: { motivo: string; tipo: 'pct' | 'monto'; valor: number } | null;
+  descuentoActual?: QuoteDiscount | null;
   /** Id de la cotizacion que se edita, para no usarla como comparable de si misma. */
   quoteId?: string | null;
   /** Cotizaciones anteriores de imSoft; las llena el servidor, no el navegador. */
@@ -57,7 +57,7 @@ export const MAX_COMPARABLES = 15;
 
 interface QuoteRow {
   id: string;
-  folio: string;
+  number: string;
   status: string;
   title: string;
   items: QuoteItem[] | null;
@@ -76,7 +76,7 @@ export function comparablesDesdeQuotes(rows: QuoteRow[], excluirId?: string | nu
   return rows
     .filter((q) => (STATUS_COMPARABLE as readonly string[]).includes(q.status) && q.id !== excluirId)
     .map((q) => ({
-      folio: q.folio,
+      folio: q.number,
       title: q.title,
       status: q.status as Comparable['status'],
       precio: totales({ items: q.items ?? [], apply_iva: false, discount: q.discount ?? null }).subtotal,
@@ -133,7 +133,7 @@ export function buildPrompt(i: AssistInput): string {
 Título: ${i.title}
 ${i.clientCompany ? `Cliente: ${i.clientCompany}\n` : ''}${i.servicio ? `Servicio base: ${i.servicio}\n` : ''}${i.intro ? `Resumen: ${i.intro}\n` : ''}Precio tentativo (sin IVA): ${i.precio > 0 ? `$${i.precio.toLocaleString('es-MX')} MXN` : 'sin definir'}
 Cliente recurrente o ya en el CRM: ${i.clienteRecurrente ? 'sí' : 'no'}
-Descuento ya capturado: ${i.descuentoActual ? `${i.descuentoActual.tipo === 'pct' ? `${i.descuentoActual.valor} %` : `$${i.descuentoActual.valor}`} por "${i.descuentoActual.motivo}"` : 'ninguno'}
+Descuento ya capturado: ${i.descuentoActual ? `${i.descuentoActual.type === 'pct' ? `${i.descuentoActual.value} %` : `$${i.descuentoActual.value}`} por "${i.descuentoActual.reason}"` : 'ninguno'}
 
 ## Características ya incluidas (${i.features.length})
 ${i.features.length ? i.features.map((f, n) => `${n + 1}. ${f}`).join('\n') : '(ninguna todavía)'}
