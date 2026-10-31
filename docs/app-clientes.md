@@ -50,8 +50,8 @@ notificaciones push y modo sin conexión. Se agregan cuando se vea qué usan los
   de entrar para esa cuenta (por ejemplo un código fijo configurado en el servidor).
 - **Capturas desde la terminal:** las compilaciones de desarrollo aceptan variables
   (`IMSOFT_DEBUG_EMAIL`/`IMSOFT_DEBUG_CODE`/`IMSOFT_DEBUG_TAB` en iOS vía `SIMCTL_CHILD_`,
-  extras `email`/`codigo`/`pestana` en Android vía `am start`) para abrirse ya con sesión. El
-  código se obtiene con `pnpm app:codigo` (usa `auth.admin.generateLink`, `properties.email_otp`).
+  extras `email`/`code`/`tab` en Android vía `am start`) para abrirse ya con sesión. El
+  código se obtiene con `pnpm app:code` (usa `auth.admin.generateLink`, `properties.email_otp`).
 
 ## Tablets y orientación (6-oct-2026)
 
@@ -65,7 +65,7 @@ notificaciones push y modo sin conexión. Se agregan cuando se vea qué usan los
 - **Para publicar:** App Store Connect exige capturas de iPad de 13" (simulador
   `iPad Pro 13-inch`); Google Play pide capturas de tablet de 7" y 10" para no marcar la app
   como no optimizada (emulador `Tablet_imSoft`, Pixel Tablet con Android 16). Las capturas
-  con sesión se toman con `pnpm app:codigo` y las variables de depuración de arriba.
+  con sesión se toman con `pnpm app:code` y las variables de depuración de arriba.
 
 ## Avisos push, cotizaciones y acceso con Google/Apple (5-oct-2026)
 

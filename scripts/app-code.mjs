@@ -2,8 +2,8 @@
  * Imprime un codigo de un solo uso para entrar a la app movil con una cuenta, sin pasar
  * por el correo ni por el limite de /api/app/login. Sirve para tomar capturas:
  *
- *   pnpm app:codigo                      # cuenta demo-app@imsoft.io
- *   pnpm app:codigo cliente@empresa.com  # otra cuenta
+ *   pnpm app:code                      # cuenta demo-app@imsoft.io
+ *   pnpm app:code cliente@empresa.com  # otra cuenta
  *
  * El codigo vence a los minutos (vigencia de OTP de Supabase) y solo sirve una vez.
  */
