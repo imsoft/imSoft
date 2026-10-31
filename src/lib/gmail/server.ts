@@ -3,8 +3,8 @@
  * Alcances: enviar correo y leer hilos (para saber si contestaron).
  */
 import { serviceClient, SITE_URL } from '@/lib/quotes/server'
-import { destinatarioFallido, tipoDeMensajeAjeno } from '@/lib/outreach'
-import { esRespuestaDeLimite, MENSAJE_LIMITE_GMAIL } from '@/lib/envio-lote'
+import { failedRecipient, foreignMessageType } from '@/lib/outreach'
+import { isRateLimitResponse, GMAIL_RATE_LIMIT_MESSAGE } from '@/lib/batch-send'
 
 /**
  * Ritmo de las lecturas en lote (revision de respuestas y rebotes): cada consulta tarda al
@@ -113,7 +113,7 @@ export async function enviarRaw(userId: string, raw: string, threadId?: string |
   })
   if (!r.ok) {
     const cuerpo = await r.text()
-    if (esRespuestaDeLimite(r.status, cuerpo)) throw new Error(MENSAJE_LIMITE_GMAIL)
+    if (isRateLimitResponse(r.status, cuerpo)) throw new Error(GMAIL_RATE_LIMIT_MESSAGE)
     throw new Error(`Gmail send ${r.status}: ${cuerpo.slice(0, 300)}`)
   }
   return r.json()
@@ -134,7 +134,7 @@ export async function messageIdHeader(userId: string, messageId: string): Promis
  * demora no cuentan: Gmail reintenta hasta 48 h y el correo todavia puede llegar. Las
  * respuestas automaticas (fuera de la oficina) tampoco: nadie leyo el correo.
  */
-export async function estadoDelHilo(userId: string, threadId: string): Promise<'respuesta' | 'rebote' | null> {
+export async function estadoDelHilo(userId: string, threadId: string): Promise<'reply' | 'bounce' | null> {
   const { token, email } = await accessToken(userId)
   const r = await aRitmo(RITMO_HILO_MS, () => fetch(`https://gmail.googleapis.com/gmail/v1/users/me/threads/${threadId}?format=metadata&metadataHeaders=From&metadataHeaders=Subject&metadataHeaders=Auto-Submitted`, { headers: { Authorization: `Bearer ${token}` } }))
   if (!r.ok) return null
@@ -144,10 +144,10 @@ export async function estadoDelHilo(userId: string, threadId: string): Promise<'
     const h = (n: string) => m.payload?.headers?.find((x) => x.name.toLowerCase() === n)?.value ?? ''
     const from = h('from')
     if (!from || from.toLowerCase().includes(mios)) return null
-    return tipoDeMensajeAjeno(from, h('subject'), h('auto-submitted'))
+    return foreignMessageType(from, h('subject'), h('auto-submitted'))
   })
-  if (tipos.includes('respuesta')) return 'respuesta'
-  if (tipos.includes('rebote')) return 'rebote'
+  if (tipos.includes('reply')) return 'reply'
+  if (tipos.includes('bounce')) return 'bounce'
   return null
 }
 
@@ -177,8 +177,8 @@ export async function rebotesRecientes(userId: string, dias = 30): Promise<strin
     const m = await r.json()
     const h = (n: string) => (m.payload?.headers as Array<{ name: string; value: string }> | undefined)?.find((x) => x.name.toLowerCase() === n)?.value ?? ''
     // Solo fallos definitivos: los avisos de demora no cuentan.
-    if (tipoDeMensajeAjeno(h('from'), h('subject')) !== 'rebote') continue
-    const email = destinatarioFallido(h('x-failed-recipients'), m.snippet as string)
+    if (foreignMessageType(h('from'), h('subject')) !== 'bounce') continue
+    const email = failedRecipient(h('x-failed-recipients'), m.snippet as string)
     if (email) fallidos.add(email)
   }
   return [...fallidos]

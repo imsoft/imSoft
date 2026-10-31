@@ -1,0 +1,9 @@
+{
+  "_comment": "Large companies in the Guadalajara metro area that scripts/find-prospects.mjs searches by name, 2 per run, with the 'corporate' segment. 'key' is what the Google name must contain to count as that company. Add as many as you like.",
+  "companies": [
+    { "name": "Grupo Dalton", "query": "Grupo Dalton corporativo Guadalajara", "key": "dalton" },
+    { "name": "Farmacias Guadalajara", "query": "Farmacias Guadalajara corporativo oficinas", "key": "farmacias guadalajara" },
+    { "name": "Sello Rojo", "query": "Sello Rojo leche Guadalajara", "key": "sello rojo" },
+    { "name": "El Palacio de Hierro", "query": "El Palacio de Hierro Guadalajara", "key": "palacio de hierro" }
+  ]
+}

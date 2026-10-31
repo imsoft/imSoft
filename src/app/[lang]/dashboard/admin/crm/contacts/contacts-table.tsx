@@ -10,7 +10,7 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Users, Plus } from 'lucide-react'
 import { DataTable } from './data-table'
-import type { CupoDeHoy } from '@/lib/envio-lote'
+import type { DailyQuota } from '@/lib/batch-send'
 import { createColumns } from './columns'
 import {
   Empty,
@@ -35,11 +35,11 @@ interface ContactsTableProps {
   contacts: Contact[]
   dict: any
   lang: string
-  /** Tope diario de correos y cuanto queda hoy. */
-  cupo?: CupoDeHoy
+  /** Daily email cap and how much is left today. */
+  quota?: DailyQuota
 }
 
-export function ContactsTable({ contacts, dict, lang, cupo }: ContactsTableProps) {
+export function ContactsTable({ contacts, dict, lang, quota }: ContactsTableProps) {
   const [isDeleting, setIsDeleting] = useState<string | null>(null)
   const [contactToDelete, setContactToDelete] = useState<string | null>(null)
   const router = useRouter()
@@ -94,7 +94,7 @@ export function ContactsTable({ contacts, dict, lang, cupo }: ContactsTableProps
   return (
     <>
       <Card className="p-6">
-        <DataTable columns={columns} data={contacts} lang={lang} cupo={cupo} />
+        <DataTable columns={columns} data={contacts} lang={lang} quota={quota} />
       </Card>
 
       <AlertDialog

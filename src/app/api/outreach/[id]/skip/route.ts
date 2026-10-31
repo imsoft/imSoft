@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { requireAdmin, serviceClient } from '@/lib/quotes/server'
 
-/** Descarta un borrador sin mandarlo. */
+/** Skips a draft without sending it. */
 export async function POST(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const auth = await requireAdmin()
   if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status })

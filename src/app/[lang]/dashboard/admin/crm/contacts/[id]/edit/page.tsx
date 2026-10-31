@@ -23,12 +23,12 @@ export default async function EditContactPage({ params }: {
     redirect(`/${lang}/login`)
   }
 
-  // Verificar que el usuario sea admin
+  // Make sure the user is an admin
   if (!esAdmin(user)) {
     redirect(`/${lang}/dashboard/client`)
   }
 
-  // Obtener el contacto
+  // Fetch the contact
   const { data: contact, error } = await supabase
     .from('contacts')
     .select('*')

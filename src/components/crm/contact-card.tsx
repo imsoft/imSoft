@@ -10,8 +10,8 @@ import { GripVertical, Mail, Phone, Building2, Loader2, User } from 'lucide-reac
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
-import { prepararCorreo } from '@/components/crm/preparar-correo'
-import { correoInvalido } from '@/lib/correo-invalido'
+import { prepareEmail } from '@/components/crm/prepare-email'
+import { isInvalidEmail } from '@/lib/invalid-email'
 import type { Contact } from '@/types/database'
 import { contactName } from '@/lib/contact-name'
 
@@ -49,7 +49,7 @@ export function ContactCard({ contact, lang }: ContactCardProps) {
     }
 
     setIsSendingEmail(true)
-    prepararCorreo(contact.id, lang, { seguimiento: true }).then((url) => { setIsSendingEmail(false); if (url) router.push(url) })
+    prepareEmail(contact.id, lang, { followUp: true }).then((url) => { setIsSendingEmail(false); if (url) router.push(url) })
   }
 
   const getStatusColor = (status: string) => {
@@ -91,7 +91,7 @@ export function ContactCard({ contact, lang }: ContactCardProps) {
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-2 mb-2">
               {(!contact.first_name && !contact.last_name) ? (
-                // Si no hay nombre, mostrar icono que prepara el correo de prospeccion
+                // No name: show an icon that prepares the prospecting email
                 contact.email ? (
                   <button
                     type="button"
@@ -112,7 +112,7 @@ export function ContactCard({ contact, lang }: ContactCardProps) {
                   </div>
                 )
               ) : (
-                // Si hay nombre, mostrar nombre normal
+                // Has a name: show it as usual
                 <Link
                   href={`/${lang}/dashboard/admin/crm/contacts/${contact.id}`}
                   className="flex-1 min-w-0 group"
@@ -135,7 +135,7 @@ export function ContactCard({ contact, lang }: ContactCardProps) {
               {contact.email && (
                 <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                   <Mail className="h-3 w-3 shrink-0" />
-                  <span className={`truncate ${correoInvalido(contact) ? 'text-red-500 line-through' : ''}`} title={correoInvalido(contact) ? (lang === 'en' ? 'Invalid email' : 'Correo inválido') : undefined}>{contact.email}</span>
+                  <span className={`truncate ${isInvalidEmail(contact) ? 'text-red-500 line-through' : ''}`} title={isInvalidEmail(contact) ? (lang === 'en' ? 'Invalid email' : 'Correo inválido') : undefined}>{contact.email}</span>
                 </div>
               )}
               {contact.phone && (
@@ -146,12 +146,12 @@ export function ContactCard({ contact, lang }: ContactCardProps) {
               )}
             </div>
 
-            {/* Badge de Estado y Botón de Email */}
+            {/* Status badge and email button */}
             <div className="flex items-center justify-between gap-2 flex-wrap">
               <Badge variant="outline" className={`text-xs ${getStatusColor(contact.status)}`}>
                 {getStatusLabel(contact.status)}
               </Badge>
-              {contact.email && !correoInvalido(contact) && contact.status !== 'no_contact' && (
+              {contact.email && !isInvalidEmail(contact) && contact.status !== 'no_contact' && (
                 <Button
                   variant="ghost"
                   size="sm"

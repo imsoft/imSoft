@@ -22,12 +22,12 @@ export default async function NewActivityPage({ params }: {
     redirect(`/${lang}/login`)
   }
 
-  // Verificar que el usuario sea admin
+  // Make sure the user is an admin
   if (!esAdmin(user)) {
     redirect(`/${lang}/dashboard/client`)
   }
 
-  // Obtener contactos y deals
+  // Fetch contacts and deals
   const { data: contacts } = await supabase
     .from('contacts')
     .select('*')

@@ -18,13 +18,13 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { prepararCorreo } from '@/components/crm/preparar-correo'
+import { prepareEmail } from '@/components/crm/prepare-email'
 import { pasaFiltroRedes, redesDe } from '@/lib/contact-socials'
-import { canalesDe } from '@/lib/mensaje-red'
-import { correoInvalido } from '@/lib/correo-invalido'
-import { accionDeCorreo, etiquetaDeCorreo, type EstadoCorreo } from '@/lib/estado-correo'
+import { channelsOf } from '@/lib/social-message'
+import { isInvalidEmail } from '@/lib/invalid-email'
+import { emailAction, emailStatusLabel, type EmailStatus } from '@/lib/email-status'
 import { Checkbox } from '@/components/ui/checkbox'
-import { MensajeRedDialog } from '@/components/crm/mensaje-red-dialog'
+import { SocialMessageDialog } from '@/components/crm/social-message-dialog'
 import { contactName } from '@/lib/contact-name'
 
 // Local SVG brand icons to avoid compilation issues due to lucide-react versions
@@ -71,21 +71,21 @@ const Tiktok = (props: React.HTMLAttributes<SVGElement>) => (
 
 function EmailCell({
   email,
-  invalido,
-  estado,
+  invalid,
+  status,
   lang,
 }: {
   email?: string
-  /** Rebotó, su dominio no recibe correo o se marcó a mano (ver correoInvalido). */
-  invalido: boolean
-  /** En que va su secuencia de correos: enviado, seguimiento pendiente, respondio... */
-  estado?: EstadoCorreo
+  /** Bounced, its domain doesn't accept mail, or it was marked by hand (see isInvalidEmail). */
+  invalid: boolean
+  /** Where their email sequence stands: sent, follow-up due, replied... */
+  status?: EmailStatus
   lang: string
 }) {
   const [copied, setCopied] = useState(false)
-  const isInvalid = invalido
+  const isInvalid = invalid
 
-  // Contacto de WhatsApp o Instagram: no tiene correo y no es un error.
+  // WhatsApp or Instagram contact: no email, and that's not an error.
   if (!email) {
     return (
       <span className="text-sm text-muted-foreground">
@@ -106,9 +106,9 @@ function EmailCell({
     }
   }
 
-  const hoy = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Mexico_City' })
-  const linea = !isInvalid && estado ? etiquetaDeCorreo(estado, hoy) : null
-  const urge = estado?.tipo === 'enviado' && estado.tocaEl <= hoy
+  const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Mexico_City' })
+  const line = !isInvalid && status ? emailStatusLabel(status, today) : null
+  const isDue = status?.type === 'sent' && status.dueOn <= today
 
   return (
     <div className="min-w-0 max-w-[min(22rem,50vw)]">
@@ -152,9 +152,9 @@ function EmailCell({
         )}
       </Button>
     </div>
-      {linea && (
-        <p className={`mt-0.5 truncate pl-6 text-xs ${estado?.tipo === 'respondio' ? 'font-medium text-emerald-600' : urge ? 'font-medium text-amber-600' : 'text-muted-foreground'}`} title={linea}>
-          {linea}
+      {line && (
+        <p className={`mt-0.5 truncate pl-6 text-xs ${status?.type === 'replied' ? 'font-medium text-emerald-600' : isDue ? 'font-medium text-amber-600' : 'text-muted-foreground'}`} title={line}>
+          {line}
         </p>
       )}
     </div>
@@ -266,7 +266,7 @@ function DescriptionCell({ description, lang }: { description: string | null | u
     return <span className="text-sm text-muted-foreground">-</span>
   }
 
-  // Truncar a 100 caracteres
+  // Truncate to 100 characters
   const maxLength = 100
   const truncated = description.length > maxLength
     ? description.substring(0, maxLength) + '...'
@@ -315,44 +315,44 @@ export function statusLabel(status: string, lang: string): string {
   return l ? (lang === 'en' ? l.en : l.es) : status
 }
 
-/** Insignia de estado que abre un menu para cambiarlo sin salir de la tabla. */
+/** Status badge that opens a menu to change it without leaving the table. */
 function StatusCell({ contactId, status, lang }: { contactId: string; status: string; lang: string }) {
   const router = useRouter()
-  const [actual, setActual] = useState(status)
-  const [ocupado, setOcupado] = useState(false)
+  const [current, setCurrent] = useState(status)
+  const [busy, setBusy] = useState(false)
 
-  const cambiar = async (nuevo: string) => {
-    if (nuevo === actual) return
-    setOcupado(true)
-    const anterior = actual
-    setActual(nuevo)
-    const { error } = await createClient().from('contacts').update({ status: nuevo, updated_at: new Date().toISOString() }).eq('id', contactId)
-    setOcupado(false)
+  const change = async (next: string) => {
+    if (next === current) return
+    setBusy(true)
+    const previous = current
+    setCurrent(next)
+    const { error } = await createClient().from('contacts').update({ status: next, updated_at: new Date().toISOString() }).eq('id', contactId)
+    setBusy(false)
     if (error) {
-      setActual(anterior)
+      setCurrent(previous)
       toast.error(lang === 'en' ? 'Could not update status' : 'No se pudo cambiar el estado')
       return
     }
-    toast.success(lang === 'en' ? `Status: ${statusLabel(nuevo, lang)}` : `Estado: ${statusLabel(nuevo, lang)}`)
+    toast.success(lang === 'en' ? `Status: ${statusLabel(next, lang)}` : `Estado: ${statusLabel(next, lang)}`)
     router.refresh()
   }
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button type="button" disabled={ocupado} className="rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring" title={lang === 'en' ? 'Change status' : 'Cambiar estado'}>
-          <Badge className={`${STATUS_COLORS[actual] || ''} cursor-pointer gap-1 pr-1.5`}>
-            {statusLabel(actual, lang)}
+        <button type="button" disabled={busy} className="rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring" title={lang === 'en' ? 'Change status' : 'Cambiar estado'}>
+          <Badge className={`${STATUS_COLORS[current] || ''} cursor-pointer gap-1 pr-1.5`}>
+            {statusLabel(current, lang)}
             <ChevronDown className="size-3 opacity-70" />
           </Badge>
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start">
         {Object.keys(STATUS_LABELS).map((k) => (
-          <DropdownMenuItem key={k} onClick={() => cambiar(k)} className={k === actual ? 'font-medium' : ''}>
+          <DropdownMenuItem key={k} onClick={() => change(k)} className={k === current ? 'font-medium' : ''}>
             <span className={`mr-2 inline-block size-2 rounded-full ${STATUS_COLORS[k]?.split(' ')[0].replace('/10', '') || 'bg-muted-foreground'}`} />
             {statusLabel(k, lang)}
-            {k === actual && <Check className="ml-auto size-3.5" />}
+            {k === current && <Check className="ml-auto size-3.5" />}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>
@@ -368,8 +368,8 @@ interface ColumnsProps {
 
 export function createColumns({ lang, onDelete, isDeleting }: ColumnsProps): ColumnDef<Contact>[] {
   return [
-    // Casilla para elegir a quien prepararle correo en lote. Solo se puede marcar a quien
-    // tiene correo valido (ver enableRowSelection en la tabla).
+    // Checkbox to pick who gets a batch email. Only contacts with a valid email can be
+    // checked (see enableRowSelection in the table).
     {
       id: 'select',
       enableHiding: false,
@@ -455,8 +455,8 @@ export function createColumns({ lang, onDelete, isDeleting }: ColumnsProps): Col
         return (
           <EmailCell
             email={row.original.email}
-            invalido={correoInvalido(row.original)}
-            estado={row.original.correo}
+            invalid={isInvalidEmail(row.original)}
+            status={row.original.emailStatus}
             lang={lang}
           />
         )
@@ -502,8 +502,8 @@ export function createColumns({ lang, onDelete, isDeleting }: ColumnsProps): Col
         return <DescriptionCell description={row.original.notes} lang={lang} />
       },
     },
-    // Columna oculta: existe solo para que el filtro "Tipo" tenga sobre que filtrar
-    // (sin ella el selector no hacia nada y la tabla avisaba que la columna no existe).
+    // Hidden column: it exists only so the "Tipo" filter has something to filter on
+    // (without it the select did nothing and the table warned the column didn't exist).
     {
       id: 'contact_type',
       accessorKey: 'contact_type',
@@ -539,19 +539,19 @@ export function createColumns({ lang, onDelete, isDeleting }: ColumnsProps): Col
     {
       id: 'actions',
       enableHiding: false,
-      cell: ({ row }) => <AccionesCell contact={row.original} lang={lang} onDelete={onDelete} isDeleting={isDeleting ?? null} />,
+      cell: ({ row }) => <ActionsCell contact={row.original} lang={lang} onDelete={onDelete} isDeleting={isDeleting ?? null} />,
     },
   ]
 }
 
-function AccionesCell({ contact, lang, onDelete, isDeleting }: { contact: Contact; lang: string; onDelete: (id: string) => void; isDeleting: string | null }) {
-  const [mensajeAbierto, setMensajeAbierto] = useState(false)
-  const puedeMensaje = canalesDe(contact).length > 0
-  const accion = accionDeCorreo(contact.correo ?? { tipo: 'ninguno' })
+function ActionsCell({ contact, lang, onDelete, isDeleting }: { contact: Contact; lang: string; onDelete: (id: string) => void; isDeleting: string | null }) {
+  const [messageOpen, setMessageOpen] = useState(false)
+  const canMessage = channelsOf(contact).length > 0
+  const action = emailAction(contact.emailStatus ?? { type: 'none' })
   return (
     <>
-      {puedeMensaje && (
-        <MensajeRedDialog contacto={{ id: contact.id, nombre: contactName(contact) || contact.company || contact.email || '', social_links: contact.social_links, instagram_url: contact.instagram_url, phone: contact.phone }} lang={lang} abierto={mensajeAbierto} onClose={() => setMensajeAbierto(false)} />
+      {canMessage && (
+        <SocialMessageDialog contact={{ id: contact.id, name: contactName(contact) || contact.company || contact.email || '', social_links: contact.social_links, instagram_url: contact.instagram_url, phone: contact.phone }} lang={lang} open={messageOpen} onClose={() => setMessageOpen(false)} />
       )}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -569,26 +569,26 @@ function AccionesCell({ contact, lang, onDelete, isDeleting }: { contact: Contac
                   {lang === 'en' ? 'View' : 'Ver'}
                 </Link>
               </DropdownMenuItem>
-              {contact.email && !correoInvalido(contact) && accion && (
-                <DropdownMenuItem onClick={async () => { const url = await prepararCorreo(contact.id, lang, { seguimiento: accion === 'seguimiento' }); if (url) window.location.assign(url) }}>
+              {contact.email && !isInvalidEmail(contact) && action && (
+                <DropdownMenuItem onClick={async () => { const url = await prepareEmail(contact.id, lang, { followUp: action === 'follow-up' }); if (url) window.location.assign(url) }}>
                   <Mail className="mr-2 h-4 w-4" />
-                  {accion === 'seguimiento' ? (lang === 'en' ? 'Write follow-up' : 'Escribir seguimiento') : accion === 'abrir-borrador' ? (lang === 'en' ? 'Open draft' : 'Abrir borrador') : lang === 'en' ? 'Write email' : 'Escribir correo'}
+                  {action === 'follow-up' ? (lang === 'en' ? 'Write follow-up' : 'Escribir seguimiento') : action === 'open-draft' ? (lang === 'en' ? 'Open draft' : 'Abrir borrador') : lang === 'en' ? 'Write email' : 'Escribir correo'}
                 </DropdownMenuItem>
               )}
-              {contact.email && !correoInvalido(contact) && !accion && (
+              {contact.email && !isInvalidEmail(contact) && !action && (
                 <DropdownMenuItem disabled>
                   <Mail className="mr-2 h-4 w-4" />
-                  {contact.correo?.tipo === 'respondio' ? (lang === 'en' ? 'Replied: answer in Gmail' : 'Respondió: contéstale en Gmail') : lang === 'en' ? 'Sequence finished' : 'Secuencia terminada'}
+                  {contact.emailStatus?.type === 'replied' ? (lang === 'en' ? 'Replied: answer in Gmail' : 'Respondió: contéstale en Gmail') : lang === 'en' ? 'Sequence finished' : 'Secuencia terminada'}
                 </DropdownMenuItem>
               )}
-              {correoInvalido(contact) && (
+              {isInvalidEmail(contact) && (
                 <DropdownMenuItem disabled className="text-red-600 dark:text-red-400">
                   <AlertTriangle className="mr-2 h-4 w-4" />
                   {lang === 'en' ? 'Invalid email: use social media' : 'Correo inválido: escríbele por redes'}
                 </DropdownMenuItem>
               )}
-              {puedeMensaje && (
-                <DropdownMenuItem onClick={() => setMensajeAbierto(true)}>
+              {canMessage && (
+                <DropdownMenuItem onClick={() => setMessageOpen(true)}>
                   <MessageCircle className="mr-2 h-4 w-4" />
                   {lang === 'en' ? 'Social media message' : 'Mensaje para redes'}
                 </DropdownMenuItem>

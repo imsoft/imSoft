@@ -2,50 +2,55 @@ import { describe, it, expect } from 'vitest'
 import { mapRowsToContacts, parseCsv } from './import-contacts'
 
 describe('parseCsv', () => {
-  it('lee encabezados en minusculas y recorta espacios', () => {
-    const rows = parseCsv('Nombre, Email\nGabriela, gaby@ejemplo.com\n')
-    expect(rows).toEqual([{ nombre: 'Gabriela', email: 'gaby@ejemplo.com' }])
+  it('reads lowercase headers and trims spaces', () => {
+    const rows = parseCsv('First_Name, Email\nGabriela, gaby@ejemplo.com\n')
+    expect(rows).toEqual([{ first_name: 'Gabriela', email: 'gaby@ejemplo.com' }])
   })
 
-  it('respeta comas dentro de comillas', () => {
-    const rows = parseCsv('empresa,gancho\n"Gil y Gil, S.A.","Cotizan a mano, una por una"\n')
-    expect(rows[0].empresa).toBe('Gil y Gil, S.A.')
-    expect(rows[0].gancho).toBe('Cotizan a mano, una por una')
+  it('maps the old Spanish headers to the English keys', () => {
+    const rows = parseCsv('Nombre,Empresa,Teléfono,Gancho,Segmento,Zona,Asunto,Saludo\nGabriela,Cabrera Llamas,33 2388 2444,Sin portal,customs-brokers,premium-zone,Hola,Hola Gaby\n')
+    expect(rows).toEqual([{ first_name: 'Gabriela', company: 'Cabrera Llamas', phone: '33 2388 2444', hook: 'Sin portal', segment: 'customs-brokers', zone: 'premium-zone', subject: 'Hola', greeting: 'Hola Gaby' }])
   })
 
-  it('interpreta las comillas escapadas', () => {
-    const rows = parseCsv('gancho\n"Le preguntan ""donde va mi carga"" todo el dia"\n')
-    expect(rows[0].gancho).toBe('Le preguntan "donde va mi carga" todo el dia')
+  it('respects commas inside quotes', () => {
+    const rows = parseCsv('company,hook\n"Gil y Gil, S.A.","Cotizan a mano, una por una"\n')
+    expect(rows[0].company).toBe('Gil y Gil, S.A.')
+    expect(rows[0].hook).toBe('Cotizan a mano, una por una')
   })
 
-  it('acepta CRLF y archivos sin salto final', () => {
+  it('handles escaped quotes', () => {
+    const rows = parseCsv('hook\n"Le preguntan ""donde va mi carga"" todo el dia"\n')
+    expect(rows[0].hook).toBe('Le preguntan "donde va mi carga" todo el dia')
+  })
+
+  it('accepts CRLF and files without a final line break', () => {
     const rows = parseCsv('email\r\nuno@ejemplo.com\r\ndos@ejemplo.com')
     expect(rows).toHaveLength(2)
     expect(rows[1].email).toBe('dos@ejemplo.com')
   })
 
-  it('ignora lineas en blanco', () => {
+  it('ignores blank lines', () => {
     const rows = parseCsv('email\n\nuno@ejemplo.com\n\n')
     expect(rows).toHaveLength(1)
   })
 
-  it('devuelve vacio si el archivo esta vacio', () => {
+  it('returns empty if the file is empty', () => {
     expect(parseCsv('')).toEqual([])
   })
 })
 
 describe('mapRowsToContacts', () => {
-  const fila = {
-    nombre: 'Gabriela',
-    empresa: 'Cabrera Llamas',
+  const row = {
+    first_name: 'Gabriela',
+    company: 'Cabrera Llamas',
     email: 'Gaby@Ejemplo.com',
-    telefono: '33 2388 2444',
-    gancho: 'Sin portal de seguimiento',
-    segmento: 'customs-brokers',
+    phone: '33 2388 2444',
+    hook: 'Sin portal de seguimiento',
+    segment: 'customs-brokers',
   }
 
-  it('mapea una fila completa a la forma de la tabla contacts', () => {
-    const { contacts } = mapRowsToContacts([fila], { source: 'prospeccion-2026' })
+  it('maps a full row to the shape of the contacts table', () => {
+    const { contacts } = mapRowsToContacts([row], { source: 'prospeccion-2026' })
 
     expect(contacts).toHaveLength(1)
     expect(contacts[0]).toEqual({
@@ -67,20 +72,20 @@ describe('mapRowsToContacts', () => {
     })
   })
 
-  it('normaliza el correo a minusculas', () => {
+  it('lowercases the email', () => {
     const { contacts } = mapRowsToContacts([{ email: 'MAYUS@Ejemplo.COM' }])
     expect(contacts[0].email).toBe('mayus@ejemplo.com')
   })
 
-  it('usa no_contact para que el contacto caiga en la primera columna del kanban', () => {
+  it('uses no_contact so the contact lands in the first kanban column', () => {
     const { contacts } = mapRowsToContacts([{ email: 'uno@ejemplo.com' }])
     expect(contacts[0].status).toBe('no_contact')
   })
 
-  it('acepta contactos sin correo si tienen telefono', () => {
+  it('accepts contacts without email if they have a phone', () => {
     const { contacts, skipped } = mapRowsToContacts([
-      { empresa: 'Gamas', telefono: '33 3695 2526' },
-      fila,
+      { company: 'Gamas', phone: '33 3695 2526' },
+      row,
     ])
 
     expect(contacts).toHaveLength(2)
@@ -90,9 +95,9 @@ describe('mapRowsToContacts', () => {
     expect(gamas.phone).toBe('33 3695 2526')
   })
 
-  it('acepta contactos sin correo si tienen Instagram', () => {
+  it('accepts contacts without email if they have Instagram', () => {
     const { contacts } = mapRowsToContacts([
-      { empresa: 'Brunetta', instagram: 'https://instagram.com/brunettaboutique' },
+      { company: 'Brunetta', instagram: 'https://instagram.com/brunettaboutique' },
     ])
 
     expect(contacts).toHaveLength(1)
@@ -100,34 +105,34 @@ describe('mapRowsToContacts', () => {
     expect(contacts[0].instagram_url).toBe('https://instagram.com/brunettaboutique')
   })
 
-  it('descarta la fila que no trae ningun dato de contacto', () => {
-    const { contacts, skipped } = mapRowsToContacts([{ empresa: 'Sin datos' }, fila])
+  it('drops the row without any contact detail', () => {
+    const { contacts, skipped } = mapRowsToContacts([{ company: 'Sin datos' }, row])
 
     expect(contacts).toHaveLength(1)
     expect(skipped.noContact).toHaveLength(1)
-    expect(skipped.noContact[0].empresa).toBe('Sin datos')
+    expect(skipped.noContact[0].company).toBe('Sin datos')
   })
 
-  it('no cuenta como duplicados a varios contactos sin correo', () => {
+  it('does not count several contacts without email as duplicates', () => {
     const { contacts, skipped } = mapRowsToContacts([
-      { empresa: 'Uno', telefono: '33 1111 1111' },
-      { empresa: 'Dos', telefono: '33 2222 2222' },
+      { company: 'Uno', phone: '33 1111 1111' },
+      { company: 'Dos', phone: '33 2222 2222' },
     ])
 
     expect(contacts).toHaveLength(2)
     expect(skipped.duplicate).toHaveLength(0)
   })
 
-  it('descarta correos con formato invalido', () => {
+  it('drops emails with an invalid format', () => {
     const { contacts, skipped } = mapRowsToContacts([{ email: 'esto-no-es-correo' }])
     expect(contacts).toHaveLength(0)
     expect(skipped.invalidEmail).toEqual(['esto-no-es-correo'])
   })
 
-  it('descarta repetidos dentro del CSV porque email es UNIQUE', () => {
+  it('drops repeats within the CSV because email is UNIQUE', () => {
     const { contacts, skipped } = mapRowsToContacts([
-      { email: 'uno@ejemplo.com', empresa: 'A' },
-      { email: 'UNO@ejemplo.com', empresa: 'B' },
+      { email: 'uno@ejemplo.com', company: 'A' },
+      { email: 'UNO@ejemplo.com', company: 'B' },
     ])
 
     expect(contacts).toHaveLength(1)
@@ -135,32 +140,32 @@ describe('mapRowsToContacts', () => {
     expect(skipped.duplicate).toEqual(['uno@ejemplo.com'])
   })
 
-  it('convierte campos vacios en null, no en cadena vacia', () => {
-    const { contacts } = mapRowsToContacts([{ email: 'uno@ejemplo.com', nombre: '   ', empresa: '' }])
+  it('turns empty fields into null, not an empty string', () => {
+    const { contacts } = mapRowsToContacts([{ email: 'uno@ejemplo.com', first_name: '   ', company: '' }])
     expect(contacts[0].first_name).toBeNull()
     expect(contacts[0].company).toBeNull()
   })
 
-  it('combina las etiquetas base con la del segmento', () => {
-    const { contacts } = mapRowsToContacts([fila], { tags: ['gdl'] })
+  it('combines the base tags with the segment one', () => {
+    const { contacts } = mapRowsToContacts([row], { tags: ['gdl'] })
     expect(contacts[0].tags).toEqual(['gdl', 'customs-brokers'])
   })
 
-  it('deja tags en null cuando no hay ninguna', () => {
+  it('leaves tags as null when there are none', () => {
     const { contacts } = mapRowsToContacts([{ email: 'uno@ejemplo.com' }])
     expect(contacts[0].tags).toBeNull()
   })
 
-  it('permite sobreescribir tipo y estado', () => {
-    const { contacts } = mapRowsToContacts([fila], { contactType: 'lead', status: 'qualification' })
+  it('allows overriding type and status', () => {
+    const { contacts } = mapRowsToContacts([row], { contactType: 'lead', status: 'qualification' })
     expect(contacts[0].contact_type).toBe('lead')
     expect(contacts[0].status).toBe('qualification')
   })
 })
 
-describe('WhatsApp en la importacion', () => {
-  it('guarda el WhatsApp como canal del contacto y basta para darlo de alta', () => {
-    const { contacts, skipped } = mapRowsToContacts([{ empresa: 'Ferretería X', whatsapp: '523312345678' }])
+describe('WhatsApp in the import', () => {
+  it("stores WhatsApp as a contact channel and it's enough to add the contact", () => {
+    const { contacts, skipped } = mapRowsToContacts([{ company: 'Ferretería X', whatsapp: '523312345678' }])
     expect(skipped.noContact).toHaveLength(0)
     expect(contacts[0].social_links).toEqual([{ platform: 'whatsapp', url: '+523312345678' }])
     expect(contacts[0].email).toBeNull()

@@ -38,11 +38,13 @@ RESEND_FROM_EMAIL=contacto@imsoft.io
 ## 2. Preparar la lista
 
 Crea `scripts/prospects/prospects.csv` (este archivo está en `.gitignore`, no se sube).
-Mínimo necesita las columnas **`nombre`** y **`email`**. Puedes añadir más columnas
-(p. ej. `empresa`) y usarlas como placeholders `{{empresa}}` en la plantilla o el asunto.
+Mínimo necesita las columnas **`first_name`** y **`email`**. Puedes añadir más columnas
+(p. ej. `company`) y usarlas como placeholders `{{company}}` en la plantilla o el asunto.
+Los encabezados viejos en español (`nombre`, `empresa`, `gancho`, `asunto`…) y sus
+placeholders (`{{nombre}}`, `{{empresa}}`…) siguen funcionando.
 
 ```csv
-nombre,email,empresa
+first_name,email,company
 Ana López,ana@ejemplo.com,Ejemplo SA
 Carlos Ruiz,carlos@otraempresa.mx,Otra Empresa
 ```
@@ -60,7 +62,7 @@ abras en el navegador.
 ```bash
 node --env-file=.env scripts/send-prospects.mjs \
   --list scripts/prospects/prospects.csv \
-  --subject "Una idea para optimizar el sitio de {{empresa}}" \
+  --subject "Una idea para optimizar el sitio de {{company}}" \
   --dry-run
 ```
 
@@ -75,13 +77,13 @@ a tu propio correo o a unos pocos contactos.
 # Prueba real con 1 correo (ponte a ti en el CSV)
 node --env-file=.env scripts/send-prospects.mjs \
   --list scripts/prospects/prospects.csv \
-  --subject "Una idea para optimizar el sitio de {{empresa}}" \
+  --subject "Una idea para optimizar el sitio de {{company}}" \
   --limit 1
 
 # Campaña completa
 node --env-file=.env scripts/send-prospects.mjs \
   --list scripts/prospects/prospects.csv \
-  --subject "Una idea para optimizar el sitio de {{empresa}}"
+  --subject "Una idea para optimizar el sitio de {{company}}"
 ```
 
 El script lleva un registro en `sent-log.csv` (también ignorado por git). Si vuelves
@@ -94,7 +96,7 @@ a correrlo, **no reenvía** a quien ya recibió el correo (`status = sent`). Usa
 
 | Flag | Default | Descripción |
 |------|---------|-------------|
-| `--list <ruta>` | — | CSV de prospectos (**requerido**). Columnas `nombre`, `email`. |
+| `--list <ruta>` | — | CSV de prospectos (**requerido**). Columnas `first_name`, `email`. |
 | `--template <ruta>` | `scripts/prospects/template.html` | Plantilla HTML. |
 | `--subject <texto>` | *(genérico)* | Asunto. Admite placeholders `{{...}}`. |
 | `--from <correo>` | `RESEND_FROM_EMAIL` | Remitente (debe estar verificado en Resend). |
@@ -103,7 +105,7 @@ a correrlo, **no reenvía** a quien ya recibió el correo (`status = sent`). Usa
 | `--delay <ms>` | `700` | Pausa entre envíos (respeta el rate limit de Resend). |
 | `--limit <n>` | ∞ | Máximo de correos en esta corrida. |
 | `--log <ruta>` | `scripts/prospects/sent-log.csv` | Registro de enviados. |
-| `--default-nombre <t>` | `""` | Texto si una fila no trae nombre. |
+| `--default-name <t>` | `""` | Texto si una fila no trae nombre (`--default-nombre` también funciona). |
 | `--dry-run` | — | No envía; valida y genera `preview.html`. |
 | `--resend` | — | Ignora el registro y reenvía. |
 
@@ -113,7 +115,7 @@ a correrlo, **no reenvía** a quien ya recibió el correo (`status = sent`). Usa
 
 - **No compres listas.** Usa prospectos que tengan relación lógica con tu servicio.
 - **Calienta el volumen:** empieza con pocos correos al día y sube gradualmente.
-- **Personaliza el asunto** con `{{empresa}}` o `{{nombre}}`; mejora aperturas y evita spam.
+- **Personaliza el asunto** con `{{company}}` o `{{first_name}}`; mejora aperturas y evita spam.
 - **Respeta las bajas:** quien responda "BAJA" debe salir de futuras listas (la
   plantilla y el header `List-Unsubscribe` ya invitan a darse de baja).
 - **Marco legal (México · LFPDPPP / CAN-SPAM):** identifica claramente al remitente,

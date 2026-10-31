@@ -23,12 +23,12 @@ export default async function ContactsPage({ params }: {
     redirect(`/${lang}/login`)
   }
 
-  // Verificar que el usuario sea admin
+  // Make sure the user is an admin
   if (!esAdmin(user)) {
     redirect(`/${lang}/dashboard/client`)
   }
 
-  // Obtener todos los contactos
+  // Fetch all contacts
   const { data: contacts } = await supabase
     .from('contacts')
     .select('*')

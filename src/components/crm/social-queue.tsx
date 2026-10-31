@@ -6,8 +6,8 @@ import { MessageCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { ETIQUETA_CANAL, type Canal, type FilaCola } from '@/lib/mensaje-red'
-import { MensajeRedDialog } from './mensaje-red-dialog'
+import { CHANNEL_LABEL, type Channel, type QueueRow } from '@/lib/social-message'
+import { SocialMessageDialog } from './social-message-dialog'
 
 const Instagram = (props: React.SVGProps<SVGSVGElement>) => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
@@ -19,17 +19,17 @@ const Instagram = (props: React.SVGProps<SVGSVGElement>) => (
 
 interface Props {
   lang: string
-  filas: FilaCola[]
+  rows: QueueRow[]
   total: number
 }
 
 /**
- * Cola de hoy por redes: prospectos sin contactar con WhatsApp o Instagram. Cada boton
- * abre el mensaje ya en ese canal; al marcar "Ya lo envie" el contacto sale de la lista.
+ * Today's social queue: uncontacted prospects with WhatsApp or Instagram. Each button
+ * opens the message on that channel; marking "Ya lo envié" takes the contact off the list.
  */
-export function ColaRedes({ lang, filas, total }: Props) {
+export function SocialQueue({ lang, rows, total }: Props) {
   const es = lang !== 'en'
-  const [abierto, setAbierto] = useState<{ fila: FilaCola; canal: Canal } | null>(null)
+  const [open, setOpen] = useState<{ row: QueueRow; channel: Channel } | null>(null)
 
   return (
     <Card>
@@ -40,24 +40,24 @@ export function ColaRedes({ lang, filas, total }: Props) {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        {filas.length === 0 ? (
+        {rows.length === 0 ? (
           <p className="text-sm text-muted-foreground">{es ? 'No hay prospectos sin contactar con WhatsApp o Instagram. Agrega redes o teléfono en sus fichas, o busca prospectos nuevos.' : 'No uncontacted prospects with WhatsApp or Instagram.'}</p>
         ) : (
           <ul className="divide-y">
-            {filas.map((f) => (
+            {rows.map((f) => (
               <li key={f.id} className="flex flex-wrap items-center gap-2 py-2">
                 <div className="min-w-0 flex-1">
-                  <Link href={`/${lang}/dashboard/admin/crm/contacts/${f.id}`} className="truncate font-medium hover:underline">{f.empresa || f.nombre || '—'}</Link>
+                  <Link href={`/${lang}/dashboard/admin/crm/contacts/${f.id}`} className="truncate font-medium hover:underline">{f.company || f.name || '—'}</Link>
                   <p className="truncate text-xs text-muted-foreground">
-                    {f.empresa && f.nombre ? f.nombre : ''}
-                    {f.sinCorreo && <Badge variant="outline" className="ml-2 align-middle text-[10px]">{es ? 'sin correo' : 'no email'}</Badge>}
+                    {f.company && f.name ? f.name : ''}
+                    {f.noEmail && <Badge variant="outline" className="ml-2 align-middle text-[10px]">{es ? 'sin correo' : 'no email'}</Badge>}
                   </p>
                 </div>
                 <div className="flex gap-1.5">
-                  {f.canales.map((c) => (
-                    <Button key={c} size="sm" variant="outline" onClick={() => setAbierto({ fila: f, canal: c })} title={`${es ? 'Mensaje por' : 'Message on'} ${ETIQUETA_CANAL[c]}`}>
+                  {f.channels.map((c) => (
+                    <Button key={c} size="sm" variant="outline" onClick={() => setOpen({ row: f, channel: c })} title={`${es ? 'Mensaje por' : 'Message on'} ${CHANNEL_LABEL[c]}`}>
                       {c === 'instagram' ? <Instagram className="mr-1.5 h-3.5 w-3.5" /> : <MessageCircle className="mr-1.5 h-3.5 w-3.5" />}
-                      {ETIQUETA_CANAL[c]}
+                      {CHANNEL_LABEL[c]}
                     </Button>
                   ))}
                 </div>
@@ -65,14 +65,14 @@ export function ColaRedes({ lang, filas, total }: Props) {
             ))}
           </ul>
         )}
-        {total > filas.length && <p className="pt-2 text-xs text-muted-foreground">{es ? `Se muestran ${filas.length} de ${total}. Los demás aparecen conforme avanzas.` : `Showing ${filas.length} of ${total}.`}</p>}
-        {abierto && (
-          <MensajeRedDialog
-            contacto={{ id: abierto.fila.id, nombre: abierto.fila.nombre || abierto.fila.empresa, social_links: abierto.fila.contacto.social_links, instagram_url: abierto.fila.contacto.instagram_url, phone: abierto.fila.contacto.phone }}
+        {total > rows.length && <p className="pt-2 text-xs text-muted-foreground">{es ? `Se muestran ${rows.length} de ${total}. Los demás aparecen conforme avanzas.` : `Showing ${rows.length} of ${total}.`}</p>}
+        {open && (
+          <SocialMessageDialog
+            contact={{ id: open.row.id, name: open.row.name || open.row.company, social_links: open.row.contact.social_links, instagram_url: open.row.contact.instagram_url, phone: open.row.contact.phone }}
             lang={lang}
-            abierto
-            canalInicial={abierto.canal}
-            onClose={() => setAbierto(null)}
+            open
+            initialChannel={open.channel}
+            onClose={() => setOpen(null)}
           />
         )}
       </CardContent>

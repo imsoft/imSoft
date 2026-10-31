@@ -7,9 +7,9 @@ import Link from 'next/link'
 import { ContactsTable } from './contacts/contacts-table'
 import { CrmTabs } from './crm-tabs'
 import { serviceClient } from '@/lib/quotes/server'
-import { estadoDeCorreo, type FilaCorreo } from '@/lib/estado-correo'
-import { estadoCampana } from '@/lib/outreach-server'
-import { cupoDeHoy } from '@/lib/envio-lote'
+import { emailStatusOf, type EmailRow } from '@/lib/email-status'
+import { campaignStatus } from '@/lib/outreach-server'
+import { dailyQuota } from '@/lib/batch-send'
 import { esAdmin } from '@/lib/roles'
 
 export default async function CRMPage({ params }: {
@@ -28,30 +28,30 @@ export default async function CRMPage({ params }: {
     redirect(`/${lang}/login`)
   }
 
-  // Verificar que el usuario sea admin
+  // Make sure the user is an admin
   if (!esAdmin(user)) {
     redirect(`/${lang}/dashboard/client`)
   }
 
-  // Obtener todos los contactos
+  // Fetch all contacts
   const { data: contacts } = await supabase
     .from('contacts')
     .select('*')
     .order('created_at', { ascending: false })
 
-  // En que va la secuencia de correos de cada contacto, para mostrarlo en la tabla.
-  // outreach_emails solo lo lee el servidor (service role); el admin ya esta verificado.
+  // Where each contact's email sequence stands, to show it in the table.
+  // Only the server reads outreach_emails (service role); the admin is already verified.
   const db = serviceClient()
-  const [{ data: correos }, campana] = await Promise.all([
+  const [{ data: emails }, campaign] = await Promise.all([
     db.from('outreach_emails').select('id, contact_id, step, status, sent_at, scheduled_for').limit(5000),
-    estadoCampana(db),
+    campaignStatus(db),
   ])
-  // Tope diario: lo enviado hoy mas los borradores que ya esperan envio.
-  const enEspera = (correos ?? []).filter((f) => f.status === 'draft' && String(f.scheduled_for) <= campana.hoy).length
-  const cupo = cupoDeHoy(campana.tope, campana.enviadosHoy, enEspera)
-  const porContacto = new Map<string, FilaCorreo[]>()
-  for (const f of (correos ?? []) as Array<FilaCorreo & { contact_id: string }>) porContacto.set(f.contact_id, [...(porContacto.get(f.contact_id) ?? []), f])
-  const conCorreo = (contacts || []).map((c) => ({ ...c, correo: estadoDeCorreo(porContacto.get(c.id) ?? []) }))
+  // Daily cap: what was sent today plus the drafts already waiting to go out.
+  const pending = (emails ?? []).filter((f) => f.status === 'draft' && String(f.scheduled_for) <= campaign.today).length
+  const quota = dailyQuota(campaign.cap, campaign.sentToday, pending)
+  const byContact = new Map<string, EmailRow[]>()
+  for (const f of (emails ?? []) as Array<EmailRow & { contact_id: string }>) byContact.set(f.contact_id, [...(byContact.get(f.contact_id) ?? []), f])
+  const withEmailStatus = (contacts || []).map((c) => ({ ...c, emailStatus: emailStatusOf(byContact.get(c.id) ?? []) }))
 
   return (
     <div className="space-y-6">
@@ -73,8 +73,8 @@ export default async function CRMPage({ params }: {
           </Link>
         </Button>
       </div>
-      <CrmTabs lang={lang} activa="contactos" />
-      <ContactsTable contacts={conCorreo} dict={dict} lang={lang} cupo={cupo} />
+      <CrmTabs lang={lang} active="contacts" />
+      <ContactsTable contacts={withEmailStatus} dict={dict} lang={lang} quota={quota} />
     </div>
   )
 }

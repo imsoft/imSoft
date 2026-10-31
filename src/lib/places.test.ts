@@ -1,235 +1,235 @@
 import { describe, expect, it } from 'vitest'
-import { telefonoParaWhatsApp, candidatoDe, fichaGoogle, fueraDePerfil, contactoLinkedInDeResultados, facebookDeResultados, fichasDelNombre, instagramDeResultados, dominioDe, enlacesDeContacto, extraerCorreo, extraerInstagram, extraerWhatsApp, filaDesdeCandidato, formatoTelefono, giroDe, limpiarNombre, marcarExistentes, nombreNormalizado, sePuedeEscribir, sinRepetidos, numeroDeCorrida, tramoDeBusquedas, deLaMarca, zonaPremium, giroDe as giroDe2 } from './places'
+import { phoneAsWhatsApp, candidateFrom, googleListing, isOffProfile, linkedInContactFromResults, facebookFromResults, distinctiveTokens, instagramFromResults, domainOf, contactLinks, extractEmail, extractInstagram, extractWhatsApp, rowFromCandidate, formatPhone, industryByKey, cleanName, markExisting, normalizedName, isReachable, dedupe, runNumber, searchSlice, matchingBrand, isPremiumZone } from './places'
 import { mapRowsToContacts } from './import-contacts'
 
-describe('Instagram por búsqueda web', () => {
-  it('toma el perfil cuyo usuario o título trae una palabra distintiva del nombre', () => {
-    expect(fichasDelNombre('Clínica Dental Díaz Sucursal Carrillo Puerto')).toEqual(['diaz', 'carrillo', 'puerto'])
+describe('Instagram by web search', () => {
+  it('takes the profile whose username or title has a distinctive word of the name', () => {
+    expect(distinctiveTokens('Clínica Dental Díaz Sucursal Carrillo Puerto')).toEqual(['diaz', 'carrillo', 'puerto'])
     const r = [
       { link: 'https://www.instagram.com/p/C1abc/', title: 'Clínica Dental Díaz en Instagram' },
       { link: 'https://www.instagram.com/clinicadentaldiaz/', title: 'Clínica Dental Díaz (@clinicadentaldiaz) • Instagram' },
     ]
-    expect(instagramDeResultados('Clínica Dental Díaz', r)).toBe('https://instagram.com/clinicadentaldiaz')
-    // El usuario no se parece pero el título sí.
-    expect(instagramDeResultados('Levy Fit', [{ link: 'https://instagram.com/levy.fit.gdl/', title: 'LEVY FIT' }])).toBe('https://instagram.com/levy.fit.gdl')
-    expect(instagramDeResultados('Rievsa Ferretería', [{ link: 'https://instagram.com/ferreteriagdl/', title: 'Ferretería GDL' }])).toBeNull()
+    expect(instagramFromResults('Clínica Dental Díaz', r)).toBe('https://instagram.com/clinicadentaldiaz')
+    // The username doesn't match but the title does.
+    expect(instagramFromResults('Levy Fit', [{ link: 'https://instagram.com/levy.fit.gdl/', title: 'LEVY FIT' }])).toBe('https://instagram.com/levy.fit.gdl')
+    expect(instagramFromResults('Rievsa Ferretería', [{ link: 'https://instagram.com/ferreteriagdl/', title: 'Ferretería GDL' }])).toBeNull()
   })
 
-  it('rechaza perfiles de otra ciudad o país aunque el nombre coincida', () => {
-    expect(instagramDeResultados('Bianca Aldama Boutique', [{ link: 'https://instagram.com/biancaaldamaboutiquemochis/', title: 'Bianca Aldama Boutique Mochis', description: 'Boutique en Los Mochis, Sinaloa' }])).toBeNull()
-    expect(instagramDeResultados('Clínica Dental Smile Clinic', [{ link: 'https://instagram.com/clinicasmile.cl/', title: 'Clínica Smile' }])).toBeNull()
-    expect(instagramDeResultados('SONRÍE', [{ link: 'https://instagram.com/sonrieeneldesayuno/', title: 'Sonríe en el desayuno' }])).toBeNull()
-    // Con seña de la zona en la descripción sí pasa aunque el usuario traiga más cosas.
-    expect(instagramDeResultados('Clínica Dental Díaz', [{ link: 'https://instagram.com/clinicadentaldiazlopezcadiz/', title: 'Clínica Dental Díaz', description: 'Odontología integral en Tlaquepaque, Jalisco' }], 'Tlaquepaque')).toBe('https://instagram.com/clinicadentaldiazlopezcadiz')
-    expect(instagramDeResultados('Hocre Inmobiliaria', [{ link: 'https://instagram.com/hocreinmobiliaria/', title: 'HOCRE Inmobiliaria' }])).toBe('https://instagram.com/hocreinmobiliaria')
+  it('rejects profiles from another city or country even if the name matches', () => {
+    expect(instagramFromResults('Bianca Aldama Boutique', [{ link: 'https://instagram.com/biancaaldamaboutiquemochis/', title: 'Bianca Aldama Boutique Mochis', description: 'Boutique en Los Mochis, Sinaloa' }])).toBeNull()
+    expect(instagramFromResults('Clínica Dental Smile Clinic', [{ link: 'https://instagram.com/clinicasmile.cl/', title: 'Clínica Smile' }])).toBeNull()
+    expect(instagramFromResults('SONRÍE', [{ link: 'https://instagram.com/sonrieeneldesayuno/', title: 'Sonríe en el desayuno' }])).toBeNull()
+    // With a local hint in the description it passes even if the username has more in it.
+    expect(instagramFromResults('Clínica Dental Díaz', [{ link: 'https://instagram.com/clinicadentaldiazlopezcadiz/', title: 'Clínica Dental Díaz', description: 'Odontología integral en Tlaquepaque, Jalisco' }], 'Tlaquepaque')).toBe('https://instagram.com/clinicadentaldiazlopezcadiz')
+    expect(instagramFromResults('Hocre Inmobiliaria', [{ link: 'https://instagram.com/hocreinmobiliaria/', title: 'HOCRE Inmobiliaria' }])).toBe('https://instagram.com/hocreinmobiliaria')
   })
 
-  it('no acepta nombres sin palabras distintivas ni rutas que no son perfil', () => {
-    expect(instagramDeResultados('Taller Mecánico Zapopan', [{ link: 'https://instagram.com/tallermecanicozapopan/', title: 'Taller Mecánico Zapopan' }])).toBeNull()
-    expect(instagramDeResultados('Maroffa', [{ link: 'https://instagram.com/explore/tags/maroffa/', title: 'maroffa' }])).toBeNull()
-    expect(instagramDeResultados('Maroffa', [])).toBeNull()
+  it('does not accept names without distinctive words or paths that are not a profile', () => {
+    expect(instagramFromResults('Taller Mecánico Zapopan', [{ link: 'https://instagram.com/tallermecanicozapopan/', title: 'Taller Mecánico Zapopan' }])).toBeNull()
+    expect(instagramFromResults('Maroffa', [{ link: 'https://instagram.com/explore/tags/maroffa/', title: 'maroffa' }])).toBeNull()
+    expect(instagramFromResults('Maroffa', [])).toBeNull()
   })
 })
 
-describe('Facebook y LinkedIn por búsqueda web', () => {
-  it('saca la página de Facebook y el teléfono del resumen cuando cuadra con el negocio', () => {
+describe('Facebook and LinkedIn by web search', () => {
+  it('gets the Facebook page and the phone from the snippet when it matches the business', () => {
     const r = [
       { link: 'https://www.facebook.com/61557672856757/reels/', title: 'Maroffa Restaurante' },
       { link: 'https://www.facebook.com/p/Maroffa-Restaurante-61557672856757/', title: 'Maroffa Restaurante | Tlaquepaque | Facebook', description: 'Somos tu primer opción en Tlaquepaque. Independencia 288, Tlaquepaque, Mexico · +52 33 1234 5678 · hola@maroffa.mx' },
     ]
-    expect(facebookDeResultados('Maroffa Restaurante', r, 'Tlaquepaque')).toEqual({ url: 'https://facebook.com/Maroffa-Restaurante-61557672856757', telefono: '33 1234 5678', correo: 'hola@maroffa.mx' })
-    expect(facebookDeResultados('Grupo GUZVA', [{ link: 'https://www.facebook.com/grupoguzva/', title: 'Grupo GUZVA | Guadalajara', description: 'Grupo GUZVA, Guadalajara, Jalisco. 436 likes' }])).toEqual({ url: 'https://facebook.com/grupoguzva', telefono: null, correo: null })
-    expect(facebookDeResultados('Rievsa Ferretería', [{ link: 'https://www.facebook.com/people/Ferreteria-Cali/123/', title: 'Ferretería Cali' }])).toBeNull()
+    expect(facebookFromResults('Maroffa Restaurante', r, 'Tlaquepaque')).toEqual({ url: 'https://facebook.com/Maroffa-Restaurante-61557672856757', phone: '33 1234 5678', email: 'hola@maroffa.mx' })
+    expect(facebookFromResults('Grupo GUZVA', [{ link: 'https://www.facebook.com/grupoguzva/', title: 'Grupo GUZVA | Guadalajara', description: 'Grupo GUZVA, Guadalajara, Jalisco. 436 likes' }])).toEqual({ url: 'https://facebook.com/grupoguzva', phone: null, email: null })
+    expect(facebookFromResults('Rievsa Ferretería', [{ link: 'https://www.facebook.com/people/Ferreteria-Cali/123/', title: 'Ferretería Cali' }])).toBeNull()
   })
 
-  it('elige al directivo de LinkedIn que decide, no al operador', () => {
+  it('picks the LinkedIn executive who decides, not the operator', () => {
     const r = [
       { link: 'https://mx.linkedin.com/in/maribel-ramirez-557238161', title: 'Maribel Ramirez - Jefe de logística - JTP LOGISTICS', description: '' },
       { link: 'https://www.linkedin.com/in/theodus-penn-962700206/', title: 'theodus penn - Truck Driver at JTP LOGISTICS', description: 'Atlanta' },
       { link: 'https://mx.linkedin.com/in/jose-tirado-b3766691?trk=x', title: 'Jose Tirado - Gerente comercial superior - JTP logistics | LinkedIn', description: 'Zapopan, JAL' },
       { link: 'https://www.linkedin.com/in/ana-lopez-1/', title: 'Ana López - Directora General - JTP Logistics | LinkedIn', description: 'Guadalajara' },
     ]
-    expect(contactoLinkedInDeResultados('JTP Logistics', r)).toEqual({ nombre: 'Ana', apellido: 'López', cargo: 'Directora General', url: 'https://www.linkedin.com/in/ana-lopez-1/' })
-    // Sin directivo con cargo de decisión, no inventa.
-    expect(contactoLinkedInDeResultados('JTP Logistics', r.slice(1, 2))).toBeNull()
-    expect(contactoLinkedInDeResultados('JTP Logistics', [{ link: 'https://linkedin.com/company/jtp', title: 'JTP Logistics | LinkedIn' }])).toBeNull()
-    // Los títulos profesionales no son el nombre.
-    expect(contactoLinkedInDeResultados('GCPI Grupo Constructor', [{ link: 'https://www.linkedin.com/in/gccorporativo/', title: 'Lic. José Alberto Guerrero Luna - Director legal - GCPI | LinkedIn' }])?.nombre).toBe('José')
+    expect(linkedInContactFromResults('JTP Logistics', r)).toEqual({ firstName: 'Ana', lastName: 'López', jobTitle: 'Directora General', url: 'https://www.linkedin.com/in/ana-lopez-1/' })
+    // Without an executive with a decision-making title, it doesn't make one up.
+    expect(linkedInContactFromResults('JTP Logistics', r.slice(1, 2))).toBeNull()
+    expect(linkedInContactFromResults('JTP Logistics', [{ link: 'https://linkedin.com/company/jtp', title: 'JTP Logistics | LinkedIn' }])).toBeNull()
+    // Professional titles are not the name.
+    expect(linkedInContactFromResults('GCPI Grupo Constructor', [{ link: 'https://www.linkedin.com/in/gccorporativo/', title: 'Lic. José Alberto Guerrero Luna - Director legal - GCPI | LinkedIn' }])?.firstName).toBe('José')
   })
 })
 
-describe('buscador de prospectos (Places)', () => {
-  it('normaliza dominio, teléfono y nombre', () => {
-    expect(dominioDe('http://www.dhiconsultores.com/')).toBe('dhiconsultores.com')
-    expect(dominioDe('https://www.facebook.com/negocio')).toBeNull()
-    expect(dominioDe('negocio.business.site')).toBeNull()
-    expect(dominioDe(null)).toBeNull()
-    expect(formatoTelefono('33 1652 5572')).toBe('33 1652 5572')
-    expect(formatoTelefono('+52 33 1652 5572')).toBe('33 1652 5572')
-    expect(formatoTelefono('(33) 1652-5572')).toBe('33 1652 5572')
-    expect(nombreNormalizado('GGV CONTADORES FISCALISTAS, S.C.')).toBe('ggv contadores fiscalistas')
-    expect(nombreNormalizado('Distribuidora La Abundancia S.A. de C.V.')).toBe('distribuidora la abundancia')
+describe('prospect search (Places)', () => {
+  it('normalizes domain, phone and name', () => {
+    expect(domainOf('http://www.dhiconsultores.com/')).toBe('dhiconsultores.com')
+    expect(domainOf('https://www.facebook.com/negocio')).toBeNull()
+    expect(domainOf('negocio.business.site')).toBeNull()
+    expect(domainOf(null)).toBeNull()
+    expect(formatPhone('33 1652 5572')).toBe('33 1652 5572')
+    expect(formatPhone('+52 33 1652 5572')).toBe('33 1652 5572')
+    expect(formatPhone('(33) 1652-5572')).toBe('33 1652 5572')
+    expect(normalizedName('GGV CONTADORES FISCALISTAS, S.C.')).toBe('ggv contadores fiscalistas')
+    expect(normalizedName('Distribuidora La Abundancia S.A. de C.V.')).toBe('distribuidora la abundancia')
   })
 
-  it('convierte un resultado de Places en candidato', () => {
-    const c = candidatoDe({ id: 'abc', displayName: { text: ' ES Contable ' }, formattedAddress: 'Eje Central 5140, Zapopan', websiteUri: 'https://www.escontable.com/', nationalPhoneNumber: '33 1973 2676', rating: 5, userRatingCount: 32, primaryTypeDisplayName: { text: 'Asesor' } })
-    expect(c).toMatchObject({ placeId: 'abc', nombre: 'ES Contable', dominio: 'escontable.com', telefono: '33 1973 2676', rating: 5, resenas: 32, tipo: 'Asesor', enCrm: false })
+  it('turns a Places result into a candidate', () => {
+    const c = candidateFrom({ id: 'abc', displayName: { text: ' ES Contable ' }, formattedAddress: 'Eje Central 5140, Zapopan', websiteUri: 'https://www.escontable.com/', nationalPhoneNumber: '33 1973 2676', rating: 5, userRatingCount: 32, primaryTypeDisplayName: { text: 'Asesor' } })
+    expect(c).toMatchObject({ placeId: 'abc', name: 'ES Contable', domain: 'escontable.com', phone: '33 1973 2676', rating: 5, reviews: 32, type: 'Asesor', inCrm: false })
   })
 
-  it('marca los que ya están en el CRM por dominio, teléfono o nombre', () => {
+  it('marks those already in the CRM by domain, phone or name', () => {
     const cands = [
-      candidatoDe({ id: '1', displayName: { text: 'Roistom Despacho' }, websiteUri: 'https://roistom.com/' }),
-      candidatoDe({ id: '2', displayName: { text: 'Otro' }, nationalPhoneNumber: '33 2001 2700' }),
-      candidatoDe({ id: '3', displayName: { text: 'GMC Consultores S.C.' } }),
-      candidatoDe({ id: '4', displayName: { text: 'Nuevo Despacho' }, websiteUri: 'https://nuevo.mx' }),
+      candidateFrom({ id: '1', displayName: { text: 'Roistom Despacho' }, websiteUri: 'https://roistom.com/' }),
+      candidateFrom({ id: '2', displayName: { text: 'Otro' }, nationalPhoneNumber: '33 2001 2700' }),
+      candidateFrom({ id: '3', displayName: { text: 'GMC Consultores S.C.' } }),
+      candidateFrom({ id: '4', displayName: { text: 'Nuevo Despacho' }, websiteUri: 'https://nuevo.mx' }),
     ]
-    const existentes = [
+    const existing = [
       { company: 'Roistom', website_url: 'https://roistom.com', phone: null, email: 'contacto@roistom.com' },
       { company: 'X', website_url: null, phone: '33 2001 2700', email: null },
       { company: 'GMC Consultores', website_url: null, phone: null, email: null },
     ]
-    expect(marcarExistentes(cands, existentes).map((c) => c.enCrm)).toEqual([true, true, true, false])
+    expect(markExisting(cands, existing).map((c) => c.inCrm)).toEqual([true, true, true, false])
   })
 
-  it('quita repetidos entre páginas y sucursales con el mismo nombre', () => {
-    const a = candidatoDe({ id: '1', displayName: { text: 'A' } })
-    expect(sinRepetidos([a, { ...a }, candidatoDe({ id: '2', displayName: { text: 'B' } })])).toHaveLength(2)
-    const e1 = candidatoDe({ id: '3', displayName: { text: 'Nucleo Odontologíco Escobar' } })
-    const e2 = candidatoDe({ id: '4', displayName: { text: 'Núcleo odontológico escobar' } })
-    expect(sinRepetidos([e1, e2])).toHaveLength(1)
+  it('removes repeats across pages and branches with the same name', () => {
+    const a = candidateFrom({ id: '1', displayName: { text: 'A' } })
+    expect(dedupe([a, { ...a }, candidateFrom({ id: '2', displayName: { text: 'B' } })])).toHaveLength(2)
+    const e1 = candidateFrom({ id: '3', displayName: { text: 'Nucleo Odontologíco Escobar' } })
+    const e2 = candidateFrom({ id: '4', displayName: { text: 'Núcleo odontológico escobar' } })
+    expect(dedupe([e1, e2])).toHaveLength(1)
   })
 
-  it('limpia nombres con lemas, sucursales y emojis, y descarta correos de relleno', () => {
-    expect(limpiarNombre('MF Dental Center | Dentista Zapopan')).toBe('MF Dental Center')
-    expect(limpiarNombre('Clínica Dental la Zapopana (Sucursal Constitución)')).toBe('Clínica Dental la Zapopana')
-    expect(limpiarNombre('FRIZCO - Bienes Raíces 🏡 | Guadalajara y Zapopan')).toBe('FRIZCO - Bienes Raíces')
-    expect(limpiarNombre('SYD Constructores, la constructora en Guadalajara')).toBe('SYD Constructores')
-    expect(extraerCorreo('escribe a usuario@dominio.com', 'ikal.mx')).toBeNull()
-    expect(extraerCorreo('correo@ejemplo.com o ventas@ikal.mx', 'ikal.mx')).toBe('ventas@ikal.mx')
-    // Relleno de plantilla y texto pegado: rebotaron el 28-oct-2026.
-    expect(extraerCorreo('Email: sample@mail.com', null)).toBeNull()
-    expect(extraerCorreo('visita placejoys.com@gmail.com', null)).toBeNull()
-    expect(extraerCorreo('tel 3312345678@hotmail.com', null)).toBeNull()
-    // Notarías y bufetes gratuitos salen de la cola aunque Places los traiga.
-    expect(fueraDePerfil('Notaría Pública no 21')).toBe(true)
-    expect(fueraDePerfil('Bufete Jurídico Gratuito ITESO')).toBe(true)
-    expect(fueraDePerfil('BD Abogados')).toBe(false)
-    // La ficha de Google va a las notas para que el primer mensaje hable de algo real.
-    expect(fichaGoogle({ rating: 4.8, resenas: 198, tipo: 'Clínica dental', direccion: 'Av. Cruz del Sur 3973, 44950 Guadalajara, Jal., México' })).toBe('Google Maps: 4.8 estrellas (198 reseñas) · Clínica dental · Av. Cruz del Sur 3973, Guadalajara, Jal.')
-    expect(fichaGoogle({ rating: null, resenas: 0, tipo: null, direccion: '' })).toBeNull()
+  it('cleans names with taglines, branches and emojis, and drops filler emails', () => {
+    expect(cleanName('MF Dental Center | Dentista Zapopan')).toBe('MF Dental Center')
+    expect(cleanName('Clínica Dental la Zapopana (Sucursal Constitución)')).toBe('Clínica Dental la Zapopana')
+    expect(cleanName('FRIZCO - Bienes Raíces 🏡 | Guadalajara y Zapopan')).toBe('FRIZCO - Bienes Raíces')
+    expect(cleanName('SYD Constructores, la constructora en Guadalajara')).toBe('SYD Constructores')
+    expect(extractEmail('escribe a usuario@dominio.com', 'ikal.mx')).toBeNull()
+    expect(extractEmail('correo@ejemplo.com o ventas@ikal.mx', 'ikal.mx')).toBe('ventas@ikal.mx')
+    // Template filler and glued text: they bounced on 2026-10-28.
+    expect(extractEmail('Email: sample@mail.com', null)).toBeNull()
+    expect(extractEmail('visita placejoys.com@gmail.com', null)).toBeNull()
+    expect(extractEmail('tel 3312345678@hotmail.com', null)).toBeNull()
+    // Notaries and free legal aid leave the queue even if Places returns them.
+    expect(isOffProfile('Notaría Pública no 21')).toBe(true)
+    expect(isOffProfile('Bufete Jurídico Gratuito ITESO')).toBe(true)
+    expect(isOffProfile('BD Abogados')).toBe(false)
+    // The Google listing goes into the notes so the first message talks about something real.
+    expect(googleListing({ rating: 4.8, reviews: 198, type: 'Clínica dental', address: 'Av. Cruz del Sur 3973, 44950 Guadalajara, Jal., México' })).toBe('Google Maps: 4.8 estrellas (198 reseñas) · Clínica dental · Av. Cruz del Sur 3973, Guadalajara, Jal.')
+    expect(googleListing({ rating: null, reviews: 0, type: null, address: '' })).toBeNull()
   })
 
-  it('elige el mejor correo de un sitio', () => {
+  it("picks a website's best email", () => {
     const html = `<a href="mailto:noreply@wixpress.com">x</a> Escríbenos a ventas@escontable.com o a juan@gmail.com. <img src="logo@2x.png">`
-    expect(extraerCorreo(html, 'escontable.com')).toBe('ventas@escontable.com')
-    expect(extraerCorreo('solo texto', 'x.com')).toBeNull()
-    expect(extraerCorreo('info [at] negocio [dot] mx', 'negocio.mx')).toBe('info@negocio.mx')
-    // Sin correo del dominio, prefiere contacto@ sobre un gmail personal
-    expect(extraerCorreo('contacto@otro.mx y persona@gmail.com', 'negocio.mx')).toBe('contacto@otro.mx')
+    expect(extractEmail(html, 'escontable.com')).toBe('ventas@escontable.com')
+    expect(extractEmail('solo texto', 'x.com')).toBeNull()
+    expect(extractEmail('info [at] negocio [dot] mx', 'negocio.mx')).toBe('info@negocio.mx')
+    // Without an email on the domain, it prefers contacto@ over a personal gmail
+    expect(extractEmail('contacto@otro.mx y persona@gmail.com', 'negocio.mx')).toBe('contacto@otro.mx')
   })
 
-  it('saca el Instagram y los enlaces de contacto', () => {
-    expect(extraerInstagram('<a href="https://www.instagram.com/roistom_despachocontable/">ig</a>')).toBe('https://instagram.com/roistom_despachocontable')
-    expect(extraerInstagram('https://instagram.com/p/abc123')).toBeNull()
-    // El icono generico de la plantilla no es el perfil: se toma el siguiente enlace.
-    expect(extraerInstagram('<a href="https://instagram.com/instagram">ig</a> <a href="https://www.instagram.com/kinal_spa/">k</a>')).toBe('https://instagram.com/kinal_spa')
-    expect(extraerInstagram('<a href="https://www.instagram.com/instagram/">ig</a>')).toBeNull()
-    const links = enlacesDeContacto('<a href="/contacto">c</a><a href="https://otro.com/contacto">x</a><a href="/blog">b</a><a href="nosotros.html">n</a>', 'https://negocio.mx/')
+  it('gets the Instagram and the contact links', () => {
+    expect(extractInstagram('<a href="https://www.instagram.com/roistom_despachocontable/">ig</a>')).toBe('https://instagram.com/roistom_despachocontable')
+    expect(extractInstagram('https://instagram.com/p/abc123')).toBeNull()
+    // The template's generic icon is not the profile: the next link is taken.
+    expect(extractInstagram('<a href="https://instagram.com/instagram">ig</a> <a href="https://www.instagram.com/kinal_spa/">k</a>')).toBe('https://instagram.com/kinal_spa')
+    expect(extractInstagram('<a href="https://www.instagram.com/instagram/">ig</a>')).toBeNull()
+    const links = contactLinks('<a href="/contacto">c</a><a href="https://otro.com/contacto">x</a><a href="/blog">b</a><a href="nosotros.html">n</a>', 'https://negocio.mx/')
     expect(links).toEqual(['https://negocio.mx/contacto', 'https://negocio.mx/nosotros.html'])
   })
 
-  it('la fila del candidato entra al mismo mapeo que el CSV', () => {
-    const c = { ...candidatoDe({ id: '1', displayName: { text: 'ES Contable' }, websiteUri: 'https://escontable.com', nationalPhoneNumber: '33 1973 2676' }), correo: 'ventas@escontable.com', instagram: null }
-    const { contacts } = mapRowsToContacts([filaDesdeCandidato(c, 'accounting')], { source: 'Google Places', tags: ['auto'] })
+  it("the candidate's row goes through the same mapping as the CSV", () => {
+    const c = { ...candidateFrom({ id: '1', displayName: { text: 'ES Contable' }, websiteUri: 'https://escontable.com', nationalPhoneNumber: '33 1973 2676' }), email: 'ventas@escontable.com', instagram: null }
+    const { contacts } = mapRowsToContacts([rowFromCandidate(c, 'accounting')], { source: 'Google Places', tags: ['auto'] })
     expect(contacts[0]).toMatchObject({ company: 'ES Contable', email: 'ventas@escontable.com', phone: '33 1973 2676', website_url: 'https://escontable.com', tags: ['auto', 'accounting'], status: 'no_contact', contact_type: 'prospect' })
-    expect(giroDe('accounting')?.segmento).toBe('accounting')
-    expect(giroDe('nada')).toBeNull()
+    expect(industryByKey('accounting')?.segment).toBe('accounting')
+    expect(industryByKey('nada')).toBeNull()
   })
 
-  it('etiqueta a los prospectos de colonias con mas presupuesto', () => {
-    expect(zonaPremium('Blvd. Puerta de Hierro 4965, Puerta de Hierro, 45116 Zapopan, Jal.')).toBe(true)
-    expect(zonaPremium('Av. Pablo Neruda 2850, Providencia, 44630 Guadalajara, Jal.')).toBe(true)
-    expect(zonaPremium('Av. Tonalá 123, Centro, 45400 Tonalá, Jal.')).toBe(false)
-    expect(zonaPremium(null)).toBe(false)
-    const cafe = { ...candidatoDe({ id: 'p1', displayName: { text: 'Tukafe' }, formattedAddress: 'Plaza Andares, Puerta de Hierro, Zapopan', nationalPhoneNumber: '33 1234 5678' }) }
-    const { contacts } = mapRowsToContacts([filaDesdeCandidato(cafe, 'restaurants')], { source: 'Google Places', tags: ['auto'] })
+  it('tags prospects in neighborhoods with a bigger budget', () => {
+    expect(isPremiumZone('Blvd. Puerta de Hierro 4965, Puerta de Hierro, 45116 Zapopan, Jal.')).toBe(true)
+    expect(isPremiumZone('Av. Pablo Neruda 2850, Providencia, 44630 Guadalajara, Jal.')).toBe(true)
+    expect(isPremiumZone('Av. Tonalá 123, Centro, 45400 Tonalá, Jal.')).toBe(false)
+    expect(isPremiumZone(null)).toBe(false)
+    const cafe = { ...candidateFrom({ id: 'p1', displayName: { text: 'Tukafe' }, formattedAddress: 'Plaza Andares, Puerta de Hierro, Zapopan', nationalPhoneNumber: '33 1234 5678' }) }
+    const { contacts } = mapRowsToContacts([rowFromCandidate(cafe, 'restaurants')], { source: 'Google Places', tags: ['auto'] })
     expect(contacts[0].tags).toEqual(['auto', 'restaurants', 'premium-zone'])
   })
 
-  it('saca el WhatsApp que el negocio publica en su sitio', () => {
-    expect(extraerWhatsApp('<a href="https://wa.me/523312345678?text=Hola">WhatsApp</a>')).toBe('523312345678')
-    expect(extraerWhatsApp('<a href="https://api.whatsapp.com/send?phone=5213312345678&amp;text=Hola">')).toBe('523312345678')
-    expect(extraerWhatsApp('href="https://api.whatsapp.com/send/?text=hola&phone=%2B52 33 1234 5678"')).toBe('523312345678')
-    expect(extraerWhatsApp('<a href="https://wa.me/3312345678">')).toBe('523312345678')
-    expect(extraerWhatsApp('<a href="https://wa.me/12025550123">')).toBe('12025550123')
-    // Sin numero (enlace generico o grupo) no hay a quien escribir.
-    expect(extraerWhatsApp('<a href="https://wa.me/?text=hola">')).toBeNull()
-    expect(extraerWhatsApp('<a href="https://chat.whatsapp.com/AbCdEf">')).toBeNull()
-    expect(extraerWhatsApp('Tel. 33 1234 5678')).toBeNull()
-    expect(sePuedeEscribir({ whatsapp: '523312345678' })).toBe(true)
+  it('gets the WhatsApp the business publishes on its website', () => {
+    expect(extractWhatsApp('<a href="https://wa.me/523312345678?text=Hola">WhatsApp</a>')).toBe('523312345678')
+    expect(extractWhatsApp('<a href="https://api.whatsapp.com/send?phone=5213312345678&amp;text=Hola">')).toBe('523312345678')
+    expect(extractWhatsApp('href="https://api.whatsapp.com/send/?text=hola&phone=%2B52 33 1234 5678"')).toBe('523312345678')
+    expect(extractWhatsApp('<a href="https://wa.me/3312345678">')).toBe('523312345678')
+    expect(extractWhatsApp('<a href="https://wa.me/12025550123">')).toBe('12025550123')
+    // Without a number (generic link or group) there's nobody to write to.
+    expect(extractWhatsApp('<a href="https://wa.me/?text=hola">')).toBeNull()
+    expect(extractWhatsApp('<a href="https://chat.whatsapp.com/AbCdEf">')).toBeNull()
+    expect(extractWhatsApp('Tel. 33 1234 5678')).toBeNull()
+    expect(isReachable({ whatsapp: '523312345678' })).toBe(true)
   })
 
-  it('entra al CRM quien tiene correo, Instagram, WhatsApp publicado o un telefono que puede ser WhatsApp', () => {
-    expect(sePuedeEscribir({ correo: 'a@b.mx', instagram: null })).toBe(true)
-    expect(sePuedeEscribir({ correo: null, instagram: 'ferreteria' })).toBe(true)
-    expect(sePuedeEscribir({ correo: ' ', instagram: '' })).toBe(false)
-    expect(sePuedeEscribir({})).toBe(false)
-    // El telefono de Google cuenta (26-oct-2026); un 800 no.
-    expect(sePuedeEscribir({ telefono: '33 1234 5678' })).toBe(true)
-    expect(sePuedeEscribir({ telefono: '800 123 4567' })).toBe(false)
+  it('whoever has an email, Instagram, published WhatsApp or a phone that may be WhatsApp gets into the CRM', () => {
+    expect(isReachable({ email: 'a@b.mx', instagram: null })).toBe(true)
+    expect(isReachable({ email: null, instagram: 'ferreteria' })).toBe(true)
+    expect(isReachable({ email: ' ', instagram: '' })).toBe(false)
+    expect(isReachable({})).toBe(false)
+    // Google's phone counts (2026-10-26); an 800 doesn't.
+    expect(isReachable({ phone: '33 1234 5678' })).toBe(true)
+    expect(isReachable({ phone: '800 123 4567' })).toBe(false)
   })
 
-  it('el telefono de Google se vuelve numero de WhatsApp de Mexico, salvo 800, 900 y numeros de relleno', () => {
-    expect(telefonoParaWhatsApp('33 1234 5678')).toBe('523312345678')
-    expect(telefonoParaWhatsApp('+52 1 33 1234 5678')).toBe('523312345678')
-    expect(telefonoParaWhatsApp('+52 33 1234 5678')).toBe('523312345678')
-    expect(telefonoParaWhatsApp('800 700 5346')).toBeNull()
-    expect(telefonoParaWhatsApp('01 800 123 4567')).toBeNull()
-    expect(telefonoParaWhatsApp('1234567890')).toBeNull()
-    expect(telefonoParaWhatsApp('3333333333')).toBeNull()
-    expect(telefonoParaWhatsApp('12345')).toBeNull()
-    expect(telefonoParaWhatsApp(null)).toBeNull()
+  it("Google's phone becomes a Mexican WhatsApp number, except 800, 900 and filler numbers", () => {
+    expect(phoneAsWhatsApp('33 1234 5678')).toBe('523312345678')
+    expect(phoneAsWhatsApp('+52 1 33 1234 5678')).toBe('523312345678')
+    expect(phoneAsWhatsApp('+52 33 1234 5678')).toBe('523312345678')
+    expect(phoneAsWhatsApp('800 700 5346')).toBeNull()
+    expect(phoneAsWhatsApp('01 800 123 4567')).toBeNull()
+    expect(phoneAsWhatsApp('1234567890')).toBeNull()
+    expect(phoneAsWhatsApp('3333333333')).toBeNull()
+    expect(phoneAsWhatsApp('12345')).toBeNull()
+    expect(phoneAsWhatsApp(null)).toBeNull()
   })
 
-  it('cada corrida toma el tramo siguiente y entre varias recorren la lista completa', () => {
-    const lista = Array.from({ length: 7 }, (_, i) => i)
-    expect(tramoDeBusquedas(lista, 0, 3)).toEqual([0, 1, 2])
-    expect(tramoDeBusquedas(lista, 1, 3)).toEqual([3, 4, 5])
-    expect(tramoDeBusquedas(lista, 2, 3)).toEqual([6, 0, 1])
-    expect(new Set([0, 1, 2].flatMap((c) => tramoDeBusquedas(lista, c, 3))).size).toBe(7)
-    expect(tramoDeBusquedas(lista, 5, 20)).toHaveLength(7)
-    expect(tramoDeBusquedas([], 5, 3)).toEqual([])
+  it('each run takes the next slice and together they cover the whole list', () => {
+    const list = Array.from({ length: 7 }, (_, i) => i)
+    expect(searchSlice(list, 0, 3)).toEqual([0, 1, 2])
+    expect(searchSlice(list, 1, 3)).toEqual([3, 4, 5])
+    expect(searchSlice(list, 2, 3)).toEqual([6, 0, 1])
+    expect(new Set([0, 1, 2].flatMap((c) => searchSlice(list, c, 3))).size).toBe(7)
+    expect(searchSlice(list, 5, 20)).toHaveLength(7)
+    expect(searchSlice([], 5, 3)).toEqual([])
   })
 
-  it('el numero de corrida cuenta lunes, miercoles y viernes, asi que las 69 busquedas se cubren en 5 corridas', () => {
-    expect(numeroDeCorrida(new Date('2026-09-21T13:00:00Z'))).toBe(1) // lunes
-    expect(numeroDeCorrida(new Date('2026-09-22T13:00:00Z'))).toBe(1) // martes: no corre
-    expect(numeroDeCorrida(new Date('2026-09-23T13:00:00Z'))).toBe(2) // miercoles
-    expect(numeroDeCorrida(new Date('2026-09-25T13:00:00Z'))).toBe(3) // viernes
-    expect(numeroDeCorrida(new Date('2026-09-28T13:00:00Z'))).toBe(4) // siguiente lunes
-    const lista = Array.from({ length: 69 }, (_, i) => i)
-    const fechas = ['2026-09-28', '2026-09-30', '2026-10-02', '2026-10-05', '2026-10-07']
-    const vistos = new Set(fechas.flatMap((f) => tramoDeBusquedas(lista, numeroDeCorrida(new Date(`${f}T13:00:00Z`)), 15)))
-    expect(vistos.size).toBe(69)
+  it('the run number counts Mondays, Wednesdays and Fridays, so the 69 searches are covered in 5 runs', () => {
+    expect(runNumber(new Date('2026-09-21T13:00:00Z'))).toBe(1) // Monday
+    expect(runNumber(new Date('2026-09-22T13:00:00Z'))).toBe(1) // Tuesday: doesn't run
+    expect(runNumber(new Date('2026-09-23T13:00:00Z'))).toBe(2) // Wednesday
+    expect(runNumber(new Date('2026-09-25T13:00:00Z'))).toBe(3) // Friday
+    expect(runNumber(new Date('2026-09-28T13:00:00Z'))).toBe(4) // next Monday
+    const list = Array.from({ length: 69 }, (_, i) => i)
+    const dates = ['2026-09-28', '2026-09-30', '2026-10-02', '2026-10-05', '2026-10-07']
+    const seen = new Set(dates.flatMap((f) => searchSlice(list, runNumber(new Date(`${f}T13:00:00Z`)), 15)))
+    expect(seen.size).toBe(69)
   })
 
-  it('al buscar una empresa grande por nombre, se queda solo con esa marca y una sola vez', () => {
-    const c = [{ nombre: 'Farmacia San Juan' }, { nombre: 'Farmacias Guadalajara Chapultepec' }, { nombre: 'Farmacias Guadalajara Américas' }]
-    expect(deLaMarca(c, 'farmacias guadalajara')).toEqual([{ nombre: 'Farmacias Guadalajara Chapultepec' }])
-    expect(deLaMarca([{ nombre: 'Leche Sello Rojo S.A. de C.V.' }], 'sello rojo')).toHaveLength(1)
-    expect(deLaMarca(c, 'dalton')).toEqual([])
-    expect(giroDe2('corporate')?.segmento).toBe('corporate')
+  it('when searching a large company by name, it keeps only that brand and only once', () => {
+    const c = [{ name: 'Farmacia San Juan' }, { name: 'Farmacias Guadalajara Chapultepec' }, { name: 'Farmacias Guadalajara Américas' }]
+    expect(matchingBrand(c, 'farmacias guadalajara')).toEqual([{ name: 'Farmacias Guadalajara Chapultepec' }])
+    expect(matchingBrand([{ name: 'Leche Sello Rojo S.A. de C.V.' }], 'sello rojo')).toHaveLength(1)
+    expect(matchingBrand(c, 'dalton')).toEqual([])
+    expect(industryByKey('corporate')?.segment).toBe('corporate')
   })
 
-  it('no toma buzones de privacidad, facturacion o bolsa de trabajo como correo de contacto', () => {
-    expect(extraerCorreo('<p>privacidad@sellorojo.com.mx</p>', 'sellorojo.com.mx')).toBeNull()
-    expect(extraerCorreo('facturacion@x.mx rh@x.mx ventas@x.mx', 'x.mx')).toBe('ventas@x.mx')
-    expect(extraerCorreo('vacantes@x.mx datos-personales@x.mx', 'x.mx')).toBeNull()
-    // Correos de relleno de plantillas web (se le escribio a uno asi el 29-sep-2026).
-    expect(extraerCorreo('support@demoagency.com info@yourdomain.com', 'supermaynuez.mx')).toBeNull()
-    // Relleno de plantilla que llego al CRM y reboto el 2026-10-08.
-    expect(extraerCorreo('<a href="mailto:johndoe@mail.com">johndoe@mail.com</a>', 'colegiobatiz.edu.mx')).toBeNull()
-    // mailto con espacio codificado: el %20 no es parte del correo.
-    expect(extraerCorreo('<a href="mailto:%20reservaspisosiete@doubletreegdlch.com">Reservas</a>', 'doubletreegdlch.com')).toBe('reservaspisosiete@doubletreegdlch.com')
+  it('does not take privacy, billing or job mailboxes as the contact email', () => {
+    expect(extractEmail('<p>privacidad@sellorojo.com.mx</p>', 'sellorojo.com.mx')).toBeNull()
+    expect(extractEmail('facturacion@x.mx rh@x.mx ventas@x.mx', 'x.mx')).toBe('ventas@x.mx')
+    expect(extractEmail('vacantes@x.mx datos-personales@x.mx', 'x.mx')).toBeNull()
+    // Web template filler emails (one like that was written to on 2026-09-29).
+    expect(extractEmail('support@demoagency.com info@yourdomain.com', 'supermaynuez.mx')).toBeNull()
+    // Template filler that reached the CRM and bounced on 2026-10-08.
+    expect(extractEmail('<a href="mailto:johndoe@mail.com">johndoe@mail.com</a>', 'colegiobatiz.edu.mx')).toBeNull()
+    // mailto with an encoded space: the %20 is not part of the address.
+    expect(extractEmail('<a href="mailto:%20reservaspisosiete@doubletreegdlch.com">Reservas</a>', 'doubletreegdlch.com')).toBe('reservaspisosiete@doubletreegdlch.com')
   })
 })

@@ -32,8 +32,8 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { ETIQUETA_PLATAFORMA, PLATAFORMAS } from '@/lib/contact-socials'
-import { puedeRecibirCorreo, type CupoDeHoy } from '@/lib/envio-lote'
-import { CorreosEnLote } from '@/components/crm/correos-en-lote'
+import { canReceiveEmail, type DailyQuota } from '@/lib/batch-send'
+import { BatchEmails } from '@/components/crm/batch-emails'
 import {
   Select,
   SelectContent,
@@ -55,26 +55,26 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
   lang: string
-  /** Tope diario de correos y cuanto queda hoy, para la barra de envio en lote. */
-  cupo?: CupoDeHoy
+  /** Daily email cap and how much is left today, for the batch-send bar. */
+  quota?: DailyQuota
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   lang,
-  cupo,
+  quota,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({ contact_type: false })
   const [rowSelection, setRowSelection] = React.useState({})
-  // pageIndex en estado: con el indice fijo en 0, "Siguiente" no avanzaba.
+  // pageIndex lives in state: with the index fixed at 0, "Siguiente" did not move forward.
   const [pagination, setPagination] = React.useState<PaginationState>({ pageIndex: 0, pageSize: 10 })
   const pageSize = pagination.pageSize
   const setPageSize = (size: number) => setPagination({ pageIndex: 0, pageSize: size })
 
-  // Etiquetas legibles y localizadas para el menú de "Columnas".
+  // Readable, localized labels for the "Columnas" menu.
   const columnLabels: Record<string, { en: string; es: string }> = {
     name: { en: 'Name', es: 'Nombre' },
     email: { en: 'Email', es: 'Correo' },
@@ -98,9 +98,9 @@ export function DataTable<TData, TValue>({
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
-    // La seleccion se guarda por id del contacto para que sobreviva a filtros y paginas.
+    // Selection is keyed by contact id so it survives filters and pages.
     getRowId: (row) => (row as { id: string }).id,
-    enableRowSelection: (row) => puedeRecibirCorreo(row.original as { email?: string | null; tags?: string[] | null; invalid_emails?: string[] | null; correo?: { tipo: string } | null }),
+    enableRowSelection: (row) => canReceiveEmail(row.original as { email?: string | null; tags?: string[] | null; invalid_emails?: string[] | null; emailStatus?: { type: string } | null }),
     onPaginationChange: setPagination,
     autoResetPageIndex: false,
     state: {
@@ -112,17 +112,17 @@ export function DataTable<TData, TValue>({
     },
   })
 
-  // Al filtrar o buscar, volver a la primera pagina para no quedar en una vacia.
+  // When filtering or searching, go back to the first page so we don't land on an empty one.
   React.useEffect(() => {
     setPagination((p) => (p.pageIndex === 0 ? p : { ...p, pageIndex: 0 }))
   }, [columnFilters])
 
   return (
     <div className="w-full min-w-0 max-w-full">
-      {/* Filtros */}
+      {/* Filters */}
       <div className="space-y-4 py-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {/* Filtro por Nombre */}
+          {/* Name filter */}
           <div className="space-y-2">
             <Label htmlFor="name-filter">{lang === 'en' ? 'Name' : 'Nombre'}</Label>
             <Input
@@ -135,7 +135,7 @@ export function DataTable<TData, TValue>({
             />
           </div>
 
-          {/* Filtro por Email */}
+          {/* Email filter */}
           <div className="space-y-2">
             <Label htmlFor="email-filter">{lang === 'en' ? 'Email' : 'Correo'}</Label>
             <Input
@@ -148,7 +148,7 @@ export function DataTable<TData, TValue>({
             />
           </div>
 
-          {/* Filtro por Empresa */}
+          {/* Company filter */}
           <div className="space-y-2">
             <Label htmlFor="company-filter">{lang === 'en' ? 'Company' : 'Empresa'}</Label>
             <Input
@@ -161,7 +161,7 @@ export function DataTable<TData, TValue>({
             />
           </div>
 
-          {/* Filtro por Estado */}
+          {/* Status filter */}
           <div className="space-y-2">
             <Label htmlFor="status-filter">{lang === 'en' ? 'Status' : 'Estado'}</Label>
             <Select
@@ -186,7 +186,7 @@ export function DataTable<TData, TValue>({
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* Filtro por Tipo */}
+          {/* Type filter */}
           <div className="space-y-2">
             <Label htmlFor="type-filter">{lang === 'en' ? 'Type' : 'Tipo'}</Label>
             <Select
@@ -208,7 +208,7 @@ export function DataTable<TData, TValue>({
             </Select>
           </div>
 
-          {/* Filtro por redes sociales: con alguna, sin ninguna o una plataforma concreta */}
+          {/* Social media filter: any, none, or a specific platform */}
           <div className="space-y-2">
             <Label htmlFor="socials-filter">{lang === 'en' ? 'Social media' : 'Redes sociales'}</Label>
             <Select
@@ -231,7 +231,7 @@ export function DataTable<TData, TValue>({
             </Select>
           </div>
 
-          {/* Botón de Columnas */}
+          {/* Columns button */}
           <div className="flex items-end justify-end">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -261,14 +261,14 @@ export function DataTable<TData, TValue>({
           </div>
         </div>
       </div>
-      <CorreosEnLote
+      <BatchEmails
         lang={lang}
-        cupo={cupo}
-        elegidos={Object.keys(rowSelection).filter((id) => (rowSelection as Record<string, boolean>)[id]).map((id) => {
+        quota={quota}
+        selected={Object.keys(rowSelection).filter((id) => (rowSelection as Record<string, boolean>)[id]).map((id) => {
           const c = (data as Array<{ id: string; company?: string | null; email?: string | null }>).find((x) => x.id === id)
-          return { id, nombre: c?.company || c?.email || id }
+          return { id, name: c?.company || c?.email || id }
         })}
-        limpiar={() => setRowSelection({})}
+        clear={() => setRowSelection({})}
       />
       <div className="max-w-full overflow-x-auto rounded-md border">
         <Table className="min-w-max w-full">

@@ -22,7 +22,7 @@ export default async function NewContactPage({ params }: {
     redirect(`/${lang}/login`)
   }
 
-  // Verificar que el usuario sea admin
+  // Make sure the user is an admin
   if (!esAdmin(user)) {
     redirect(`/${lang}/dashboard/client`)
   }

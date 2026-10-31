@@ -1,43 +1,47 @@
 #!/usr/bin/env node
 /**
- * Envío de correos de prospección (cold outreach) con Resend.
+ * Sends prospecting (cold outreach) emails with Resend.
  *
- * Lee una lista CSV, personaliza una plantilla HTML por cada fila
- * (placeholders {{nombre}}, {{empresa}}, etc.) y envía un correo individual
- * a cada prospecto. Lleva un registro de enviados para que no se repitan al
- * volver a correr el script.
+ * Reads a CSV list, personalizes an HTML template per row (placeholders
+ * {{first_name}}, {{company}}, etc.) and sends an individual email to each
+ * prospect. Keeps a log of sent emails so they are not repeated when the
+ * script runs again.
  *
- * Variables de entorno (de .env):
- *   RESEND_API_KEY     — API key de Resend (requerida)
- *   RESEND_FROM_EMAIL  — remitente verificado, p.ej. contacto@imsoft.io
+ * Environment variables (from .env):
+ *   RESEND_API_KEY     — Resend API key (required)
+ *   RESEND_FROM_EMAIL  — verified sender, e.g. contacto@imsoft.io
  *
- * Uso:
+ * Usage:
  *   node --env-file=.env scripts/send-prospects.mjs \
  *     --list scripts/prospects/prospects.csv \
  *     --template scripts/prospects/template.html \
- *     --subject "Una idea para optimizar el sitio de {{empresa}}" \
+ *     --subject "Una idea para optimizar el sitio de {{company}}" \
  *     --dry-run
  *
  * Flags:
- *   --list <ruta>          CSV de prospectos (requerido). Debe tener columnas "nombre" y "email".
- *   --template <ruta>      HTML de la plantilla (default: scripts/prospects/template.html)
- *   --subject <texto>      Asunto. Admite placeholders {{...}} (default abajo).
- *   --from <correo>        Remitente (default: RESEND_FROM_EMAIL o contacto@imsoft.io)
- *   --from-name <texto>    Nombre del remitente (default: "imSoft")
- *   --reply-to <correo>    Reply-To (default: igual que --from)
- *   --delay <ms>           Pausa entre envíos (default: 700ms, ~1.4 correos/seg)
- *   --limit <n>            Enviar como máximo N correos en esta corrida
- *   --log <ruta>           Registro de enviados (default: scripts/prospects/sent-log.csv)
- *   --default-nombre <t>   Texto si la fila no trae nombre (default: "")
- *   --dry-run              No envía nada: valida la lista y escribe una vista previa.
- *   --resend               Ignora el registro y reenvía aunque ya se haya enviado antes.
+ *   --list <path>          Prospects CSV (required). Needs "first_name" and "email" columns
+ *                          (the old Spanish headers, e.g. "nombre", "empresa", still work).
+ *   --template <path>      HTML template (default: scripts/prospects/template.html)
+ *   --subject <text>       Subject. Accepts {{...}} placeholders (default below).
+ *   --from <email>         Sender (default: RESEND_FROM_EMAIL or contacto@imsoft.io)
+ *   --from-name <text>     Sender name (default: "imSoft")
+ *   --reply-to <email>     Reply-To (default: same as --from)
+ *   --delay <ms>           Pause between sends (default: 700ms, ~1.4 emails/sec)
+ *   --limit <n>            Send at most N emails in this run
+ *   --log <path>           Sent log (default: scripts/prospects/sent-log.csv)
+ *   --default-name <t>     Text when the row has no name (default: ""; old flag --default-nombre also works)
+ *   --dry-run              Sends nothing: validates the list and writes a preview.
+ *   --resend               Ignores the log and resends even if already sent.
+ *
+ * Templates and subjects may use the English column names or the old Spanish ones
+ * ({{nombre}}, {{empresa}}...): both are filled in.
  */
 
 import { readFileSync, writeFileSync, appendFileSync, existsSync, mkdirSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { Resend } from 'resend';
 
-// ---------- Parseo de argumentos ----------
+// ---------- Argument parsing ----------
 function parseArgs(argv) {
   const args = {};
   for (let i = 0; i < argv.length; i++) {
@@ -46,7 +50,7 @@ function parseArgs(argv) {
     const key = a.slice(2);
     const next = argv[i + 1];
     if (next === undefined || next.startsWith('--')) {
-      args[key] = true; // flag booleana
+      args[key] = true; // boolean flag
     } else {
       args[key] = next;
       i++;
@@ -57,14 +61,14 @@ function parseArgs(argv) {
 
 const args = parseArgs(process.argv.slice(2));
 
-// ---------- Sincronizacion con el CRM ----------
-// Un prospecto al que ya le escribimos deja de estar "Sin contacto". Solo se
-// mueve desde ahi: si ya iba en negociacion, un correo mas no lo regresa.
+// ---------- CRM sync ----------
+// A prospect we already wrote to is no longer "no contact". It only moves from
+// there: if it was already in negotiation, one more email does not send it back.
 const CRM_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const CRM_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const CRM_ON = Boolean(CRM_URL && CRM_KEY) && !args['no-crm'];
 
-async function crmRegistrarEnvio(email, subject, html) {
+async function crmRecordSend(email, subject, html) {
   if (!CRM_ON) return null;
   const headers = {
     apikey: CRM_KEY,
@@ -72,30 +76,30 @@ async function crmRegistrarEnvio(email, subject, html) {
     'Content-Type': 'application/json',
   };
   try {
-    const filtro = `email=eq.${encodeURIComponent(email.toLowerCase())}`;
-    const r = await fetch(`${CRM_URL}/rest/v1/contacts?${filtro}&select=id,status`, { headers });
-    const [contacto] = await r.json();
-    if (!contacto) return 'sin-contacto';
+    const filter = `email=eq.${encodeURIComponent(email.toLowerCase())}`;
+    const r = await fetch(`${CRM_URL}/rest/v1/contacts?${filter}&select=id,status`, { headers });
+    const [contact] = await r.json();
+    if (!contact) return 'not-in-crm';
 
     await fetch(`${CRM_URL}/rest/v1/contact_emails`, {
       method: 'POST',
       headers,
       body: JSON.stringify({
-        contact_id: contacto.id,
-        status: contacto.status,
+        contact_id: contact.id,
+        status: contact.status,
         subject,
         body: html,
       }),
     });
 
-    if (contacto.status !== 'no_contact') return 'sin-cambio';
+    if (contact.status !== 'no_contact') return 'unchanged';
 
-    const u = await fetch(`${CRM_URL}/rest/v1/contacts?${filtro}`, {
+    const u = await fetch(`${CRM_URL}/rest/v1/contacts?${filter}`, {
       method: 'PATCH',
       headers,
       body: JSON.stringify({ status: 'qualification' }),
     });
-    return u.ok ? 'a-prospeccion' : 'error';
+    return u.ok ? 'to-qualification' : 'error';
   } catch (e) {
     console.log(`     ⚠️  CRM: ${e.message}`);
     return 'error';
@@ -106,14 +110,14 @@ async function crmRegistrarEnvio(email, subject, html) {
 
 const LIST = args.list;
 const TEMPLATE = args.template || 'scripts/prospects/template.html';
-const SUBJECT = args.subject || 'Una idea para potenciar el software de {{empresa}}';
+const SUBJECT = args.subject || 'Una idea para potenciar el software de {{company}}';
 const FROM_EMAIL = args.from || process.env.RESEND_FROM_EMAIL || 'contacto@imsoft.io';
 const FROM_NAME = args['from-name'] || 'imSoft';
 const REPLY_TO = args['reply-to'] || FROM_EMAIL;
 const DELAY = Number(args.delay ?? 700);
 const LIMIT = args.limit ? Number(args.limit) : Infinity;
 const LOG = args.log || 'scripts/prospects/sent-log.csv';
-const DEFAULT_NOMBRE = args['default-nombre'] || '';
+const DEFAULT_NAME = args['default-name'] || args['default-nombre'] || '';
 const DRY_RUN = Boolean(args['dry-run']);
 const FORCE_RESEND = Boolean(args.resend);
 
@@ -129,7 +133,7 @@ if (!DRY_RUN && !process.env.RESEND_API_KEY) {
   fail('RESEND_API_KEY no está definida. Corre con: node --env-file=.env scripts/send-prospects.mjs ...');
 }
 
-// ---------- CSV mínimo (soporta comillas y comas dentro de comillas) ----------
+// ---------- Minimal CSV (supports quotes and commas inside quotes) ----------
 function parseCsv(text) {
   const rows = [];
   let row = [];
@@ -146,7 +150,7 @@ function parseCsv(text) {
       if (c === '"') inQuotes = true;
       else if (c === ',') { row.push(field); field = ''; }
       else if (c === '\n') { row.push(field); rows.push(row); row = []; field = ''; }
-      else if (c === '\r') { /* ignora */ }
+      else if (c === '\r') { /* ignored */ }
       else field += c;
     }
   }
@@ -154,10 +158,18 @@ function parseCsv(text) {
   return rows.filter((r) => r.some((v) => v.trim() !== ''));
 }
 
+// Old Spanish CSV headers -> English keys. Same table as CSV_HEADER_ALIASES in
+// src/lib/import-contacts.ts (copied: this script runs as plain JS).
+const CSV_HEADER_ALIASES = {
+  nombre: 'first_name', apellido: 'last_name', empresa: 'company', puesto: 'job_title', cargo: 'job_title',
+  telefono: 'phone', 'teléfono': 'phone', sitio: 'website', gancho: 'hook', segmento: 'segment', zona: 'zone',
+  asunto: 'subject', saludo: 'greeting', correo: 'email',
+};
+
 function readCsvAsObjects(path) {
   const rows = parseCsv(readFileSync(path, 'utf8'));
   if (rows.length === 0) return [];
-  const headers = rows[0].map((h) => h.trim().toLowerCase());
+  const headers = rows[0].map((h) => h.trim().toLowerCase()).map((h) => CSV_HEADER_ALIASES[h] ?? h);
   return rows.slice(1).map((r) => {
     const obj = {};
     headers.forEach((h, idx) => { obj[h] = (r[idx] ?? '').trim(); });
@@ -165,22 +177,32 @@ function readCsvAsObjects(path) {
   });
 }
 
-// ---------- Render de plantilla ----------
+// Templates written with the old placeholders ({{nombre}}, {{empresa}}...) keep working.
+function withLegacyKeys(row) {
+  const out = { ...row };
+  for (const [legacy, key] of Object.entries(CSV_HEADER_ALIASES)) {
+    if (key in row && !(legacy in out)) out[legacy] = row[key];
+  }
+  return out;
+}
+
+// ---------- Template rendering ----------
 function render(tpl, data) {
+  const values = withLegacyKeys(data);
   return tpl.replace(/\{\{\s*([\w-]+)\s*\}\}/g, (_, key) => {
     const k = key.toLowerCase();
-    return data[k] ?? '';
+    return values[k] ?? '';
   });
 }
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-// ---------- Registro de enviados ----------
+// ---------- Sent log ----------
 function loadSent(path) {
   const set = new Set();
   if (!existsSync(path)) return set;
   const rows = parseCsv(readFileSync(path, 'utf8'));
-  // formato: timestamp,email,status,id
+  // format: timestamp,email,status,id
   for (const r of rows.slice(1)) {
     const email = (r[1] ?? '').trim().toLowerCase();
     const status = (r[2] ?? '').trim();
@@ -211,7 +233,7 @@ async function main() {
 
   const alreadySent = FORCE_RESEND ? new Set() : loadSent(LOG);
 
-  // Validación + dedup local en la lista
+  // Validation + local dedup within the list
   const seen = new Set();
   const queue = [];
   const skipped = { invalid: [], duplicate: [], already: [], noName: [] };
@@ -222,7 +244,7 @@ async function main() {
     if (seen.has(email)) { skipped.duplicate.push(email); continue; }
     seen.add(email);
     if (alreadySent.has(email)) { skipped.already.push(email); continue; }
-    if (!p.nombre) { p.nombre = DEFAULT_NOMBRE; skipped.noName.push(email); }
+    if (!p.first_name) { p.first_name = DEFAULT_NAME; skipped.noName.push(email); }
     queue.push(p);
   }
 
@@ -238,7 +260,7 @@ async function main() {
   console.log(`  Asunto:       ${SUBJECT}`);
   console.log(`  A enviar:     ${toSend.length}${toSend.length < queue.length ? ` (de ${queue.length} elegibles, limitado a ${LIMIT})` : ''}`);
   console.log(`  Ya enviados:  ${skipped.already.length}  ·  Duplicados: ${skipped.duplicate.length}  ·  Inválidos: ${skipped.invalid.length}`);
-  if (skipped.noName.length) console.log(`  ⚠️  Sin nombre (${skipped.noName.length}): se usará "${DEFAULT_NOMBRE}" → revisa que el saludo lea bien.`);
+  if (skipped.noName.length) console.log(`  ⚠️  Sin nombre (${skipped.noName.length}): se usará "${DEFAULT_NAME}" → revisa que el saludo lea bien.`);
   if (skipped.invalid.length) console.log(`  ⚠️  Correos inválidos omitidos: ${skipped.invalid.join(', ')}`);
   console.log('══════════════════════════════════════════════\n');
 
@@ -257,7 +279,7 @@ async function main() {
     console.log(`   Asunto renderizado:  "${previewSubject}"`);
     console.log(`   Destinatario #1:     ${toSend[0].email}\n`);
     console.log('   Destinatarios que se enviarían:');
-    toSend.forEach((p, i) => console.log(`     ${i + 1}. ${p.nombre || '(sin nombre)'} <${p.email}>`));
+    toSend.forEach((p, i) => console.log(`     ${i + 1}. ${p.first_name || '(sin nombre)'} <${p.email}>`));
     console.log('\n   Cuando todo se vea bien, vuelve a correr SIN --dry-run.\n');
     return;
   }
@@ -265,7 +287,7 @@ async function main() {
   ensureLog(LOG);
   const resend = new Resend(process.env.RESEND_API_KEY);
 
-  // List-Unsubscribe por mailto: mejora la entregabilidad y da opción de baja.
+  // List-Unsubscribe via mailto: improves deliverability and offers an opt-out.
   const unsubHeaders = {
     'List-Unsubscribe': `<mailto:${FROM_EMAIL}?subject=BAJA>`,
   };
@@ -296,12 +318,12 @@ async function main() {
         logRow(LOG, p.email, 'error', msg.replace(/\s+/g, ' ').slice(0, 120));
       } else {
         ok++;
-        const crm = await crmRegistrarEnvio(p.email, subject, html);
-        const nota = crm === 'a-prospeccion' ? ' · CRM: → Prospección'
-          : crm === 'sin-contacto' ? ' · no está en el CRM'
-          : crm === 'sin-cambio' ? ' · CRM: estado sin cambio'
+        const crm = await crmRecordSend(p.email, subject, html);
+        const note = crm === 'to-qualification' ? ' · CRM: → Prospección'
+          : crm === 'not-in-crm' ? ' · no está en el CRM'
+          : crm === 'unchanged' ? ' · CRM: estado sin cambio'
           : '';
-        console.log(`  ✓ ${label} — id ${data?.id ?? ''}${nota}`);
+        console.log(`  ✓ ${label} — id ${data?.id ?? ''}${note}`);
         logRow(LOG, p.email, 'sent', data?.id ?? '');
       }
     } catch (e) {

@@ -1,31 +1,33 @@
 #!/usr/bin/env node
 /**
- * Importacion masiva de prospectos a la tabla `contacts` del CRM.
+ * Bulk import of prospects into the CRM `contacts` table.
  *
- * Lee un CSV, lo mapea con src/lib/import-contacts.ts y lo inserta en Supabase.
- * Como `contacts.email` es UNIQUE, la carga es idempotente: correrlo dos veces
- * no duplica nada. Por default los que ya existen se dejan intactos.
+ * Reads a CSV, maps it with src/lib/import-contacts.ts and inserts it into Supabase.
+ * Since `contacts.email` is UNIQUE, the load is idempotent: running it twice
+ * duplicates nothing. By default existing contacts are left untouched.
  *
- * Variables de entorno (de .env):
+ * Environment variables (from .env):
  *   NEXT_PUBLIC_SUPABASE_URL
  *   SUPABASE_SERVICE_ROLE_KEY
  *
- * Uso:
+ * Usage:
  *   node --env-file=.env --experimental-strip-types scripts/import-contacts.mjs \
- *     --list scripts/prospects/prospects-logistica-gdl.csv \
+ *     --list scripts/prospects/prospects-logistics-gdl.csv \
  *     --source "Prospeccion en frio - logistica GDL" \
  *     --tag logistics-gdl \
  *     --dry-run
  *
  * Flags:
- *   --list <ruta>      CSV a importar (requerido). Necesita columna "email".
- *   --source <texto>   Valor para la columna `source`. Recomendado: identifica la campana.
- *   --tag <texto>      Etiqueta para todas las filas. Se puede repetir.
- *   --type <tipo>      contact_type: lead | prospect | customer | partner (default: prospect)
- *   --status <estado>  status inicial (default: no_contact, la primera columna del kanban)
- *   --update           Sobreescribe los contactos que ya existan con ese correo.
- *                      CUIDADO: pisa notas y datos editados a mano en el CRM.
- *   --dry-run          No escribe nada: valida el CSV y muestra que se insertaria.
+ *   --list <path>      CSV to import (required). Needs an "email" column. Headers may be
+ *                      English (first_name, company, hook, segment...) or the old Spanish
+ *                      ones (nombre, empresa, gancho, segmento...).
+ *   --source <text>    Value for the `source` column. Recommended: identifies the campaign.
+ *   --tag <text>       Tag for every row. Can be repeated.
+ *   --type <type>      contact_type: lead | prospect | customer | partner (default: prospect)
+ *   --status <status>  initial status (default: no_contact, the first kanban column)
+ *   --update           Overwrites contacts that already exist with that email.
+ *                      CAREFUL: overwrites notes and data edited by hand in the CRM.
+ *   --dry-run          Writes nothing: validates the CSV and shows what would be inserted.
  */
 
 import { readFileSync } from 'node:fs'
@@ -92,7 +94,7 @@ console.log(`  A importar:   ${contacts.length}`)
 if (skipped.noContact.length) {
   console.log(`\n  ⚠️  Sin ningun dato de contacto (${skipped.noContact.length}): ni correo, ni telefono, ni Instagram.`)
   for (const row of skipped.noContact) {
-    console.log(`       · ${row.empresa || '(sin empresa)'}`)
+    console.log(`       · ${row.company || '(sin empresa)'}`)
   }
 }
 if (skipped.invalidEmail.length) {
@@ -119,42 +121,42 @@ const headers = {
   'Content-Type': 'application/json',
 }
 
-// `resolution=ignore-duplicates` deja intacto lo que ya existe en el CRM; con
-// --update se pisa con lo del CSV.
+// `resolution=ignore-duplicates` leaves what already exists in the CRM untouched; with
+// --update it is overwritten with the CSV.
 const resolution = args.update ? 'merge-duplicates' : 'ignore-duplicates'
 
-const conCorreo = contacts.filter((c) => c.email)
-const sinCorreo = contacts.filter((c) => !c.email)
+const withEmail = contacts.filter((c) => c.email)
+const withoutEmail = contacts.filter((c) => !c.email)
 
-let insertados = 0
-let yaExistian = 0
+let inserted = 0
+let alreadyExisted = 0
 
-// Con correo: el UNIQUE de email hace la carga idempotente.
-if (conCorreo.length > 0) {
+// With email: the UNIQUE on email makes the load idempotent.
+if (withEmail.length > 0) {
   const r = await fetch(`${SUPABASE_URL}/rest/v1/contacts?on_conflict=email`, {
     method: 'POST',
     headers: { ...headers, Prefer: `resolution=${resolution},return=representation` },
-    body: JSON.stringify(conCorreo),
+    body: JSON.stringify(withEmail),
   })
   if (!r.ok) fail(`Supabase respondio ${r.status}: ${await r.text()}`)
-  const filas = await r.json()
-  insertados += filas.length
-  yaExistian += conCorreo.length - filas.length
+  const insertedRows = await r.json()
+  inserted += insertedRows.length
+  alreadyExisted += withEmail.length - insertedRows.length
 }
 
-// Sin correo no hay clave unica sobre la cual hacer upsert, asi que se busca por
-// empresa antes de insertar. Es mas lento, pero evita duplicar al reejecutar.
-for (const contacto of sinCorreo) {
-  if (contacto.company) {
-    const filtro = `company=eq.${encodeURIComponent(contacto.company)}&email=is.null`
-    const previo = await (await fetch(`${SUPABASE_URL}/rest/v1/contacts?${filtro}&select=id`, { headers })).json()
-    if (previo[0]) {
-      yaExistian++
+// Without email there is no unique key to upsert on, so we look it up by
+// company before inserting. Slower, but avoids duplicates on re-runs.
+for (const contact of withoutEmail) {
+  if (contact.company) {
+    const filter = `company=eq.${encodeURIComponent(contact.company)}&email=is.null`
+    const existing = await (await fetch(`${SUPABASE_URL}/rest/v1/contacts?${filter}&select=id`, { headers })).json()
+    if (existing[0]) {
+      alreadyExisted++
       if (!args.update) continue
-      const u = await fetch(`${SUPABASE_URL}/rest/v1/contacts?id=eq.${previo[0].id}`, {
-        method: 'PATCH', headers, body: JSON.stringify(contacto),
+      const u = await fetch(`${SUPABASE_URL}/rest/v1/contacts?id=eq.${existing[0].id}`, {
+        method: 'PATCH', headers, body: JSON.stringify(contact),
       })
-      if (!u.ok) console.error(`     ✖ ${contacto.company}: ${await u.text()}`)
+      if (!u.ok) console.error(`     ✖ ${contact.company}: ${await u.text()}`)
       continue
     }
   }
@@ -162,15 +164,15 @@ for (const contacto of sinCorreo) {
   const r = await fetch(`${SUPABASE_URL}/rest/v1/contacts`, {
     method: 'POST',
     headers: { ...headers, Prefer: 'return=representation' },
-    body: JSON.stringify([contacto]),
+    body: JSON.stringify([contact]),
   })
-  if (r.ok) insertados++
-  else console.error(`     ✖ ${contacto.company || '(sin empresa)'}: ${await r.text()}`)
+  if (r.ok) inserted++
+  else console.error(`     ✖ ${contact.company || '(sin empresa)'}: ${await r.text()}`)
 }
 
-console.log(`\n  ✅ Insertados: ${insertados}`)
-if (sinCorreo.length > 0) console.log(`     (${sinCorreo.length} sin correo, identificados por empresa)`)
-if (yaExistian > 0) {
-  console.log(`  ↩️  Ya existian: ${yaExistian}${args.update ? ' (actualizados)' : ' (sin tocar)'}`)
+console.log(`\n  ✅ Insertados: ${inserted}`)
+if (withoutEmail.length > 0) console.log(`     (${withoutEmail.length} sin correo, identificados por empresa)`)
+if (alreadyExisted > 0) {
+  console.log(`  ↩️  Ya existian: ${alreadyExisted}${args.update ? ' (actualizados)' : ' (sin tocar)'}`)
 }
 console.log('\n  Revisalos en /dashboard/admin/crm/contacts\n')

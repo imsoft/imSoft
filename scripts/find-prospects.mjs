@@ -1,30 +1,32 @@
 /**
- * Prospectos nuevos con Google Places, lunes, miercoles y viernes.
+ * New prospects from Google Places, on Mondays, Wednesdays and Fridays.
  *
- * Recorre las busquedas de content/prospect-searches.json (giro x municipio), descarta
- * los negocios que ya estan en el CRM, rastrea el correo en el sitio de cada uno y da
- * de alta los nuevos como prospectos sin contactar. El gancho lo propone la IA cuando
- * se genera el borrador en Prospección.
+ * Walks the searches in content/prospect-searches.json (industry x municipality), skips
+ * businesses already in the CRM, crawls each website for an email and adds the new ones
+ * as uncontacted prospects. The hook is proposed by the AI when the draft is generated
+ * in Prospección.
  *
- * Variables de entorno: NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY,
+ * Environment variables: NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY,
  * GOOGLE_PLACES_API_KEY.
  *
- * Uso:
- *   node --env-file=.env --experimental-strip-types scripts/find-prospects.mjs [--max 80] [--busquedas 15] [--giros jewelry,wholesale-market] [--dry-run]
+ * Usage:
+ *   node --env-file=.env --experimental-strip-types scripts/find-prospects.mjs [--max 80] [--searches 15] [--industries jewelry,wholesale-market] [--dry-run]
  *
- * --giros corre todas las busquedas de esos giros en vez del tramo del dia (para estrenar un giro sin esperar la rotacion).
+ * --industries runs every search of those industries instead of today's slice (to try a
+ * new industry without waiting for the rotation). The old flags --giros and --busquedas
+ * still work.
  */
 import { readFileSync } from 'node:fs'
 import { createClient } from '@supabase/supabase-js'
-import { buscarProspectos, importarCandidatos } from '../src/lib/places-server.ts'
-import { deLaMarca, fueraDePerfil, numeroDeCorrida, sePuedeEscribir, tramoDeBusquedas } from '../src/lib/places.ts'
+import { importCandidates, searchProspects } from '../src/lib/places-server.ts'
+import { isOffProfile, isReachable, matchingBrand, runNumber, searchSlice } from '../src/lib/places.ts'
 
 const args = Object.fromEntries(process.argv.slice(2).map((a, i, all) => (a.startsWith('--') ? [a.slice(2), all[i + 1]?.startsWith('--') || all[i + 1] === undefined ? true : all[i + 1]] : [])).filter((x) => x.length))
-// Tope de altas por corrida. Con el telefono de Google contando como WhatsApp (26-oct-2026)
-// entran muchos mas por busqueda; 80 por corrida, tres por semana, alcanza para 15 diarios.
+// Cap on new contacts per run. With the Google phone counting as WhatsApp (2026-10-26)
+// many more get in per search; 80 per run, three runs a week, covers 15 a day.
 const MAX = Number(args.max) || 80
-// Busquedas por corrida: cada una cuesta en Google, y con tres corridas por semana asi se recorre la lista completa en unas dos semanas.
-const POR_CORRIDA = Number(args.busquedas) || 15
+// Searches per run: each one costs on Google, and with three runs a week the whole list is covered in about two weeks.
+const SEARCHES_PER_RUN = Number(args.searches ?? args.busquedas) || 15
 const dryRun = Boolean(args['dry-run'])
 
 for (const v of ['NEXT_PUBLIC_SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY', 'GOOGLE_PLACES_API_KEY']) {
@@ -37,36 +39,37 @@ for (const v of ['NEXT_PUBLIC_SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY', 'GOOGL
 const config = JSON.parse(readFileSync(new URL('../content/prospect-searches.json', import.meta.url), 'utf8'))
 const db = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, { auth: { persistSession: false } })
 
-// Cada corrida (lunes, miercoles y viernes) toma un tramo distinto de la lista.
-const corrida = numeroDeCorrida()
-const soloGiros = typeof args.giros === 'string' ? args.giros.split(',') : null
-const busquedas = soloGiros ? config.busquedas.filter((b) => soloGiros.includes(b.giro)) : tramoDeBusquedas(config.busquedas, corrida, POR_CORRIDA)
-console.log(`Corrida ${corrida}: ${busquedas.length} busquedas de ${config.busquedas.length}${soloGiros ? ` (solo ${soloGiros.join(', ')})` : ''}`)
+// Each run (Monday, Wednesday and Friday) takes a different slice of the list.
+const run = runNumber()
+const industriesArg = args.industries ?? args.giros
+const onlyIndustries = typeof industriesArg === 'string' ? industriesArg.split(',') : null
+const searches = onlyIndustries ? config.searches.filter((s) => onlyIndustries.includes(s.industry)) : searchSlice(config.searches, run, SEARCHES_PER_RUN)
+console.log(`Corrida ${run}: ${searches.length} busquedas de ${config.searches.length}${onlyIndustries ? ` (solo ${onlyIndustries.join(', ')})` : ''}`)
 
-const hoy = new Date().toISOString().slice(0, 10)
+const today = new Date().toISOString().slice(0, 10)
 let total = 0
-for (const b of busquedas) {
+for (const s of searches) {
   if (total >= MAX) break
-  const { candidatos, segmento, nuevos } = await buscarProspectos(db, b.giro, b.municipio, { max: 20, correos: true })
-  const elegibles = candidatos.filter((c) => !c.enCrm && sePuedeEscribir(c) && !fueraDePerfil(c.nombre)).slice(0, MAX - total)
-  console.log(`${b.giro} / ${b.municipio}: ${candidatos.length} encontrados, ${nuevos} nuevos, ${elegibles.length} con correo, Instagram o WhatsApp`)
+  const { candidates, segment, newCount } = await searchProspects(db, s.industry, s.municipality, { max: 20, emails: true })
+  const eligible = candidates.filter((c) => !c.inCrm && isReachable(c) && !isOffProfile(c.name)).slice(0, MAX - total)
+  console.log(`${s.industry} / ${s.municipality}: ${candidates.length} encontrados, ${newCount} nuevos, ${eligible.length} con correo, Instagram o WhatsApp`)
   if (dryRun) {
-    total += elegibles.length
+    total += eligible.length
     continue
   }
-  if (elegibles.length === 0) continue
-  const r = await importarCandidatos(db, elegibles, segmento, `Google Places - ${segmento} - ${hoy}`, ['auto-places', `campaign-${hoy.slice(0, 7)}`])
-  total += r.insertados
-  console.log(`  -> ${r.insertados} agregados`)
+  if (eligible.length === 0) continue
+  const r = await importCandidates(db, eligible, segment, `Google Places - ${segment} - ${today}`, ['auto-places', `campaign-${today.slice(0, 7)}`])
+  total += r.inserted
+  console.log(`  -> ${r.inserted} agregados`)
 }
-// Empresas grandes, por nombre (content/empresas-grandes.json): 2 por corrida, fuera del tope.
-const grandes = JSON.parse(readFileSync(new URL('../content/empresas-grandes.json', import.meta.url), 'utf8')).empresas
-for (const e of tramoDeBusquedas(grandes, corrida, 2)) {
-  const { candidatos } = await buscarProspectos(db, 'corporate', 'zmg', { max: 10, correos: true, queryLibre: e.busqueda })
-  const elegibles = deLaMarca(candidatos, e.clave).filter((c) => !c.enCrm && sePuedeEscribir(c))
-  console.log(`corporativo / ${e.nombre}: ${elegibles.length ? 'con correo, Instagram o WhatsApp' : 'ya en el CRM, sin contacto o no encontrado'}`)
-  if (dryRun || elegibles.length === 0) continue
-  const r = await importarCandidatos(db, elegibles, 'corporate', `Google Places - corporate - ${hoy}`, ['auto-places', 'large-company', `campaign-${hoy.slice(0, 7)}`])
-  total += r.insertados
+// Large companies, by name (content/large-companies.json): 2 per run, outside the cap.
+const largeCompanies = JSON.parse(readFileSync(new URL('../content/large-companies.json', import.meta.url), 'utf8')).companies
+for (const company of searchSlice(largeCompanies, run, 2)) {
+  const { candidates } = await searchProspects(db, 'corporate', 'zmg', { max: 10, emails: true, freeQuery: company.query })
+  const eligible = matchingBrand(candidates, company.key).filter((c) => !c.inCrm && isReachable(c))
+  console.log(`corporativo / ${company.name}: ${eligible.length ? 'con correo, Instagram o WhatsApp' : 'ya en el CRM, sin contacto o no encontrado'}`)
+  if (dryRun || eligible.length === 0) continue
+  const r = await importCandidates(db, eligible, 'corporate', `Google Places - corporate - ${today}`, ['auto-places', 'large-company', `campaign-${today.slice(0, 7)}`])
+  total += r.inserted
 }
 console.log(`\nTotal ${dryRun ? 'que se agregarian' : 'agregados'}: ${total}${dryRun ? ' (dry run, nada escrito)' : ''}`)

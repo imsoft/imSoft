@@ -75,8 +75,8 @@ export function ContactsKanbanBoard({ contacts: initialContacts, lang }: Contact
   const [overId, setOverId] = useState<string | null>(null)
   const [isUpdating, setIsUpdating] = useState(false)
 
-  // Sincronizar contacts cuando initialContacts cambia (después de refresh)
-  // Pero solo si no estamos en medio de una actualización
+  // Sync contacts when initialContacts changes (after a refresh)
+  // but only when no update is in progress
   React.useEffect(() => {
     if (!isUpdating) {
       setContacts(initialContacts)
@@ -92,7 +92,7 @@ export function ContactsKanbanBoard({ contacts: initialContacts, lang }: Contact
     useSensor(KeyboardSensor)
   )
 
-  // Agrupar contactos por estado
+  // Group contacts by status
   const contactsByStatus = useMemo(() => {
     const grouped: Record<ContactStatus, typeof contacts> = {
       no_contact: [],
@@ -103,11 +103,11 @@ export function ContactsKanbanBoard({ contacts: initialContacts, lang }: Contact
     }
 
     contacts.forEach((contact) => {
-      // Si el contacto tiene un status válido, agruparlo
+      // Valid status: group it
       if (grouped[contact.status as ContactStatus]) {
         grouped[contact.status as ContactStatus].push(contact)
       } else {
-        // Si no tiene un status válido, ponerlo en no_contact por defecto
+        // No valid status: default to no_contact
         grouped.no_contact.push(contact)
       }
     })
@@ -125,25 +125,25 @@ export function ContactsKanbanBoard({ contacts: initialContacts, lang }: Contact
   const handleDragOver = (event: DragOverEvent) => {
     const { over, active } = event
     if (over) {
-      // Verificar si el over es directamente una columna (stage)
+      // Check whether `over` is a column (stage) itself
       const isStage = STAGES.find((s) => s.id === over.id)
       if (isStage) {
-        console.log('DragOver sobre columna:', over.id)
+        console.log('DragOver on column:', over.id)
         setOverId(over.id as string)
       } else {
-        // Si el over es una card, buscar en qué columna está esa card
+        // `over` is a card: find which column that card is in
         const contact = contacts.find((c) => c.id === over.id)
         if (contact) {
-          // Usar el status de esa card para identificar la columna
-          console.log('DragOver sobre card, columna:', contact.status)
+          // Use that card's status to identify the column
+          console.log('DragOver on card, column:', contact.status)
           setOverId(contact.status as string)
         } else {
-          // Si no encontramos el contacto, puede ser que estemos sobre el área vacía de una columna
-          // Intentar detectar la columna padre usando el active (el elemento que estamos arrastrando)
+          // Contact not found: we may be over the empty area of a column
+          // Try to detect the parent column from `active` (the element being dragged)
           const activeContact = contacts.find((c) => c.id === active.id)
           if (activeContact) {
-            // Si estamos arrastrando y no hay over válido, mantener el overId actual o buscar la columna más cercana
-            console.log('DragOver sin contacto válido, manteniendo estado actual')
+            // Dragging with no valid `over`: keep the current overId
+            console.log('DragOver without a valid contact, keeping current state')
           } else {
             setOverId(null)
           }
@@ -167,40 +167,40 @@ export function ContactsKanbanBoard({ contacts: initialContacts, lang }: Contact
 
     const contactId = active.id as string
     
-    // Determinar el nuevo estado
+    // Work out the new status
     let newStatus: ContactStatus | null = null
     
-    // Verificar si el over es directamente una columna (stage)
+    // Check whether `over` is a column (stage) itself
     const isStage = STAGES.find((s) => s.id === over.id)
     if (isStage) {
-      // Si es directamente una columna, usar su ID
-      console.log('Drop sobre columna directa:', over.id)
+      // A column itself: use its ID
+      console.log('Drop on column:', over.id)
       newStatus = over.id as ContactStatus
     } else {
-      // Si el over es una card, obtener el status de esa card para identificar la columna
+      // `over` is a card: use its status to identify the column
       const overContact = contacts.find((c) => c.id === over.id)
       if (overContact) {
-        console.log('Drop sobre card, usando status de card:', overContact.status)
+        console.log('Drop on card, using card status:', overContact.status)
         newStatus = overContact.status as ContactStatus
       } else {
-        // Si no encontramos el contacto pero tenemos un overId, usar ese
+        // Contact not found but we have an overId: use it
         if (overId) {
-          console.log('Drop sin contacto válido, usando overId:', overId)
+          console.log('Drop without a valid contact, using overId:', overId)
           newStatus = overId as ContactStatus
         }
       }
     }
 
-    // Si no se pudo determinar el nuevo estado, cancelar
+    // Could not work out the new status: cancel
     if (!newStatus || !STAGES.find((s) => s.id === newStatus)) {
-      console.log('No se pudo determinar el nuevo estado:', { overId: over.id, newStatus })
+      console.log('Could not determine the new status:', { overId: over.id, newStatus })
       setActiveContact(null)
       setOriginalStatus(null)
       setOverId(null)
       return
     }
 
-    console.log('Actualizando contacto:', { contactId, from: originalStatus, to: newStatus })
+    console.log('Updating contact:', { contactId, from: originalStatus, to: newStatus })
 
     const contact = contacts.find((c) => c.id === contactId)
     if (!contact || contact.status === newStatus) {
@@ -219,7 +219,7 @@ export function ContactsKanbanBoard({ contacts: initialContacts, lang }: Contact
     )
 
     try {
-      // Actualizar en la base de datos
+      // Update in the database
       const response = await fetch(`/api/crm/contacts/${contactId}/status`, {
         method: 'PATCH',
         headers: {
@@ -237,16 +237,16 @@ export function ContactsKanbanBoard({ contacts: initialContacts, lang }: Contact
       const result = await response.json()
       console.log('Contact status updated successfully:', result)
 
-      // El estado ya fue actualizado optimísticamente y la API confirmó el éxito
-      // Permitir que el useEffect sincronice después de un delay
+      // State was already updated optimistically and the API confirmed it
+      // Let the useEffect sync after a delay
       setTimeout(() => {
         setIsUpdating(false)
-        // Refrescar en background para sincronizar otros componentes (estadísticas, etc)
+        // Refresh in the background to sync other components (stats, etc.)
         router.refresh()
       }, 1000)
     } catch (error) {
       console.error('Error updating contact status:', error)
-      // Revertir el cambio optimista
+      // Revert the optimistic change
       setContacts((prevContacts) =>
         prevContacts.map((c) =>
           c.id === contactId ? { ...c, status: originalStatus || (c.status as ContactStatus) } : c
@@ -357,7 +357,7 @@ export function ContactsKanbanBoard({ contacts: initialContacts, lang }: Contact
                       ))}
                       {stageContacts.length === 0 && (() => {
                         const emptyContent = getEmptyStateContent(stage.id)
-                        // Si hay un drag activo sobre esta columna, no mostrar el empty state (ya se muestra el indicador de drop)
+                        // A drag is active over this column: skip the empty state (the drop indicator already shows)
                         if (overId === stage.id) {
                           return null
                         }

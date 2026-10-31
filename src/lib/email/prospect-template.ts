@@ -1,19 +1,19 @@
 /**
- * Plantilla de correo de prospección (cold outreach).
+ * Prospecting (cold outreach) email template.
  *
- * Fuente única para el admin (botón "Usar plantilla" en el envío por contacto).
- * Debe mantenerse en sincronía con scripts/prospects/template.html, que usa el
- * envío masivo por terminal.
+ * Single source for the admin ("Usar plantilla" button in the per-contact send).
+ * Must stay in sync with scripts/prospects/template.html, which the bulk send from the
+ * terminal uses.
  */
 
 interface ProspectEmailParams {
-  /** Nombre de pila del prospecto para el saludo. Si está vacío se usa "Hola,". */
-  nombre?: string
-  /** Empresa del prospecto para personalizar el asunto. */
-  empresa?: string
+  /** Prospect's first name for the greeting. If empty, "Hola," is used. */
+  name?: string
+  /** Prospect's company to personalize the subject. */
+  company?: string
 }
 
-/** Escapa texto interpolado en el HTML para evitar romper el markup. */
+/** Escapes text interpolated into the HTML so it doesn't break the markup. */
 function escapeHtml(value: string): string {
   return value
     .replace(/&/g, '&amp;')
@@ -22,20 +22,20 @@ function escapeHtml(value: string): string {
     .replace(/"/g, '&quot;')
 }
 
-/** Asunto de la plantilla, personalizado con la empresa si está disponible. */
-export function buildProspectSubject(empresa?: string): string {
-  const company = empresa?.trim()
-  return company
-    ? `Una idea para potenciar el software de ${company}`
+/** Template subject, personalized with the company when available. */
+export function buildProspectSubject(company?: string): string {
+  const trimmed = company?.trim()
+  return trimmed
+    ? `Una idea para potenciar el software de ${trimmed}`
     : 'Una idea para potenciar tu software'
 }
 
-/** Devuelve el asunto y el HTML listos para el formulario de envío. */
-export function buildProspectEmail({ nombre, empresa }: ProspectEmailParams = {}): {
+/** Returns the subject and HTML ready for the send form. */
+export function buildProspectEmail({ name: rawName, company }: ProspectEmailParams = {}): {
   subject: string
   html: string
 } {
-  const name = nombre?.trim()
+  const name = rawName?.trim()
   const greeting = name ? `Hola ${escapeHtml(name)},` : 'Hola,'
 
   const html = `<!DOCTYPE html>
@@ -187,5 +187,5 @@ export function buildProspectEmail({ nombre, empresa }: ProspectEmailParams = {}
 </body>
 </html>`
 
-  return { subject: buildProspectSubject(empresa), html }
+  return { subject: buildProspectSubject(company), html }
 }

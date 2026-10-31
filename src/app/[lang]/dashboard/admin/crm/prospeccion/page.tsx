@@ -3,38 +3,38 @@ import { hasLocale } from '../../../../dictionaries'
 import { CrmTabs } from '../crm-tabs'
 import { requireAdmin, serviceClient } from '@/lib/quotes/server'
 import { cuentaConectada, gmailConfigurado } from '@/lib/gmail/server'
-import { CONTACTO_COLS, estadoCampana, mensajesDeRedes, prospectosParaRedes, type ContactoMin } from '@/lib/outreach-server'
-import { Prospeccion, type FilaOutreach } from './prospeccion'
+import { CONTACT_COLUMNS, campaignStatus, socialMessageCounts, socialQueueProspects, type MinContact } from '@/lib/outreach-server'
+import { Prospecting, type OutreachRow } from './prospecting'
 
 export const dynamic = 'force-dynamic'
 
-export default async function AdminProspeccionPage({ params }: { params: Promise<{ lang: string }> }) {
+export default async function AdminProspectingPage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params
   if (!hasLocale(lang)) notFound()
   const auth = await requireAdmin()
   if (!auth.ok) notFound()
 
   const db = serviceClient()
-  // Los borradores van aparte de los enviados: con cientos de correos esperando
-  // respuesta, un solo tope de 300 dejaba fuera a los borradores de hoy.
-  const [gmail, campana, redes, { data: borradores }, { data: enviados }, { count: sinContactar }, cola] = await Promise.all([
+  // Drafts are fetched apart from sent emails: with hundreds of emails awaiting a
+  // reply, a single limit of 300 left today's drafts out.
+  const [gmail, campaign, social, { data: drafts }, { data: sent }, { count: uncontacted }, queue] = await Promise.all([
     cuentaConectada(auth.userId),
-    estadoCampana(db),
-    mensajesDeRedes(db),
+    campaignStatus(db),
+    socialMessageCounts(db),
     db.from('outreach_emails').select('*').eq('status', 'draft').order('scheduled_for', { ascending: true }).order('step', { ascending: true }).limit(500),
     db.from('outreach_emails').select('*').in('status', ['sent', 'replied']).order('scheduled_for', { ascending: false }).order('step', { ascending: true }).limit(300),
     db.from('contacts').select('id', { count: 'exact', head: true }).eq('contact_type', 'prospect').eq('status', 'no_contact').not('email', 'is', null),
-    prospectosParaRedes(db),
+    socialQueueProspects(db),
   ])
-  const filas = [...(borradores ?? []), ...(enviados ?? [])]
-  const ids = [...new Set((filas ?? []).map((f) => f.contact_id as string))]
-  const { data: contactos } = ids.length ? await db.from('contacts').select(CONTACTO_COLS).in('id', ids) : { data: [] }
-  const cDe = new Map(((contactos ?? []) as ContactoMin[]).map((c) => [c.id, c]))
-  const rows: FilaOutreach[] = (filas ?? []).map((f) => {
-    const c = cDe.get(f.contact_id)
+  const all = [...(drafts ?? []), ...(sent ?? [])]
+  const ids = [...new Set((all ?? []).map((f) => f.contact_id as string))]
+  const { data: contacts } = ids.length ? await db.from('contacts').select(CONTACT_COLUMNS).in('id', ids) : { data: [] }
+  const contactById = new Map(((contacts ?? []) as MinContact[]).map((c) => [c.id, c]))
+  const rows: OutreachRow[] = (all ?? []).map((f) => {
+    const c = contactById.get(f.contact_id)
     return {
       id: f.id, contact_id: f.contact_id, step: f.step, status: f.status, subject: f.subject, html: f.html, text: f.text, scheduled_for: f.scheduled_for, sent_at: f.sent_at, sent_via: f.sent_via, hook: f.hook,
-      nombre: [c?.first_name, c?.last_name].filter(Boolean).join(' '), empresa: c?.company ?? '', email: c?.email ?? '',
+      name: [c?.first_name, c?.last_name].filter(Boolean).join(' '), company: c?.company ?? '', email: c?.email ?? '',
     }
   })
 
@@ -48,8 +48,8 @@ export default async function AdminProspeccionPage({ params }: { params: Promise
             : 'Correos en frío personalizados, enviados desde tu Gmail, con dos seguimientos automáticos.'}
         </p>
       </div>
-      <CrmTabs lang={lang} activa="prospeccion" />
-      <Prospeccion lang={lang} gmail={gmail} gmailConfigurado={gmailConfigurado()} campana={campana} redes={redes} filas={rows} sinContactar={sinContactar ?? 0} cola={cola} />
+      <CrmTabs lang={lang} active="prospecting" />
+      <Prospecting lang={lang} gmail={gmail} gmailConfigured={gmailConfigurado()} campaign={campaign} social={social} rows={rows} uncontacted={uncontacted ?? 0} queue={queue} />
     </div>
   )
 }

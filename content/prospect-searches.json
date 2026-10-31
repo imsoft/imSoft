@@ -1,313 +1,313 @@
 {
-  "_comentario": "Busquedas de scripts/find-prospects.mjs (giro de src/lib/places.ts x municipio). Corre lunes, miercoles y viernes; cada corrida toma un tramo distinto de la lista (ver tramoDeBusquedas).",
-  "busquedas": [
+  "_comment": "Searches run by scripts/find-prospects.mjs (industry from src/lib/places.ts x municipality). Runs on Mondays, Wednesdays and Fridays; each run takes a different slice of the list (see searchSlice).",
+  "searches": [
     {
-      "giro": "wholesale-market",
-      "municipio": "guadalajara"
+      "industry": "wholesale-market",
+      "municipality": "guadalajara"
     },
     {
-      "giro": "logistics",
-      "municipio": "guadalajara"
+      "industry": "logistics",
+      "municipality": "guadalajara"
     },
     {
-      "giro": "law-firms",
-      "municipio": "guadalajara"
+      "industry": "law-firms",
+      "municipality": "guadalajara"
     },
     {
-      "giro": "accounting",
-      "municipio": "guadalajara"
+      "industry": "accounting",
+      "municipality": "guadalajara"
     },
     {
-      "giro": "health",
-      "municipio": "guadalajara"
+      "industry": "health",
+      "municipality": "guadalajara"
     },
     {
-      "giro": "dental",
-      "municipio": "guadalajara"
+      "industry": "dental",
+      "municipality": "guadalajara"
     },
     {
-      "giro": "restaurants",
-      "municipio": "guadalajara"
+      "industry": "restaurants",
+      "municipality": "guadalajara"
     },
     {
-      "giro": "ecommerce",
-      "municipio": "guadalajara"
+      "industry": "ecommerce",
+      "municipality": "guadalajara"
     },
     {
-      "giro": "construction",
-      "municipio": "guadalajara"
+      "industry": "construction",
+      "municipality": "guadalajara"
     },
     {
-      "giro": "hardware-stores",
-      "municipio": "guadalajara"
+      "industry": "hardware-stores",
+      "municipality": "guadalajara"
     },
     {
-      "giro": "real-estate",
-      "municipio": "guadalajara"
+      "industry": "real-estate",
+      "municipality": "guadalajara"
     },
     {
-      "giro": "fitness",
-      "municipio": "guadalajara"
+      "industry": "fitness",
+      "municipality": "guadalajara"
     },
     {
-      "giro": "schools",
-      "municipio": "guadalajara"
+      "industry": "schools",
+      "municipality": "guadalajara"
     },
     {
-      "giro": "auto-repair-shops",
-      "municipio": "guadalajara"
+      "industry": "auto-repair-shops",
+      "municipality": "guadalajara"
     },
     {
-      "giro": "aesthetic-clinics",
-      "municipio": "guadalajara"
+      "industry": "aesthetic-clinics",
+      "municipality": "guadalajara"
     },
     {
-      "giro": "logistics",
-      "municipio": "zapopan"
+      "industry": "logistics",
+      "municipality": "zapopan"
     },
     {
-      "giro": "law-firms",
-      "municipio": "zapopan"
+      "industry": "law-firms",
+      "municipality": "zapopan"
     },
     {
-      "giro": "accounting",
-      "municipio": "zapopan"
+      "industry": "accounting",
+      "municipality": "zapopan"
     },
     {
-      "giro": "health",
-      "municipio": "zapopan"
+      "industry": "health",
+      "municipality": "zapopan"
     },
     {
-      "giro": "dental",
-      "municipio": "zapopan"
+      "industry": "dental",
+      "municipality": "zapopan"
     },
     {
-      "giro": "restaurants",
-      "municipio": "zapopan"
+      "industry": "restaurants",
+      "municipality": "zapopan"
     },
     {
-      "giro": "ecommerce",
-      "municipio": "zapopan"
+      "industry": "ecommerce",
+      "municipality": "zapopan"
     },
     {
-      "giro": "construction",
-      "municipio": "zapopan"
+      "industry": "construction",
+      "municipality": "zapopan"
     },
     {
-      "giro": "hardware-stores",
-      "municipio": "zapopan"
+      "industry": "hardware-stores",
+      "municipality": "zapopan"
     },
     {
-      "giro": "real-estate",
-      "municipio": "zapopan"
+      "industry": "real-estate",
+      "municipality": "zapopan"
     },
     {
-      "giro": "fitness",
-      "municipio": "zapopan"
+      "industry": "fitness",
+      "municipality": "zapopan"
     },
     {
-      "giro": "schools",
-      "municipio": "zapopan"
+      "industry": "schools",
+      "municipality": "zapopan"
     },
     {
-      "giro": "auto-repair-shops",
-      "municipio": "zapopan"
+      "industry": "auto-repair-shops",
+      "municipality": "zapopan"
     },
     {
-      "giro": "aesthetic-clinics",
-      "municipio": "zapopan"
+      "industry": "aesthetic-clinics",
+      "municipality": "zapopan"
     },
     {
-      "giro": "logistics",
-      "municipio": "tlaquepaque"
+      "industry": "logistics",
+      "municipality": "tlaquepaque"
     },
     {
-      "giro": "law-firms",
-      "municipio": "tlaquepaque"
+      "industry": "law-firms",
+      "municipality": "tlaquepaque"
     },
     {
-      "giro": "accounting",
-      "municipio": "tlaquepaque"
+      "industry": "accounting",
+      "municipality": "tlaquepaque"
     },
     {
-      "giro": "health",
-      "municipio": "tlaquepaque"
+      "industry": "health",
+      "municipality": "tlaquepaque"
     },
     {
-      "giro": "dental",
-      "municipio": "tlaquepaque"
+      "industry": "dental",
+      "municipality": "tlaquepaque"
     },
     {
-      "giro": "restaurants",
-      "municipio": "tlaquepaque"
+      "industry": "restaurants",
+      "municipality": "tlaquepaque"
     },
     {
-      "giro": "construction",
-      "municipio": "tlaquepaque"
+      "industry": "construction",
+      "municipality": "tlaquepaque"
     },
     {
-      "giro": "hardware-stores",
-      "municipio": "tlaquepaque"
+      "industry": "hardware-stores",
+      "municipality": "tlaquepaque"
     },
     {
-      "giro": "real-estate",
-      "municipio": "tlaquepaque"
+      "industry": "real-estate",
+      "municipality": "tlaquepaque"
     },
     {
-      "giro": "fitness",
-      "municipio": "tlaquepaque"
+      "industry": "fitness",
+      "municipality": "tlaquepaque"
     },
     {
-      "giro": "schools",
-      "municipio": "tlaquepaque"
+      "industry": "schools",
+      "municipality": "tlaquepaque"
     },
     {
-      "giro": "auto-repair-shops",
-      "municipio": "tlaquepaque"
+      "industry": "auto-repair-shops",
+      "municipality": "tlaquepaque"
     },
     {
-      "giro": "aesthetic-clinics",
-      "municipio": "tlaquepaque"
+      "industry": "aesthetic-clinics",
+      "municipality": "tlaquepaque"
     },
     {
-      "giro": "logistics",
-      "municipio": "tonala"
+      "industry": "logistics",
+      "municipality": "tonala"
     },
     {
-      "giro": "law-firms",
-      "municipio": "tonala"
+      "industry": "law-firms",
+      "municipality": "tonala"
     },
     {
-      "giro": "accounting",
-      "municipio": "tonala"
+      "industry": "accounting",
+      "municipality": "tonala"
     },
     {
-      "giro": "health",
-      "municipio": "tonala"
+      "industry": "health",
+      "municipality": "tonala"
     },
     {
-      "giro": "dental",
-      "municipio": "tonala"
+      "industry": "dental",
+      "municipality": "tonala"
     },
     {
-      "giro": "restaurants",
-      "municipio": "tonala"
+      "industry": "restaurants",
+      "municipality": "tonala"
     },
     {
-      "giro": "construction",
-      "municipio": "tonala"
+      "industry": "construction",
+      "municipality": "tonala"
     },
     {
-      "giro": "hardware-stores",
-      "municipio": "tonala"
+      "industry": "hardware-stores",
+      "municipality": "tonala"
     },
     {
-      "giro": "real-estate",
-      "municipio": "tonala"
+      "industry": "real-estate",
+      "municipality": "tonala"
     },
     {
-      "giro": "fitness",
-      "municipio": "tonala"
+      "industry": "fitness",
+      "municipality": "tonala"
     },
     {
-      "giro": "schools",
-      "municipio": "tonala"
+      "industry": "schools",
+      "municipality": "tonala"
     },
     {
-      "giro": "auto-repair-shops",
-      "municipio": "tonala"
+      "industry": "auto-repair-shops",
+      "municipality": "tonala"
     },
     {
-      "giro": "aesthetic-clinics",
-      "municipio": "tonala"
+      "industry": "aesthetic-clinics",
+      "municipality": "tonala"
     },
     {
-      "giro": "logistics",
-      "municipio": "tlajomulco"
+      "industry": "logistics",
+      "municipality": "tlajomulco"
     },
     {
-      "giro": "law-firms",
-      "municipio": "tlajomulco"
+      "industry": "law-firms",
+      "municipality": "tlajomulco"
     },
     {
-      "giro": "accounting",
-      "municipio": "tlajomulco"
+      "industry": "accounting",
+      "municipality": "tlajomulco"
     },
     {
-      "giro": "health",
-      "municipio": "tlajomulco"
+      "industry": "health",
+      "municipality": "tlajomulco"
     },
     {
-      "giro": "dental",
-      "municipio": "tlajomulco"
+      "industry": "dental",
+      "municipality": "tlajomulco"
     },
     {
-      "giro": "restaurants",
-      "municipio": "tlajomulco"
+      "industry": "restaurants",
+      "municipality": "tlajomulco"
     },
     {
-      "giro": "construction",
-      "municipio": "tlajomulco"
+      "industry": "construction",
+      "municipality": "tlajomulco"
     },
     {
-      "giro": "hardware-stores",
-      "municipio": "tlajomulco"
+      "industry": "hardware-stores",
+      "municipality": "tlajomulco"
     },
     {
-      "giro": "real-estate",
-      "municipio": "tlajomulco"
+      "industry": "real-estate",
+      "municipality": "tlajomulco"
     },
     {
-      "giro": "fitness",
-      "municipio": "tlajomulco"
+      "industry": "fitness",
+      "municipality": "tlajomulco"
     },
     {
-      "giro": "schools",
-      "municipio": "tlajomulco"
+      "industry": "schools",
+      "municipality": "tlajomulco"
     },
     {
-      "giro": "auto-repair-shops",
-      "municipio": "tlajomulco"
+      "industry": "auto-repair-shops",
+      "municipality": "tlajomulco"
     },
     {
-      "giro": "aesthetic-clinics",
-      "municipio": "tlajomulco"
+      "industry": "aesthetic-clinics",
+      "municipality": "tlajomulco"
     },
     {
-      "giro": "ecommerce",
-      "municipio": "zmg"
+      "industry": "ecommerce",
+      "municipality": "zmg"
     },
     {
-      "giro": "wholesale-market",
-      "municipio": "zmg"
+      "industry": "wholesale-market",
+      "municipality": "zmg"
     },
     {
-      "giro": "wholesalers",
-      "municipio": "guadalajara"
+      "industry": "wholesalers",
+      "municipality": "guadalajara"
     },
     {
-      "giro": "wholesalers",
-      "municipio": "zmg"
+      "industry": "wholesalers",
+      "municipality": "zmg"
     },
     {
-      "giro": "jewelry",
-      "municipio": "guadalajara"
+      "industry": "jewelry",
+      "municipality": "guadalajara"
     },
     {
-      "giro": "jewelry",
-      "municipio": "zapopan"
+      "industry": "jewelry",
+      "municipality": "zapopan"
     },
     {
-      "giro": "agro",
-      "municipio": "guadalajara"
+      "industry": "agro",
+      "municipality": "guadalajara"
     },
     {
-      "giro": "agro",
-      "municipio": "zmg"
+      "industry": "agro",
+      "municipality": "zmg"
     },
     {
-      "giro": "farms",
-      "municipio": "tepatitlan"
+      "industry": "farms",
+      "municipality": "tepatitlan"
     }
   ]
 }

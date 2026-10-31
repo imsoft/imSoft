@@ -23,12 +23,12 @@ export default async function ActivitiesPage({ params }: {
     redirect(`/${lang}/login`)
   }
 
-  // Verificar que el usuario sea admin
+  // Make sure the user is an admin
   if (!esAdmin(user)) {
     redirect(`/${lang}/dashboard/client`)
   }
 
-  // Obtener todas las actividades con información relacionada
+  // Fetch all activities with their related records
   const { data: activities } = await supabase
     .from('activities')
     .select(`
