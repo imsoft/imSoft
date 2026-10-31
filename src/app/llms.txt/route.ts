@@ -118,9 +118,13 @@ ${blogSection}
 
 All projects receive a fixed-price proposal within 24 hours. No surprise charges.
 
-- Web pages: From $15,000 MXN / $800 USD
-- MVP / Product launch: From $60,000 MXN / $3,000 USD
-- Custom software / SaaS: From $150,000 MXN / $8,000 USD
+- Web pages: From $16,000 MXN / $850 USD
+- Online stores: From $32,000 MXN / $1,700 USD
+- Custom software: From $63,000 MXN / $3,400 USD
+- Mobile apps: From $95,000 MXN / $5,000 USD
+- MVP / Product launch: From $63,000 MXN / $3,200 USD
+- Full platform / SaaS: From $158,000 MXN / $8,400 USD
+- 5 % off when paying by bank transfer; up to 12 interest-free months with Mexican credit cards; software and apps can also go on a monthly plan (deposit + monthly fee with hosting and support, code transferred once paid off).
 
 ## Frequently asked questions
 

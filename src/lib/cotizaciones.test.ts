@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   PROMOCIONES, descuentoValido, estaVencida, importesMensualidades, numMensualidades, textoMensualidades, featuresValidas, fechaVigencia, hitosValidos, importesHitos, itemsDesdePrecio, itemsValidos, motivoNoAceptable,
-  DIAS_REVISION, plazoEntrega, porcentajeDescuento, precioProyecto, renderContrato, siguienteFolio, textoFormaDePago, totales, type QuoteLike,
+  DIAS_REVISION, esOpcionPago, opcionesDePago, planValido, plazoEntrega, porcentajeDescuento, precioProyecto, renderContrato, siguienteFolio, textoFormaDePago, totales, type QuoteLike,
 } from './cotizaciones';
 import { CONDICIONES_DEFAULT } from '@/config/emisor';
 
@@ -133,14 +133,44 @@ describe('cotizaciones', () => {
     expect(motivoNoAceptable(q, new Date('2026-10-05T00:00:00Z'))).toMatch(/venció el 30 de septiembre de 2026/);
   });
 
-  it('describe la forma de pago con hitos y MSI', () => {
+  it('describe la forma de pago con hitos, descuento por transferencia, MSI y plan', () => {
     const t = textoFormaDePago(q);
     expect(t[0]).toBe('Anticipo: 50% ($10,440.00)');
     expect(t[1]).toBe('Liquidación: 50% ($10,440.00)');
-    expect(t[2]).toMatch(/3, 6 o 12 meses sin intereses/);
-    expect(t[2]).toMatch(/6 pagos de \$3,480/);
-    expect(t[3]).toContain('facturacion@imsoft.io');
-    expect(textoFormaDePago({ ...q, payment: { ...q.payment, msi: false } })).toHaveLength(3);
+    expect(t[2]).toBe('Pagando por transferencia bancaria, 5 % de descuento: $19,836.00 en total.');
+    expect(t[3]).toMatch(/6 o 12 meses sin intereses/);
+    // El costo del plazo va al total: 7.5 % + IVA a 6 meses, 12.5 % + IVA a 12.
+    expect(t[3]).toContain('a 6 meses $22,696.56');
+    expect(t[3]).toContain('a 12 meses $23,907.60');
+    expect(t[4]).toContain('facturacion@imsoft.io');
+    expect(textoFormaDePago({ ...q, payment: { ...q.payment, msi: false, descuento_transferencia_pct: 0 } })).toHaveLength(3);
+    const conPlan = textoFormaDePago({ ...q, payment: { ...q.payment, plan: { meses: 24, anticipo_pct: 30, recargo_pct: 40 } } });
+    expect(conPlan[4]).toBe('Plan mensual a 24 meses: anticipo de $6,264.00 y 24 mensualidades de $957.00 ($29,232.00 en total), con hosting y soporte incluidos; el sistema opera en infraestructura de imSoft y el código se transfiere al cubrir la última mensualidad.');
+  });
+
+  it('las opciones de pago llevan cada una su total y el cliente elige una', () => {
+    const op = opcionesDePago(q);
+    expect(op.map((o) => o.clave)).toEqual(['transferencia', 'tarjeta', 'msi6', 'msi12']);
+    expect(op[0].total).toBe(19836);
+    expect(op[1].total).toBe(20880);
+    expect(op[3].resumen).toBe('12 pagos de $1,992.30; $23,907.60 en total');
+    // Bajo el minimo de MSI, o sin MSI, solo transferencia y tarjeta.
+    expect(opcionesDePago({ ...q, items: [{ concepto: 'x', cantidad: 1, precio: 5000 }] }).map((o) => o.clave)).toEqual(['transferencia', 'tarjeta']);
+    // Con plan valido aparece; con plan invalido no.
+    expect(opcionesDePago({ ...q, payment: { ...q.payment, plan: { meses: 24, anticipo_pct: 30, recargo_pct: 40 } } }).at(-1)?.clave).toBe('plan');
+    expect(opcionesDePago({ ...q, payment: { ...q.payment, plan: { meses: 2, anticipo_pct: 30, recargo_pct: 40 } } }).some((o) => o.clave === 'plan')).toBe(false);
+    expect(planValido({ meses: 24, anticipo_pct: 30, recargo_pct: 40 })).toBeNull();
+    expect(planValido({ meses: 48, anticipo_pct: 30, recargo_pct: 40 })).toMatch(/6 a 36/);
+    expect(esOpcionPago('plan')).toBe(true);
+    expect(esOpcionPago('credito')).toBe(false);
+    // El contrato nombra la opcion elegida y, en el plan, sus reglas.
+    const html = renderContrato({ ...q, payment: { ...q.payment, plan: { meses: 24, anticipo_pct: 30, recargo_pct: 40 } }, accepted_payment_option: 'plan' }, 'CON-2026-009');
+    expect(html).toContain('El Cliente eligió como forma de pago: <strong>Plan mensual a 24 meses');
+    expect(html).toContain('<strong>Plan de suscripción.</strong>');
+    expect(html).toContain('no un crédito ni un financiamiento');
+    expect(html).toContain('24 mensualidades consecutivas de $957.00');
+    expect(renderContrato({ ...q, accepted_payment_option: 'transferencia' }, 'CON-2026-010')).toContain('El descuento por transferencia aplica');
+    expect(renderContrato(q, 'CON-2026-011')).not.toContain('El Cliente eligió');
   });
 
   it('el contrato lleva las partes, el alcance, los pagos y las condiciones', () => {

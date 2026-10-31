@@ -1,5 +1,5 @@
 import { DocumentHeader } from './document-header'
-import { fechaLarga, importesHitos, mxn, plazoEntrega, textoFormaDePago, textoMensualidades, totales, type QuoteLike } from '@/lib/cotizaciones'
+import { fechaLarga, importesHitos, mxn, opcionesDePago, plazoEntrega, textoFormaDePago, textoMensualidades, totales, type QuoteLike } from '@/lib/cotizaciones'
 import { FIRMA_PRESTADOR, SignatureBlock } from './signature-block'
 
 /**
@@ -12,6 +12,7 @@ export function QuoteDocument({ quote }: { quote: QuoteLike & { created_at?: str
   const plazo = plazoEntrega(quote)
   const hitos = importesHitos(t.total, quote.payment.hitos)
   const formaPago = textoFormaDePago(quote)
+  const opciones = opcionesDePago(quote)
   return (
     <article className="doc mx-auto max-w-3xl bg-white text-neutral-900 p-8 md:p-12 rounded-xl shadow-sm print:shadow-none print:p-0 print:max-w-none">
       <DocumentHeader
@@ -63,6 +64,21 @@ export function QuoteDocument({ quote }: { quote: QuoteLike & { created_at?: str
           {t.descuento > 0 && <p className="text-xs text-neutral-500 pt-1">Descuento válido si la cotización se acepta a más tardar el {fechaLarga(quote.valid_until)}.</p>}
         </div>
       </section>
+
+      {opciones.length > 1 && (
+        <section className="py-6 border-t border-neutral-200 text-sm">
+          <p className="text-xs uppercase tracking-widest text-neutral-500 mb-3">Elige cómo pagar</p>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {opciones.map((o) => (
+              <div key={o.clave} className={`rounded-lg border p-3 ${quote.accepted_payment_option === o.clave ? 'border-neutral-900 bg-neutral-50' : 'border-neutral-200'}`}>
+                <div className="flex justify-between gap-3"><span className="font-medium">{o.titulo}</span><span className="tabular-nums font-semibold shrink-0">{mxn(o.total, quote.currency)}</span></div>
+                <p className="text-neutral-600 mt-0.5">{o.resumen}</p>
+                {quote.accepted_payment_option === o.clave && <p className="text-xs font-medium mt-1">Opción elegida</p>}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       <section className="grid gap-6 sm:grid-cols-2 py-6 border-t border-neutral-200 text-sm">
         <div>

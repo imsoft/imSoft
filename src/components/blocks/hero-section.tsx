@@ -176,8 +176,8 @@ export function HeroSection({ dict, lang, companies = [], portfolioProjects = []
                                 </AnimatedGroup>
                                 <p className="mt-6 text-sm text-muted-foreground">
                                     {lang === 'es'
-                                        ? 'Cotización con precio fijo en 24 horas · Hasta 12 meses sin intereses con tarjeta · La primera llamada es gratis'
-                                        : 'Fixed-price quote within 24 hours · Up to 12 interest-free months with Mexican credit cards · The first call is free'}
+                                        ? 'Cotización con precio fijo en 24 horas · Transferencia, meses sin intereses o plan mensual · La primera llamada es gratis'
+                                        : 'Fixed-price quote within 24 hours · Bank transfer, interest-free months or a monthly plan · The first call is free'}
                                 </p>
                             </div>
                         </div>

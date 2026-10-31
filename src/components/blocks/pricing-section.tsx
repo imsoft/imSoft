@@ -215,8 +215,8 @@ export function PricingSection({ dict, lang }: PricingSectionProps) {
           )}
           <p className="text-center text-sm text-primary-foreground/60 max-w-2xl">
             {isEs
-              ? '* Los precios son referencias orientativas. Cada proyecto recibe una propuesta con precio fijo en 24 horas. Aceptamos 3, 6 y 12 meses sin intereses con tarjeta de crédito de bancos participantes.'
-              : '* Prices are indicative references. Every project receives a fixed-price proposal within 24 hours. Mexican credit cards can pay in 3, 6 or 12 interest-free installments.'}
+              ? '* Los precios son referencias orientativas. Cada proyecto recibe una propuesta con precio fijo en 24 horas. Pagando por transferencia, 5 % de descuento; con tarjeta, hasta 12 meses sin intereses con bancos participantes; en software y apps, también plan mensual con hosting y soporte incluidos.'
+              : '* Prices are indicative references. Every project receives a fixed-price proposal within 24 hours. 5 % off when paying by bank transfer; Mexican credit cards can pay in up to 12 interest-free installments; software and apps can also go on a monthly plan with hosting and support included.'}
           </p>
         </ScrollReveal>
       </div>

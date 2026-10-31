@@ -13,7 +13,7 @@ import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
 import { Trash2, Plus } from 'lucide-react'
 import { CONDICIONES_DEFAULT } from '@/config/emisor'
-import { DESCUENTO_MAXIMO_RECOMENDADO_PCT, PROMOCIONES, descuentoValido, numMensualidades, textoMensualidades, featuresValidas, fechaVigencia, generarToken, hitosValidos, itemsDesdePrecio, mxn, plazoEntrega, porcentajeDescuento, precioProyecto, siguienteFolio, totales, type Hito, type QuoteDiscount, type QuoteTerms } from '@/lib/cotizaciones'
+import { DESCUENTO_MAXIMO_RECOMENDADO_PCT, PLAN_DEFAULT, PROMOCIONES, descuentoTransferenciaPct, descuentoValido, importesPlan, numMensualidades, planValido, textoMensualidades, totalConMsi, type PlanMensual, featuresValidas, fechaVigencia, generarToken, hitosValidos, itemsDesdePrecio, mxn, plazoEntrega, porcentajeDescuento, precioProyecto, siguienteFolio, totales, type Hito, type QuoteDiscount, type QuoteTerms } from '@/lib/cotizaciones'
 import type { Quote } from '@/types/quotes'
 import { textoIguala, type AssistOutput } from '@/lib/quote-assist'
 import { Badge } from '@/components/ui/badge'
@@ -52,6 +52,8 @@ export function QuoteForm({ lang, quote }: { lang: string; quote?: Quote }) {
   const [descuento, setDescuento] = useState<QuoteDiscount>(quote?.discount ?? { motivo: '', tipo: 'pct', valor: 10 })
   const [hitos, setHitos] = useState<Hito[]>(quote?.payment?.hitos ?? CONDICIONES_DEFAULT.hitos.map((h) => ({ ...h })))
   const [msi, setMsi] = useState(quote?.payment?.msi ?? CONDICIONES_DEFAULT.msi)
+  const [dtoTransferencia, setDtoTransferencia] = useState<number>(quote?.payment ? descuentoTransferenciaPct(quote.payment) : descuentoTransferenciaPct({}))
+  const [plan, setPlan] = useState<PlanMensual | null>(quote?.payment?.plan ?? null)
   const [terms, setTerms] = useState<QuoteTerms>(quote?.terms ?? {
     garantia_dias: CONDICIONES_DEFAULT.garantia_dias,
     soporte: CONDICIONES_DEFAULT.soporte,
@@ -80,6 +82,7 @@ export function QuoteForm({ lang, quote }: { lang: string; quote?: Quote }) {
   const pctDescuento = useMemo(() => porcentajeDescuento({ items: itemsDesdePrecio(title, precio), discount: discountActivo }), [title, precio, discountActivo])
   const errorDescuento = conDescuento ? descuentoValido(descuento) : null
   const errorHitos = hitosValidos(hitos)
+  const errorPlan = planValido(plan)
   const errorFeatures = featuresValidas(features)
 
   async function pedirRecomendaciones() {
@@ -170,7 +173,7 @@ export function QuoteForm({ lang, quote }: { lang: string; quote?: Quote }) {
       currency: 'MXN',
       apply_iva: applyIva,
       discount: conDescuento ? { motivo: descuento.motivo.trim(), tipo: descuento.tipo, valor: Number(descuento.valor) } : null,
-      payment: { hitos: hitos.map((h) => ({ label: h.label.trim(), pct: Number(h.pct), ...(numMensualidades(h) > 1 ? { mensualidades: numMensualidades(h) } : {}) })), msi },
+      payment: { hitos: hitos.map((h) => ({ label: h.label.trim(), pct: Number(h.pct), ...(numMensualidades(h) > 1 ? { mensualidades: numMensualidades(h) } : {}) })), msi, descuento_transferencia_pct: dtoTransferencia, plan },
       terms: { ...terms, garantia_dias: Number(terms.garantia_dias), penalizacion_dia: Number(terms.penalizacion_dia), entrega_semanas: plazo.semanas, fecha_limite: terms.fecha_limite || plazo.fechaLimite },
       notes: notes.trim() || null,
       valid_until: validUntil,
@@ -348,6 +351,30 @@ export function QuoteForm({ lang, quote }: { lang: string; quote?: Quote }) {
               </div>
               <Switch id="q-msi" className={sw} checked={msi} onCheckedChange={setMsi} />
             </div>
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <Label htmlFor="q-dto">{es ? 'Descuento por transferencia' : 'Bank-transfer discount'}</Label>
+                <p className="text-xs text-muted-foreground">{es ? 'El precio de lista ya trae la comisión de tarjeta; por transferencia se descuenta. 0 para no ofrecerlo.' : 'List price already includes the card fee; bank transfers get it back. 0 to disable.'}</p>
+              </div>
+              <div className="relative w-24"><NumberInput id="q-dto" className={`${campo} pr-7`} value={dtoTransferencia} onValueChange={(n) => setDtoTransferencia(Math.min(20, Math.max(0, n || 0)))} aria-label="%" /><span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">%</span></div>
+            </div>
+            <div className="space-y-3 rounded-lg border p-3">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <Label htmlFor="q-plan">{es ? 'Ofrecer plan mensual' : 'Offer monthly plan'}</Label>
+                  <p className="text-xs text-muted-foreground">{es ? 'Anticipo + mensualidades con hosting y soporte; el sistema vive en infra de imSoft y el código se transfiere al liquidar. Solo software y apps.' : 'Deposit + monthly fee with hosting and support; code is transferred once paid off. Software and apps only.'}</p>
+                </div>
+                <Switch id="q-plan" className={sw} checked={plan !== null} onCheckedChange={(v) => setPlan(v ? { ...PLAN_DEFAULT } : null)} />
+              </div>
+              {plan && (
+                <div className="grid grid-cols-3 gap-2">
+                  <div className="space-y-1"><Label className="text-xs">{es ? 'Meses' : 'Months'}</Label><NumberInput className={campo} value={plan.meses} onValueChange={(n) => setPlan({ ...plan, meses: Math.round(n) || 0 })} /></div>
+                  <div className="space-y-1"><Label className="text-xs">{es ? 'Anticipo %' : 'Deposit %'}</Label><NumberInput className={campo} value={plan.anticipo_pct} onValueChange={(n) => setPlan({ ...plan, anticipo_pct: n || 0 })} /></div>
+                  <div className="space-y-1"><Label className="text-xs">{es ? 'Recargo %' : 'Surcharge %'}</Label><NumberInput className={campo} value={plan.recargo_pct} onValueChange={(n) => setPlan({ ...plan, recargo_pct: n || 0 })} /></div>
+                  {errorPlan && <p className="col-span-3 text-xs text-destructive">{errorPlan}</p>}
+                </div>
+              )}
+            </div>
           </CardContent>
         </Card>
 
@@ -394,6 +421,14 @@ export function QuoteForm({ lang, quote }: { lang: string; quote?: Quote }) {
               </div>
             )
           })}
+          <div className="border-t pt-2 space-y-1 text-xs text-muted-foreground">
+            <p className="font-medium text-foreground">{es ? 'Lo que ve el cliente' : 'What the client sees'}</p>
+            {dtoTransferencia > 0 && <div className="flex justify-between"><span>{es ? `Transferencia (−${dtoTransferencia} %)` : `Bank transfer (−${dtoTransferencia} %)`}</span><span className="font-mono tabular-nums">{mxn(t.total * (1 - dtoTransferencia / 100))}</span></div>}
+            <div className="flex justify-between"><span>{es ? 'Tarjeta, una exhibición' : 'Card, one payment'}</span><span className="font-mono tabular-nums">{mxn(t.total)}</span></div>
+            {msi && <div className="flex justify-between"><span>6 MSI</span><span className="font-mono tabular-nums">{mxn(totalConMsi(t.total, 6))}</span></div>}
+            {msi && <div className="flex justify-between"><span>12 MSI</span><span className="font-mono tabular-nums">{mxn(totalConMsi(t.total, 12))}</span></div>}
+            {plan && !errorPlan && (() => { const ip = importesPlan(t.total, plan); return <div className="flex justify-between"><span>{es ? `Plan ${plan.meses} m` : `${plan.meses}-mo plan`}</span><span className="font-mono tabular-nums">{mxn(ip.anticipo)} + {plan.meses} × {mxn(ip.mensualidad)}</span></div> })()}
+          </div>
           <Button className="w-full mt-2" onClick={guardar} disabled={guardando}>
             {guardando ? (es ? 'Guardando…' : 'Saving…') : quote ? (es ? 'Guardar cambios' : 'Save changes') : (es ? 'Crear cotización' : 'Create quote')}
           </Button>

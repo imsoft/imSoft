@@ -1,4 +1,4 @@
-import type { QuoteDiscount, QuoteItem, QuotePayment, QuoteStatus, QuoteTerms } from '@/lib/cotizaciones'
+import type { OpcionPagoClave, QuoteDiscount, QuoteItem, QuotePayment, QuoteStatus, QuoteTerms } from '@/lib/cotizaciones'
 
 export interface Quote {
   id: string
@@ -29,6 +29,8 @@ export interface Quote {
   accepted_name?: string | null
   accepted_ip?: string | null
   accepted_user_agent?: string | null
+  /** Forma de pago elegida al aceptar (opcionesDePago). */
+  accepted_payment_option?: OpcionPagoClave | null
   project_id?: string | null
   created_by?: string | null
   created_at?: string

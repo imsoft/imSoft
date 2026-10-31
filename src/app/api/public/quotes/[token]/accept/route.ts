@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { ADMIN_EMAIL, clientIp, enviarCorreo, serviceClient } from '@/lib/quotes/server'
 import { correoCotizacionAceptada } from '@/lib/email/plantillas'
-import { motivoNoAceptable, mxn, totales } from '@/lib/cotizaciones'
+import { esOpcionPago, motivoNoAceptable, mxn, opcionesDePago, totales } from '@/lib/cotizaciones'
 
 /** El cliente acepta la cotizacion desde el enlace publico. Guarda nombre, fecha, IP y navegador. */
 export async function POST(req: NextRequest, { params }: { params: Promise<{ token: string }> }) {
@@ -16,17 +16,22 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ tok
   if (!q) return NextResponse.json({ error: 'Cotización no encontrada' }, { status: 404 })
   const motivo = motivoNoAceptable(q)
   if (motivo) return NextResponse.json({ error: motivo }, { status: 409 })
+  // La forma de pago elegida tiene que ser una de las que ofrece esta cotizacion.
+  const opciones = opcionesDePago(q)
+  const formaDePago = esOpcionPago(body.formaDePago) && opciones.some((o) => o.clave === body.formaDePago) ? body.formaDePago : null
+  if (!formaDePago && opciones.length > 1) return NextResponse.json({ error: 'Elige cómo prefieres pagar.' }, { status: 400 })
 
   const ahora = new Date().toISOString()
   const { error } = await db
     .from('quotes')
-    .update({ status: 'accepted', accepted_at: ahora, accepted_name: nombre, accepted_ip: clientIp(req.headers), accepted_user_agent: req.headers.get('user-agent') ?? null, updated_at: ahora })
+    .update({ status: 'accepted', accepted_at: ahora, accepted_name: nombre, accepted_payment_option: formaDePago ?? opciones[0]?.clave ?? null, accepted_ip: clientIp(req.headers), accepted_user_agent: req.headers.get('user-agent') ?? null, updated_at: ahora })
     .eq('id', q.id)
     .eq('status', 'sent')
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
   try {
-    const correo = correoCotizacionAceptada({ nombre, folio: q.folio, titulo: q.title, cliente: q.client_name, empresa: q.client_company, total: mxn(totales(q).total, q.currency), quoteId: q.id, fecha: new Date(ahora) })
+    const elegida = opciones.find((o) => o.clave === (formaDePago ?? opciones[0]?.clave))
+    const correo = correoCotizacionAceptada({ nombre, folio: q.folio, titulo: q.title, cliente: q.client_name, empresa: q.client_company, total: `${mxn(totales(q).total, q.currency)}${elegida ? ` · ${elegida.titulo}: ${elegida.resumen}` : ''}`, quoteId: q.id, fecha: new Date(ahora) })
     await enviarCorreo({ to: ADMIN_EMAIL, ...correo })
   } catch (e) {
     console.error('[quotes] aviso de aceptación no enviado:', e)

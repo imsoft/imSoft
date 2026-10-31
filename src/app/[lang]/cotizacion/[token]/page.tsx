@@ -6,7 +6,7 @@ import { QuoteDocument } from '@/components/documents/quote-document'
 import { AcceptForm } from '@/components/documents/accept-form'
 import { PrintButton } from '@/components/documents/print-button'
 import { Confetti } from '@/components/documents/confetti'
-import { fechaLarga, motivoNoAceptable } from '@/lib/cotizaciones'
+import { fechaLarga, motivoNoAceptable, opcionesDePago } from '@/lib/cotizaciones'
 import type { Quote } from '@/types/quotes'
 
 export const dynamic = 'force-dynamic'
@@ -43,7 +43,7 @@ export default async function CotizacionPublica({ params }: { params: Promise<{ 
         {esBorrador ? null : motivo ? (
           <p className="no-print mx-auto max-w-3xl rounded-xl border bg-white p-4 text-sm text-neutral-700">{motivo}</p>
         ) : (
-          <AcceptForm endpoint={`/api/public/quotes/${token}/accept`} tipo="cotizacion" lang={lang} />
+          <AcceptForm endpoint={`/api/public/quotes/${token}/accept`} tipo="cotizacion" lang={lang} opciones={opcionesDePago(q).map(({ clave, titulo, resumen }) => ({ clave, titulo, resumen }))} />
         )}
       </div>
     </main>

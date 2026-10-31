@@ -2,9 +2,10 @@
  * Logica pura de cotizaciones y contratos: totales, folios, vigencia, hitos y la
  * plantilla del contrato. Sin E/S; las paginas y rutas del panel la usan.
  */
-import { IVA } from './simulador-cobros';
+import { IVA, MSI_EXTRA } from './simulador-cobros';
 import { msiEtiqueta, MSI_MINIMO_MXN } from './msi';
 import { EMISOR } from '@/config/emisor';
+import { DESCUENTO_TRANSFERENCIA_PCT } from '@/config/precios';
 
 export interface QuoteItem {
   concepto: string;
@@ -21,9 +22,94 @@ export interface Hito {
    */
   mensualidades?: number;
 }
+/**
+ * Plan de suscripcion a N meses (31-oct-2026): anticipo que cubre el trabajo, mensualidad
+ * que incluye hosting y soporte, el sistema vive en infraestructura de imSoft hasta
+ * liquidar y el codigo se transfiere al terminar. Se vende como licencia + servicio,
+ * nunca como credito. El recargo cubre el tiempo y el hosting de esos meses.
+ */
+export interface PlanMensual {
+  meses: number;
+  /** Porcentaje del total que se paga de entrada. */
+  anticipo_pct: number;
+  /** Porcentaje sobre el total que se suma por pagar en el plan. */
+  recargo_pct: number;
+}
+export const PLAN_DEFAULT: PlanMensual = { meses: 24, anticipo_pct: 30, recargo_pct: 40 };
+
 export interface QuotePayment {
   hitos: Hito[];
   msi: boolean;
+  /** Descuento por transferencia (%). Si falta, el de src/config/precios.ts. */
+  descuento_transferencia_pct?: number;
+  /** Plan mensual ofrecido; null o ausente = no se ofrece. */
+  plan?: PlanMensual | null;
+}
+
+export type OpcionPagoClave = 'transferencia' | 'tarjeta' | 'msi6' | 'msi12' | 'plan';
+export interface OpcionPago {
+  clave: OpcionPagoClave;
+  titulo: string;
+  /** Lo que paga el cliente en total con esta opcion. */
+  total: number;
+  /** Una linea que lo explica ("12 pagos de $5,958 con tarjeta"). */
+  resumen: string;
+}
+
+export function planValido(plan: PlanMensual | null | undefined): string | null {
+  if (!plan) return null;
+  if (!(plan.meses >= 6 && plan.meses <= 36)) return 'El plan va de 6 a 36 meses.';
+  if (!(plan.anticipo_pct >= 10 && plan.anticipo_pct <= 60)) return 'El anticipo del plan va del 10 al 60 %.';
+  if (!(plan.recargo_pct >= 0 && plan.recargo_pct <= 80)) return 'El recargo del plan va del 0 al 80 %.';
+  return null;
+}
+
+export function descuentoTransferenciaPct(p: Pick<QuotePayment, 'descuento_transferencia_pct'>): number {
+  const v = Number(p.descuento_transferencia_pct);
+  return Number.isFinite(v) && v >= 0 && v <= 20 ? v : DESCUENTO_TRANSFERENCIA_PCT;
+}
+
+/** Lo que cuesta el plan: anticipo, total y mensualidad, sobre el total con IVA. */
+export function importesPlan(total: number, plan: PlanMensual) {
+  const anticipo = round2((total * plan.anticipo_pct) / 100);
+  const totalPlan = round2(total * (1 + plan.recargo_pct / 100));
+  const mensualidad = round2((totalPlan - anticipo) / plan.meses);
+  return { anticipo, totalPlan, mensualidad };
+}
+
+/** Total con tarjeta a N meses sin intereses: el costo del plazo (Stripe + IVA) va al precio. */
+export function totalConMsi(total: number, meses: 6 | 12): number {
+  return round2(total * (1 + (MSI_EXTRA[String(meses) as '6' | '12'] ?? 0) * (1 + IVA)));
+}
+
+/**
+ * Las formas de pago que ve el cliente, cada una con su total. La lista ya trae la
+ * comision de tarjeta; por transferencia hay descuento; los MSI y el plan cuestan mas y
+ * se dice cuanto. El cliente elige una al aceptar y queda en el contrato.
+ */
+export function opcionesDePago(q: Pick<QuoteLike, 'items' | 'apply_iva' | 'payment' | 'currency' | 'discount'>): OpcionPago[] {
+  const { total } = totales(q);
+  const c = q.currency;
+  const dto = descuentoTransferenciaPct(q.payment);
+  const out: OpcionPago[] = [];
+  const totalTransferencia = round2(total * (1 - dto / 100));
+  out.push({ clave: 'transferencia', titulo: 'Transferencia bancaria', total: totalTransferencia, resumen: dto > 0 ? `${dto} % de descuento: ${mxn(totalTransferencia, c)} en total` : `${mxn(total, c)} en total` });
+  out.push({ clave: 'tarjeta', titulo: 'Tarjeta en una sola exhibición', total, resumen: `${mxn(total, c)} en total, por enlace de pago seguro` });
+  if (q.payment.msi && c === 'MXN' && total >= MSI_MINIMO_MXN) {
+    for (const m of [6, 12] as const) {
+      const t = totalConMsi(total, m);
+      out.push({ clave: m === 6 ? 'msi6' : 'msi12', titulo: `Tarjeta a ${m} meses sin intereses`, total: t, resumen: `${m} pagos de ${mxn(t / m, c)}; ${mxn(t, c)} en total` });
+    }
+  }
+  if (q.payment.plan && !planValido(q.payment.plan)) {
+    const { anticipo, totalPlan, mensualidad } = importesPlan(total, q.payment.plan);
+    out.push({ clave: 'plan', titulo: `Plan mensual a ${q.payment.plan.meses} meses`, total: totalPlan, resumen: `Anticipo de ${mxn(anticipo, c)} y ${q.payment.plan.meses} mensualidades de ${mxn(mensualidad, c)}, con hosting y soporte incluidos` });
+  }
+  return out;
+}
+
+export function esOpcionPago(v: unknown): v is OpcionPagoClave {
+  return typeof v === 'string' && ['transferencia', 'tarjeta', 'msi6', 'msi12', 'plan'].includes(v);
 }
 export interface QuoteTerms {
   garantia_dias: number;
@@ -85,6 +171,8 @@ export interface QuoteLike {
   valid_until: string;
   accepted_at?: string | null;
   accepted_name?: string | null;
+  /** Forma de pago que eligio el cliente al aceptar (ver opcionesDePago). */
+  accepted_payment_option?: OpcionPagoClave | null;
 }
 
 /** El precio del proyecto sin IVA (la unica linea de `items`). */
@@ -265,12 +353,24 @@ export function textoFormaDePago(q: Pick<QuoteLike, 'items' | 'apply_iva' | 'pay
   const hitos = importesHitos(total, q.payment.hitos);
   const lineas = hitos.map((h) => { const m = textoMensualidades(h.importe, h, q.currency); return `${h.label}: ${h.pct}% (${mxn(h.importe, q.currency)})${m ? `, ${m} por transferencia` : ''}`; });
   if (hitos.some((h) => numMensualidades(h) > 1)) lineas.push('Las mensualidades son pagos por transferencia bancaria, sin intereses: la primera vence al cumplirse el hito y las siguientes cada mes.');
+  const dto = descuentoTransferenciaPct(q.payment);
+  if (dto > 0) lineas.push(`Pagando por transferencia bancaria, ${dto} % de descuento: ${mxn(round2(total * (1 - dto / 100)), q.currency)} en total.`);
   if (q.payment.msi && q.currency === 'MXN' && total >= MSI_MINIMO_MXN) {
-    const seis = msiEtiqueta(total, 6);
-    lineas.push(`Cada hito puede pagarse con tarjeta de crédito a 3, 6 o 12 meses sin intereses con bancos participantes${seis ? `; a 6 meses, el total equivale a ${seis.replace(/^o /, '')}` : ''}.`);
+    const seis = msiEtiqueta(totalConMsi(total, 6), 6);
+    lineas.push(`Con tarjeta de crédito a 6 o 12 meses sin intereses con bancos participantes; el costo del plazo va en el total: a 6 meses ${mxn(totalConMsi(total, 6), q.currency)}${seis ? ` (${seis.replace(/^o /, '')})` : ''} y a 12 meses ${mxn(totalConMsi(total, 12), q.currency)}.`);
+  }
+  if (q.payment.plan && !planValido(q.payment.plan)) {
+    const { anticipo, totalPlan, mensualidad } = importesPlan(total, q.payment.plan);
+    lineas.push(`Plan mensual a ${q.payment.plan.meses} meses: anticipo de ${mxn(anticipo, q.currency)} y ${q.payment.plan.meses} mensualidades de ${mxn(mensualidad, q.currency)} (${mxn(totalPlan, q.currency)} en total), con hosting y soporte incluidos; el sistema opera en infraestructura de imSoft y el código se transfiere al cubrir la última mensualidad.`);
   }
   lineas.push(`Por transferencia bancaria o con tarjeta mediante enlace de pago seguro (Stripe). Se emite CFDI por cada pago; dudas de facturación a ${EMISOR.emailFacturacion}.`);
   return lineas;
+}
+
+/** Como se nombra en el contrato la opcion que eligio el cliente. */
+export function textoOpcionElegida(q: Pick<QuoteLike, 'items' | 'apply_iva' | 'payment' | 'currency' | 'discount' | 'accepted_payment_option'>): string | null {
+  const o = opcionesDePago(q).find((x) => x.clave === q.accepted_payment_option);
+  return o ? `${o.titulo}: ${o.resumen}` : null;
 }
 
 function esc(s: string | null | undefined): string {
@@ -298,6 +398,8 @@ export function renderContrato(q: QuoteLike & { created_at?: string | null }, fo
   const listaAlcance = features.length > 0 ? 'ol' : 'ul';
   const pagos = hitos.map((h) => { const m = textoMensualidades(h.importe, h, q.currency); return `<li>${esc(h.label)}: ${h.pct}% del total, ${mxn(h.importe, q.currency)}${m ? `, pagadero ${m} por transferencia bancaria; la primera vence al cumplirse el hito y las siguientes el mismo día de cada mes` : ''}.</li>`; }).join('');
   const hayMensualidades = hitos.some((h) => numMensualidades(h) > 1);
+  const opcionElegida = textoOpcionElegida(q);
+  const plan = q.payment.plan && !planValido(q.payment.plan) ? importesPlan(t.total, q.payment.plan) : null;
   const penal = q.terms.penalizacion_dia > 0
     ? `Si el Cliente no entrega los insumos, contenidos, accesos o aprobaciones que le corresponden en las fechas acordadas, el calendario se recorre por el mismo número de días y, a partir del quinto día hábil de retraso, el Cliente pagará al Prestador ${mxn(q.terms.penalizacion_dia, q.currency)} por cada día hábil adicional de retraso.`
     : 'Si el Cliente no entrega los insumos, contenidos, accesos o aprobaciones que le corresponden en las fechas acordadas, el calendario de entrega se recorre por el mismo número de días de retraso.';
@@ -318,7 +420,9 @@ ${q.intro ? `<p>${esc(q.intro)}</p>` : ''}
 <p>El precio total es de <strong>${mxn(t.total, q.currency)}</strong> (${t.descuento > 0 ? `precio de lista de ${mxn(t.lista, q.currency)} menos un descuento de ${mxn(t.descuento, q.currency)} por concepto de "${esc(q.discount?.motivo ?? '')}", es decir, ${mxn(t.subtotal, q.currency)}` : mxn(t.subtotal, q.currency)}${q.apply_iva ? ` más ${mxn(t.iva, q.currency)} de IVA` : ', sin IVA'}), pagadero así:</p>${t.descuento > 0 ? `
 <p>El descuento aplica únicamente a este contrato y no constituye un precio de referencia para trabajos futuros.</p>` : ''}
 <ul>${pagos}</ul>
-<p>Los pagos se realizan por transferencia bancaria o mediante enlace de pago con tarjeta${q.payment.msi ? ', incluidos meses sin intereses cuando el banco emisor lo permita' : ''}. El Prestador emite CFDI por cada pago recibido; los asuntos de facturación se atienden en ${esc(EMISOR.emailFacturacion)}. ${hayMensualidades ? 'Las mensualidades pactadas son un pago diferido sin intereses. Los entregables se ponen en producción al cubrirse la primera mensualidad del hito correspondiente; la propiedad se transfiere conforme a la cláusula Quinta, al quedar pagado el total. El atraso en cualquier mensualidad faculta al Prestador a suspender el servicio, los accesos y el soporte hasta que el pago se regularice, sin que ello modifique las fechas de las mensualidades restantes.' : 'Ningún entregable se pone en producción ni se transfiere hasta recibir el pago del hito correspondiente.'}</p>
+${opcionElegida ? `<p>El Cliente eligió como forma de pago: <strong>${esc(opcionElegida)}</strong>. ${q.accepted_payment_option === 'transferencia' ? 'El descuento por transferencia aplica mientras cada pago se cubra por ese medio en la fecha pactada; un pago con tarjeta se cobra sin el descuento.' : ''}${q.accepted_payment_option === 'msi6' || q.accepted_payment_option === 'msi12' ? 'Los meses sin intereses los otorga el banco emisor de la tarjeta; el total indicado incluye el costo del plazo y no cambia si el banco no ofrece ese plan, en cuyo caso el Cliente puede pagar en una sola exhibición al precio de lista.' : ''}</p>` : ''}
+<p>Los pagos se realizan por transferencia bancaria o mediante enlace de pago con tarjeta${q.payment.msi ? ', incluidos meses sin intereses cuando el banco emisor lo permita' : ''}. El Prestador emite CFDI por cada pago recibido; los asuntos de facturación se atienden en ${esc(EMISOR.emailFacturacion)}. ${hayMensualidades ? 'Las mensualidades pactadas son un pago diferido sin intereses. Los entregables se ponen en producción al cubrirse la primera mensualidad del hito correspondiente; la propiedad se transfiere conforme a la cláusula Quinta, al quedar pagado el total. El atraso en cualquier mensualidad faculta al Prestador a suspender el servicio, los accesos y el soporte hasta que el pago se regularice, sin que ello modifique las fechas de las mensualidades restantes.' : 'Ningún entregable se pone en producción ni se transfiere hasta recibir el pago del hito correspondiente.'}</p>${plan && q.accepted_payment_option === 'plan' ? `
+<p><strong>Plan de suscripción.</strong> El Cliente paga un anticipo de ${mxn(plan.anticipo, q.currency)} al aceptar este contrato y ${q.payment.plan!.meses} mensualidades consecutivas de ${mxn(plan.mensualidad, q.currency)} (${mxn(plan.totalPlan, q.currency)} en total), la primera al ponerse el sistema en producción y las siguientes el mismo día de cada mes, mediante cargo automático a tarjeta o domiciliación. Durante el plan, el Prestador otorga al Cliente una licencia de uso del sistema, lo aloja en su propia infraestructura y le da hosting, soporte y mantenimiento correctivo sin costo adicional; el Cliente conserva en todo momento la propiedad de sus datos y puede exportarlos. El atraso de más de 10 días naturales en una mensualidad faculta al Prestador a suspender el acceso al sistema hasta que se regularice, y el de más de 60 días a dar por terminado el plan, en cuyo caso el Cliente recibe sus datos y el Prestador conserva el código. Al cubrirse la última mensualidad, el Prestador transfiere al Cliente el código fuente y la propiedad conforme a la cláusula Quinta y le ofrece continuar el hosting y soporte mediante una mensualidad reducida cotizada por separado. El Cliente puede liquidar anticipadamente el saldo restante en cualquier momento sin penalización. Este plan es un servicio de licencia, hosting y soporte, no un crédito ni un financiamiento.</p>` : ''}
 
 <h2>Tercera. Plazo de entrega</h2>
 <p>El Prestador entregará el proyecto a más tardar el <strong>${esc(fechaLarga(plazo.fechaLimite))}</strong>, es decir, en un plazo de ${plazo.semanas} ${plazo.semanas === 1 ? 'semana' : 'semanas'} contado desde la cotización, siempre que el Cliente entregue el anticipo y los insumos iniciales oportunamente. El plazo se ajustará de común acuerdo si el alcance cambia o si el Cliente retrasa la entrega de insumos, conforme a las cláusulas Sexta y Séptima.</p>
