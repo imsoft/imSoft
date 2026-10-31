@@ -1,8 +1,8 @@
 /**
- * Abre el dialogo de impresion DESPUES de que el navegador pinte el siguiente cuadro.
- * `window.print()` bloquea el hilo principal mientras el dialogo esta abierto, y si se
- * llama dentro del clic, la metrica INP cuenta todo ese tiempo (decenas de segundos).
+ * Opens the print dialog AFTER the browser paints the next frame. `window.print()`
+ * blocks the main thread while the dialog is open, and if it is called inside the click
+ * handler, the INP metric counts all that time (tens of seconds).
  */
-export function imprimir(): void {
+export function printPage(): void {
   requestAnimationFrame(() => setTimeout(() => window.print(), 0))
 }

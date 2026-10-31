@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getResend } from '@/lib/email/resend-client'
-import { correoFalloBlog } from '@/lib/email/plantillas';
+import { blogNotifyFailedEmail } from '@/lib/email/templates';
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { buildBlogNotificationHtml } from '@/lib/email/blog-notification-template'
@@ -200,7 +200,7 @@ async function notifyAdminOfError(postTitle: string, message: string) {
     await getResend().emails.send({
       from: `imSoft <${fromEmail}>`,
       to: [adminEmail],
-      ...correoFalloBlog({ titulo: postTitle, error: message }),
+      ...blogNotifyFailedEmail({ title: postTitle, error: message }),
     })
   } catch (e) {
     console.error('[blog/notify] No se pudo avisar al admin del error:', e)

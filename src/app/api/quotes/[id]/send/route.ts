@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { ADMIN_EMAIL, SITE_URL, enviarCorreo, requireAdmin, serviceClient } from '@/lib/quotes/server'
-import { correoCotizacionAlCliente } from '@/lib/email/plantillas'
-import { fechaLarga, mxn, totales } from '@/lib/cotizaciones'
+import { ADMIN_EMAIL, SITE_URL, sendEmail, requireAdmin, serviceClient } from '@/lib/quotes/server'
+import { quoteToClientEmail } from '@/lib/email/templates'
+import { longDate, formatMoney, quoteTotals } from '@/lib/quotes'
 
-/** Manda la cotizacion al cliente por correo con el enlace de aceptacion, y la marca como enviada. */
+/** Emails the quote to the client with the acceptance link, and marks it as sent. */
 export async function POST(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const auth = await requireAdmin()
   if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status })
@@ -14,20 +14,20 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
   if (!q.client_email) return NextResponse.json({ error: 'La cotización no tiene correo del cliente' }, { status: 400 })
 
   const url = `${SITE_URL}/${q.lang}/cotizacion/${q.token}`
-  const t = totales(q)
+  const t = quoteTotals(q)
   const whatsapp = `https://wa.me/523325365558?text=${encodeURIComponent(`Hola Brandon, tengo una duda sobre la cotización ${q.number}.`)}`
-  const correo = correoCotizacionAlCliente({
-    cliente: q.client_name,
-    folio: q.number,
-    titulo: q.title,
-    total: mxn(t.total, q.currency),
-    ivaIncluido: Boolean(q.apply_iva),
-    vigencia: fechaLarga(q.valid_until),
-    enlace: url,
+  const email = quoteToClientEmail({
+    client: q.client_name,
+    number: q.number,
+    title: q.title,
+    total: formatMoney(t.total, q.currency),
+    vatIncluded: Boolean(q.apply_iva),
+    validUntil: longDate(q.valid_until),
+    link: url,
     whatsapp,
-    descuento: t.descuento > 0 ? `${mxn(t.descuento, q.currency)} · ${q.discount?.motivo ?? ''}` : null,
+    discount: t.discount > 0 ? `${formatMoney(t.discount, q.currency)} · ${q.discount?.reason ?? ''}` : null,
   })
-  await enviarCorreo({ to: q.client_email, replyTo: ADMIN_EMAIL, ...correo })
+  await sendEmail({ to: q.client_email, replyTo: ADMIN_EMAIL, ...email })
   if (q.status === 'draft') await db.from('quotes').update({ status: 'sent', sent_at: new Date().toISOString() }).eq('id', id)
   return NextResponse.json({ ok: true })
 }

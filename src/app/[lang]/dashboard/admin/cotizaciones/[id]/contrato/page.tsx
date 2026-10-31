@@ -3,7 +3,7 @@ import { notFound, redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { ContractEditor } from './contract-editor'
 import type { Contract, Quote } from '@/types/quotes'
-import { huellaContrato } from '@/lib/huella-contrato'
+import { contractHash } from '@/lib/contract-hash'
 
 export default async function ContractPage({ params }: { params: Promise<{ lang: string; id: string }> }) {
   const { lang, id } = await params
@@ -17,15 +17,15 @@ export default async function ContractPage({ params }: { params: Promise<{ lang:
   ])
   if (!quote || !contract) notFound()
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io'
-  const actual = huellaContrato(contract.body_html)
-  const huella = contract.signed_hash ? { actual, coincide: actual === contract.signed_hash } : null
+  const current = contractHash(contract.body_html)
+  const hashCheck = contract.signed_hash ? { current, matches: current === contract.signed_hash } : null
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold"><span className="font-mono">{contract.number}</span> <span className="text-muted-foreground text-xl">· {quote.title}</span></h1>
         <p className="text-muted-foreground">{lang === 'en' ? 'Contract from quote' : 'Contrato de la cotización'} {quote.number}</p>
       </div>
-      <ContractEditor lang={lang} quote={quote as Quote} contract={contract as Contract} publicUrl={`${siteUrl}/${contract.lang}/contrato/${contract.token}`} huella={huella} />
+      <ContractEditor lang={lang} quote={quote as Quote} contract={contract as Contract} publicUrl={`${siteUrl}/${contract.lang}/contrato/${contract.token}`} hashCheck={hashCheck} />
     </div>
   )
 }

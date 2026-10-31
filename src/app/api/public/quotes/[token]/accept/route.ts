@@ -1,40 +1,40 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { ADMIN_EMAIL, clientIp, enviarCorreo, serviceClient } from '@/lib/quotes/server'
-import { correoCotizacionAceptada } from '@/lib/email/plantillas'
-import { esOpcionPago, motivoNoAceptable, mxn, opcionesDePago, totales } from '@/lib/cotizaciones'
+import { ADMIN_EMAIL, clientIp, sendEmail, serviceClient } from '@/lib/quotes/server'
+import { quoteAcceptedEmail } from '@/lib/email/templates'
+import { isPaymentOptionKey, notAcceptableReason, formatMoney, paymentOptions, quoteTotals } from '@/lib/quotes'
 
-/** El cliente acepta la cotizacion desde el enlace publico. Guarda nombre, fecha, IP y navegador. */
+/** The client accepts the quote from the public link. Stores name, date, IP and browser. */
 export async function POST(req: NextRequest, { params }: { params: Promise<{ token: string }> }) {
   const { token } = await params
   const body = await req.json().catch(() => ({}))
-  const nombre = String(body.nombre ?? '').trim()
-  if (nombre.length < 3) return NextResponse.json({ error: 'Escribe tu nombre completo para aceptar.' }, { status: 400 })
-  if (!body.acepta) return NextResponse.json({ error: 'Marca la casilla de aceptación.' }, { status: 400 })
+  const name = String(body.name ?? '').trim()
+  if (name.length < 3) return NextResponse.json({ error: 'Escribe tu nombre completo para aceptar.' }, { status: 400 })
+  if (!body.accepted) return NextResponse.json({ error: 'Marca la casilla de aceptación.' }, { status: 400 })
 
   const db = serviceClient()
   const { data: q } = await db.from('quotes').select('*').eq('token', token).maybeSingle()
   if (!q) return NextResponse.json({ error: 'Cotización no encontrada' }, { status: 404 })
-  const motivo = motivoNoAceptable(q)
-  if (motivo) return NextResponse.json({ error: motivo }, { status: 409 })
-  // La forma de pago elegida tiene que ser una de las que ofrece esta cotizacion.
-  const opciones = opcionesDePago(q)
-  const formaDePago = esOpcionPago(body.formaDePago) && opciones.some((o) => o.clave === body.formaDePago) ? body.formaDePago : null
-  if (!formaDePago && opciones.length > 1) return NextResponse.json({ error: 'Elige cómo prefieres pagar.' }, { status: 400 })
+  const reason = notAcceptableReason(q)
+  if (reason) return NextResponse.json({ error: reason }, { status: 409 })
+  // The chosen payment option has to be one of those this quote offers.
+  const options = paymentOptions(q)
+  const paymentOption = isPaymentOptionKey(body.paymentOption) && options.some((o) => o.key === body.paymentOption) ? body.paymentOption : null
+  if (!paymentOption && options.length > 1) return NextResponse.json({ error: 'Elige cómo prefieres pagar.' }, { status: 400 })
 
-  const ahora = new Date().toISOString()
+  const now = new Date().toISOString()
   const { error } = await db
     .from('quotes')
-    .update({ status: 'accepted', accepted_at: ahora, accepted_name: nombre, accepted_payment_option: formaDePago ?? opciones[0]?.clave ?? null, accepted_ip: clientIp(req.headers), accepted_user_agent: req.headers.get('user-agent') ?? null, updated_at: ahora })
+    .update({ status: 'accepted', accepted_at: now, accepted_name: name, accepted_payment_option: paymentOption ?? options[0]?.key ?? null, accepted_ip: clientIp(req.headers), accepted_user_agent: req.headers.get('user-agent') ?? null, updated_at: now })
     .eq('id', q.id)
     .eq('status', 'sent')
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
   try {
-    const elegida = opciones.find((o) => o.clave === (formaDePago ?? opciones[0]?.clave))
-    const correo = correoCotizacionAceptada({ nombre, folio: q.number, titulo: q.title, cliente: q.client_name, empresa: q.client_company, total: `${mxn(totales(q).total, q.currency)}${elegida ? ` · ${elegida.titulo}: ${elegida.resumen}` : ''}`, quoteId: q.id, fecha: new Date(ahora) })
-    await enviarCorreo({ to: ADMIN_EMAIL, ...correo })
+    const chosen = options.find((o) => o.key === (paymentOption ?? options[0]?.key))
+    const email = quoteAcceptedEmail({ name, number: q.number, title: q.title, client: q.client_name, company: q.client_company, total: `${formatMoney(quoteTotals(q).total, q.currency)}${chosen ? ` · ${chosen.title}: ${chosen.summary}` : ''}`, quoteId: q.id, date: new Date(now) })
+    await sendEmail({ to: ADMIN_EMAIL, ...email })
   } catch (e) {
-    console.error('[quotes] aviso de aceptación no enviado:', e)
+    console.error('[quotes] acceptance notice not sent:', e)
   }
   return NextResponse.json({ ok: true })
 }

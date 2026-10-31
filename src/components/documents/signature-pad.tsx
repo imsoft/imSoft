@@ -5,27 +5,27 @@ import { Button } from '@/components/ui/button'
 import { Eraser } from 'lucide-react'
 
 /**
- * Cuadro para firmar con el dedo o el mouse. Entrega el trazo como PNG en data URL
- * (null cuando esta vacio). Dibuja con eventos de puntero, asi que sirve igual en
- * telefono, tableta y escritorio; en el telefono bloquea el scroll mientras se firma.
+ * Box to sign with a finger or the mouse. Returns the stroke as a PNG data URL (null
+ * when empty). Draws with pointer events, so it works the same on phone, tablet and
+ * desktop; on the phone it blocks scrolling while signing.
  */
 export function SignaturePad({ onChange, lang }: { onChange: (png: string | null) => void; lang: string }) {
   const es = lang !== 'en'
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const dibujando = useRef(false)
-  const [vacio, setVacio] = useState(true)
+  const drawing = useRef(false)
+  const [empty, setEmpty] = useState(true)
 
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
-    const ajustar = () => {
+    const resize = () => {
       const ratio = Math.max(1, window.devicePixelRatio || 1)
-      const ancho = canvas.clientWidth
-      const alto = canvas.clientHeight
-      // Cambiar el tamano borra el lienzo; se conserva el dibujo y se vuelve a pintar.
-      const previo = canvas.width > 0 ? canvas.toDataURL() : null
-      canvas.width = Math.round(ancho * ratio)
-      canvas.height = Math.round(alto * ratio)
+      const width = canvas.clientWidth
+      const height = canvas.clientHeight
+      // Resizing clears the canvas; the drawing is kept and painted again.
+      const previous = canvas.width > 0 ? canvas.toDataURL() : null
+      canvas.width = Math.round(width * ratio)
+      canvas.height = Math.round(height * ratio)
       const ctx = canvas.getContext('2d')
       if (!ctx) return
       ctx.scale(ratio, ratio)
@@ -33,57 +33,57 @@ export function SignaturePad({ onChange, lang }: { onChange: (png: string | null
       ctx.lineCap = 'round'
       ctx.lineJoin = 'round'
       ctx.strokeStyle = '#1a1a1a'
-      if (previo) {
+      if (previous) {
         const img = new Image()
-        img.onload = () => ctx.drawImage(img, 0, 0, ancho, alto)
-        img.src = previo
+        img.onload = () => ctx.drawImage(img, 0, 0, width, height)
+        img.src = previous
       }
     }
-    ajustar()
-    window.addEventListener('resize', ajustar)
-    return () => window.removeEventListener('resize', ajustar)
+    resize()
+    window.addEventListener('resize', resize)
+    return () => window.removeEventListener('resize', resize)
   }, [])
 
-  function punto(e: React.PointerEvent<HTMLCanvasElement>) {
+  function point(e: React.PointerEvent<HTMLCanvasElement>) {
     const r = e.currentTarget.getBoundingClientRect()
     return { x: e.clientX - r.left, y: e.clientY - r.top }
   }
 
-  function empezar(e: React.PointerEvent<HTMLCanvasElement>) {
+  function start(e: React.PointerEvent<HTMLCanvasElement>) {
     const ctx = e.currentTarget.getContext('2d')
     if (!ctx) return
     e.currentTarget.setPointerCapture(e.pointerId)
-    dibujando.current = true
-    const p = punto(e)
+    drawing.current = true
+    const p = point(e)
     ctx.beginPath()
     ctx.moveTo(p.x, p.y)
-    // Un toque sin arrastre tambien deja marca (un punto).
+    // A tap without dragging also leaves a mark (a dot).
     ctx.lineTo(p.x + 0.1, p.y + 0.1)
     ctx.stroke()
-    if (vacio) setVacio(false)
+    if (empty) setEmpty(false)
   }
 
-  function mover(e: React.PointerEvent<HTMLCanvasElement>) {
-    if (!dibujando.current) return
+  function move(e: React.PointerEvent<HTMLCanvasElement>) {
+    if (!drawing.current) return
     const ctx = e.currentTarget.getContext('2d')
     if (!ctx) return
-    const p = punto(e)
+    const p = point(e)
     ctx.lineTo(p.x, p.y)
     ctx.stroke()
   }
 
-  function terminar(e: React.PointerEvent<HTMLCanvasElement>) {
-    if (!dibujando.current) return
-    dibujando.current = false
+  function end(e: React.PointerEvent<HTMLCanvasElement>) {
+    if (!drawing.current) return
+    drawing.current = false
     onChange(e.currentTarget.toDataURL('image/png'))
   }
 
-  function limpiar() {
+  function clear() {
     const canvas = canvasRef.current
     const ctx = canvas?.getContext('2d')
     if (!canvas || !ctx) return
     ctx.clearRect(0, 0, canvas.width, canvas.height)
-    setVacio(true)
+    setEmpty(true)
     onChange(null)
   }
 
@@ -94,14 +94,14 @@ export function SignaturePad({ onChange, lang }: { onChange: (png: string | null
           ref={canvasRef}
           className="h-40 w-full touch-none rounded-lg border-2 border-neutral-300 bg-white"
           style={{ touchAction: 'none' }}
-          onPointerDown={empezar}
-          onPointerMove={mover}
-          onPointerUp={terminar}
-          onPointerCancel={terminar}
-          onPointerLeave={terminar}
+          onPointerDown={start}
+          onPointerMove={move}
+          onPointerUp={end}
+          onPointerCancel={end}
+          onPointerLeave={end}
           aria-label={es ? 'Cuadro para dibujar tu firma' : 'Signature drawing box'}
         />
-        {vacio && (
+        {empty && (
           <p className="pointer-events-none absolute inset-0 flex items-center justify-center text-sm text-neutral-400">
             {es ? 'Firma aquí con el dedo o el mouse' : 'Sign here with your finger or mouse'}
           </p>
@@ -109,7 +109,7 @@ export function SignaturePad({ onChange, lang }: { onChange: (png: string | null
         <div className="pointer-events-none absolute inset-x-6 bottom-8 border-b border-neutral-300" />
       </div>
       <div className="flex justify-end">
-        <Button type="button" variant="ghost" size="sm" onClick={limpiar} disabled={vacio} className="text-neutral-600">
+        <Button type="button" variant="ghost" size="sm" onClick={clear} disabled={empty} className="text-neutral-600">
           <Eraser className="size-4 mr-1" />{es ? 'Borrar firma' : 'Clear signature'}
         </Button>
       </div>

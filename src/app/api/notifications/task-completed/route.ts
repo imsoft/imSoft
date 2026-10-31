@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getResend } from '@/lib/email/resend-client';
-import { correoTareaCompletada } from '@/lib/email/plantillas';
+import { taskCompletedEmail } from '@/lib/email/templates';
 import { createClient } from '@/lib/supabase/server'
 import { serviceClient } from '@/lib/quotes/server'
 
@@ -77,13 +77,13 @@ export async function POST(request: NextRequest) {
       from: `imSoft <${process.env.RESEND_FROM_EMAIL || 'contacto@imsoft.io'}>`,
       replyTo: process.env.ADMIN_NOTIFICATION_EMAIL || 'contacto@imsoft.io',
       to: [clientEmail],
-      ...correoTareaCompletada({
-        cliente: clientName,
-        proyecto: project.title_es || project.title_en,
-        tarea: taskTitle,
-        completadas: completedTasks,
+      ...taskCompletedEmail({
+        client: clientName,
+        project: project.title_es || project.title_en,
+        task: taskTitle,
+        completed: completedTasks,
         total: totalTasks,
-        enlace: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io'}/es/dashboard/client/projects/${projectId}`,
+        link: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io'}/es/dashboard/client/projects/${projectId}`,
       }),
     })
 

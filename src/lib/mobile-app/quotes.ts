@@ -1,4 +1,4 @@
-import { estaVencida, opcionesDePago, totales, type QuoteLike, type QuoteStatus } from '@/lib/cotizaciones'
+import { isExpired, paymentOptions, quoteTotals, type QuoteLike, type QuoteStatus } from '@/lib/quotes'
 
 /** What the app shows of a quote. No items or tax data: the detail lives on the public page. */
 export interface AppQuote {
@@ -33,15 +33,15 @@ export function quotesForApp(rows: QuoteRow[], site: string, today = new Date())
     .map((q) => {
       // Published apps only read `total`: once accepted, it carries the chosen option's total.
       const chosen = q.status === 'accepted' && q.accepted_payment_option && q.payment
-        ? opcionesDePago({ ...q, payment: q.payment, currency: q.currency || 'MXN' }).find((o) => o.clave === q.accepted_payment_option)
+        ? paymentOptions({ ...q, payment: q.payment, currency: q.currency || 'MXN' }).find((o) => o.key === q.accepted_payment_option)
         : undefined
       return {
         id: q.id,
         number: q.number,
         title: q.title,
         status: appStatus(q, today),
-        total: chosen?.total ?? totales(q).total,
-        paymentOption: chosen?.titulo ?? null,
+        total: chosen?.total ?? quoteTotals(q).total,
+        paymentOption: chosen?.title ?? null,
         currency: q.currency || 'MXN',
         vatIncluded: q.apply_iva,
         validUntil: q.valid_until,
@@ -53,6 +53,6 @@ export function quotesForApp(rows: QuoteRow[], site: string, today = new Date())
 function appStatus(q: Pick<QuoteLike, 'valid_until' | 'status'>, today: Date): AppQuote['status'] {
   if (q.status === 'accepted') return 'accepted'
   if (q.status === 'rejected') return 'rejected'
-  if (q.status === 'expired' || estaVencida(q, today)) return 'expired'
+  if (q.status === 'expired' || isExpired(q, today)) return 'expired'
   return 'sent'
 }

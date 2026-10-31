@@ -281,15 +281,15 @@
   text-decoration: underline;
 }
 
-/* Documentos (cotizaciones y contratos): tipografia del contrato e impresion a PDF. */
-.contrato h1 { font-size: 1.5rem; font-weight: 700; line-height: 1.2; margin-bottom: 0.5rem; }
+/* Documents (quotes and contracts): contract typography and printing to PDF. */
+.contract-body h1 { font-size: 1.5rem; font-weight: 700; line-height: 1.2; margin-bottom: 0.5rem; }
 /* .folio: contracts saved before 2026-11 keep the old class in their body_html (it is signed, so it is never rewritten). */
-.contrato .folio, .contrato .document-number { font-size: 0.85rem; color: #525252; margin-bottom: 1.5rem; }
-.contrato h2 { font-size: 1rem; font-weight: 700; margin-top: 1.5rem; margin-bottom: 0.5rem; }
-.contrato p { margin-bottom: 0.75rem; line-height: 1.6; }
-.contrato ul { list-style: disc; padding-left: 1.5rem; margin-bottom: 0.75rem; }
-.contrato ol { list-style: decimal; padding-left: 1.5rem; margin-bottom: 0.75rem; }
-.contrato li { margin-bottom: 0.25rem; }
+.contract-body .folio, .contract-body .document-number { font-size: 0.85rem; color: #525252; margin-bottom: 1.5rem; }
+.contract-body h2 { font-size: 1rem; font-weight: 700; margin-top: 1.5rem; margin-bottom: 0.5rem; }
+.contract-body p { margin-bottom: 0.75rem; line-height: 1.6; }
+.contract-body ul { list-style: disc; padding-left: 1.5rem; margin-bottom: 0.75rem; }
+.contract-body ol { list-style: decimal; padding-left: 1.5rem; margin-bottom: 0.75rem; }
+.contract-body li { margin-bottom: 0.25rem; }
 @media print {
   body { background: white !important; }
   .no-print { display: none !important; }

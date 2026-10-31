@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { notifyClient, paymentNotice } from '@/lib/mobile-app/notifications'
 import { headers } from 'next/headers'
 import Stripe from 'stripe'
-import { ADMIN_EMAIL, enviarCorreo, serviceClient } from '@/lib/quotes/server'
+import { ADMIN_EMAIL, sendEmail, serviceClient } from '@/lib/quotes/server'
 import { stripe } from '@/lib/stripe'
 import { datosDeSuscripcion, etiquetaCobroPlan, mensualidadesCobradas, planLiquidado } from '@/lib/plan-mensual'
 
@@ -305,7 +305,7 @@ export async function POST(request: NextRequest) {
         // Con la ultima mensualidad, la suscripcion termina sola.
         if (!esAnticipo && months > 0 && planLiquidado(cobradas + 1, months)) {
           await stripe.subscriptions.update(subscriptionId, { cancel_at_period_end: true }).catch((err) => console.error('[Stripe Webhook] plan: no se pudo cerrar la suscripción', err))
-          await enviarCorreo({ to: ADMIN_EMAIL, subject: `Plan liquidado · proyecto ${projectId}`, html: `<p>Se cobró la última mensualidad (${cobradas + 1} de ${months}) del plan. Toca transferir el código al cliente y ofrecerle la mensualidad de hosting y soporte.</p>` }).catch(() => {})
+          await sendEmail({ to: ADMIN_EMAIL, subject: `Plan liquidado · proyecto ${projectId}`, html: `<p>Se cobró la última mensualidad (${cobradas + 1} de ${months}) del plan. Toca transferir el código al cliente y ofrecerle la mensualidad de hosting y soporte.</p>` }).catch(() => {})
         }
         break
       }
@@ -318,14 +318,14 @@ export async function POST(request: NextRequest) {
         const amount = (invoice.amount_due ?? 0) / 100
         await supabase.from('project_payments').insert({ project_id: projectId, amount, currency: (invoice.currency ?? 'mxn').toUpperCase(), payment_method: 'card', payment_date: new Date().toISOString().split('T')[0], status: 'cancelled', notes: `Plan mensual · Cobro rechazado · Stripe Invoice ${invoice.id}` })
         // Stripe reintenta solo; aqui se avisa para suspender el acceso si no se regulariza (clausula Segunda).
-        await enviarCorreo({ to: ADMIN_EMAIL, subject: `Mensualidad rechazada · proyecto ${projectId}`, html: `<p>Stripe no pudo cobrar la mensualidad de ${amount} ${(invoice.currency ?? 'mxn').toUpperCase()} del plan (suscripción ${subscriptionId}). Stripe reintentará; si pasan 10 días sin pago, el contrato permite suspender el acceso.</p>` }).catch(() => {})
+        await sendEmail({ to: ADMIN_EMAIL, subject: `Mensualidad rechazada · proyecto ${projectId}`, html: `<p>Stripe no pudo cobrar la mensualidad de ${amount} ${(invoice.currency ?? 'mxn').toUpperCase()} del plan (suscripción ${subscriptionId}). Stripe reintentará; si pasan 10 días sin pago, el contrato permite suspender el acceso.</p>` }).catch(() => {})
         break
       }
 
       case 'customer.subscription.deleted': {
         const sub = event.data.object as Stripe.Subscription
         if (sub.metadata?.plan !== '1' || !sub.metadata?.project_id) break
-        await enviarCorreo({ to: ADMIN_EMAIL, subject: `Suscripción del plan terminada · proyecto ${sub.metadata.project_id}`, html: `<p>La suscripción ${sub.id} del plan mensual terminó (${sub.cancellation_details?.reason ?? 'sin motivo registrado'}). Revisa si fue por liquidación o por impago.</p>` }).catch(() => {})
+        await sendEmail({ to: ADMIN_EMAIL, subject: `Suscripción del plan terminada · proyecto ${sub.metadata.project_id}`, html: `<p>La suscripción ${sub.id} del plan mensual terminó (${sub.cancellation_details?.reason ?? 'sin motivo registrado'}). Revisa si fue por liquidación o por impago.</p>` }).catch(() => {})
         break
       }
 

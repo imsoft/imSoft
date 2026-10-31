@@ -5,7 +5,7 @@
  * recurrente que arranca tras un periodo de gracia (lo que tarda en salir a produccion).
  * Logica pura; la E/S vive en /api/quotes/[id]/plan-link y en el webhook de Stripe.
  */
-import type { PlanMensual } from './cotizaciones'
+import type { MonthlyPlan } from './quotes'
 
 /** Dias entre el anticipo y la primera mensualidad: el tiempo tipico de poner el sistema en produccion. */
 export const DIAS_PRIMERA_MENSUALIDAD = 30
@@ -30,7 +30,7 @@ export function lineasDelPlan(o: { titulo: string; currency: string; anticipo: n
 }
 
 /** Metadata que viaja en la suscripcion para que el webhook sepa de que proyecto y cuantas mensualidades son. */
-export function metadataDelPlan(o: { projectId: string; quoteId: string; plan: PlanMensual }): Record<string, string> {
+export function metadataDelPlan(o: { projectId: string; quoteId: string; plan: MonthlyPlan }): Record<string, string> {
   return { project_id: o.projectId, quote_id: o.quoteId, plan: '1', months: String(o.plan.months) }
 }
 

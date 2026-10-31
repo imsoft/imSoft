@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getResend } from '@/lib/email/resend-client';
-import { correoContacto } from '@/lib/email/plantillas';
+import { contactEmail } from '@/lib/email/templates';
 import { createClient } from '@supabase/supabase-js';
 import { verifyTurnstileToken } from '@/lib/turnstile';
 
@@ -80,11 +80,11 @@ export async function POST(request: Request) {
         from: `imSoft <${fromEmail}>`,
         to: adminEmail,
         replyTo: email,
-        ...correoContacto({
-          nombre: [firstName, lastName].filter(Boolean).join(' '),
+        ...contactEmail({
+          name: [firstName, lastName].filter(Boolean).join(' '),
           email,
-          telefono: phoneNumber,
-          mensaje: message,
+          phone: phoneNumber,
+          message,
           panelUrl: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io'}/es/dashboard/admin/contact-messages`,
         }),
       });

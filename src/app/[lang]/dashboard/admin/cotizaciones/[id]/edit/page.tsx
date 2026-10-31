@@ -12,7 +12,7 @@ export default async function EditQuotePage({ params }: { params: Promise<{ lang
   if (!user) redirect(`/${lang}/login`)
   const { data: quote } = await supabase.from('quotes').select('*').eq('id', id).maybeSingle()
   if (!quote) notFound()
-  // Una cotizacion aceptada es evidencia: ya no se edita (se hace una nueva).
+  // An accepted quote is evidence: it is no longer edited (a new one is made).
   if (quote.status === 'accepted') redirect(`/${lang}/dashboard/admin/cotizaciones/${id}`)
   return (
     <div className="space-y-6">

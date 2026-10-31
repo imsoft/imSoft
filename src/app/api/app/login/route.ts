@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { correoCodigoApp } from '@/lib/email/plantillas'
+import { appLoginCodeEmail } from '@/lib/email/templates'
 import { canRequestCode, codeHistory, historyAfter, metadataWithHistory, normalizeEmail } from '@/lib/mobile-app/login'
-import { enviarCorreo, serviceClient } from '@/lib/quotes/server'
+import { sendEmail, serviceClient } from '@/lib/quotes/server'
 
 /** Minutes the code is valid: Supabase Auth's default OTP expiry. */
 const CODE_VALID_MINUTES = 60
@@ -36,8 +36,8 @@ export async function POST(req: NextRequest) {
     if (error || !code) throw new Error(error?.message ?? 'Supabase returned no code')
     // The history lives in app_metadata: only the server writes it.
     await db.auth.admin.updateUserById(user.id, { app_metadata: metadataWithHistory(user.app_metadata, historyAfter(history, now)) })
-    const mail = correoCodigoApp({ codigo: code, minutos: CODE_VALID_MINUTES })
-    await enviarCorreo({ to: email, subject: mail.subject, html: mail.html })
+    const mail = appLoginCodeEmail({ code, minutes: CODE_VALID_MINUTES })
+    await sendEmail({ to: email, subject: mail.subject, html: mail.html })
     return NextResponse.json({ ok: true })
   } catch (err) {
     console.error('[app/login]', err)

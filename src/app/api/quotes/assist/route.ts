@@ -2,12 +2,12 @@ import { NextRequest, NextResponse } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
 import { requireAdmin } from '@/lib/quotes/server'
 import { createClient } from '@/lib/supabase/server'
-import { ASSIST_TOOL, buildPrompt, comparablesDesdeQuotes, normalizarOutput, validarInput, type Comparable } from '@/lib/quote-assist'
+import { ASSIST_TOOL, buildPrompt, comparablesFromQuotes, normalizeOutput, validateInput, type Comparable } from '@/lib/quote-assist'
 
 export const maxDuration = 60
 
-/** Ultimas cotizaciones enviadas, como referencia de precio. Si falla, se sigue sin ellas. */
-async function cargarComparables(excluirId: string | null | undefined): Promise<Comparable[]> {
+/** Latest sent quotes, as a price reference. If it fails, it carries on without them. */
+async function loadComparables(excludeId: string | null | undefined): Promise<Comparable[]> {
   const supabase = await createClient()
   const { data, error } = await supabase
     .from('quotes')
@@ -19,20 +19,20 @@ async function cargarComparables(excluirId: string | null | undefined): Promise<
     console.error('[quotes/assist] comparables', error)
     return []
   }
-  return comparablesDesdeQuotes(data ?? [], excluirId)
+  return comparablesFromQuotes(data ?? [], excludeId)
 }
 
-/** Recomendaciones de precio, caracteristicas, iguala, preguntas y riesgos para una cotizacion. */
+/** Price, feature, retainer, question and risk recommendations for a quote. */
 export async function POST(req: NextRequest) {
   const auth = await requireAdmin()
   if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status })
   if (!process.env.ANTHROPIC_API_KEY) {
     return NextResponse.json({ error: 'Falta ANTHROPIC_API_KEY en el entorno del servidor (Vercel → Settings → Environment Variables).' }, { status: 500 })
   }
-  const v = validarInput(await req.json().catch(() => ({})))
+  const v = validateInput(await req.json().catch(() => ({})))
   if (!v.ok) return NextResponse.json({ error: v.error }, { status: 400 })
 
-  const comparables = await cargarComparables(v.input.quoteId)
+  const comparables = await loadComparables(v.input.quoteId)
   const input = { ...v.input, comparables }
 
   const client = new Anthropic()
@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
     if (!tool || tool.type !== 'tool_use') {
       return NextResponse.json({ error: 'El modelo no devolvió recomendaciones.' }, { status: 502 })
     }
-    return NextResponse.json(normalizarOutput(tool.input, input.features, comparables.map((c) => c.folio)))
+    return NextResponse.json(normalizeOutput(tool.input, input.features, comparables.map((c) => c.number)))
   } catch (err) {
     console.error('[quotes/assist]', err)
     const msg = err instanceof Anthropic.APIError ? `Anthropic ${err.status}: ${err.message}` : 'No se pudieron obtener las recomendaciones.'

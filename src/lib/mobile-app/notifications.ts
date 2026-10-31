@@ -1,5 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { mxn } from '@/lib/cotizaciones'
+import { formatMoney } from '@/lib/quotes'
 import { sendPush, type PushMessage } from './push'
 
 /** Notices the client gets on their phone. Short texts: they're read on the lock screen. */
@@ -25,7 +25,7 @@ export function taskCompletedNotice(p: { project: string; task: string; done: nu
 }
 
 export function paymentNotice(p: { project: string; amount: number; currency?: string | null; status: string; projectId: string }): PushMessage | null {
-  const amount = mxn(p.amount, p.currency || 'MXN')
+  const amount = formatMoney(p.amount, p.currency || 'MXN')
   if (p.status === 'completed') {
     return { title: 'Recibimos tu pago', body: `${amount} de ${p.project}. ¡Gracias!`, data: noticeData('payments', p.projectId) }
   }

@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { requireAdmin, serviceClient } from '@/lib/quotes/server'
-import { opcionesDePago, totales } from '@/lib/cotizaciones'
+import { paymentOptions, quoteTotals } from '@/lib/quotes'
 
-/** Crea el proyecto a partir de la cotizacion aceptada y lo enlaza. */
+/** Creates the project from the accepted quote and links it. */
 export async function POST(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const auth = await requireAdmin()
   if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status })
@@ -13,13 +13,13 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
   if (q.status !== 'accepted') return NextResponse.json({ error: 'Solo se convierte una cotización aceptada' }, { status: 400 })
   if (q.project_id) return NextResponse.json({ id: q.project_id, existed: true })
 
-  const t = totales(q)
-  // El proyecto se cobra por lo que el cliente eligio al aceptar: con transferencia es
-  // menos que la lista, con MSI o plan es mas (ver opcionesDePago). Sin eleccion, la lista.
-  const elegida = opcionesDePago(q).find((o) => o.clave === q.accepted_payment_option)
-  const totalACobrar = elegida?.total ?? t.total
-  const conMsi = elegida ? elegida.clave === 'installments_6' || elegida.clave === 'installments_12' : Boolean(q.payment?.card_installments)
-  const { data: proyecto, error } = await db
+  const t = quoteTotals(q)
+  // The project is charged for what the client chose when accepting: by transfer it is
+  // less than the list price, with installments or the plan it is more (see paymentOptions). No choice, list price.
+  const chosen = paymentOptions(q).find((o) => o.key === q.accepted_payment_option)
+  const totalToCharge = chosen?.total ?? t.total
+  const withInstallments = chosen ? chosen.key === 'installments_6' || chosen.key === 'installments_12' : Boolean(q.payment?.card_installments)
+  const { data: project, error } = await db
     .from('projects')
     .insert({
       title_es: q.title,
@@ -30,15 +30,15 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
       company_id: q.company_id ?? null,
       status: 'planning',
       start_date: new Date().toISOString().slice(0, 10),
-      total_price: totalACobrar,
+      total_price: totalToCharge,
       currency: q.currency,
-      // Los MSI solo si el cliente eligio pagar asi (o, sin eleccion, si la cotizacion los ofrecia).
-      stripe_enable_installments: conMsi,
-      stripe_installment_options: conMsi ? JSON.stringify(elegida?.clave === 'installments_6' ? [6] : elegida?.clave === 'installments_12' ? [12] : [3, 6, 12]) : null,
+      // Installments only if the client chose to pay that way (or, with no choice, if the quote offered them).
+      stripe_enable_installments: withInstallments,
+      stripe_installment_options: withInstallments ? JSON.stringify(chosen?.key === 'installments_6' ? [6] : chosen?.key === 'installments_12' ? [12] : [3, 6, 12]) : null,
     })
     .select('id')
     .single()
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-  await db.from('quotes').update({ project_id: proyecto.id }).eq('id', id)
-  return NextResponse.json({ id: proyecto.id })
+  await db.from('quotes').update({ project_id: project.id }).eq('id', id)
+  return NextResponse.json({ id: project.id })
 }

@@ -3,14 +3,14 @@ import { createClient } from '@/lib/supabase/server'
 import { getResend } from '@/lib/email/resend-client'
 import { esAdmin } from '@/lib/roles'
 
-/** Cliente con service role: para las paginas publicas por token y los envios de correo. */
+/** Service-role client: for the public token pages and for sending email. */
 export function serviceClient() {
   return createSupabaseClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, {
     auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
   })
 }
 
-/** Verifica que la peticion venga de un admin autenticado. */
+/** Checks that the request comes from an authenticated admin. */
 export async function requireAdmin(): Promise<{ ok: true; userId: string } | { ok: false; status: number; error: string }> {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -23,7 +23,7 @@ export function clientIp(headers: Headers): string {
   return headers.get('x-forwarded-for')?.split(',')[0]?.trim() || headers.get('x-real-ip') || 'desconocida'
 }
 
-export async function enviarCorreo(opts: { to: string; subject: string; html: string; replyTo?: string }) {
+export async function sendEmail(opts: { to: string; subject: string; html: string; replyTo?: string }) {
   const from = process.env.RESEND_FROM_EMAIL || 'contacto@imsoft.io'
   await getResend().emails.send({ from: `imSoft <${from}>`, to: opts.to, replyTo: opts.replyTo, subject: opts.subject, html: opts.html })
 }

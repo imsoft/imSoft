@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import Script from 'next/script'
-import { mxn } from '@/lib/cotizaciones'
+import { formatMoney } from '@/lib/quotes'
 import { etiquetaPlazo } from '@/lib/pagar-plazo'
 import type { Plazo } from '@/lib/enlace-pago'
 
@@ -110,11 +110,11 @@ export function PagarTarjeta({ token, lang, publishableKey, concepto, folio, cob
         <div className="mt-5 rounded-xl bg-neutral-50 p-4">
           <div className="flex items-baseline justify-between">
             <span className="text-sm text-neutral-600">{es ? 'Total' : 'Total'}</span>
-            <span className="text-2xl font-semibold tabular-nums text-neutral-900">{mxn(cobro, currency)}</span>
+            <span className="text-2xl font-semibold tabular-nums text-neutral-900">{formatMoney(cobro, currency)}</span>
           </div>
           <div className="mt-1 flex items-baseline justify-between text-sm">
             <span className="text-neutral-600">{etiquetaPlazo(plazo, es)}</span>
-            {plazo > 0 && <span className="tabular-nums text-neutral-700">{plazo} × {mxn(mensualidad, currency)}</span>}
+            {plazo > 0 && <span className="tabular-nums text-neutral-700">{plazo} × {formatMoney(mensualidad, currency)}</span>}
           </div>
           {plazo > 0 && <p className="mt-2 text-xs text-neutral-500">{es ? 'Solo con tarjeta de crédito mexicana participante. Si tu tarjeta no admite este plazo, te avisamos y no se cobra nada.' : 'Mexican participating credit cards only. If your card does not support this plan, we tell you and nothing is charged.'}</p>}
         </div>
@@ -130,7 +130,7 @@ export function PagarTarjeta({ token, lang, publishableKey, concepto, folio, cob
         {error && <p role="alert" className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
 
         <button type="submit" disabled={!listo || !tarjetaOk || paso !== 'tarjeta'} className="mt-6 w-full rounded-lg bg-[#1E9DF1] px-4 py-3 text-base font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-50">
-          {paso === 'cobrando' ? (es ? 'Procesando…' : 'Processing…') : paso === 'hecho' ? (es ? 'Pago recibido' : 'Payment received') : (es ? `Pagar ${mxn(cobro, currency)}` : `Pay ${mxn(cobro, currency)}`)}
+          {paso === 'cobrando' ? (es ? 'Procesando…' : 'Processing…') : paso === 'hecho' ? (es ? 'Pago recibido' : 'Payment received') : (es ? `Pagar ${formatMoney(cobro, currency)}` : `Pay ${formatMoney(cobro, currency)}`)}
         </button>
         <p className="mt-3 text-center text-xs text-neutral-500">{es ? 'Pago procesado por Stripe. imSoft no guarda los datos de tu tarjeta.' : 'Processed by Stripe. imSoft never stores your card details.'}</p>
       </form>

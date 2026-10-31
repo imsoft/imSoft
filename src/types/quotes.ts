@@ -1,4 +1,4 @@
-import type { OpcionPagoClave, QuoteDiscount, QuoteItem, QuotePayment, QuoteStatus, QuoteTerms } from '@/lib/cotizaciones'
+import type { PaymentOptionKey, QuoteDiscount, QuoteItem, QuotePayment, QuoteStatus, QuoteTerms } from '@/lib/quotes'
 
 export interface Quote {
   id: string
@@ -29,8 +29,8 @@ export interface Quote {
   accepted_name?: string | null
   accepted_ip?: string | null
   accepted_user_agent?: string | null
-  /** Forma de pago elegida al aceptar (opcionesDePago). */
-  accepted_payment_option?: OpcionPagoClave | null
+  /** Payment option chosen when accepting (paymentOptions). */
+  accepted_payment_option?: PaymentOptionKey | null
   project_id?: string | null
   created_by?: string | null
   created_at?: string
@@ -52,9 +52,9 @@ export interface Contract {
   signed_name?: string | null
   signed_ip?: string | null
   signed_user_agent?: string | null
-  /** PNG en data URL con el trazo del cliente al aceptar. */
+  /** PNG data URL with the client's stroke when accepting. */
   signed_signature?: string | null
-  /** SHA-256 del body_html en el momento de la aceptacion. */
+  /** SHA-256 of body_html at the time of acceptance. */
   signed_hash?: string | null
   created_at?: string
   updated_at?: string

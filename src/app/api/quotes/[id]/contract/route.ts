@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { randomBytes } from 'node:crypto'
 import { requireAdmin, serviceClient } from '@/lib/quotes/server'
-import { generarToken, renderContrato, siguienteFolio } from '@/lib/cotizaciones'
+import { generateToken, renderContract, nextNumber } from '@/lib/quotes'
 
 /**
- * Genera el contrato desde la cotizacion aceptada (uno por cotizacion). Con
- * `{ regenerar: true }` vuelve a armar el texto de un contrato que sigue en borrador
- * con la plantilla actual, conservando folio y enlace.
+ * Generates the contract from the accepted quote (one per quote). With
+ * `{ regenerate: true }` it rebuilds the text of a contract that is still a draft with
+ * the current template, keeping its number and link.
  */
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const auth = await requireAdmin()
@@ -16,23 +16,23 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   const { data: q } = await db.from('quotes').select('*').eq('id', id).maybeSingle()
   if (!q) return NextResponse.json({ error: 'Cotización no encontrada' }, { status: 404 })
   if (q.status !== 'accepted') return NextResponse.json({ error: 'El contrato se genera cuando la cotización está aceptada' }, { status: 400 })
-  const { data: existente } = await db.from('contracts').select('id, number, status').eq('quote_id', id).maybeSingle()
-  if (existente) {
+  const { data: existing } = await db.from('contracts').select('id, number, status').eq('quote_id', id).maybeSingle()
+  if (existing) {
     const body = await req.json().catch(() => ({}))
-    if (body?.regenerar !== true) return NextResponse.json({ id: existente.id, existed: true })
-    if (existente.status !== 'draft') return NextResponse.json({ error: 'Solo se regenera un contrato en borrador' }, { status: 400 })
-    const { error } = await db.from('contracts').update({ body_html: renderContrato(q, existente.number), updated_at: new Date().toISOString() }).eq('id', existente.id)
+    if (body?.regenerate !== true) return NextResponse.json({ id: existing.id, existed: true })
+    if (existing.status !== 'draft') return NextResponse.json({ error: 'Solo se regenera un contrato en borrador' }, { status: 400 })
+    const { error } = await db.from('contracts').update({ body_html: renderContract(q, existing.number), updated_at: new Date().toISOString() }).eq('id', existing.id)
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-    return NextResponse.json({ id: existente.id, number: existente.number, regenerated: true })
+    return NextResponse.json({ id: existing.id, number: existing.number, regenerated: true })
   }
 
-  const { data: ultimo } = await db.from('contracts').select('number').like('number', 'CON-%').order('created_at', { ascending: false }).limit(1).maybeSingle()
-  const folio = siguienteFolio('CON', ultimo?.number)
+  const { data: last } = await db.from('contracts').select('number').like('number', 'CON-%').order('created_at', { ascending: false }).limit(1).maybeSingle()
+  const contractNumber = nextNumber('CON', last?.number)
   const { data, error } = await db
     .from('contracts')
-    .insert({ quote_id: id, number: folio, status: 'draft', lang: q.lang, body_html: renderContrato(q, folio), token: generarToken(randomBytes(24)) })
+    .insert({ quote_id: id, number: contractNumber, status: 'draft', lang: q.lang, body_html: renderContract(q, contractNumber), token: generateToken(randomBytes(24)) })
     .select('id')
     .single()
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-  return NextResponse.json({ id: data.id, number: folio })
+  return NextResponse.json({ id: data.id, number: contractNumber })
 }

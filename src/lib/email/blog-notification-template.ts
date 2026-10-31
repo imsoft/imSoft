@@ -1,4 +1,4 @@
-import { correoBlog } from './plantillas'
+import { blogPostEmail } from './templates'
 
 interface BlogNotificationParams {
   recipientName: string
@@ -11,16 +11,16 @@ interface BlogNotificationParams {
   lang?: string
 }
 
-/** HTML del correo de aviso de nuevo artículo del blog (plantilla unica de imSoft). */
+/** HTML of the new blog article notice email (single imSoft template). */
 export function buildBlogNotificationHtml(params: BlogNotificationParams): string {
-  return correoBlog({
-    nombre: params.recipientName,
-    titulo: params.postTitle,
-    resumen: params.postExcerpt,
-    imagen: params.postImageUrl,
-    enlace: params.postUrl,
-    bajaUrl: params.unsubscribeUrl,
-    direccion: params.companyAddress,
+  return blogPostEmail({
+    name: params.recipientName,
+    title: params.postTitle,
+    excerpt: params.postExcerpt,
+    image: params.postImageUrl,
+    link: params.postUrl,
+    unsubscribeUrl: params.unsubscribeUrl,
+    address: params.companyAddress,
     lang: params.lang,
   }).html
 }

@@ -2,11 +2,11 @@
 
 import Link from 'next/link'
 import { Badge } from '@/components/ui/badge'
-import { estaVencida, mxn, totales } from '@/lib/cotizaciones'
+import { isExpired, formatMoney, quoteTotals } from '@/lib/quotes'
 import type { Quote } from '@/types/quotes'
 import { DeleteQuoteButton } from '@/components/documents/delete-quote-button'
 
-const ESTADOS: Record<string, { es: string; en: string; variant: 'default' | 'secondary' | 'outline' | 'destructive' }> = {
+const STATUSES: Record<string, { es: string; en: string; variant: 'default' | 'secondary' | 'outline' | 'destructive' }> = {
   draft: { es: 'Borrador', en: 'Draft', variant: 'outline' },
   sent: { es: 'Enviada', en: 'Sent', variant: 'secondary' },
   accepted: { es: 'Aceptada', en: 'Accepted', variant: 'default' },
@@ -14,12 +14,12 @@ const ESTADOS: Record<string, { es: string; en: string; variant: 'default' | 'se
   expired: { es: 'Vencida', en: 'Expired', variant: 'destructive' },
 }
 
-export function estadoDe(q: Pick<Quote, 'status' | 'valid_until'>): keyof typeof ESTADOS {
-  return q.status !== 'accepted' && q.status !== 'rejected' && estaVencida(q) ? 'expired' : q.status
+export function statusOf(q: Pick<Quote, 'status' | 'valid_until'>): keyof typeof STATUSES {
+  return q.status !== 'accepted' && q.status !== 'rejected' && isExpired(q) ? 'expired' : q.status
 }
 
-export function EstadoBadge({ quote, lang }: { quote: Pick<Quote, 'status' | 'valid_until'>; lang: string }) {
-  const e = ESTADOS[estadoDe(quote)]
+export function StatusBadge({ quote, lang }: { quote: Pick<Quote, 'status' | 'valid_until'>; lang: string }) {
+  const e = STATUSES[statusOf(quote)]
   return <Badge variant={e.variant}>{lang === 'en' ? e.en : e.es}</Badge>
 }
 
@@ -47,10 +47,10 @@ export function QuotesTable({ quotes, lang }: { quotes: Quote[]; lang: string })
               <td className="p-3 font-mono"><Link className="underline underline-offset-4" href={`/${lang}/dashboard/admin/cotizaciones/${q.id}`}>{q.number}</Link></td>
               <td className="p-3">{q.client_name}{q.client_company ? <span className="text-muted-foreground"> · {q.client_company}</span> : null}</td>
               <td className="p-3">{q.title}</td>
-              <td className="p-3 text-right font-mono tabular-nums">{mxn(totales(q).total, q.currency)}</td>
+              <td className="p-3 text-right font-mono tabular-nums">{formatMoney(quoteTotals(q).total, q.currency)}</td>
               <td className="p-3">{q.valid_until}</td>
-              <td className="p-3"><EstadoBadge quote={q} lang={lang} /></td>
-              <td className="p-3 text-right"><DeleteQuoteButton id={q.id} folio={q.number} lang={lang} compact /></td>
+              <td className="p-3"><StatusBadge quote={q} lang={lang} /></td>
+              <td className="p-3 text-right"><DeleteQuoteButton id={q.id} number={q.number} lang={lang} compact /></td>
             </tr>
           ))}
         </tbody>

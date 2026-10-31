@@ -1,6 +1,6 @@
 'use client'
 
-import { imprimir } from '@/lib/print'
+import { printPage } from '@/lib/print'
 
 import { useState } from 'react'
 import Link from 'next/link'
@@ -12,27 +12,27 @@ import { CalendarClock, Copy, ExternalLink, FileSignature, FolderPlus, Mail, Mes
 import type { Contract, Quote } from '@/types/quotes'
 import { DeleteQuoteButton } from '@/components/documents/delete-quote-button'
 import { CardPaymentDialog } from '@/components/documents/card-payment-dialog'
-import { importesHitos, totales } from '@/lib/cotizaciones'
+import { milestoneAmounts, quoteTotals } from '@/lib/quotes'
 
 export function QuoteActions({ lang, quote, contract, publicUrl }: { lang: string; quote: Quote; contract: Contract | null; publicUrl: string }) {
   const es = lang !== 'en'
   const router = useRouter()
-  const [ocupado, setOcupado] = useState<string | null>(null)
+  const [busy, setBusy] = useState<string | null>(null)
 
-  async function marcarEnviada() {
-    setOcupado('sent')
+  async function markSent() {
+    setBusy('sent')
     const supabase = createClient()
     const { error } = await supabase.from('quotes').update({ status: 'sent', sent_at: new Date().toISOString() }).eq('id', quote.id)
-    setOcupado(null)
+    setBusy(null)
     if (error) return toast.error(error.message)
     toast.success(es ? 'Marcada como enviada: el cliente ya puede aceptarla en el enlace.' : 'Marked as sent: the client can now accept it.')
     router.refresh()
   }
 
-  async function llamar(ruta: string, clave: string, okMsg: string) {
-    setOcupado(clave)
+  async function call(path: string, key: string, okMsg: string) {
+    setBusy(key)
     try {
-      const r = await fetch(ruta, { method: 'POST' })
+      const r = await fetch(path, { method: 'POST' })
       const j = await r.json().catch(() => ({}))
       if (!r.ok) throw new Error(j.error || r.statusText)
       toast.success(okMsg)
@@ -41,53 +41,53 @@ export function QuoteActions({ lang, quote, contract, publicUrl }: { lang: strin
     } catch (err) {
       toast.error(err instanceof Error ? err.message : String(err))
     } finally {
-      setOcupado(null)
+      setBusy(null)
     }
   }
 
-  const copiar = async () => { await navigator.clipboard.writeText(publicUrl); toast.success(es ? 'Enlace copiado' : 'Link copied') }
+  const copy = async () => { await navigator.clipboard.writeText(publicUrl); toast.success(es ? 'Enlace copiado' : 'Link copied') }
   const whatsapp = `https://wa.me/?text=${encodeURIComponent(es ? `Hola ${quote.client_name}, aquí está la cotización ${quote.number} de imSoft para "${quote.title}". La puedes revisar y aceptar en línea: ${publicUrl}` : `Hi ${quote.client_name}, here is imSoft's quote ${quote.number} for "${quote.title}": ${publicUrl}`)}`
 
   const btn = 'h-9'
-  const principal = quote.status === 'draft' ? (
-    <Button size="sm" className={btn} onClick={marcarEnviada} disabled={ocupado !== null}><Send className="size-4 mr-1.5" />{es ? 'Marcar como enviada' : 'Mark as sent'}</Button>
+  const primaryAction = quote.status === 'draft' ? (
+    <Button size="sm" className={btn} onClick={markSent} disabled={busy !== null}><Send className="size-4 mr-1.5" />{es ? 'Marcar como enviada' : 'Mark as sent'}</Button>
   ) : quote.status === 'accepted' && !contract ? (
-    <Button size="sm" className={btn} disabled={ocupado !== null} onClick={async () => { const j = await llamar(`/api/quotes/${quote.id}/contract`, 'contract', es ? 'Contrato generado' : 'Contract generated'); if (j?.id) router.push(`/${lang}/dashboard/admin/cotizaciones/${quote.id}/contrato`) }}>
+    <Button size="sm" className={btn} disabled={busy !== null} onClick={async () => { const j = await call(`/api/quotes/${quote.id}/contract`, 'contract', es ? 'Contrato generado' : 'Contract generated'); if (j?.id) router.push(`/${lang}/dashboard/admin/cotizaciones/${quote.id}/contrato`) }}>
       <FileSignature className="size-4 mr-1.5" />{es ? 'Generar contrato' : 'Generate contract'}
     </Button>
   ) : quote.status === 'accepted' && !quote.project_id ? (
-    <Button size="sm" className={btn} disabled={ocupado !== null} onClick={() => llamar(`/api/quotes/${quote.id}/convert`, 'convert', es ? 'Proyecto creado' : 'Project created')}><FolderPlus className="size-4 mr-1.5" />{es ? 'Convertir en proyecto' : 'Convert to project'}</Button>
+    <Button size="sm" className={btn} disabled={busy !== null} onClick={() => call(`/api/quotes/${quote.id}/convert`, 'convert', es ? 'Proyecto creado' : 'Project created')}><FolderPlus className="size-4 mr-1.5" />{es ? 'Convertir en proyecto' : 'Convert to project'}</Button>
   ) : null
 
   return (
     <div className="no-print rounded-xl border bg-card p-4 space-y-4">
-      {/* Fila 1: enlace publico con acciones de vista */}
+      {/* Row 1: public link with view actions */}
       <div className="flex flex-col gap-2 lg:flex-row lg:items-center">
         <div className="flex h-9 min-w-0 flex-1 items-stretch overflow-hidden rounded-md border bg-background">
           <span className="flex items-center border-r bg-muted/60 px-2.5 text-xs font-medium text-muted-foreground">{es ? 'Enlace' : 'Link'}</span>
           <input readOnly value={publicUrl} onFocus={(e) => e.currentTarget.select()} className="min-w-0 flex-1 bg-transparent px-3 font-mono text-xs outline-none" />
-          <button type="button" onClick={copiar} title={es ? 'Copiar enlace' : 'Copy link'} className="flex items-center gap-1.5 border-l px-3 text-xs font-medium text-primary hover:bg-accent"><Copy className="size-3.5" />{es ? 'Copiar' : 'Copy'}</button>
+          <button type="button" onClick={copy} title={es ? 'Copiar enlace' : 'Copy link'} className="flex items-center gap-1.5 border-l px-3 text-xs font-medium text-primary hover:bg-accent"><Copy className="size-3.5" />{es ? 'Copiar' : 'Copy'}</button>
         </div>
         <div className="flex shrink-0 gap-2">
           <Button size="sm" variant="outline" className={btn} asChild><a href={publicUrl} target="_blank" rel="noopener noreferrer"><ExternalLink className="size-4 mr-1.5" />{es ? 'Ver como cliente' : 'View as client'}</a></Button>
-          <Button size="sm" variant="outline" className={btn} onClick={imprimir}><Printer className="size-4 mr-1.5" />PDF</Button>
+          <Button size="sm" variant="outline" className={btn} onClick={printPage}><Printer className="size-4 mr-1.5" />PDF</Button>
         </div>
       </div>
 
-      {/* Fila 2: accion principal, envio, edicion y eliminar */}
+      {/* Row 2: main action, sending, editing and delete */}
       <div className="flex flex-wrap items-center gap-2">
-        {principal}
+        {primaryAction}
         {quote.status !== 'accepted' && (
           <div className="flex items-center gap-2 lg:border-l lg:pl-2">
             <Button size="sm" variant="outline" className={btn} asChild><a href={whatsapp} target="_blank" rel="noopener noreferrer"><MessageCircle className="size-4 mr-1.5" />WhatsApp</a></Button>
-            <Button size="sm" variant="outline" className={btn} disabled={!quote.client_email || ocupado !== null} onClick={() => llamar(`/api/quotes/${quote.id}/send`, 'mail', es ? 'Correo enviado al cliente' : 'Email sent to the client')}><Mail className="size-4 mr-1.5" />{es ? 'Correo' : 'Email'}</Button>
+            <Button size="sm" variant="outline" className={btn} disabled={!quote.client_email || busy !== null} onClick={() => call(`/api/quotes/${quote.id}/send`, 'mail', es ? 'Correo enviado al cliente' : 'Email sent to the client')}><Mail className="size-4 mr-1.5" />{es ? 'Correo' : 'Email'}</Button>
           </div>
         )}
-        <CardPaymentDialog quoteId={quote.id} folio={quote.number} clientName={quote.client_name} lang={lang} msiDefault={Boolean(quote.payment?.card_installments)} montoSugerido={importesHitos(totales(quote).total, quote.payment?.milestones ?? [])[0]?.importe ?? 0} />
+        <CardPaymentDialog quoteId={quote.id} number={quote.number} clientName={quote.client_name} lang={lang} installmentsByDefault={Boolean(quote.payment?.card_installments)} suggestedAmount={milestoneAmounts(quoteTotals(quote).total, quote.payment?.milestones ?? [])[0]?.amount ?? 0} />
         {quote.accepted_payment_option === 'plan' && quote.project_id && (
-          <Button size="sm" variant="outline" className={btn} disabled={ocupado !== null} title={es ? 'Checkout de Stripe: cobra el anticipo hoy y deja la mensualidad programada' : 'Stripe Checkout: charges the deposit now and schedules the monthly fee'} onClick={async () => {
-            const j = await llamar(`/api/quotes/${quote.id}/plan-link`, 'plan', es ? 'Enlace del plan listo y copiado' : 'Plan link ready and copied')
-            if (j?.url) { await navigator.clipboard.writeText(j.url).catch(() => {}); window.open(`https://wa.me/?text=${encodeURIComponent(es ? `Hola ${quote.client_name}, aquí está el enlace para activar el plan mensual de "${quote.title}" (cotización ${quote.number}): se cobra el anticipo hoy y la primera mensualidad en ${j.diasPrimeraMensualidad} días: ${j.url}` : `Hi ${quote.client_name}, here is the link to start the monthly plan for "${quote.title}" (quote ${quote.number}): the deposit is charged today and the first monthly fee in ${j.diasPrimeraMensualidad} days: ${j.url}`)}`, '_blank') }
+          <Button size="sm" variant="outline" className={btn} disabled={busy !== null} title={es ? 'Checkout de Stripe: cobra el anticipo hoy y deja la mensualidad programada' : 'Stripe Checkout: charges the deposit now and schedules the monthly fee'} onClick={async () => {
+            const j = await call(`/api/quotes/${quote.id}/plan-link`, 'plan', es ? 'Enlace del plan listo y copiado' : 'Plan link ready and copied')
+            if (j?.url) { await navigator.clipboard.writeText(j.url).catch(() => {}); window.open(`https://wa.me/?text=${encodeURIComponent(es ? `Hola ${quote.client_name}, aquí está el enlace para activar el plan mensual de "${quote.title}" (cotización ${quote.number}): se cobra el anticipo hoy y la primera mensualidad en ${j.firstPaymentDays} días: ${j.url}` : `Hi ${quote.client_name}, here is the link to start the monthly plan for "${quote.title}" (quote ${quote.number}): the deposit is charged today and the first monthly fee in ${j.firstPaymentDays} days: ${j.url}`)}`, '_blank') }
           }}><CalendarClock className="size-4 mr-1.5" />{es ? 'Enlace del plan' : 'Plan link'}</Button>
         )}
         {contract && (
@@ -101,7 +101,7 @@ export function QuoteActions({ lang, quote, contract, publicUrl }: { lang: strin
             <Button size="sm" variant="ghost" className={btn} asChild><Link href={`/${lang}/dashboard/admin/cotizaciones/${quote.id}/edit`}><Pencil className="size-4 mr-1.5" />{es ? 'Editar' : 'Edit'}</Link></Button>
           )}
           {!quote.project_id && contract?.status !== 'signed' && (
-            <DeleteQuoteButton id={quote.id} folio={quote.number} lang={lang} redirectTo={`/${lang}/dashboard/admin/cotizaciones`} />
+            <DeleteQuoteButton id={quote.id} number={quote.number} lang={lang} redirectTo={`/${lang}/dashboard/admin/cotizaciones`} />
           )}
         </div>
       </div>

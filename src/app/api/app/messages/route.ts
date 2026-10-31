@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { correoContacto } from '@/lib/email/plantillas'
+import { contactEmail } from '@/lib/email/templates'
 import { getResend } from '@/lib/email/resend-client'
 import { bodyField, legacyMessage } from '@/lib/mobile-app/legacy'
 import { messageForApp, senderName, validateMessage } from '@/lib/mobile-app/messages'
@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
       from: `imSoft <${process.env.RESEND_FROM_EMAIL || 'contacto@imsoft.io'}>`,
       to: process.env.ADMIN_NOTIFICATION_EMAIL || 'contacto@imsoft.io',
       replyTo: user.email,
-      ...correoContacto({ nombre: [sender.first_name, sender.last_name].filter(Boolean).join(' '), email: user.email, mensaje: `${text}\n\n(Enviado desde la app)`, panelUrl: `${SITE_URL}/es/dashboard/admin/contact-messages` }),
+      ...contactEmail({ name: [sender.first_name, sender.last_name].filter(Boolean).join(' '), email: user.email, message: `${text}\n\n(Enviado desde la app)`, panelUrl: `${SITE_URL}/es/dashboard/admin/contact-messages` }),
     })
   } catch (err) {
     console.error('[app/messages] notice', err)

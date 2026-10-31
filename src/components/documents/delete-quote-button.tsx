@@ -16,41 +16,41 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 
-/** Boton de eliminar cotizacion con confirmacion; en la tabla va como icono, en la ficha con texto. */
-export function DeleteQuoteButton({ id, folio, lang, compact = false, redirectTo }: { id: string; folio: string; lang: string; compact?: boolean; redirectTo?: string }) {
+/** Delete-quote button with confirmation; an icon in the table, with text on the detail page. */
+export function DeleteQuoteButton({ id, number, lang, compact = false, redirectTo }: { id: string; number: string; lang: string; compact?: boolean; redirectTo?: string }) {
   const es = lang !== 'en'
   const router = useRouter()
-  const [abierto, setAbierto] = useState(false)
-  const [ocupado, setOcupado] = useState(false)
+  const [open, setOpen] = useState(false)
+  const [busy, setBusy] = useState(false)
 
-  async function eliminar() {
-    setOcupado(true)
+  async function remove() {
+    setBusy(true)
     try {
       const r = await fetch(`/api/quotes/${id}`, { method: 'DELETE' })
       const j = await r.json().catch(() => ({}))
       if (!r.ok) throw new Error(j.error || r.statusText)
-      toast.success(es ? `Cotización ${folio} eliminada` : `Quote ${folio} deleted`)
-      setAbierto(false)
+      toast.success(es ? `Cotización ${number} eliminada` : `Quote ${number} deleted`)
+      setOpen(false)
       if (redirectTo) router.push(redirectTo)
       else router.refresh()
     } catch (err) {
       toast.error(err instanceof Error ? err.message : String(err))
     } finally {
-      setOcupado(false)
+      setBusy(false)
     }
   }
 
   return (
     <>
       {compact ? (
-        <Button size="icon" variant="ghost" className="h-8 w-8 text-muted-foreground hover:text-destructive" title={es ? 'Eliminar' : 'Delete'} onClick={() => setAbierto(true)}><Trash2 className="size-4" /></Button>
+        <Button size="icon" variant="ghost" className="h-8 w-8 text-muted-foreground hover:text-destructive" title={es ? 'Eliminar' : 'Delete'} onClick={() => setOpen(true)}><Trash2 className="size-4" /></Button>
       ) : (
-        <Button size="sm" variant="ghost" className="h-9 text-destructive hover:bg-destructive/10 hover:text-destructive" onClick={() => setAbierto(true)}><Trash2 className="size-4 mr-1" />{es ? 'Eliminar' : 'Delete'}</Button>
+        <Button size="sm" variant="ghost" className="h-9 text-destructive hover:bg-destructive/10 hover:text-destructive" onClick={() => setOpen(true)}><Trash2 className="size-4 mr-1" />{es ? 'Eliminar' : 'Delete'}</Button>
       )}
-      <AlertDialog open={abierto} onOpenChange={setAbierto}>
+      <AlertDialog open={open} onOpenChange={setOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{es ? `¿Eliminar la cotización ${folio}?` : `Delete quote ${folio}?`}</AlertDialogTitle>
+            <AlertDialogTitle>{es ? `¿Eliminar la cotización ${number}?` : `Delete quote ${number}?`}</AlertDialogTitle>
             <AlertDialogDescription>
               {es
                 ? 'Se borra la cotización y su contrato si lo tiene. El enlace público dejará de funcionar. Esto no se puede deshacer.'
@@ -58,9 +58,9 @@ export function DeleteQuoteButton({ id, folio, lang, compact = false, redirectTo
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={ocupado}>{es ? 'Cancelar' : 'Cancel'}</AlertDialogCancel>
-            <AlertDialogAction disabled={ocupado} onClick={(e) => { e.preventDefault(); eliminar() }} className="bg-destructive text-white hover:bg-destructive/90">
-              {ocupado ? (es ? 'Eliminando…' : 'Deleting…') : es ? 'Sí, eliminar' : 'Yes, delete'}
+            <AlertDialogCancel disabled={busy}>{es ? 'Cancelar' : 'Cancel'}</AlertDialogCancel>
+            <AlertDialogAction disabled={busy} onClick={(e) => { e.preventDefault(); remove() }} className="bg-destructive text-white hover:bg-destructive/90">
+              {busy ? (es ? 'Eliminando…' : 'Deleting…') : es ? 'Sí, eliminar' : 'Yes, delete'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
