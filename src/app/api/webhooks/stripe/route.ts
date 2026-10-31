@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { avisarAlCliente, avisoPago } from '@/lib/notificaciones'
+import { notifyClient, paymentNotice } from '@/lib/mobile-app/notifications'
 import { headers } from 'next/headers'
 import Stripe from 'stripe'
 import { ADMIN_EMAIL, enviarCorreo, serviceClient } from '@/lib/quotes/server'
@@ -44,7 +44,7 @@ async function completarPagoPendiente(
   if (error) console.error('[Stripe Webhook] Error completando pago pendiente:', error)
   if (!error) {
     const { data: pago } = await supabase.from('project_payments').select('project_id, amount, currency').eq('id', paymentId).maybeSingle()
-    if (pago) await avisarAlCliente(supabase, pago.project_id, (proyecto) => avisoPago({ proyecto, monto: Number(pago.amount), moneda: pago.currency, status: 'completed', proyectoId: pago.project_id }))
+    if (pago) await notifyClient(supabase, pago.project_id, (project) => paymentNotice({ project, amount: Number(pago.amount), currency: pago.currency, status: 'completed', projectId: pago.project_id }))
   }
   return !error
 }
@@ -163,7 +163,7 @@ export async function POST(request: NextRequest) {
           })
 
         if (!paymentError) {
-          await avisarAlCliente(supabase, projectId, (proyecto) => avisoPago({ proyecto, monto: amount, moneda: currency, status: 'completed', proyectoId: projectId }))
+          await notifyClient(supabase, projectId, (project) => paymentNotice({ project, amount, currency, status: 'completed', projectId }))
         }
         if (paymentError) {
           console.error('Error creating payment record:', paymentError)
@@ -300,7 +300,7 @@ export async function POST(request: NextRequest) {
         if ((previos ?? []).some((p) => (p.notes ?? '').includes(`Stripe Invoice ${invoice.id}`))) break
         const { error: e } = await supabase.from('project_payments').insert({ project_id: projectId, amount, currency: (invoice.currency ?? 'mxn').toUpperCase(), payment_method: 'card', payment_date: new Date().toISOString().split('T')[0], status: 'completed', notes })
         if (e) { console.error('[Stripe Webhook] plan: no se registró el cobro', e); break }
-        await avisarAlCliente(supabase, projectId, (proyecto) => avisoPago({ proyecto, monto: amount, moneda: (invoice.currency ?? 'mxn').toUpperCase(), status: 'completed', proyectoId: projectId }))
+        await notifyClient(supabase, projectId, (project) => paymentNotice({ project, amount: amount, currency: (invoice.currency ?? 'mxn').toUpperCase(), status: 'completed', projectId }))
         // Con la ultima mensualidad, la suscripcion termina sola.
         if (!esAnticipo && meses > 0 && planLiquidado(cobradas + 1, meses)) {
           await stripe.subscriptions.update(subscriptionId, { cancel_at_period_end: true }).catch((err) => console.error('[Stripe Webhook] plan: no se pudo cerrar la suscripción', err))

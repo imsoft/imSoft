@@ -2,7 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
 import { rolDe } from '@/lib/roles'
 import { serviceClient } from '@/lib/quotes/server'
-import { avisarAlCliente, avisoTareaCompletada } from '@/lib/notificaciones'
+import { notifyClient, taskCompletedNotice } from '@/lib/mobile-app/notifications'
 
 /**
  * PATCH /api/projects/[id]/tasks/[taskId]
@@ -69,7 +69,7 @@ export async function PATCH(
       const { data: todas } = await supabase.from('project_tasks').select('completed').eq('project_id', projectId)
       const total = todas?.length ?? 0
       const hechas = todas?.filter((t) => t.completed).length ?? 0
-      await avisarAlCliente(serviceClient(), projectId, (proyecto) => avisoTareaCompletada({ proyecto, tarea: task.title, hechas, total, proyectoId: projectId }))
+      await notifyClient(serviceClient(), projectId, (project) => taskCompletedNotice({ project, task: task.title, done: hechas, total, projectId }))
       // Enviar email de notificación de manera asíncrona (no bloqueante)
       fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/notifications/task-completed`, {
         method: 'POST',

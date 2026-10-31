@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { requireAdmin, serviceClient } from '@/lib/quotes/server'
-import { avisarAlCliente, avisoPago } from '@/lib/notificaciones'
+import { notifyClient, paymentNotice } from '@/lib/mobile-app/notifications'
 import { pagoValido } from '@/lib/pagos'
 
 /**
@@ -21,6 +21,6 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     console.error('[payments]', error)
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
-  await avisarAlCliente(db, projectId, (proyecto) => avisoPago({ proyecto, monto: pago.amount, moneda: pago.currency, status: pago.status, proyectoId: projectId }))
+  await notifyClient(db, projectId, (project) => paymentNotice({ project, amount: pago.amount, currency: pago.currency, status: pago.status, projectId }))
   return NextResponse.json(data)
 }
