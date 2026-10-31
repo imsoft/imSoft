@@ -10,7 +10,7 @@
  * GOOGLE_PLACES_API_KEY.
  *
  * Uso:
- *   node --env-file=.env --experimental-strip-types scripts/find-prospects.mjs [--max 80] [--busquedas 15] [--giros joyeria,abastos] [--dry-run]
+ *   node --env-file=.env --experimental-strip-types scripts/find-prospects.mjs [--max 80] [--busquedas 15] [--giros jewelry,wholesale-market] [--dry-run]
  *
  * --giros corre todas las busquedas de esos giros en vez del tramo del dia (para estrenar un giro sin esperar la rotacion).
  */
@@ -55,18 +55,18 @@ for (const b of busquedas) {
     continue
   }
   if (elegibles.length === 0) continue
-  const r = await importarCandidatos(db, elegibles, segmento, `Google Places - ${segmento} - ${hoy}`, ['auto-places', `campana-${hoy.slice(0, 7)}`])
+  const r = await importarCandidatos(db, elegibles, segmento, `Google Places - ${segmento} - ${hoy}`, ['auto-places', `campaign-${hoy.slice(0, 7)}`])
   total += r.insertados
   console.log(`  -> ${r.insertados} agregados`)
 }
 // Empresas grandes, por nombre (content/empresas-grandes.json): 2 por corrida, fuera del tope.
 const grandes = JSON.parse(readFileSync(new URL('../content/empresas-grandes.json', import.meta.url), 'utf8')).empresas
 for (const e of tramoDeBusquedas(grandes, corrida, 2)) {
-  const { candidatos } = await buscarProspectos(db, 'corporativo', 'zmg', { max: 10, correos: true, queryLibre: e.busqueda })
+  const { candidatos } = await buscarProspectos(db, 'corporate', 'zmg', { max: 10, correos: true, queryLibre: e.busqueda })
   const elegibles = deLaMarca(candidatos, e.clave).filter((c) => !c.enCrm && sePuedeEscribir(c))
   console.log(`corporativo / ${e.nombre}: ${elegibles.length ? 'con correo, Instagram o WhatsApp' : 'ya en el CRM, sin contacto o no encontrado'}`)
   if (dryRun || elegibles.length === 0) continue
-  const r = await importarCandidatos(db, elegibles, 'corporativo', `Google Places - corporativo - ${hoy}`, ['auto-places', 'empresa-grande', `campana-${hoy.slice(0, 7)}`])
+  const r = await importarCandidatos(db, elegibles, 'corporate', `Google Places - corporate - ${hoy}`, ['auto-places', 'large-company', `campaign-${hoy.slice(0, 7)}`])
   total += r.insertados
 }
 console.log(`\nTotal ${dryRun ? 'que se agregarian' : 'agregados'}: ${total}${dryRun ? ' (dry run, nada escrito)' : ''}`)

@@ -17,7 +17,7 @@ export interface CsvRow {
   sitio?: string
   gancho?: string
   segmento?: string
-  /** Etiqueta de zona ("zona-premium"); la pone el buscador de prospectos. */
+  /** Etiqueta de zona ("premium-zone"); la pone el buscador de prospectos. */
   zona?: string
   instagram?: string
   /** Numero de WhatsApp (solo digitos, con lada de pais). */

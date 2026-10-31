@@ -41,7 +41,7 @@ describe('mapRowsToContacts', () => {
     email: 'Gaby@Ejemplo.com',
     telefono: '33 2388 2444',
     gancho: 'Sin portal de seguimiento',
-    segmento: 'aduanal',
+    segmento: 'customs-brokers',
   }
 
   it('mapea una fila completa a la forma de la tabla contacts', () => {
@@ -58,7 +58,7 @@ describe('mapRowsToContacts', () => {
       contact_type: 'prospect',
       status: 'no_contact',
       source: 'prospeccion-2026',
-      tags: ['aduanal'],
+      tags: ['customs-brokers'],
       website_url: null,
       instagram_url: null,
       linkedin_url: null,
@@ -143,7 +143,7 @@ describe('mapRowsToContacts', () => {
 
   it('combina las etiquetas base con la del segmento', () => {
     const { contacts } = mapRowsToContacts([fila], { tags: ['gdl'] })
-    expect(contacts[0].tags).toEqual(['gdl', 'aduanal'])
+    expect(contacts[0].tags).toEqual(['gdl', 'customs-brokers'])
   })
 
   it('deja tags en null cuando no hay ninguna', () => {

@@ -69,18 +69,18 @@ export function estadoDelTope(enviados: number, canal: Canal): 'bien' | 'cerca' 
 }
 
 /** Etiqueta de los prospectos en colonias de alto poder adquisitivo (la pone el buscador). */
-export const TAG_ZONA_PREMIUM = 'zona-premium'
+export const TAG_ZONA_PREMIUM = 'premium-zone'
 
 /** Etiqueta que saca al contacto de la cola de redes: sus datos no sirven para escribirle. */
-export const TAG_REDES_DESCARTADO = 'redes-descartado'
+export const TAG_REDES_DESCARTADO = 'social-discarded'
 
 /** Por que se descarta un contacto de la cola de redes; queda en su historial. */
 export const MOTIVOS_DESCARTE_REDES = {
-  'sin-whatsapp': 'El número no está en WhatsApp',
-  'perfil-no-cuadra': 'El perfil de Instagram no es del negocio',
-  'corporativo': 'Corporativo o franquicia: no decide local',
-  'ya-contactado': 'Ya se le había escrito antes',
-  'otro': 'Otro motivo',
+  'no-whatsapp': 'El número no está en WhatsApp',
+  'profile-mismatch': 'El perfil de Instagram no es del negocio',
+  'corporate': 'Corporativo o franquicia: no decide local',
+  'already-contacted': 'Ya se le había escrito antes',
+  'other': 'Otro motivo',
 } as const
 export type MotivoDescarteRedes = keyof typeof MOTIVOS_DESCARTE_REDES
 
@@ -89,18 +89,18 @@ export type MotivoDescarteRedes = keyof typeof MOTIVOS_DESCARTE_REDES
  * A esos no se les habla de Excel sino de su propia app (pedidos, puntos, promociones),
  * hecha a la medida. La idea salio de la app de Tukafe, en Puerta de Hierro (2026-10-09).
  */
-const GIROS_APP = ['restaurantes', 'fitness', 'ecommerce', 'abastos']
+const GIROS_APP = ['restaurants', 'fitness', 'ecommerce', 'wholesale-market']
 /** Giros que venden producto con foto: lo suyo es una tienda en linea con su marca (2026-10-26). */
-const GIROS_TIENDA = ['joyeria']
+const GIROS_TIENDA = ['jewelry']
 
-export type Oferta = 'app' | 'tienda'
+export type Oferta = 'app' | 'store'
 
 /**
  * Giros con presentacion propia en redes. segmentoDe (outreach.ts) solo reconoce los
  * que tienen plantilla de correo, y por eso la presentacion de gimnasios o agro nunca
  * llegaba al mensaje: el segmento para redes se saca de aqui (2026-10-27).
  */
-const GIROS_CON_PRESENTACION = ['logistica', 'fitness', 'abastos', 'agro', 'joyeria', 'dental', 'salud', 'ferreteria', 'restaurantes', 'automotriz', 'inmobiliaria', 'construccion', 'escuelas', 'abogados', 'contabilidad', 'ecommerce', 'corporativo']
+const GIROS_CON_PRESENTACION = ['logistics', 'fitness', 'wholesale-market', 'agro', 'jewelry', 'dental', 'health', 'hardware-stores', 'restaurants', 'automotive', 'real-estate', 'construction', 'schools', 'law-firms', 'accounting', 'ecommerce', 'corporate']
 
 export function giroDeRedes(tags: string[] | null | undefined): string | null {
   const lower = (tags ?? []).map((t) => t.toLowerCase())
@@ -110,22 +110,22 @@ export function giroDeRedes(tags: string[] | null | undefined): string | null {
 /** "hacemos … en Guadalajara": la presentacion de una linea del primer mensaje, por giro. */
 export function queHacemos(segmento?: string | null, oferta?: Oferta | null): string {
   const g = (segmento ?? '').toLowerCase()
-  if (oferta === 'tienda') return 'tiendas en línea para joyerías'
-  if (g.startsWith('abastos')) return 'apps de pedidos para mayoristas'
+  if (oferta === 'store') return 'tiendas en línea para joyerías'
+  if (g.startsWith('wholesale-market')) return 'apps de pedidos para mayoristas'
   if (g.startsWith('fitness')) return 'apps para gimnasios'
-  if (g.startsWith('restaurantes')) return 'apps para restaurantes y cafeterías'
+  if (g.startsWith('restaurants')) return 'apps para restaurantes y cafeterías'
   if (oferta === 'app') return 'apps y tiendas en línea para comercios'
   if (g.startsWith('dental')) return 'software para consultorios dentales'
-  if (g.startsWith('salud')) return 'software para clínicas y consultorios'
-  if (g.startsWith('ferreteria')) return 'software para ferreterías y distribuidoras'
-  if (g.startsWith('automotriz')) return 'software para talleres y refaccionarias'
-  if (g.startsWith('inmobiliaria')) return 'software para inmobiliarias'
-  if (g.startsWith('construccion')) return 'software para constructoras'
-  if (g.startsWith('logistica')) return 'software para agencias aduanales y logística'
+  if (g.startsWith('health')) return 'software para clínicas y consultorios'
+  if (g.startsWith('hardware-stores')) return 'software para ferreterías y distribuidoras'
+  if (g.startsWith('automotive')) return 'software para talleres y refaccionarias'
+  if (g.startsWith('real-estate')) return 'software para inmobiliarias'
+  if (g.startsWith('construction')) return 'software para constructoras'
+  if (g.startsWith('logistics')) return 'software para agencias aduanales y logística'
   if (g.startsWith('agro')) return 'software para el campo y la agroindustria'
-  if (g.startsWith('escuelas')) return 'software para colegios'
-  if (g.startsWith('abogados')) return 'software para despachos jurídicos'
-  if (g.startsWith('contabilidad')) return 'software para despachos contables'
+  if (g.startsWith('schools')) return 'software para colegios'
+  if (g.startsWith('law-firms')) return 'software para despachos jurídicos'
+  if (g.startsWith('accounting')) return 'software para despachos contables'
   return 'software a la medida para negocios'
 }
 
@@ -135,8 +135,8 @@ const tieneGiro = (lower: string[], giros: string[]) => giros.some((g) => lower.
 export function ofertaDe(tags: string[] | null | undefined): Oferta | null {
   const lower = (tags ?? []).map((t) => t.toLowerCase())
   // Un corporativo tiene area de sistemas: su mensaje es otro aunque venda al publico.
-  if (lower.some((t) => t === 'corporativo' || t.startsWith('corporativo-'))) return null
-  if (tieneGiro(lower, GIROS_TIENDA)) return 'tienda'
+  if (lower.some((t) => t === 'corporate' || t.startsWith('corporate-'))) return null
+  if (tieneGiro(lower, GIROS_TIENDA)) return 'store'
   return tieneGiro(lower, GIROS_APP) ? 'app' : null
 }
 
@@ -149,15 +149,15 @@ export interface MensajeVars {
 }
 
 const presentacion = (segmento?: string | null, oferta?: Oferta | null) =>
-  oferta === 'tienda'
+  oferta === 'store'
     ? 'Soy Brandon, de imSoft. Hacemos tiendas en línea a la medida en Guadalajara para joyerías: catálogo con fotos, apartado y pago a meses, con su propia marca.'
     : oferta === 'app'
     ? segmento?.startsWith('fitness')
       ? 'Soy Brandon, de imSoft. Hacemos apps a la medida en Guadalajara para negocios con clientela que regresa: reservas de clases, membresías y promociones con su propia marca.'
-      : segmento?.startsWith('abastos')
+      : segmento?.startsWith('wholesale-market')
       ? 'Soy Brandon, de imSoft. Hacemos apps a la medida en Guadalajara para mayoristas: tus clientes de tienda levantan el pedido desde su celular, con su lista de precios, y tú ves qué sale a reparto.'
       : 'Soy Brandon, de imSoft. Hacemos apps a la medida en Guadalajara para negocios con clientela que regresa: pedidos, puntos y promociones con su propia marca, sin comisiones de terceros.'
-    : segmento?.startsWith('logistica')
+    : segmento?.startsWith('logistics')
     ? 'Soy Brandon, de imSoft. Hacemos software a la medida en Guadalajara y varios de nuestros clientes son del sector aduanal y logístico.'
     : segmento?.startsWith('agro')
     ? 'Soy Brandon, de imSoft. Hacemos software a la medida en Guadalajara para empresas del campo y la agroindustria: lotes, pesajes y trazabilidad en un solo lugar, sin libretas ni Excel.'
@@ -273,7 +273,7 @@ export interface FilaCola {
  * Instagram. Primero los que no tienen correo (no hay otro camino), luego los que tienen
  * WhatsApp (contesta mas gente que por DM). Dentro de cada grupo, primero los de zona
  * premium: ahi es mas probable que haya presupuesto. Los descartados (etiqueta
- * `redes-descartado`) no entran. Es puro: la pagina trae los contactos.
+ * `social-discarded`) no entran. Es puro: la pagina trae los contactos.
  */
 export function colaDeRedes(contactos: ContactoDeCola[]): FilaCola[] {
   const filas: FilaCola[] = []

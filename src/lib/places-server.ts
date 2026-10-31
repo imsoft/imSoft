@@ -218,8 +218,8 @@ export async function buscarProspectos(db: SupabaseClient, giroClave: string, mu
   if (!query) throw new Error('Giro desconocido')
   const [lugares, existentes] = await Promise.all([buscarLugares(query, municipio, opts.max ?? 60), contactosExistentes(db)])
   let candidatos = marcarExistentes(lugares, existentes)
-  if (opts.correos) candidatos = await enriquecer(candidatos, (MUNICIPIOS[municipio] ?? MUNICIPIOS.zmg).nombre.replace(/^Zona metropolitana de /, ''), { linkedin: giroClave === 'corporativo' })
-  return { candidatos, segmento: giro?.segmento ?? 'otros', nuevos: candidatos.filter((c) => !c.enCrm).length }
+  if (opts.correos) candidatos = await enriquecer(candidatos, (MUNICIPIOS[municipio] ?? MUNICIPIOS.zmg).nombre.replace(/^Zona metropolitana de /, ''), { linkedin: giroClave === 'corporate' })
+  return { candidatos, segmento: giro?.segmento ?? 'other', nuevos: candidatos.filter((c) => !c.enCrm).length }
 }
 
 /** Da de alta los candidatos elegidos como prospectos sin contactar. */

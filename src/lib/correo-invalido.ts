@@ -1,10 +1,10 @@
 /**
- * Un correo queda invalido por dos caminos: la etiqueta `correo-invalido` (rebotes y
+ * Un correo queda invalido por dos caminos: la etiqueta `invalid-email` (rebotes y
  * dominios sin correo que detecta la prospeccion) o la lista `invalid_emails` (marcado a
  * mano en la ficha). La tabla, la ficha y el tablero preguntan aqui para no ofrecer
  * "Escribir correo" a quien ya se sabe que rebota.
  */
-export const TAG_CORREO_INVALIDO = 'correo-invalido'
+export const TAG_CORREO_INVALIDO = 'invalid-email'
 
 export function correoInvalido(c: { email?: string | null; tags?: string[] | null; invalid_emails?: string[] | null }): boolean {
   const email = (c.email ?? '').trim().toLowerCase()

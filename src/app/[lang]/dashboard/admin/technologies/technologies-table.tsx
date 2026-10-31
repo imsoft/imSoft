@@ -182,7 +182,7 @@ export function TechnologiesTable({ technologies, dict, lang }: TechnologiesTabl
           frontend: lang === 'es' ? 'Frontend' : 'Frontend',
           backend: lang === 'es' ? 'Backend' : 'Backend',
           database: lang === 'es' ? 'Base de Datos' : 'Database',
-          servidor: lang === 'es' ? 'Servidor' : 'Server',
+          server: lang === 'es' ? 'Servidor' : 'Server',
           storage: lang === 'es' ? 'Storage' : 'Storage',
           authentication: lang === 'es' ? 'Autenticación' : 'Authentication',
           email: lang === 'es' ? 'Correo Electrónico' : 'Email',

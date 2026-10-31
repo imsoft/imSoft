@@ -20,30 +20,30 @@ export const MUNICIPIOS: Record<string, { nombre: string; lat: number; lng: numb
 
 /** Giros que suelen comprar software a la medida, con la consulta que mejor funciona en Places. */
 export const GIROS: { clave: string; nombre: string; query: string; segmento: string }[] = [
-  { clave: 'abastos', nombre: 'Mercado de Abastos y mayoristas', query: 'distribuidora mayorista abarrotes frutas verduras Mercado de Abastos', segmento: 'abastos' },
+  { clave: 'wholesale-market', nombre: 'Mercado de Abastos y mayoristas', query: 'distribuidora mayorista abarrotes frutas verduras Mercado de Abastos', segmento: 'wholesale-market' },
   // Las bodegas del Mercado de Abastos por tipo de producto; Places no las saca con la consulta general.
-  { clave: 'mayoristas', nombre: 'Bodegas mayoristas (cárnicos, lácteos, desechables)', query: 'distribuidora mayorista cárnicos lácteos desechables', segmento: 'abastos' },
-  { clave: 'logistica', nombre: 'Logística y agencias aduanales', query: 'agencia aduanal empresa de logística transporte de carga', segmento: 'logistica' },
-  { clave: 'abogados', nombre: 'Despachos de abogados', query: 'despacho de abogados bufete jurídico', segmento: 'abogados' },
-  { clave: 'contabilidad', nombre: 'Despachos contables', query: 'despacho contable contadores públicos', segmento: 'contabilidad' },
-  { clave: 'salud', nombre: 'Hospitales y clínicas', query: 'hospital privado clínica de especialidades', segmento: 'salud' },
-  { clave: 'dental', nombre: 'Clínicas dentales', query: 'clínica dental', segmento: 'salud' },
-  { clave: 'restaurantes', nombre: 'Restaurantes', query: 'restaurante', segmento: 'restaurantes' },
+  { clave: 'wholesalers', nombre: 'Bodegas mayoristas (cárnicos, lácteos, desechables)', query: 'distribuidora mayorista cárnicos lácteos desechables', segmento: 'wholesale-market' },
+  { clave: 'logistics', nombre: 'Logística y agencias aduanales', query: 'agencia aduanal empresa de logística transporte de carga', segmento: 'logistics' },
+  { clave: 'law-firms', nombre: 'Despachos de abogados', query: 'despacho de abogados bufete jurídico', segmento: 'law-firms' },
+  { clave: 'accounting', nombre: 'Despachos contables', query: 'despacho contable contadores públicos', segmento: 'accounting' },
+  { clave: 'health', nombre: 'Hospitales y clínicas', query: 'hospital privado clínica de especialidades', segmento: 'health' },
+  { clave: 'dental', nombre: 'Clínicas dentales', query: 'clínica dental', segmento: 'health' },
+  { clave: 'restaurants', nombre: 'Restaurantes', query: 'restaurante', segmento: 'restaurants' },
   { clave: 'ecommerce', nombre: 'Tiendas y boutiques (ecommerce)', query: 'boutique tienda de ropa calzado', segmento: 'ecommerce' },
   // Se concentran en el Centro Joyero y San Juan de Dios; su oferta es tienda en linea, no app.
-  { clave: 'joyeria', nombre: 'Joyerías y centros joyeros', query: 'joyería centro joyero', segmento: 'joyeria' },
-  { clave: 'construccion', nombre: 'Constructoras', query: 'empresa constructora', segmento: 'construccion' },
+  { clave: 'jewelry', nombre: 'Joyerías y centros joyeros', query: 'joyería centro joyero', segmento: 'jewelry' },
+  { clave: 'construction', nombre: 'Constructoras', query: 'empresa constructora', segmento: 'construction' },
   // Agro: en la ZMG estan las oficinas, distribuidoras y empacadoras; las granjas, en Los Altos.
   { clave: 'agro', nombre: 'Agroindustria, empacadoras y distribuidoras agrícolas', query: 'empacadora comercializadora agrícola distribuidora agroquímicos semillas forrajes', segmento: 'agro' },
-  { clave: 'granjas', nombre: 'Granjas avícolas y porcícolas', query: 'granja avícola huevo', segmento: 'agro' },
-  { clave: 'ferreteria', nombre: 'Ferreterías y distribuidores industriales', query: 'ferretería industrial distribuidor', segmento: 'ferreteria' },
-  { clave: 'inmobiliaria', nombre: 'Inmobiliarias', query: 'inmobiliaria bienes raíces', segmento: 'inmobiliaria' },
+  { clave: 'farms', nombre: 'Granjas avícolas y porcícolas', query: 'granja avícola huevo', segmento: 'agro' },
+  { clave: 'hardware-stores', nombre: 'Ferreterías y distribuidores industriales', query: 'ferretería industrial distribuidor', segmento: 'hardware-stores' },
+  { clave: 'real-estate', nombre: 'Inmobiliarias', query: 'inmobiliaria bienes raíces', segmento: 'real-estate' },
   { clave: 'fitness', nombre: 'Gimnasios', query: 'gimnasio', segmento: 'fitness' },
-  { clave: 'escuelas', nombre: 'Escuelas privadas', query: 'colegio privado escuela particular', segmento: 'escuelas' },
-  { clave: 'talleres', nombre: 'Talleres y refaccionarias', query: 'taller mecánico refaccionaria', segmento: 'automotriz' },
-  { clave: 'clinicas-estetica', nombre: 'Clínicas de estética y spa', query: 'clínica de estética spa', segmento: 'salud' },
+  { clave: 'schools', nombre: 'Escuelas privadas', query: 'colegio privado escuela particular', segmento: 'schools' },
+  { clave: 'auto-repair-shops', nombre: 'Talleres y refaccionarias', query: 'taller mecánico refaccionaria', segmento: 'automotive' },
+  { clave: 'aesthetic-clinics', nombre: 'Clínicas de estética y spa', query: 'clínica de estética spa', segmento: 'health' },
   // Para buscar empresas grandes por nombre ("Grupo Dalton") con la busqueda propia.
-  { clave: 'corporativo', nombre: 'Empresas grandes y corporativos', query: 'corporativo oficinas corporativas', segmento: 'corporativo' },
+  { clave: 'corporate', nombre: 'Empresas grandes y corporativos', query: 'corporativo oficinas corporativas', segmento: 'corporate' },
 ]
 
 /** Negocios que salen en las busquedas pero no compran software a la medida (notarias, bufetes gratuitos, dependencias). */
@@ -486,7 +486,7 @@ export function filaDesdeCandidato(c: Candidato, segmento: string): CsvRow {
     facebook: c.facebook ?? '',
     sitio: c.sitio ?? '',
     segmento,
-    zona: zonaPremium(c.direccion) ? 'zona-premium' : '',
+    zona: zonaPremium(c.direccion) ? 'premium-zone' : '',
     gancho: fichaGoogle(c) ?? '',
   }
 }

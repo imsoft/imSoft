@@ -2,23 +2,23 @@
   "_comentario": "Busquedas de scripts/find-prospects.mjs (giro de src/lib/places.ts x municipio). Corre lunes, miercoles y viernes; cada corrida toma un tramo distinto de la lista (ver tramoDeBusquedas).",
   "busquedas": [
     {
-      "giro": "abastos",
+      "giro": "wholesale-market",
       "municipio": "guadalajara"
     },
     {
-      "giro": "logistica",
+      "giro": "logistics",
       "municipio": "guadalajara"
     },
     {
-      "giro": "abogados",
+      "giro": "law-firms",
       "municipio": "guadalajara"
     },
     {
-      "giro": "contabilidad",
+      "giro": "accounting",
       "municipio": "guadalajara"
     },
     {
-      "giro": "salud",
+      "giro": "health",
       "municipio": "guadalajara"
     },
     {
@@ -26,7 +26,7 @@
       "municipio": "guadalajara"
     },
     {
-      "giro": "restaurantes",
+      "giro": "restaurants",
       "municipio": "guadalajara"
     },
     {
@@ -34,15 +34,15 @@
       "municipio": "guadalajara"
     },
     {
-      "giro": "construccion",
+      "giro": "construction",
       "municipio": "guadalajara"
     },
     {
-      "giro": "ferreteria",
+      "giro": "hardware-stores",
       "municipio": "guadalajara"
     },
     {
-      "giro": "inmobiliaria",
+      "giro": "real-estate",
       "municipio": "guadalajara"
     },
     {
@@ -50,31 +50,31 @@
       "municipio": "guadalajara"
     },
     {
-      "giro": "escuelas",
+      "giro": "schools",
       "municipio": "guadalajara"
     },
     {
-      "giro": "talleres",
+      "giro": "auto-repair-shops",
       "municipio": "guadalajara"
     },
     {
-      "giro": "clinicas-estetica",
+      "giro": "aesthetic-clinics",
       "municipio": "guadalajara"
     },
     {
-      "giro": "logistica",
+      "giro": "logistics",
       "municipio": "zapopan"
     },
     {
-      "giro": "abogados",
+      "giro": "law-firms",
       "municipio": "zapopan"
     },
     {
-      "giro": "contabilidad",
+      "giro": "accounting",
       "municipio": "zapopan"
     },
     {
-      "giro": "salud",
+      "giro": "health",
       "municipio": "zapopan"
     },
     {
@@ -82,7 +82,7 @@
       "municipio": "zapopan"
     },
     {
-      "giro": "restaurantes",
+      "giro": "restaurants",
       "municipio": "zapopan"
     },
     {
@@ -90,15 +90,15 @@
       "municipio": "zapopan"
     },
     {
-      "giro": "construccion",
+      "giro": "construction",
       "municipio": "zapopan"
     },
     {
-      "giro": "ferreteria",
+      "giro": "hardware-stores",
       "municipio": "zapopan"
     },
     {
-      "giro": "inmobiliaria",
+      "giro": "real-estate",
       "municipio": "zapopan"
     },
     {
@@ -106,31 +106,31 @@
       "municipio": "zapopan"
     },
     {
-      "giro": "escuelas",
+      "giro": "schools",
       "municipio": "zapopan"
     },
     {
-      "giro": "talleres",
+      "giro": "auto-repair-shops",
       "municipio": "zapopan"
     },
     {
-      "giro": "clinicas-estetica",
+      "giro": "aesthetic-clinics",
       "municipio": "zapopan"
     },
     {
-      "giro": "logistica",
+      "giro": "logistics",
       "municipio": "tlaquepaque"
     },
     {
-      "giro": "abogados",
+      "giro": "law-firms",
       "municipio": "tlaquepaque"
     },
     {
-      "giro": "contabilidad",
+      "giro": "accounting",
       "municipio": "tlaquepaque"
     },
     {
-      "giro": "salud",
+      "giro": "health",
       "municipio": "tlaquepaque"
     },
     {
@@ -138,19 +138,19 @@
       "municipio": "tlaquepaque"
     },
     {
-      "giro": "restaurantes",
+      "giro": "restaurants",
       "municipio": "tlaquepaque"
     },
     {
-      "giro": "construccion",
+      "giro": "construction",
       "municipio": "tlaquepaque"
     },
     {
-      "giro": "ferreteria",
+      "giro": "hardware-stores",
       "municipio": "tlaquepaque"
     },
     {
-      "giro": "inmobiliaria",
+      "giro": "real-estate",
       "municipio": "tlaquepaque"
     },
     {
@@ -158,31 +158,31 @@
       "municipio": "tlaquepaque"
     },
     {
-      "giro": "escuelas",
+      "giro": "schools",
       "municipio": "tlaquepaque"
     },
     {
-      "giro": "talleres",
+      "giro": "auto-repair-shops",
       "municipio": "tlaquepaque"
     },
     {
-      "giro": "clinicas-estetica",
+      "giro": "aesthetic-clinics",
       "municipio": "tlaquepaque"
     },
     {
-      "giro": "logistica",
+      "giro": "logistics",
       "municipio": "tonala"
     },
     {
-      "giro": "abogados",
+      "giro": "law-firms",
       "municipio": "tonala"
     },
     {
-      "giro": "contabilidad",
+      "giro": "accounting",
       "municipio": "tonala"
     },
     {
-      "giro": "salud",
+      "giro": "health",
       "municipio": "tonala"
     },
     {
@@ -190,19 +190,19 @@
       "municipio": "tonala"
     },
     {
-      "giro": "restaurantes",
+      "giro": "restaurants",
       "municipio": "tonala"
     },
     {
-      "giro": "construccion",
+      "giro": "construction",
       "municipio": "tonala"
     },
     {
-      "giro": "ferreteria",
+      "giro": "hardware-stores",
       "municipio": "tonala"
     },
     {
-      "giro": "inmobiliaria",
+      "giro": "real-estate",
       "municipio": "tonala"
     },
     {
@@ -210,31 +210,31 @@
       "municipio": "tonala"
     },
     {
-      "giro": "escuelas",
+      "giro": "schools",
       "municipio": "tonala"
     },
     {
-      "giro": "talleres",
+      "giro": "auto-repair-shops",
       "municipio": "tonala"
     },
     {
-      "giro": "clinicas-estetica",
+      "giro": "aesthetic-clinics",
       "municipio": "tonala"
     },
     {
-      "giro": "logistica",
+      "giro": "logistics",
       "municipio": "tlajomulco"
     },
     {
-      "giro": "abogados",
+      "giro": "law-firms",
       "municipio": "tlajomulco"
     },
     {
-      "giro": "contabilidad",
+      "giro": "accounting",
       "municipio": "tlajomulco"
     },
     {
-      "giro": "salud",
+      "giro": "health",
       "municipio": "tlajomulco"
     },
     {
@@ -242,19 +242,19 @@
       "municipio": "tlajomulco"
     },
     {
-      "giro": "restaurantes",
+      "giro": "restaurants",
       "municipio": "tlajomulco"
     },
     {
-      "giro": "construccion",
+      "giro": "construction",
       "municipio": "tlajomulco"
     },
     {
-      "giro": "ferreteria",
+      "giro": "hardware-stores",
       "municipio": "tlajomulco"
     },
     {
-      "giro": "inmobiliaria",
+      "giro": "real-estate",
       "municipio": "tlajomulco"
     },
     {
@@ -262,15 +262,15 @@
       "municipio": "tlajomulco"
     },
     {
-      "giro": "escuelas",
+      "giro": "schools",
       "municipio": "tlajomulco"
     },
     {
-      "giro": "talleres",
+      "giro": "auto-repair-shops",
       "municipio": "tlajomulco"
     },
     {
-      "giro": "clinicas-estetica",
+      "giro": "aesthetic-clinics",
       "municipio": "tlajomulco"
     },
     {
@@ -278,23 +278,23 @@
       "municipio": "zmg"
     },
     {
-      "giro": "abastos",
+      "giro": "wholesale-market",
       "municipio": "zmg"
     },
     {
-      "giro": "mayoristas",
+      "giro": "wholesalers",
       "municipio": "guadalajara"
     },
     {
-      "giro": "mayoristas",
+      "giro": "wholesalers",
       "municipio": "zmg"
     },
     {
-      "giro": "joyeria",
+      "giro": "jewelry",
       "municipio": "guadalajara"
     },
     {
-      "giro": "joyeria",
+      "giro": "jewelry",
       "municipio": "zapopan"
     },
     {
@@ -306,7 +306,7 @@
       "municipio": "zmg"
     },
     {
-      "giro": "granjas",
+      "giro": "farms",
       "municipio": "tepatitlan"
     }
   ]

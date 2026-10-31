@@ -79,11 +79,11 @@ describe('registrarMensajeRed', () => {
 describe('rebote de un correo', () => {
   it('cierra la secuencia, descarta borradores y etiqueta el correo como invalido sin perder sus etiquetas', async () => {
     const { db, updates } = dbFalso(null)
-    await marcarRebote(db, 'c1', ['google-places', 'logistica'])
+    await marcarRebote(db, 'c1', ['google-places', 'logistics'])
     const correos = updates.filter((u) => u.tabla === 'outreach_emails')
     expect(correos.map((u) => [u.valores.status, u.filtros.status])).toEqual([['closed', ['sent', 'replied']], ['skipped', 'draft']])
     const contacto = updates.find((u) => u.tabla === 'contacts')!
-    expect(contacto.valores.tags).toEqual(['google-places', 'logistica', 'correo-invalido'])
+    expect(contacto.valores.tags).toEqual(['google-places', 'logistics', 'invalid-email'])
     expect(contacto.filtros).toEqual({ id: 'c1' })
   })
 })
@@ -112,7 +112,7 @@ describe('borrador para un contacto concreto', () => {
         select: () => q,
         eq: () => q,
         order: () => q,
-        maybeSingle: async () => ({ data: tabla === 'contacts' ? { id: 'c1', first_name: 'Laura', email: 'laura@x.mx', company: 'Ferretería X', notes: null, tags: ['ferreteria'] } : null }),
+        maybeSingle: async () => ({ data: tabla === 'contacts' ? { id: 'c1', first_name: 'Laura', email: 'laura@x.mx', company: 'Ferretería X', notes: null, tags: ['hardware-stores'] } : null }),
         insert: (v: Record<string, unknown>) => { inserts.push(v); return { select: () => ({ single: async () => ({ data: { id: 'nuevo' }, error: null }) }) } },
         then: (ok: (v: unknown) => void) => ok({ data: tabla === 'outreach_emails' ? previos : null, error: null }),
       }
@@ -120,7 +120,7 @@ describe('borrador para un contacto concreto', () => {
     }
     return { db: { from } as never, inserts }
   }
-  const enviado = { id: 'e1', step: 1, status: 'sent', sent_at: '2026-09-24T19:14:00Z', gancho: 'Las cotizaciones se arman a mano.', campaign: 'ferreteria' }
+  const enviado = { id: 'e1', step: 1, status: 'sent', sent_at: '2026-09-24T19:14:00Z', hook: 'Las cotizaciones se arman a mano.', campaign: 'hardware-stores' }
 
   it('si ya se le escribio, sin pedirlo no crea nada y dice cuando toca el seguimiento', async () => {
     const { db: d, inserts } = db([enviado])
@@ -132,7 +132,7 @@ describe('borrador para un contacto concreto', () => {
     const { db: d, inserts } = db([enviado])
     const r = await crearBorradorParaContacto(d, 'c1', { seguimiento: true })
     expect(r).toMatchObject({ id: 'nuevo', existente: false, seguimiento: 1 })
-    expect(inserts[0]).toMatchObject({ contact_id: 'c1', step: 2, status: 'draft', gancho: 'Las cotizaciones se arman a mano.', campaign: 'ferreteria' })
+    expect(inserts[0]).toMatchObject({ contact_id: 'c1', step: 2, status: 'draft', hook: 'Las cotizaciones se arman a mano.', campaign: 'hardware-stores' })
     expect(String(inserts[0].subject)).toMatch(/^Re: /)
   })
 

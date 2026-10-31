@@ -71,7 +71,7 @@ export async function dominioRecibeCorreo(email: string | null | undefined, reso
 async function descartarSiNoRecibe(db: SupabaseClient, c: ContactoMin): Promise<boolean> {
   // Buzon de privacidad, facturacion, RH o legal: existe, pero no es a quien escribirle.
   if (!buzonNoComercial(c.email) && (await dominioRecibeCorreo(c.email))) return false
-  await db.from('contacts').update({ tags: [...new Set([...(c.tags ?? []), 'correo-invalido'])], ...(c.email ? { invalid_emails: [c.email.toLowerCase()] } : {}), updated_at: new Date().toISOString() }).eq('id', c.id)
+  await db.from('contacts').update({ tags: [...new Set([...(c.tags ?? []), 'invalid-email'])], ...(c.email ? { invalid_emails: [c.email.toLowerCase()] } : {}), updated_at: new Date().toISOString() }).eq('id', c.id)
   return true
 }
 
@@ -98,7 +98,7 @@ export async function crearBorradoresPaso1(db: SupabaseClient, limite: number, c
   const yaTienen = new Set((existentes ?? []).map((r) => r.contact_id as string))
   const { data: contactos, error } = await db.from('contacts').select(CONTACTO_COLS).eq('contact_type', 'prospect').eq('status', 'no_contact').not('email', 'is', null).order('created_at', { ascending: true }).limit(400)
   if (error) throw new Error(error.message)
-  const candidatos = ((contactos ?? []) as ContactoMin[]).filter((c) => !yaTienen.has(c.id) && c.email && !(c.tags ?? []).includes('correo-invalido')).slice(0, limite)
+  const candidatos = ((contactos ?? []) as ContactoMin[]).filter((c) => !yaTienen.has(c.id) && c.email && !(c.tags ?? []).includes('invalid-email')).slice(0, limite)
   const creados: string[] = []
   const errores: string[] = []
   for (const c of candidatos) {
@@ -109,7 +109,7 @@ export async function crearBorradoresPaso1(db: SupabaseClient, limite: number, c
       }
       const gancho = ganchoDesdeNotas(c.notes) ?? (await ganchoConIA(c))
       const r = renderOutreach(1, { nombre: nombreDe(c), empresa: c.company ?? '', gancho, segmento: segmentoDe(c.tags) })
-      const { error: e } = await db.from('outreach_emails').insert({ contact_id: c.id, step: 1, status: 'draft', campaign: campaign ?? segmentoDe(c.tags), gancho, subject: r.subject, html: r.html, text: r.text, scheduled_for: hoyLocal() })
+      const { error: e } = await db.from('outreach_emails').insert({ contact_id: c.id, step: 1, status: 'draft', campaign: campaign ?? segmentoDe(c.tags), hook: gancho, subject: r.subject, html: r.html, text: r.text, scheduled_for: hoyLocal() })
       if (e) throw new Error(e.message)
       creados.push(c.id)
     } catch (err) {
@@ -126,7 +126,7 @@ export async function crearBorradoresPaso1(db: SupabaseClient, limite: number, c
  * seguimientos por accidente.
  */
 export async function crearBorradorParaContacto(db: SupabaseClient, contactId: string, opts: { seguimiento?: boolean } = {}) {
-  const { data: previos } = await db.from('outreach_emails').select('id, step, status, sent_at, gancho, campaign').eq('contact_id', contactId).order('step', { ascending: false })
+  const { data: previos } = await db.from('outreach_emails').select('id, step, status, sent_at, hook, campaign').eq('contact_id', contactId).order('step', { ascending: false })
   const estado = estadoDeCorreo((previos ?? []) as FilaCorreo[])
   if (estado.tipo === 'borrador') return { id: estado.borradorId, existente: true }
   if (estado.tipo === 'respondio') throw new Error('Este contacto ya respondió: contéstale desde Gmail, en el mismo hilo.')
@@ -135,22 +135,22 @@ export async function crearBorradorParaContacto(db: SupabaseClient, contactId: s
     if (!opts.seguimiento) throw new Error(`Ya se le escribió el ${fechaCorta(estado.fecha)}; su seguimiento toca el ${fechaCorta(estado.tocaEl)}.`)
     const { data: c } = await db.from('contacts').select(CONTACTO_COLS).eq('id', contactId).maybeSingle()
     if (!c) throw new Error('Contacto no encontrado')
-    if ((c.tags ?? []).includes('correo-invalido')) throw new Error('El correo de este contacto está marcado como inválido')
+    if ((c.tags ?? []).includes('invalid-email')) throw new Error('El correo de este contacto está marcado como inválido')
     const primero = (previos ?? []).find((r) => r.step === 1) ?? (previos ?? [])[0]
-    const gancho = ganchoDesdeNotas(primero?.gancho as string | null) ?? ganchoDesdeNotas(c.notes) ?? (await ganchoConIA(c as ContactoMin))
+    const gancho = ganchoDesdeNotas(primero?.hook as string | null) ?? ganchoDesdeNotas(c.notes) ?? (await ganchoConIA(c as ContactoMin))
     const r = renderOutreach(estado.siguientePaso, { nombre: nombreDe(c), empresa: c.company ?? '', gancho, segmento: segmentoDe(c.tags) })
-    const { data, error } = await db.from('outreach_emails').insert({ contact_id: c.id, step: estado.siguientePaso, status: 'draft', campaign: primero?.campaign ?? segmentoDe(c.tags), gancho, subject: r.subject, html: r.html, text: r.text, scheduled_for: hoyLocal() }).select('id').single()
+    const { data, error } = await db.from('outreach_emails').insert({ contact_id: c.id, step: estado.siguientePaso, status: 'draft', campaign: primero?.campaign ?? segmentoDe(c.tags), hook: gancho, subject: r.subject, html: r.html, text: r.text, scheduled_for: hoyLocal() }).select('id').single()
     if (error) throw new Error(error.message)
     return { id: data.id as string, existente: false, seguimiento: estado.siguientePaso - 1, adelantado: estado.tocaEl > hoyLocal() ? estado.tocaEl : null }
   }
   const { data: c } = await db.from('contacts').select(CONTACTO_COLS).eq('id', contactId).maybeSingle()
   if (!c) throw new Error('Contacto no encontrado')
   if (!c.email) throw new Error('El contacto no tiene correo')
-  if ((c.tags ?? []).includes('correo-invalido')) throw new Error('El correo de este contacto está marcado como inválido')
+  if ((c.tags ?? []).includes('invalid-email')) throw new Error('El correo de este contacto está marcado como inválido')
   if (await descartarSiNoRecibe(db, c as ContactoMin)) throw new Error(buzonNoComercial(c.email) ? `${c.email} es un buzón de privacidad, facturación, RH o legal, no de ventas. Lo marqué como correo inválido; escríbele por redes si tiene.` : `El dominio de ${c.email} no existe o no recibe correo. Lo marqué como correo inválido; escríbele por redes si tiene.`)
   const gancho = ganchoDesdeNotas(c.notes) ?? (await ganchoConIA(c as ContactoMin))
   const r = renderOutreach(1, { nombre: nombreDe(c), empresa: c.company ?? '', gancho, segmento: segmentoDe(c.tags) })
-  const { data, error } = await db.from('outreach_emails').insert({ contact_id: c.id, step: 1, status: 'draft', campaign: segmentoDe(c.tags), gancho, subject: r.subject, html: r.html, text: r.text, scheduled_for: hoyLocal() }).select('id').single()
+  const { data, error } = await db.from('outreach_emails').insert({ contact_id: c.id, step: 1, status: 'draft', campaign: segmentoDe(c.tags), hook: gancho, subject: r.subject, html: r.html, text: r.text, scheduled_for: hoyLocal() }).select('id').single()
   if (error) throw new Error(error.message)
   return { id: data.id as string, existente: false }
 }
@@ -292,7 +292,7 @@ export async function registrarMensajeRed(db: SupabaseClient, userId: string, co
 
 /**
  * Saca al contacto de la cola de redes sin fingir que se le escribio: le pone la etiqueta
- * `redes-descartado`, deja el motivo en su historial y no toca su estado.
+ * `social-discarded`, deja el motivo en su historial y no toca su estado.
  */
 export async function descartarDeRedes(db: SupabaseClient, userId: string, contactId: string, motivo: MotivoDescarteRedes) {
   const { data: c } = await db.from('contacts').select('id, tags').eq('id', contactId).maybeSingle()
@@ -335,7 +335,7 @@ export async function sincronizar(db: SupabaseClient, userId: string) {
     if (fallidos.length) {
       const { data: afectados } = await db.from('contacts').select('id, email, tags').in('email', fallidos)
       for (const c of afectados ?? []) {
-        if (((c.tags as string[] | null) ?? []).includes('correo-invalido')) continue
+        if (((c.tags as string[] | null) ?? []).includes('invalid-email')) continue
         await marcarRebote(db, c.id as string, c.tags as string[] | null)
         porContacto.delete(c.id as string)
         res.rebotaron += 1
@@ -380,9 +380,9 @@ export async function sincronizar(db: SupabaseClient, userId: string) {
       if (yaHay) continue
       const c = contactoDe.get(contactId)
       if (!c) continue
-      const gancho = ganchoDesdeNotas(filas![0].gancho as string | null) ?? ganchoDesdeNotas(c.notes) ?? (await ganchoConIA(c))
+      const gancho = ganchoDesdeNotas(filas![0].hook as string | null) ?? ganchoDesdeNotas(c.notes) ?? (await ganchoConIA(c))
       const r = renderOutreach(siguiente, { nombre: nombreDe(c), empresa: c.company ?? '', gancho, segmento: segmentoDe(c.tags) })
-      const { error } = await db.from('outreach_emails').insert({ contact_id: contactId, step: siguiente, status: 'draft', campaign: filas![0].campaign, gancho, subject: r.subject, html: r.html, text: r.text, scheduled_for: toca })
+      const { error } = await db.from('outreach_emails').insert({ contact_id: contactId, step: siguiente, status: 'draft', campaign: filas![0].campaign, hook: gancho, subject: r.subject, html: r.html, text: r.text, scheduled_for: toca })
       if (error) throw new Error(error.message)
       res.seguimientosCreados += 1
     } catch (err) {
@@ -394,14 +394,14 @@ export async function sincronizar(db: SupabaseClient, userId: string) {
 
 /**
  * El correo del contacto no existe: se cierra su secuencia, se descartan sus borradores y
- * se etiqueta `correo-invalido`, que lo saca de futuros borradores. Sigue en el CRM por si
+ * se etiqueta `invalid-email`, que lo saca de futuros borradores. Sigue en el CRM por si
  * tiene Instagram o telefono.
  */
 export async function marcarRebote(db: SupabaseClient, contactId: string, tags: string[] | null) {
   const ahora = new Date().toISOString()
   await db.from('outreach_emails').update({ status: 'closed', updated_at: ahora }).eq('contact_id', contactId).in('status', ['sent', 'replied'])
   await db.from('outreach_emails').update({ status: 'skipped', updated_at: ahora }).eq('contact_id', contactId).eq('status', 'draft')
-  const nuevas = [...new Set([...(tags ?? []), 'correo-invalido'])]
+  const nuevas = [...new Set([...(tags ?? []), 'invalid-email'])]
   const { data: c } = await db.from('contacts').select('email, invalid_emails').eq('id', contactId).maybeSingle()
   const invalidos = [...new Set([...((c?.invalid_emails as string[] | null) ?? []), ...(c?.email ? [String(c.email).toLowerCase()] : [])])]
   await db.from('contacts').update({ tags: nuevas, invalid_emails: invalidos, updated_at: ahora }).eq('id', contactId)
@@ -414,7 +414,7 @@ export async function registrarEnviadosAMano(db: SupabaseClient, contactIds: str
   for (const c of (contactos ?? []) as ContactoMin[]) {
     const gancho = ganchoDesdeNotas(c.notes) ?? ''
     const r = renderOutreach(1, { nombre: nombreDe(c), empresa: c.company ?? '', gancho, segmento: segmentoDe(c.tags) })
-    const { error } = await db.from('outreach_emails').upsert({ contact_id: c.id, step: 1, status: 'sent', campaign: segmentoDe(c.tags), gancho, subject: r.subject, html: r.html, text: r.text, scheduled_for: sentAt.slice(0, 10), sent_at: sentAt, sent_via: 'manual' }, { onConflict: 'contact_id,step', ignoreDuplicates: true })
+    const { error } = await db.from('outreach_emails').upsert({ contact_id: c.id, step: 1, status: 'sent', campaign: segmentoDe(c.tags), hook: gancho, subject: r.subject, html: r.html, text: r.text, scheduled_for: sentAt.slice(0, 10), sent_at: sentAt, sent_via: 'manual' }, { onConflict: 'contact_id,step', ignoreDuplicates: true })
     if (!error) creados += 1
   }
   return { creados }

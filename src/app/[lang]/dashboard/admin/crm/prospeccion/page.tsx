@@ -33,7 +33,7 @@ export default async function AdminProspeccionPage({ params }: { params: Promise
   const rows: FilaOutreach[] = (filas ?? []).map((f) => {
     const c = cDe.get(f.contact_id)
     return {
-      id: f.id, contact_id: f.contact_id, step: f.step, status: f.status, subject: f.subject, html: f.html, text: f.text, scheduled_for: f.scheduled_for, sent_at: f.sent_at, sent_via: f.sent_via, gancho: f.gancho,
+      id: f.id, contact_id: f.contact_id, step: f.step, status: f.status, subject: f.subject, html: f.html, text: f.text, scheduled_for: f.scheduled_for, sent_at: f.sent_at, sent_via: f.sent_via, hook: f.hook,
       nombre: [c?.first_name, c?.last_name].filter(Boolean).join(' '), empresa: c?.company ?? '', email: c?.email ?? '',
     }
   })

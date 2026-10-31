@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { canalDeAsunto, canalesDe, colaDeRedes, giroDeRedes, queHacemos, TAG_REDES_DESCARTADO, conteoPorCanal, estadoDelTope, ETIQUETA_CANAL, numeroWhatsApp, ofertaDe, renderMensajeRed, TOPE_CANAL, TOPE_DIARIO_CANAL, urlDeRed } from './mensaje-red'
 
-const v = { nombre: 'Héctor', empresa: 'Gil y Gil', gancho: 'Cada filial lleva sus pedimentos en su propio Excel.', segmento: 'logistica-gdl' }
+const v = { nombre: 'Héctor', empresa: 'Gil y Gil', gancho: 'Cada filial lleva sus pedimentos en su propio Excel.', segmento: 'logistics-gdl' }
 
 describe('mensaje para redes', () => {
   it('el primer mensaje es la apertura (observación + pregunta) y una línea de quién escribe, sin pitch ni llamada', () => {
@@ -13,7 +13,7 @@ describe('mensaje para redes', () => {
   })
 
   it('un gancho viejo sin saludo se envuelve con "Hola" y, si hay nombre, con el nombre', () => {
-    const t = renderMensajeRed('instagram', { ...v, segmento: 'logistica' })
+    const t = renderMensajeRed('instagram', { ...v, segmento: 'logistics' })
     expect(t.startsWith('Hola Héctor, ')).toBe(true)
     expect(t).toContain('agencias aduanales y logística')
     const sin = renderMensajeRed('facebook', { ...v, nombre: '', segmento: null })
@@ -22,11 +22,11 @@ describe('mensaje para redes', () => {
   })
 
   it('la línea de presentación cambia por giro y oferta', () => {
-    expect(queHacemos('ferreteria')).toBe('software para ferreterías y distribuidoras')
-    expect(queHacemos('restaurantes', 'app')).toBe('apps para restaurantes y cafeterías')
+    expect(queHacemos('hardware-stores')).toBe('software para ferreterías y distribuidoras')
+    expect(queHacemos('restaurants', 'app')).toBe('apps para restaurantes y cafeterías')
     expect(queHacemos('fitness-gdl', 'app')).toBe('apps para gimnasios')
-    expect(queHacemos('abastos', 'app')).toBe('apps de pedidos para mayoristas')
-    expect(queHacemos('joyeria', 'tienda')).toBe('tiendas en línea para joyerías')
+    expect(queHacemos('wholesale-market', 'app')).toBe('apps de pedidos para mayoristas')
+    expect(queHacemos('jewelry', 'store')).toBe('tiendas en línea para joyerías')
     expect(queHacemos('agro')).toBe('software para el campo y la agroindustria')
     expect(queHacemos(null)).toBe('software a la medida para negocios')
   })
@@ -139,8 +139,8 @@ describe('cola de redes', () => {
   it('dentro de cada grupo, primero los de zona premium', () => {
     const cola = colaDeRedes([
       { ...base, id: 'wa', email: '', phone: '3325365558' },
-      { ...base, id: 'wa-premium', email: '', phone: '3325365559', tags: ['restaurantes', 'zona-premium'] },
-      { ...base, id: 'correo-premium', phone: '3325365550', tags: ['zona-premium'] },
+      { ...base, id: 'wa-premium', email: '', phone: '3325365559', tags: ['restaurants', 'premium-zone'] },
+      { ...base, id: 'correo-premium', phone: '3325365550', tags: ['premium-zone'] },
     ])
     // La zona ordena dentro del grupo, no le gana a "sin correo".
     expect(cola.map((f) => f.id)).toEqual(['wa-premium', 'wa', 'correo-premium'])
@@ -148,18 +148,18 @@ describe('cola de redes', () => {
   })
 
   it('a restaurantes, gimnasios y tiendas les ofrece su propia app', () => {
-    expect(ofertaDe(['google-places', 'restaurantes'])).toBe('app')
+    expect(ofertaDe(['google-places', 'restaurants'])).toBe('app')
     expect(ofertaDe(['fitness-gdl'])).toBe('app')
     expect(ofertaDe(['ecommerce'])).toBe('app')
-    expect(ofertaDe(['ferreteria'])).toBeNull()
+    expect(ofertaDe(['hardware-stores'])).toBeNull()
     expect(ofertaDe(null)).toBeNull()
     // Mayoristas de abastos: app de pedidos para sus clientes de tienda; joyerías: tienda en línea.
-    expect(ofertaDe(['google-places', 'abastos'])).toBe('app')
-    expect(ofertaDe(['joyeria'])).toBe('tienda')
+    expect(ofertaDe(['google-places', 'wholesale-market'])).toBe('app')
+    expect(ofertaDe(['jewelry'])).toBe('store')
     // Una cadena grande con area de sistemas no recibe el mensaje de la app.
-    expect(ofertaDe(['restaurantes', 'corporativo'])).toBeNull()
+    expect(ofertaDe(['restaurants', 'corporate'])).toBeNull()
 
-    const t = renderMensajeRed('instagram', { nombre: '', empresa: 'Tukafe', gancho: 'Hola, vi que tienen 4.7 en Google. ¿Sus clientes frecuentes piden por WhatsApp o por app?', segmento: 'restaurantes', oferta: 'app' })
+    const t = renderMensajeRed('instagram', { nombre: '', empresa: 'Tukafe', gancho: 'Hola, vi que tienen 4.7 en Google. ¿Sus clientes frecuentes piden por WhatsApp o por app?', segmento: 'restaurants', oferta: 'app' })
     expect(t).toContain('apps para restaurantes')
     expect(t).not.toContain('Excel')
     // LinkedIn conserva la presentación larga por giro.
@@ -169,7 +169,7 @@ describe('cola de redes', () => {
     expect(giroDeRedes(['google-places', 'agro'])).toBe('agro')
     expect(giroDeRedes(['fitness-gdl'])).toBe('fitness')
     expect(giroDeRedes(['google-places', 'dental'])).toBe('dental')
-    expect(giroDeRedes(['zona-premium'])).toBeNull()
+    expect(giroDeRedes(['premium-zone'])).toBeNull()
     expect(ofertaDe(['agro'])).toBeNull()
   })
 

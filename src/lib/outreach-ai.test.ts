@@ -3,10 +3,10 @@ import { fichaDeNotas, ganchoDesdeNotas, limpiarApertura, limpiarGancho, notasSi
 
 describe('gancho con IA', () => {
   it('el prompt lleva los datos del prospecto y las reglas', () => {
-    const p = promptGancho({ nombre: 'Omar', empresa: 'Proicomex', segmento: 'logistica', sitio: 'proicomex.com.mx', notas: null, cargo: 'Gerente' });
+    const p = promptGancho({ nombre: 'Omar', empresa: 'Proicomex', segmento: 'logistics', sitio: 'proicomex.com.mx', notas: null, cargo: 'Gerente' });
     expect(p).toContain('Empresa: Proicomex');
     expect(p).toContain('Omar, Gerente');
-    expect(p).toContain('Sector: logistica');
+    expect(p).toContain('Sector: logistics');
     expect(p).toContain('sin datos inventados');
     expect(p).toContain('No menciones a imSoft, JTP Logistics');
   });
@@ -39,10 +39,10 @@ describe('gancho con IA', () => {
     // Sin oferta, esa regla no aparece.
     expect(promptGancho({ nombre: '', empresa: 'X', segmento: null, sitio: null, notas: null, cargo: null })).not.toContain('su propia app');
     // Mayorista: el pedido del cliente de tienda; joyería: cómo vende hoy, para su tienda en línea.
-    const m = promptGancho({ nombre: '', empresa: 'Fruvecas', segmento: 'abastos', sitio: null, notas: null, cargo: null, oferta: 'app' });
+    const m = promptGancho({ nombre: '', empresa: 'Fruvecas', segmento: 'wholesale-market', sitio: null, notas: null, cargo: null, oferta: 'app' });
     expect(m).toContain('mayorista');
     expect(m).not.toContain('juntar puntos');
-    const j = promptGancho({ nombre: '', empresa: 'Malka', segmento: 'joyeria', sitio: null, notas: null, cargo: null, oferta: 'tienda' });
+    const j = promptGancho({ nombre: '', empresa: 'Malka', segmento: 'jewelry', sitio: null, notas: null, cargo: null, oferta: 'store' });
     expect(j).toContain('joyería');
     expect(j).toContain('tienda en línea');
   });
@@ -60,17 +60,17 @@ describe('gancho con IA', () => {
     expect(p).toContain('Trato de usted');
     expect(p).toContain('sin proponer llamada');
     expect(p).toContain('agenda y confirmaciones');
-    expect(promptApertura({ empresa: 'Fruvecas', segmento: 'abastos', oferta: 'app' })).toContain('clientes de tienda y ruta');
-    expect(promptApertura({ empresa: 'Malka', segmento: 'joyeria', oferta: 'tienda' })).toContain('piezas por foto');
+    expect(promptApertura({ empresa: 'Fruvecas', segmento: 'wholesale-market', oferta: 'app' })).toContain('clientes de tienda y ruta');
+    expect(promptApertura({ empresa: 'Malka', segmento: 'jewelry', oferta: 'store' })).toContain('piezas por foto');
     // La apertura no se recorta a dos frases (la pregunta suele ser la tercera) y hay pregunta de respaldo por giro.
     expect(limpiarApertura({ gancho: '"Hola, vi que están en Av. Hidalgo. Una duda: ¿las citas las confirman a mano o ya tienen algo?"' })).toBe('Hola, vi que están en Av. Hidalgo. Una duda: ¿las citas las confirman a mano o ya tienen algo?');
-    expect(preguntaPorDefecto('ferreteria')).toMatch(/cotizaciones/);
-    expect(preguntaPorDefecto('restaurantes', 'app')).toMatch(/clientes frecuentes/);
+    expect(preguntaPorDefecto('hardware-stores')).toMatch(/cotizaciones/);
+    expect(preguntaPorDefecto('restaurants', 'app')).toMatch(/clientes frecuentes/);
   });
 
   it('para empresas grandes el prompt cambia el tipo de problema', () => {
-    const p = promptGancho({ nombre: 'Laura', empresa: 'Grupo Dalton', segmento: 'corporativo', sitio: null, notas: null, cargo: null });
-    expect(p).toContain('Si el sector es "corporativo"');
+    const p = promptGancho({ nombre: 'Laura', empresa: 'Grupo Dalton', segmento: 'corporate', sitio: null, notas: null, cargo: null });
+    expect(p).toContain('Si el sector es "corporate"');
     expect(p).toContain('No supongas que les falta tecnología');
   });
 });

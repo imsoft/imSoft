@@ -203,7 +203,7 @@
         "frontend": "Frontend",
         "backend": "Backend",
         "database": "Database",
-        "servidor": "Server",
+        "server": "Server",
         "storage": "Storage",
         "authentication": "Authentication",
         "email": "Email",

@@ -344,7 +344,7 @@ export function TechnologyForm({ dict, lang, technology }: TechnologyFormProps) 
     { value: 'frontend', label_es: 'Frontend', label_en: 'Frontend' },
     { value: 'backend', label_es: 'Backend', label_en: 'Backend' },
     { value: 'database', label_es: 'Base de Datos', label_en: 'Database' },
-    { value: 'servidor', label_es: 'Servidor', label_en: 'Server' },
+    { value: 'server', label_es: 'Servidor', label_en: 'Server' },
     { value: 'storage', label_es: 'Storage', label_en: 'Storage' },
     { value: 'authentication', label_es: 'Autenticación', label_en: 'Authentication' },
     { value: 'email', label_es: 'Correo Electrónico', label_en: 'Email' },

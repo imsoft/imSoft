@@ -14,7 +14,7 @@
  *   node --env-file=.env --experimental-strip-types scripts/import-contacts.mjs \
  *     --list scripts/prospects/prospects-logistica-gdl.csv \
  *     --source "Prospeccion en frio - logistica GDL" \
- *     --tag logistica-gdl \
+ *     --tag logistics-gdl \
  *     --dry-run
  *
  * Flags:

@@ -27,7 +27,7 @@ export interface FilaOutreach {
   scheduled_for: string
   sent_at: string | null
   sent_via: string | null
-  gancho: string | null
+  hook: string | null
   nombre: string
   empresa: string
   email: string

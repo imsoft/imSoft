@@ -20,16 +20,16 @@ describe('prospeccion', () => {
   });
 
   it('elige la plantilla por segmento y cae a la generica', () => {
-    expect(plantillaDe('logistica')).toBe('logistica');
-    expect(plantillaDe('Logistica')).toBe('logistica');
+    expect(plantillaDe('logistics')).toBe('logistics');
+    expect(plantillaDe('Logistics')).toBe('logistics');
     expect(plantillaDe('clinicas')).toBe('default');
-    expect(segmentoDe(['gdl', 'logistica'])).toBe('logistica');
-    expect(segmentoDe(['logistica-gdl', 'aduanal', 'campana-sep-2026'])).toBe('logistica');
+    expect(segmentoDe(['gdl', 'logistics'])).toBe('logistics');
+    expect(segmentoDe(['logistics-gdl', 'customs-brokers', 'campaign-sep-2026'])).toBe('logistics');
     expect(segmentoDe(['gdl'])).toBeNull();
   });
 
   it('el primer correo lleva saludo, gancho, boton de WhatsApp y linea legal', () => {
-    const e = renderOutreach(1, { nombre: 'Omar', empresa: 'Proicomex', gancho: 'Vi que manejan carga refrigerada y pensé en su control de temperaturas.', segmento: 'logistica' });
+    const e = renderOutreach(1, { nombre: 'Omar', empresa: 'Proicomex', gancho: 'Vi que manejan carga refrigerada y pensé en su control de temperaturas.', segmento: 'logistics' });
     expect(e.subject).toBe('Software para la operación de Proicomex');
     expect(e.text).toContain('Hola Omar:');
     expect(e.text).toContain('carga refrigerada');
@@ -133,12 +133,12 @@ describe('rebotes', () => {
 
 describe('segmento corporativo', () => {
   it('las empresas grandes reciben su propio correo: proveedor externo y a quien turnarlo, sin Excel ni JTP', () => {
-    const e = renderOutreach(1, { nombre: 'Laura', empresa: 'Grupo Dalton', gancho: 'Las integraciones con proveedores se quedan en la fila de sistemas.', segmento: segmentoDe(['corporativo']) });
+    const e = renderOutreach(1, { nombre: 'Laura', empresa: 'Grupo Dalton', gancho: 'Las integraciones con proveedores se quedan en la fila de sistemas.', segmento: segmentoDe(['corporate']) });
     expect(e.subject).toBe('Desarrollo de software para Grupo Dalton');
     expect(e.text).toContain('proveedor externo');
     expect(e.text).toContain('quién ve estos temas en Grupo Dalton');
     expect(e.text).not.toMatch(/Excel|JTP/);
-    expect(renderOutreach(3, { nombre: 'Laura', empresa: 'Grupo Dalton', gancho: '', segmento: 'corporativo' }).subject).toBe('Re: Desarrollo de software para Grupo Dalton');
+    expect(renderOutreach(3, { nombre: 'Laura', empresa: 'Grupo Dalton', gancho: '', segmento: 'corporate' }).subject).toBe('Re: Desarrollo de software para Grupo Dalton');
   });
 });
 

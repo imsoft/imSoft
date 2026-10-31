@@ -6,7 +6,7 @@ describe('envio en lote', () => {
     expect(puedeRecibirCorreo({ email: 'a@x.mx' })).toBe(true)
     expect(puedeRecibirCorreo({ email: null })).toBe(false)
     expect(puedeRecibirCorreo({ email: '  ' })).toBe(false)
-    expect(puedeRecibirCorreo({ email: 'a@x.mx', tags: ['correo-invalido'] })).toBe(false)
+    expect(puedeRecibirCorreo({ email: 'a@x.mx', tags: ['invalid-email'] })).toBe(false)
     expect(puedeRecibirCorreo({ email: 'a@x.mx', invalid_emails: ['A@x.mx'] })).toBe(false)
     // A quien ya se le escribio no entra al lote: su seguimiento va aparte y en su fecha.
     expect(puedeRecibirCorreo({ email: 'a@x.mx', correo: { tipo: 'enviado' } })).toBe(false)

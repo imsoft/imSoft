@@ -140,9 +140,9 @@ describe('buscador de prospectos (Places)', () => {
 
   it('la fila del candidato entra al mismo mapeo que el CSV', () => {
     const c = { ...candidatoDe({ id: '1', displayName: { text: 'ES Contable' }, websiteUri: 'https://escontable.com', nationalPhoneNumber: '33 1973 2676' }), correo: 'ventas@escontable.com', instagram: null }
-    const { contacts } = mapRowsToContacts([filaDesdeCandidato(c, 'contabilidad')], { source: 'Google Places', tags: ['auto'] })
-    expect(contacts[0]).toMatchObject({ company: 'ES Contable', email: 'ventas@escontable.com', phone: '33 1973 2676', website_url: 'https://escontable.com', tags: ['auto', 'contabilidad'], status: 'no_contact', contact_type: 'prospect' })
-    expect(giroDe('contabilidad')?.segmento).toBe('contabilidad')
+    const { contacts } = mapRowsToContacts([filaDesdeCandidato(c, 'accounting')], { source: 'Google Places', tags: ['auto'] })
+    expect(contacts[0]).toMatchObject({ company: 'ES Contable', email: 'ventas@escontable.com', phone: '33 1973 2676', website_url: 'https://escontable.com', tags: ['auto', 'accounting'], status: 'no_contact', contact_type: 'prospect' })
+    expect(giroDe('accounting')?.segmento).toBe('accounting')
     expect(giroDe('nada')).toBeNull()
   })
 
@@ -152,8 +152,8 @@ describe('buscador de prospectos (Places)', () => {
     expect(zonaPremium('Av. Tonalá 123, Centro, 45400 Tonalá, Jal.')).toBe(false)
     expect(zonaPremium(null)).toBe(false)
     const cafe = { ...candidatoDe({ id: 'p1', displayName: { text: 'Tukafe' }, formattedAddress: 'Plaza Andares, Puerta de Hierro, Zapopan', nationalPhoneNumber: '33 1234 5678' }) }
-    const { contacts } = mapRowsToContacts([filaDesdeCandidato(cafe, 'restaurantes')], { source: 'Google Places', tags: ['auto'] })
-    expect(contacts[0].tags).toEqual(['auto', 'restaurantes', 'zona-premium'])
+    const { contacts } = mapRowsToContacts([filaDesdeCandidato(cafe, 'restaurants')], { source: 'Google Places', tags: ['auto'] })
+    expect(contacts[0].tags).toEqual(['auto', 'restaurants', 'premium-zone'])
   })
 
   it('saca el WhatsApp que el negocio publica en su sitio', () => {
@@ -218,7 +218,7 @@ describe('buscador de prospectos (Places)', () => {
     expect(deLaMarca(c, 'farmacias guadalajara')).toEqual([{ nombre: 'Farmacias Guadalajara Chapultepec' }])
     expect(deLaMarca([{ nombre: 'Leche Sello Rojo S.A. de C.V.' }], 'sello rojo')).toHaveLength(1)
     expect(deLaMarca(c, 'dalton')).toEqual([])
-    expect(giroDe2('corporativo')?.segmento).toBe('corporativo')
+    expect(giroDe2('corporate')?.segmento).toBe('corporate')
   })
 
   it('no toma buzones de privacidad, facturacion o bolsa de trabajo como correo de contacto', () => {

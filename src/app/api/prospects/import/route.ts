@@ -10,10 +10,10 @@ export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => ({}))
   const candidatos: Candidato[] = Array.isArray(body.candidatos) ? body.candidatos : []
   if (candidatos.length === 0) return NextResponse.json({ error: 'No hay candidatos' }, { status: 400 })
-  const segmento = typeof body.segmento === 'string' && body.segmento ? body.segmento : 'otros'
+  const segmento = typeof body.segmento === 'string' && body.segmento ? body.segmento : 'other'
   const hoy = new Date().toISOString().slice(0, 10)
   try {
-    const r = await importarCandidatos(serviceClient(), candidatos, segmento, `Google Places - ${segmento} - ${hoy}`, [`campana-${hoy.slice(0, 7)}`])
+    const r = await importarCandidatos(serviceClient(), candidatos, segmento, `Google Places - ${segmento} - ${hoy}`, [`campaign-${hoy.slice(0, 7)}`])
     return NextResponse.json(r)
   } catch (err) {
     console.error('[prospects/import]', err)

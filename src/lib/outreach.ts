@@ -10,7 +10,7 @@ export interface OutreachVars {
   nombre: string;
   empresa: string;
   gancho: string;
-  /** Etiqueta de segmento del contacto (p. ej. "logistica"); elige la plantilla. */
+  /** Etiqueta de segmento del contacto (p. ej. "logistics"); elige la plantilla. */
   segmento?: string | null;
 }
 
@@ -115,7 +115,7 @@ const PLANTILLAS: Record<string, Record<Step, Plantilla>> = {
   // Empresas grandes (Dalton, Farmacias Guadalajara...): no les falta Excel sino manos
   // en sistemas. El correo ofrece ser proveedor externo para proyectos puntuales y pide
   // que lo turnen a quien ve estos temas.
-  corporativo: {
+  corporate: {
     1: {
       subject: 'Desarrollo de software para {{empresa}}',
       parrafos: [
@@ -143,7 +143,7 @@ const PLANTILLAS: Record<string, Record<Step, Plantilla>> = {
       ],
     },
   },
-  logistica: {
+  logistics: {
     1: {
       subject: 'Software para la operación de {{empresa}}',
       parrafos: [
@@ -291,7 +291,7 @@ export function construirMime(m: { from: string; to: string; subject: string; te
 /** El segmento sale de las etiquetas del contacto (las pone el importador). */
 export function segmentoDe(tags: string[] | null | undefined): string | null {
   const conocidos = Object.keys(PLANTILLAS).filter((k) => k !== 'default');
-  // Las etiquetas del importador llevan sufijo de ciudad ("logistica-gdl"): basta el prefijo.
+  // Las etiquetas del importador llevan sufijo de ciudad ("logistics-gdl"): basta el prefijo.
   const lower = (tags ?? []).map((t) => t.toLowerCase());
   return conocidos.find((k) => lower.some((t) => t === k || t.startsWith(`${k}-`))) ?? null;
 }

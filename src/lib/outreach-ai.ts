@@ -12,8 +12,8 @@ export interface GanchoInput {
   sitio?: string | null;
   notas?: string | null;
   cargo?: string | null;
-  /** 'app': negocio de consumo al que se le ofrece su propia app, no arreglar su Excel; 'tienda': tienda en linea. */
-  oferta?: 'app' | 'tienda' | null;
+  /** 'app': negocio de consumo al que se le ofrece su propia app, no arreglar su Excel; 'store': tienda en linea. */
+  oferta?: 'app' | 'store' | null;
 }
 
 export function promptGancho(i: GanchoInput): string {
@@ -31,10 +31,10 @@ Reglas:
 - Tuteo, español de México, tono de alguien que conoce el sector; sin halagos vacíos ("me encanta su empresa"), sin signos de exclamación, sin datos inventados sobre la empresa.
 - Habla solo del problema del prospecto. No menciones a imSoft, JTP Logistics, casos de éxito, precios ni lo que ofrecemos: eso ya va en otros párrafos del correo.
 - Si el sector es "agro" (granja, empacadora, distribuidora agrícola), el problema está en el campo y la bodega: pesajes y lotes en libretas que luego se capturan, trazabilidad que se arma a mano cuando la pide una certificación o un cliente de exportación, el inventario de insumos o de parvadas que nadie tiene al día. Elige uno.
-- Si el sector es "corporativo", es una empresa grande con área de sistemas propia: el problema no es el Excel sino proyectos que se quedan en la fila de sistemas (integraciones entre sucursales o con proveedores, portales internos, reportes que se arman a mano entre áreas). No supongas que les falta tecnología.
-${i.oferta === 'app' && (i.segmento ?? '').startsWith('abastos') ? `- Es un mayorista (Mercado de Abastos o bodega de distribución) y le ofrecemos una app para que sus clientes de tienda y de ruta pidan solos; la presentación ya lo dice. Tu frase habla del pedido del cliente, no de su operación interna: pedidos que llegan por WhatsApp a deshoras y hay que pasar a mano, precios por cliente que cada vendedor trae en la cabeza, el cliente que llama a preguntar si ya salió su pedido. Elige uno. No hables de Excel.
+- Si el sector es "corporate", es una empresa grande con área de sistemas propia: el problema no es el Excel sino proyectos que se quedan en la fila de sistemas (integraciones entre sucursales o con proveedores, portales internos, reportes que se arman a mano entre áreas). No supongas que les falta tecnología.
+${i.oferta === 'app' && (i.segmento ?? '').startsWith('wholesale-market') ? `- Es un mayorista (Mercado de Abastos o bodega de distribución) y le ofrecemos una app para que sus clientes de tienda y de ruta pidan solos; la presentación ya lo dice. Tu frase habla del pedido del cliente, no de su operación interna: pedidos que llegan por WhatsApp a deshoras y hay que pasar a mano, precios por cliente que cada vendedor trae en la cabeza, el cliente que llama a preguntar si ya salió su pedido. Elige uno. No hables de Excel.
 ` : i.oferta === 'app' ? `- A este negocio le ofrecemos su propia app para sus clientes (pedir, juntar puntos, recibir promociones), y la presentación ya lo dice. Tu frase habla del problema del lado del cliente final, no de la operación interna: pedidos que entran por WhatsApp o por apps de terceros que cobran comisión, clientes frecuentes que nadie identifica ni premia, promociones que solo viven en Instagram y no llegan a quien ya compra. Elige uno que cuadre con el giro. No hables de Excel ni de procesos internos.
-` : i.oferta === 'tienda' ? `- Es una joyería y le ofrecemos su tienda en línea con su marca; la presentación ya lo dice. Tu frase habla de cómo vende hoy: piezas que se muestran por fotos en WhatsApp e Instagram una por una, apartados que se llevan en una libreta, clientes de fuera de la ciudad que no pueden comprar, el precio del oro que cambia y hay que recotizar a mano. Elige uno. No hables de Excel ni de procesos internos.
+` : i.oferta === 'store' ? `- Es una joyería y le ofrecemos su tienda en línea con su marca; la presentación ya lo dice. Tu frase habla de cómo vende hoy: piezas que se muestran por fotos en WhatsApp e Instagram una por una, apartados que se llevan en una libreta, clientes de fuera de la ciudad que no pueden comprar, el precio del oro que cambia y hay que recotizar a mano. Elige uno. No hables de Excel ni de procesos internos.
 ` : ''}- Si las notas del CRM traen un gancho corto escrito por Brandon, respétalo y solo púlelo. Si traen un correo completo, úsalo solo como contexto del sector.
 - Devuelve únicamente el gancho, sin comillas ni explicaciones.`;
 }
@@ -82,7 +82,7 @@ export interface AperturaInput {
   /** Ficha de Google Maps (calificacion, reseñas, tipo, direccion) y lo que se sepa del negocio. */
   datos?: string | null;
   notas?: string | null;
-  oferta?: 'app' | 'tienda' | null;
+  oferta?: 'app' | 'store' | null;
 }
 
 /**
@@ -93,17 +93,17 @@ export interface AperturaInput {
  */
 export function promptApertura(i: AperturaInput): string {
   const problema =
-    i.oferta === 'tienda'
+    i.oferta === 'store'
       ? 'como venden hoy fuera del mostrador: piezas por foto en WhatsApp o Instagram, apartados en libreta, clientes de otra ciudad'
-      : i.oferta === 'app' && (i.segmento ?? '').startsWith('abastos')
+      : i.oferta === 'app' && (i.segmento ?? '').startsWith('wholesale-market')
       ? 'como les llegan los pedidos de sus clientes de tienda y ruta (WhatsApp a deshoras, captura a mano) y como arman la ruta'
       : i.oferta === 'app'
       ? 'como identifican hoy a sus clientes frecuentes y como les hacen llegar promociones, o por donde les entran los pedidos'
       : (i.segmento ?? '').startsWith('agro')
       ? 'como llevan pesajes, lotes y trazabilidad: libreta, Excel o algo mas'
-      : (i.segmento ?? '').startsWith('logistica')
+      : (i.segmento ?? '').startsWith('logistics')
       ? 'como le contestan al cliente donde va su embarque'
-      : (i.segmento ?? '').startsWith('corporativo')
+      : (i.segmento ?? '').startsWith('corporate')
       ? 'que proyecto de sistemas traen formado que no sale por falta de manos'
       : 'el proceso que probablemente llevan a mano o en Excel (agenda y confirmaciones, cotizaciones, seguimiento de pedidos, avance de obra, prospectos)';
   return `Escribes el primer mensaje de WhatsApp o Instagram que imSoft (software a la medida, Guadalajara) le manda en frío a un negocio local. El mensaje NO vende: abre conversación. Después de tu texto se agrega, en otra línea, "Soy Brandon, de imSoft; hacemos …", así que no te presentes ni menciones imSoft.
@@ -121,17 +121,17 @@ Reglas: la observación y la pregunta son obligatorias y la pregunta cierra el t
 }
 
 /** Pregunta de respaldo por giro, por si la IA devuelve la observacion sin pregunta. */
-export function preguntaPorDefecto(segmento?: string | null, oferta?: 'app' | 'tienda' | null): string {
+export function preguntaPorDefecto(segmento?: string | null, oferta?: 'app' | 'store' | null): string {
   const g = (segmento ?? '').toLowerCase();
-  if (oferta === 'tienda') return '¿Las ventas a clientes de fuera las cierran por WhatsApp o ya tienen tienda en línea?';
-  if (g.startsWith('abastos')) return '¿Los pedidos de sus clientes los capturan a mano o ya tienen algo?';
+  if (oferta === 'store') return '¿Las ventas a clientes de fuera las cierran por WhatsApp o ya tienen tienda en línea?';
+  if (g.startsWith('wholesale-market')) return '¿Los pedidos de sus clientes los capturan a mano o ya tienen algo?';
   if (oferta === 'app') return '¿A sus clientes frecuentes los tienen identificados de alguna forma o se atienden igual que a los nuevos?';
-  if (g.startsWith('dental') || g.startsWith('salud')) return '¿Las confirmaciones de cita las hacen a mano o ya tienen algo que las mande solas?';
-  if (g.startsWith('ferreteria')) return '¿Las cotizaciones grandes las arman a mano o ya tienen un sistema que les dé precio y existencia?';
-  if (g.startsWith('automotriz')) return '¿Cuando el cliente pregunta cómo va su carro, se lo contestan al momento o alguien tiene que ir a ver?';
-  if (g.startsWith('inmobiliaria')) return '¿El seguimiento a los prospectos lo lleva cada asesor por su cuenta o ya tienen un sistema?';
-  if (g.startsWith('construccion')) return '¿El avance de obra les llega en fotos por WhatsApp o ya tienen algo donde se registre?';
-  if (g.startsWith('logistica')) return '¿Cuando el cliente pregunta dónde va su embarque, se lo contestan al momento o alguien tiene que buscarlo?';
+  if (g.startsWith('dental') || g.startsWith('health')) return '¿Las confirmaciones de cita las hacen a mano o ya tienen algo que las mande solas?';
+  if (g.startsWith('hardware-stores')) return '¿Las cotizaciones grandes las arman a mano o ya tienen un sistema que les dé precio y existencia?';
+  if (g.startsWith('automotive')) return '¿Cuando el cliente pregunta cómo va su carro, se lo contestan al momento o alguien tiene que ir a ver?';
+  if (g.startsWith('real-estate')) return '¿El seguimiento a los prospectos lo lleva cada asesor por su cuenta o ya tienen un sistema?';
+  if (g.startsWith('construction')) return '¿El avance de obra les llega en fotos por WhatsApp o ya tienen algo donde se registre?';
+  if (g.startsWith('logistics')) return '¿Cuando el cliente pregunta dónde va su embarque, se lo contestan al momento o alguien tiene que buscarlo?';
   if (g.startsWith('agro')) return '¿Los pesajes y lotes los llevan en libreta o ya tienen algo?';
   return '¿Lo que llevan a mano o en Excel hoy, ya tienen algo que lo ordene o siguen así?';
 }
