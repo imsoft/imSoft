@@ -23,7 +23,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { generateImage, uploadImageToSupabase } from "./lib/blog-image.mjs";
 import {
   MAX_TITLE_OVERLAP,
-  normalizarArticulo,
+  normalizeArticle,
   pickNextTopic,
   titleOverlap,
   validateArticle,
@@ -74,7 +74,7 @@ async function fetchExistingPosts() {
 
 function loadQueue() {
   const raw = fs.readFileSync(path.join(ROOT, "content", "blog-queue.json"), "utf8");
-  return JSON.parse(raw).temas;
+  return JSON.parse(raw).topics;
 }
 
 const CTA_HTML =
@@ -97,7 +97,7 @@ const PUBLISH_TOOL = {
       excerpt_en: { type: "string", description: "Summary in English, max 160 characters" },
       content_es: { type: "string", description: "Cuerpo en HTML (h2, h3, p, ul, ol, li, table, strong, a). Sin h1, sin markdown, sin el CTA final." },
       content_en: { type: "string", description: "Body in HTML, same rules, English" },
-      fuentes: {
+      sources: {
         type: "array",
         description: "Cada fuente externa que enlazas en el texto. La URL debe ser exactamente la que pusiste en el href.",
         items: {
@@ -105,14 +105,14 @@ const PUBLISH_TOOL = {
           additionalProperties: false,
           properties: {
             url: { type: "string" },
-            titulo: { type: "string" },
-            respalda: { type: "string", description: "Qué dato del artículo respalda esta fuente" },
+            title: { type: "string" },
+            supports: { type: "string", description: "Qué dato del artículo respalda esta fuente" },
           },
-          required: ["url", "titulo", "respalda"],
+          required: ["url", "title", "supports"],
         },
       },
     },
-    required: ["title_es", "title_en", "excerpt_es", "excerpt_en", "content_es", "content_en", "fuentes"],
+    required: ["title_es", "title_en", "excerpt_es", "excerpt_en", "content_es", "content_en", "sources"],
   },
 };
 
@@ -121,15 +121,15 @@ function buildPrompt(topic, existingTitles) {
   return `Escribes para el blog de imSoft, una agencia de desarrollo de software de Guadalajara, México (páginas web, tiendas en línea, apps móviles y software a medida). Hoy es ${today}.
 
 ## Para quién
-Dueños de negocio y directivos en México que teclearon en Google exactamente esto: "${topic.busqueda}". Quieren una respuesta útil, no un discurso de ventas.
+Dueños de negocio y directivos en México que teclearon en Google exactamente esto: "${topic.query}". Quieren una respuesta útil, no un discurso de ventas.
 
 ## Qué debe cubrir el artículo
-${topic.angulo}
+${topic.angle}
 
 ## Regla número uno: nada de cifras sin fuente
 Antes de escribir, investiga con la herramienta de búsqueda web. Toda cifra (precios, porcentajes, tarifas, plazos, "según…") tiene que venir de una página real que hayas encontrado, enlazada con <a href="URL exacta"> en el MISMO párrafo o item de lista donde aparece la cifra. Si no encuentras fuente para un dato, no lo pongas. Preferimos un artículo con cuatro cifras verificables a uno con veinte inventadas. Prioriza fuentes mexicanas y recientes, y anota junto a cada fuente su fecha si la tiene.
 
-Declara cada fuente que enlaces en el campo "fuentes", con la URL idéntica a la del href. Mínimo dos fuentes externas distintas. No enlaces a imsoft.io ni a wa.me dentro del cuerpo.
+Declara cada fuente que enlaces en el campo "sources", con la URL idéntica a la del href. Mínimo dos fuentes externas distintas. No enlaces a imsoft.io ni a wa.me dentro del cuerpo.
 
 ## Cómo escribir
 - Responde la pregunta en los primeros dos párrafos. Después, el detalle.
@@ -175,7 +175,7 @@ async function generateBlogPost(topic, existingTitles, correcciones = []) {
       })
       .finalMessage();
     const publish = response.content.find((b) => b.type === "tool_use" && b.name === "publish_blog_post");
-    if (publish) return normalizarArticulo(publish.input);
+    if (publish) return normalizeArticle(publish.input);
     if (response.stop_reason === "pause_turn") {
       // El bucle de búsqueda del servidor se pausó: se reenvía tal cual y continúa.
       messages.push({ role: "assistant", content: response.content });
@@ -462,7 +462,7 @@ async function main() {
     await sendEmail("Blog automático: cola de temas vacía", buildErrorEmail("No quedan temas pendientes en content/blog-queue.json. No se publicó nada."));
     return;
   }
-  console.log(`Tema: "${topic.busqueda}" → /es/blog/${topic.slug_es}`);
+  console.log(`Tema: "${topic.query}" → /es/blog/${topic.slug_es}`);
 
   const existingTitles = existing.map((p) => p.title_es).filter(Boolean);
 
@@ -474,7 +474,7 @@ async function main() {
     if (clash && clash.score >= MAX_TITLE_OVERLAP) {
       problemas.push(`el título solapa ${(clash.score * 100).toFixed(0)}% con uno publicado: "${clash.t}"`);
     }
-    problemas.push(...(await verifySources(g.fuentes)).map((f) => `fuente que no responde: ${f}`));
+    problemas.push(...(await verifySources(g.sources)).map((f) => `fuente que no responde: ${f}`));
     return problemas;
   };
 
@@ -495,7 +495,7 @@ async function main() {
     const detalle = problemas.map((p) => `- ${p}`).join("\n");
     throw new Error(`El artículo no pasó la validación tras dos intentos y NO se publicó:\n${detalle}`);
   }
-  console.log(`Validado: ${generated.fuentes.length} fuentes, todas responden.`);
+  console.log(`Validado: ${generated.sources.length} fuentes, todas responden.`);
 
   if (DRY_RUN) {
     const out = path.join(ROOT, ".blog-dry-run.json");
@@ -523,7 +523,7 @@ async function main() {
     slug: topic.slug_en,
     slug_es: topic.slug_es,
     image_url: imageUrl,
-    category: topic.categoria,
+    category: topic.category,
     author_id: BLOG_AUTHOR_ID,
     published: true,
   };
@@ -537,7 +537,7 @@ async function main() {
       title_es: generated.title_es,
       title_en: generated.title_en,
       slug: topic.slug_es,
-      category: CATEGORY_LABELS[topic.categoria] ?? topic.categoria,
+      category: CATEGORY_LABELS[topic.category] ?? topic.category,
       imageUrl,
     })
   );

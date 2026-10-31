@@ -11,7 +11,7 @@ describe('related-content', () => {
 
   it('todo slug de blog mapeado existe: publicado o en la cola', () => {
     const publicados = ['cuanto-cuesta-desarrollar-una-app-en-mexico', 'cuanto-cuesta-una-pagina-web-en-mexico'];
-    const enCola = (cola as { temas: Array<{ slug_es: string }> }).temas.map((t) => t.slug_es);
+    const enCola = (cola as { topics: Array<{ slug_es: string }> }).topics.map((t) => t.slug_es);
     for (const posts of Object.values(RELATED_POSTS_BY_SERVICE)) {
       for (const p of posts) expect([...publicados, ...enCola], p).toContain(p);
     }

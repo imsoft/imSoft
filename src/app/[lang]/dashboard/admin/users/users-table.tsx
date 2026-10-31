@@ -34,7 +34,7 @@ import {
 import { Users, Plus } from "lucide-react"
 import { DataTable } from "@/components/ui/data-table"
 import type { Dictionary, Locale } from '@/app/[lang]/dictionaries'
-import { rolDe } from '@/lib/roles'
+import { roleOf } from '@/lib/roles'
 
 interface User {
   id: string
@@ -144,10 +144,10 @@ export function UsersTable({ users, dict, lang }: UsersTableProps) {
     },
     {
       id: "role",
-      accessorFn: (row) => rolDe(row),
+      accessorFn: (row) => roleOf(row),
       header: () => <div>{lang === 'en' ? 'Role' : 'Rol'}</div>,
       cell: ({ row }) => {
-        const role = rolDe(row.original)
+        const role = roleOf(row.original)
         return (
           <div className="capitalize">
             {role === 'admin' 

@@ -52,8 +52,8 @@ export function AdminSidebar({ dict, lang }: AdminSidebarProps) {
       label: g.sales,
       items: [
         { title: nav.crm, url: `${base}/crm`, icon: UserCog },
-        { title: nav.cotizaciones, url: `${base}/cotizaciones`, icon: FileSignature },
-        { title: nav.simulador, url: `${base}/simulador`, icon: Calculator },
+        { title: nav.quotes, url: `${base}/cotizaciones`, icon: FileSignature },
+        { title: nav.feeSimulator, url: `${base}/simulador`, icon: Calculator },
         { title: nav.contactMessages, url: `${base}/contact-messages`, icon: Mail },
       ],
     },

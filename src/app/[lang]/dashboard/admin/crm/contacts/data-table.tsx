@@ -31,7 +31,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
-import { ETIQUETA_PLATAFORMA, PLATAFORMAS } from '@/lib/contact-socials'
+import { PLATFORM_LABEL, PLATFORMS } from '@/lib/contact-socials'
 import { canReceiveEmail, type DailyQuota } from '@/lib/batch-send'
 import { BatchEmails } from '@/components/crm/batch-emails'
 import {
@@ -224,8 +224,8 @@ export function DataTable<TData, TValue>({
                 <SelectItem value="all">{lang === 'en' ? 'All contacts' : 'Todos'}</SelectItem>
                 <SelectItem value="any">{lang === 'en' ? 'With any social media' : 'Con alguna red'}</SelectItem>
                 <SelectItem value="none">{lang === 'en' ? 'Without social media' : 'Sin redes'}</SelectItem>
-                {PLATAFORMAS.map((p) => (
-                  <SelectItem key={p} value={p}>{p === 'website' && lang === 'en' ? 'Website' : ETIQUETA_PLATAFORMA[p]}</SelectItem>
+                {PLATFORMS.map((p) => (
+                  <SelectItem key={p} value={p}>{p === 'website' && lang === 'en' ? 'Website' : PLATFORM_LABEL[p]}</SelectItem>
                 ))}
               </SelectContent>
             </Select>

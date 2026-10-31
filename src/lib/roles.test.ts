@@ -1,20 +1,20 @@
 import { describe, expect, it } from 'vitest'
 import fs from 'node:fs'
 import path from 'node:path'
-import { esAdmin, rolDe } from './roles'
+import { isAdmin, roleOf } from './roles'
 
 describe('roles', () => {
   it('solo es admin quien lo tiene en app_metadata', () => {
-    expect(esAdmin({ app_metadata: { role: 'admin' } })).toBe(true)
-    expect(rolDe({ app_metadata: { role: 'admin' } })).toBe('admin')
-    expect(rolDe({ app_metadata: { provider: 'google' } })).toBe('client')
-    expect(rolDe(null)).toBe('client')
+    expect(isAdmin({ app_metadata: { role: 'admin' } })).toBe(true)
+    expect(roleOf({ app_metadata: { role: 'admin' } })).toBe('admin')
+    expect(roleOf({ app_metadata: { provider: 'google' } })).toBe('client')
+    expect(roleOf(null)).toBe('client')
   })
 
   it('lo que el usuario escriba en user_metadata no lo vuelve admin', () => {
     // supabase.auth.updateUser({ data: { role: 'admin' } }) lo puede hacer cualquiera sobre si mismo.
     const tramposo = { user_metadata: { role: 'admin' }, app_metadata: {} }
-    expect(esAdmin(tramposo)).toBe(false)
+    expect(isAdmin(tramposo)).toBe(false)
   })
 
   it('ningun archivo decide permisos leyendo el rol de user_metadata', () => {

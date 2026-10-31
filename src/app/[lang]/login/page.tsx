@@ -1,13 +1,13 @@
 import { getDictionary, hasLocale } from '../dictionaries';
 import { notFound, redirect } from 'next/navigation';
-import { panelDe } from '@/lib/panel-destino';
+import { panelFor } from '@/lib/panel-destination';
 import { HeroHeader } from "@/components/blocks/hero-section";
 import { FooterSection } from "@/components/blocks/footer-section";
 import LoginForm from './login-form';
 import { Logo } from "@/components/blocks/hero-section";
 import { createClient } from '@/lib/supabase/server';
 import type { Metadata } from 'next';
-import { rolDe } from '@/lib/roles'
+import { roleOf } from '@/lib/roles'
 
 export const metadata: Metadata = {
   title: 'Iniciar sesión — imSoft',
@@ -27,7 +27,7 @@ export default async function LoginPage({ params }: {
   // Con la sesion abierta no se muestra el formulario: parecia que la sesion se habia
   // cerrado cuando solo se habia entrado por /login (marcador o enlace).
   const { data: { user } } = await supabase.auth.getUser();
-  if (user) redirect(panelDe(rolDe(user), lang));
+  if (user) redirect(panelFor(roleOf(user), lang));
   
   // Obtener datos de contacto
   const { data: contactData } = await supabase

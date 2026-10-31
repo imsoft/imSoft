@@ -12,10 +12,10 @@ import { isRateLimitResponse, GMAIL_RATE_LIMIT_MESSAGE } from '@/lib/batch-send'
  * sin cupo a los envios. threads.get cuesta 10 unidades y messages.get 5: asi quedan en
  * unas 60 unidades por segundo, menos de la mitad del limite.
  */
-const RITMO_HILO_MS = 170
-const RITMO_MENSAJE_MS = 85
+const THREAD_PACE_MS = 170
+const MESSAGE_PACE_MS = 85
 
-async function aRitmo<T>(minMs: number, f: () => Promise<T>): Promise<T> {
+async function paced<T>(minMs: number, f: () => Promise<T>): Promise<T> {
   const inicio = Date.now()
   const r = await f()
   const falta = minMs - (Date.now() - inicio)
@@ -28,11 +28,11 @@ const CLIENT_ID = process.env.GOOGLE_OAUTH_CLIENT_ID
 const CLIENT_SECRET = process.env.GOOGLE_OAUTH_CLIENT_SECRET
 export const REDIRECT_URI = `${SITE_URL}/api/gmail/callback`
 
-export function gmailConfigurado(): boolean {
+export function gmailConfigured(): boolean {
   return Boolean(CLIENT_ID && CLIENT_SECRET)
 }
 
-export function urlDeConsentimiento(state: string): string {
+export function consentUrl(state: string): string {
   const p = new URLSearchParams({
     client_id: CLIENT_ID!,
     redirect_uri: REDIRECT_URI,
@@ -58,7 +58,7 @@ async function tokenRequest(params: Record<string, string>): Promise<TokenRespon
 }
 
 /** Intercambia el codigo del consentimiento y guarda la cuenta. */
-export async function conectarCuenta(userId: string, code: string): Promise<string> {
+export async function connectAccount(userId: string, code: string): Promise<string> {
   const t = await tokenRequest({ code, grant_type: 'authorization_code', redirect_uri: REDIRECT_URI })
   if (!t.refresh_token) throw new Error('Google no devolvió refresh_token; vuelve a conectar con prompt=consent.')
   const perfil = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/profile', { headers: { Authorization: `Bearer ${t.access_token}` } }).then((r) => r.json())
@@ -77,12 +77,12 @@ export async function conectarCuenta(userId: string, code: string): Promise<stri
   return email
 }
 
-export async function cuentaConectada(userId: string): Promise<{ email: string } | null> {
+export async function connectedAccount(userId: string): Promise<{ email: string } | null> {
   const { data } = await serviceClient().from('gmail_accounts').select('email').eq('user_id', userId).maybeSingle()
   return data ? { email: data.email } : null
 }
 
-export async function desconectarCuenta(userId: string): Promise<void> {
+export async function disconnectAccount(userId: string): Promise<void> {
   const db = serviceClient()
   const { data } = await db.from('gmail_accounts').select('refresh_token').eq('user_id', userId).maybeSingle()
   if (data?.refresh_token) {
@@ -104,7 +104,7 @@ export async function accessToken(userId: string): Promise<{ token: string; emai
   return { token: t.access_token, email: data.email }
 }
 
-export async function enviarRaw(userId: string, raw: string, threadId?: string | null): Promise<{ id: string; threadId: string }> {
+export async function sendRaw(userId: string, raw: string, threadId?: string | null): Promise<{ id: string; threadId: string }> {
   const { token } = await accessToken(userId)
   const r = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages/send', {
     method: 'POST',
@@ -134,9 +134,9 @@ export async function messageIdHeader(userId: string, messageId: string): Promis
  * demora no cuentan: Gmail reintenta hasta 48 h y el correo todavia puede llegar. Las
  * respuestas automaticas (fuera de la oficina) tampoco: nadie leyo el correo.
  */
-export async function estadoDelHilo(userId: string, threadId: string): Promise<'reply' | 'bounce' | null> {
+export async function threadStatus(userId: string, threadId: string): Promise<'reply' | 'bounce' | null> {
   const { token, email } = await accessToken(userId)
-  const r = await aRitmo(RITMO_HILO_MS, () => fetch(`https://gmail.googleapis.com/gmail/v1/users/me/threads/${threadId}?format=metadata&metadataHeaders=From&metadataHeaders=Subject&metadataHeaders=Auto-Submitted`, { headers: { Authorization: `Bearer ${token}` } }))
+  const r = await paced(THREAD_PACE_MS, () => fetch(`https://gmail.googleapis.com/gmail/v1/users/me/threads/${threadId}?format=metadata&metadataHeaders=From&metadataHeaders=Subject&metadataHeaders=Auto-Submitted`, { headers: { Authorization: `Bearer ${token}` } }))
   if (!r.ok) return null
   const j = await r.json()
   const mios = email.toLowerCase()
@@ -154,9 +154,9 @@ export async function estadoDelHilo(userId: string, threadId: string): Promise<'
 /**
  * Correos que rebotaron de forma definitiva en los ultimos `dias`, leyendo los avisos de
  * mailer-daemon de toda la bandeja. Cubre los que llegan fuera del hilo del envio y los de
- * correos mandados a mano, que `estadoDelHilo` no ve.
+ * correos mandados a mano, que `threadStatus` no ve.
  */
-export async function rebotesRecientes(userId: string, dias = 30): Promise<string[]> {
+export async function recentBounces(userId: string, dias = 30): Promise<string[]> {
   const { token } = await accessToken(userId)
   const auth = { headers: { Authorization: `Bearer ${token}` } }
   const ids: string[] = []
@@ -172,7 +172,7 @@ export async function rebotesRecientes(userId: string, dias = 30): Promise<strin
   }
   const fallidos = new Set<string>()
   for (const id of ids) {
-    const r = await aRitmo(RITMO_MENSAJE_MS, () => fetch(`https://gmail.googleapis.com/gmail/v1/users/me/messages/${id}?format=metadata&metadataHeaders=Subject&metadataHeaders=From&metadataHeaders=X-Failed-Recipients`, auth))
+    const r = await paced(MESSAGE_PACE_MS, () => fetch(`https://gmail.googleapis.com/gmail/v1/users/me/messages/${id}?format=metadata&metadataHeaders=Subject&metadataHeaders=From&metadataHeaders=X-Failed-Recipients`, auth))
     if (!r.ok) continue
     const m = await r.json()
     const h = (n: string) => (m.payload?.headers as Array<{ name: string; value: string }> | undefined)?.find((x) => x.name.toLowerCase() === n)?.value ?? ''

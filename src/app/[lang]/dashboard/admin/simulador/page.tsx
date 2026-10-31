@@ -10,7 +10,7 @@ export default async function AdminFeeSimulatorPage({ params }: { params: Promis
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">{dict.dashboard.admin.nav.simulador}</h1>
+        <h1 className="text-3xl font-bold">{dict.dashboard.admin.nav.feeSimulator}</h1>
         <p className="text-muted-foreground">
           {lang === 'en'
             ? 'What the client pays, what Stripe keeps, what goes to SAT and what you keep, per milestone and payment method.'

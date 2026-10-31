@@ -120,14 +120,14 @@
         "settings": "Configuración",
         "analytics": "Analíticas",
         "reports": "Reportes",
-        "simulador": "Simulador de cobros",
+        "feeSimulator": "Simulador de cobros",
         "groups": {
           "sales": "Ventas",
           "clients": "Clientes",
           "website": "Sitio web",
           "insights": "Análisis"
         },
-        "cotizaciones": "Cotizaciones y contratos"
+        "quotes": "Cotizaciones y contratos"
       },
       "crud": {
         "create": "Crear",

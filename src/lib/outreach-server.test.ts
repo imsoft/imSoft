@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 
-vi.mock('@/lib/gmail/server', () => ({ enviarRaw: vi.fn(), estadoDelHilo: vi.fn(), messageIdHeader: vi.fn(), rebotesRecientes: vi.fn(async () => []) }))
+vi.mock('@/lib/gmail/server', () => ({ sendRaw: vi.fn(), threadStatus: vi.fn(), messageIdHeader: vi.fn(), recentBounces: vi.fn(async () => []) }))
 vi.mock('@anthropic-ai/sdk', () => ({ default: class {} }))
 
 import { createDraftForContact, domainAcceptsMail, markSentManually, markBounce, recordSocialMessage } from './outreach-server'

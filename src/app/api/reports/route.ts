@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { NextResponse } from 'next/server'
-import { rolDe } from '@/lib/roles'
+import { roleOf } from '@/lib/roles'
 
 function convertToCSV(data: any[]): string {
   if (data.length === 0) return ''
@@ -42,7 +42,7 @@ export async function GET(request: Request) {
           first_name: user.user_metadata?.first_name || '',
           last_name: user.user_metadata?.last_name || '',
           company_name: user.user_metadata?.company_name || '',
-          role: rolDe(user),
+          role: roleOf(user),
           created_at: user.created_at,
         }))
         break
@@ -96,7 +96,7 @@ export async function GET(request: Request) {
             first_name: user.user_metadata?.first_name || '',
             last_name: user.user_metadata?.last_name || '',
             company_name: user.user_metadata?.company_name || '',
-            role: rolDe(user),
+            role: roleOf(user),
             created_at: user.created_at,
           })),
           projects: projects || [],

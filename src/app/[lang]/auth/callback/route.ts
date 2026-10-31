@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { rolDe } from '@/lib/roles'
+import { roleOf } from '@/lib/roles'
 
 export async function GET(
   request: NextRequest,
@@ -47,7 +47,7 @@ export async function GET(
         }
 
         // Para usuarios existentes, redirigir según el rol
-        const userRole = rolDe(user)
+        const userRole = roleOf(user)
 
         if (userRole === 'admin') {
           return NextResponse.redirect(`${requestUrl.origin}/${lang}/dashboard/admin`)

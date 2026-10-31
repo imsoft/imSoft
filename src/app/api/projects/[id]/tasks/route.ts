@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
-import { rolDe } from '@/lib/roles'
+import { roleOf } from '@/lib/roles'
 
 /**
  * GET /api/projects/[id]/tasks
@@ -68,7 +68,7 @@ export async function POST(
     }
 
     // Verificar que el usuario es admin
-    const role = rolDe(user)
+    const role = roleOf(user)
     if (role !== 'admin') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }

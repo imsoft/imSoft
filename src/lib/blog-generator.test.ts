@@ -1,14 +1,14 @@
 import { describe, it, expect } from 'vitest';
 import {
   MAX_TITLE_OVERLAP,
-  contarPalabras,
+  countWords,
   pickNextTopic,
   slugify,
   titleOverlap,
   validateArticle,
   type GeneratedArticle,
   type QueueTopic,
-  normalizarHtml,
+  normalizeHtml,
 } from './blog-generator';
 import cola from '../../content/blog-queue.json';
 import { PRICE_GUIDES, PRICE_GUIDE_SLUGS } from '../config/price-guides';
@@ -16,9 +16,9 @@ import { PRICE_GUIDES, PRICE_GUIDE_SLUGS } from '../config/price-guides';
 const tema = (slug_es: string, slug_en = `${slug_es}-en`): QueueTopic => ({
   slug_es,
   slug_en,
-  busqueda: slug_es.replace(/-/g, ' '),
-  angulo: 'x',
-  categoria: 'business',
+  query: slug_es.replace(/-/g, ' '),
+  angle: 'x',
+  category: 'business',
 });
 
 describe('pickNextTopic', () => {
@@ -36,11 +36,11 @@ describe('pickNextTopic', () => {
 
 describe('content/blog-queue.json', () => {
   it('tiene entradas completas, sin slugs repetidos y con slugs ya normalizados', () => {
-    const temas = (cola as { temas: QueueTopic[] }).temas;
+    const temas = (cola as { topics: QueueTopic[] }).topics;
     expect(temas.length).toBeGreaterThan(0);
     const vistos = new Set<string>();
     for (const t of temas) {
-      for (const k of ['slug_es', 'slug_en', 'busqueda', 'angulo', 'categoria'] as const) {
+      for (const k of ['slug_es', 'slug_en', 'query', 'angle', 'category'] as const) {
         expect(t[k], `${t.slug_es}.${k}`).toBeTruthy();
       }
       expect(t.slug_es).toBe(slugify(t.slug_es));
@@ -54,10 +54,10 @@ describe('content/blog-queue.json', () => {
 
 describe('normalizarHtml', () => {
   it('deja los enlaces con comillas dobles aunque el modelo los entregue con simples o escapadas', () => {
-    expect(normalizarHtml("<p>Ver <a href='https://x.mx/precios' target='_blank'>precios</a>.</p>")).toBe('<p>Ver <a href="https://x.mx/precios" target="_blank">precios</a>.</p>');
-    expect(normalizarHtml('<a href=\\"https://x.mx\\">x</a>')).toBe('<a href="https://x.mx">x</a>');
+    expect(normalizeHtml("<p>Ver <a href='https://x.mx/precios' target='_blank'>precios</a>.</p>")).toBe('<p>Ver <a href="https://x.mx/precios" target="_blank">precios</a>.</p>');
+    expect(normalizeHtml('<a href=\\"https://x.mx\\">x</a>')).toBe('<a href="https://x.mx">x</a>');
     // Un apostrofo dentro del texto no se toca.
-    expect(normalizarHtml("<p>It's fine</p>")).toBe("<p>It's fine</p>");
+    expect(normalizeHtml("<p>It's fine</p>")).toBe("<p>It's fine</p>");
   });
 });
 
@@ -65,7 +65,7 @@ describe('la cola no compite con las guias de precio', () => {
   it('ningun tema de la cola es la misma pregunta que una guia de /es/cuanto-cuesta/', () => {
     // El 15-sep y el 1-oct-2026 el blog intento publicar "cuanto cuesta una tienda en linea
     // en mexico", que ya responde la guia: dos paginas para la misma busqueda se estorban.
-    const temas = (cola as { temas: QueueTopic[] }).temas;
+    const temas = (cola as { topics: QueueTopic[] }).topics;
     for (const slug of PRICE_GUIDE_SLUGS) {
       const pregunta = slugify(PRICE_GUIDES[slug].h1);
       for (const t of temas) {
@@ -118,9 +118,9 @@ const base: GeneratedArticle = {
   excerpt_en: 'Published ranges and what each includes.',
   content_es: `<h2>Rangos</h2><p>Alcodea publica de $15,000 a $50,000 MXN para una básica (<a href="https://alcodea.com/precios">fuente</a>).</p><p>Magokoro coincide, ver <a href="https://www.magokoro.mx/blog/precios">su tabla</a>.</p>${relleno}`,
   content_en: `<h2>Ranges</h2><p>Alcodea publishes MXN $15,000 to $50,000 for a basic site (<a href="https://alcodea.com/precios">source</a>).</p><p>Magokoro agrees, see <a href="https://www.magokoro.mx/blog/precios">their table</a>.</p>${relleno}`,
-  fuentes: [
-    { url: 'https://alcodea.com/precios', titulo: 'Alcodea', respalda: 'rango básica' },
-    { url: 'https://www.magokoro.mx/blog/precios', titulo: 'Magokoro', respalda: 'rango básica' },
+  sources: [
+    { url: 'https://alcodea.com/precios', title: 'Alcodea', supports: 'rango básica' },
+    { url: 'https://www.magokoro.mx/blog/precios', title: 'Magokoro', supports: 'rango básica' },
   ],
 };
 
@@ -151,12 +151,12 @@ describe('validateArticle', () => {
     const sinDeclarar = { ...base, content_es: base.content_es + '<p>Ver <a href="https://otra.com/x">otra</a>.</p>' };
     expect(validateArticle(sinDeclarar, 'es').join('\n')).toMatch(/otra\.com.*no está declarado/);
 
-    const sinEnlazar = { ...base, fuentes: [...base.fuentes, { url: 'https://tercera.com/y', titulo: 't', respalda: 'r' }] };
+    const sinEnlazar = { ...base, sources: [...base.sources, { url: 'https://tercera.com/y', title: 't', supports: 'r' }] };
     expect(validateArticle(sinEnlazar, 'es').join('\n')).toMatch(/tercera\.com.*no se enlaza/);
   });
 
   it('no cuenta wa.me ni imsoft.io como fuentes', () => {
-    const a = { ...base, fuentes: [{ url: 'https://www.imsoft.io/es', titulo: 'x', respalda: 'y' }] };
+    const a = { ...base, sources: [{ url: 'https://www.imsoft.io/es', title: 'x', supports: 'y' }] };
     const p = validateArticle(a, 'es').join('\n');
     expect(p).toMatch(/no es externa/);
     expect(p).toMatch(/solo 1 fuentes/);
@@ -179,7 +179,7 @@ describe('validateArticle', () => {
 
 describe('contarPalabras', () => {
   it('cuenta texto, no etiquetas', () => {
-    expect(contarPalabras('<p>uno <strong>dos</strong> tres</p>')).toBe(3);
-    expect(contarPalabras('')).toBe(0);
+    expect(countWords('<p>uno <strong>dos</strong> tres</p>')).toBe(3);
+    expect(countWords('')).toBe(0);
   });
 });

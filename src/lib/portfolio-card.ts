@@ -40,27 +40,27 @@ export interface PortfolioCard {
 }
 
 /** Con tres basta para dar sustancia a la tarjeta sin volverla una ficha completa. */
-export const MAX_RESULTADOS_EN_TARJETA = 3;
+export const MAX_CARD_RESULTS = 3;
 
-const IMAGEN_POR_DEFECTO =
+const DEFAULT_IMAGE =
   'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop';
 
-function porIdioma(lang: string, es?: string | null, en?: string | null, neutro?: string | null) {
-  const orden = lang === 'en' ? [en, es, neutro] : [es, en, neutro];
+function byLang(lang: string, es?: string | null, en?: string | null, neutral?: string | null) {
+  const orden = lang === 'en' ? [en, es, neutral] : [es, en, neutral];
   return orden.find((v) => typeof v === 'string' && v.trim() !== '')?.trim() ?? '';
 }
 
 export function portfolioCard(row: PortfolioRow, lang: string): PortfolioCard {
   const results = (lang === 'en' ? row.results_en : row.results_es) ?? [];
-  const challenge = porIdioma(lang, row.challenge_es, row.challenge_en);
+  const challenge = byLang(lang, row.challenge_es, row.challenge_en);
   return {
     id: row.id,
     slug: row.slug?.trim() || row.id,
-    title: porIdioma(lang, row.title_es, row.title_en, row.title),
-    description: porIdioma(lang, row.description_es, row.description_en, row.description),
+    title: byLang(lang, row.title_es, row.title_en, row.title),
+    description: byLang(lang, row.description_es, row.description_en, row.description),
     challenge: challenge || null,
-    results: results.filter((r) => typeof r === 'string' && r.trim() !== '').slice(0, MAX_RESULTADOS_EN_TARJETA),
-    image: row.image_url || IMAGEN_POR_DEFECTO,
+    results: results.filter((r) => typeof r === 'string' && r.trim() !== '').slice(0, MAX_CARD_RESULTS),
+    image: row.image_url || DEFAULT_IMAGE,
     project_url: row.project_url ?? undefined,
     client: row.client?.trim() || null,
     year: row.year ?? null,
@@ -85,7 +85,7 @@ export function portfolioLookup(segment: string): { column: 'id' | 'slug'; value
  * El recorte a ~155 lo hace generateMetadata.
  */
 export function portfolioMetaDescription(row: PortfolioRow, lang: string): string {
-  const description = porIdioma(lang, row.description_es, row.description_en, row.description);
-  const challenge = porIdioma(lang, row.challenge_es, row.challenge_en);
+  const description = byLang(lang, row.description_es, row.description_en, row.description);
+  const challenge = byLang(lang, row.challenge_es, row.challenge_en);
   return description.length >= 70 || !challenge ? description : `${description.replace(/\.?$/, '.')} ${challenge}`;
 }

@@ -19,7 +19,7 @@ import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { prepareEmail } from '@/components/crm/prepare-email'
-import { pasaFiltroRedes, redesDe } from '@/lib/contact-socials'
+import { matchesSocialFilter, socialsOf } from '@/lib/contact-socials'
 import { channelsOf } from '@/lib/social-message'
 import { isInvalidEmail } from '@/lib/invalid-email'
 import { emailAction, emailStatusLabel, type EmailStatus } from '@/lib/email-status'
@@ -215,7 +215,7 @@ function SocialsCell({ socials, instagram, lang }: { socials: SocialLink[] | nul
     return labels[platform] || platform
   }
 
-  const allSocials = redesDe({ social_links: socials ?? undefined, instagram_url: instagram ?? undefined })
+  const allSocials = socialsOf({ social_links: socials ?? undefined, instagram_url: instagram ?? undefined })
 
   if (allSocials.length === 0) {
     return <span className="text-sm text-muted-foreground">-</span>
@@ -514,7 +514,7 @@ export function createColumns({ lang, onDelete, isDeleting }: ColumnsProps): Col
     {
       id: 'socials',
       header: lang === 'en' ? 'Social Media' : 'Redes Sociales',
-      filterFn: (row, _id, value) => pasaFiltroRedes(row.original, value),
+      filterFn: (row, _id, value) => matchesSocialFilter(row.original, value),
       cell: ({ row }) => {
         return (
           <SocialsCell

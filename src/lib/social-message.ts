@@ -4,7 +4,7 @@
  * signature, no button, and with the length each network allows without cutting.
  */
 import type { SocialLink } from '@/types/database'
-import { redesDe, type Plataforma } from '@/lib/contact-socials'
+import { socialsOf, type Platform } from '@/lib/contact-socials'
 
 export type Channel = 'instagram' | 'whatsapp' | 'facebook' | 'linkedin' | 'tiktok' | 'twitter'
 
@@ -224,9 +224,9 @@ export interface AvailableChannel {
  * tried. WhatsApp comes in through the phone even if it isn't among its networks.
  */
 export function channelsOf(c: { social_links?: SocialLink[] | null; instagram_url?: string | null; phone?: string | null }, text = ''): AvailableChannel[] {
-  const networks = redesDe({ social_links: c.social_links ?? undefined, instagram_url: c.instagram_url ?? undefined })
+  const networks = socialsOf({ social_links: c.social_links ?? undefined, instagram_url: c.instagram_url ?? undefined })
   const out: AvailableChannel[] = []
-  const isChannel = (p: Plataforma): p is Channel => (CHANNELS as string[]).includes(p)
+  const isChannel = (p: Platform): p is Channel => (CHANNELS as string[]).includes(p)
   for (const channel of CHANNELS) {
     const network = networks.find((r) => r.platform === channel && isChannel(r.platform))
     if (channel === 'whatsapp') {

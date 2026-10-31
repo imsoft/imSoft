@@ -22,9 +22,9 @@ const q = (query: string, impressions = 10, clicks = 0): QueryRow => ({
 
 describe('classifyQuery', () => {
   it('reconoce la marca propia, con y sin errata', () => {
-    expect(classifyQuery('imsoft')).toBe('marca');
-    expect(classifyQuery('imSoft Guadalajara')).toBe('marca');
-    expect(classifyQuery('imsof')).toBe('marca');
+    expect(classifyQuery('imsoft')).toBe('brand');
+    expect(classifyQuery('imSoft Guadalajara')).toBe('brand');
+    expect(classifyQuery('imsof')).toBe('brand');
   });
 
   it('separa las busquedas de IMS, que es otra empresa', () => {
@@ -39,13 +39,13 @@ describe('classifyQuery', () => {
       'im software',
       'ims 소프트웨어',
     ]) {
-      expect(classifyQuery(query), query).toBe('colision-ims');
+      expect(classifyQuery(query), query).toBe('ims-collision');
     }
   });
 
   it('atrapa las erratas de marca y las variantes de IMS que vio el primer reporte real', () => {
     // Salieron como "comerciales" en el reporte del 11-sep-2026 y no lo son.
-    expect(classifyQuery('insoft')).toBe('marca');
+    expect(classifyQuery('insoft')).toBe('brand');
     for (const query of [
       'i.soft',
       "i'm soft",
@@ -60,38 +60,38 @@ describe('classifyQuery', () => {
       'international micro systems',
       'iomify limited',
     ]) {
-      expect(classifyQuery(query), query).toBe('colision-ims');
+      expect(classifyQuery(query), query).toBe('ims-collision');
     }
   });
 
   it('todo lo demas es comercial: el trafico que si se puede ganar', () => {
-    expect(classifyQuery('empresas de desarrollo de software en guadalajara')).toBe('comercial');
-    expect(classifyQuery('páginas web zapopan')).toBe('comercial');
-    expect(classifyQuery('desarrollo de páginas web guadalajara')).toBe('comercial');
-    expect(classifyQuery('servicios de desarrollo de software para logistica')).toBe('comercial');
-    expect(classifyQuery('diseño web zapopan')).toBe('comercial');
-    expect(classifyQuery('consultoria integral tecnologica')).toBe('comercial');
+    expect(classifyQuery('empresas de desarrollo de software en guadalajara')).toBe('commercial');
+    expect(classifyQuery('páginas web zapopan')).toBe('commercial');
+    expect(classifyQuery('desarrollo de páginas web guadalajara')).toBe('commercial');
+    expect(classifyQuery('servicios de desarrollo de software para logistica')).toBe('commercial');
+    expect(classifyQuery('diseño web zapopan')).toBe('commercial');
+    expect(classifyQuery('consultoria integral tecnologica')).toBe('commercial');
     // Termina en "soft" pero es una consulta de verdad, no una marca de cuatro letras.
-    expect(classifyQuery('empresas de software')).toBe('comercial');
+    expect(classifyQuery('empresas de software')).toBe('commercial');
   });
 
   it('no confunde palabras que contienen "ims" sin ser la sigla', () => {
-    expect(classifyQuery('sistemas de gestión')).toBe('comercial');
+    expect(classifyQuery('sistemas de gestión')).toBe('commercial');
   });
 });
 
 describe('summarizeQueries', () => {
   it('acumula por clase y ordena las comerciales por impresiones', () => {
-    const { porClase, comerciales } = summarizeQueries([
+    const { byClass, commercial } = summarizeQueries([
       q('imsoft', 86, 12),
       q('ims software', 88, 0),
       q('paginas web guadalajara', 40, 2),
       q('desarrollo de software guadalajara', 70, 1),
     ]);
-    expect(porClase.marca).toEqual({ clicks: 12, impressions: 86, consultas: 1 });
-    expect(porClase['colision-ims']).toEqual({ clicks: 0, impressions: 88, consultas: 1 });
-    expect(porClase.comercial).toEqual({ clicks: 3, impressions: 110, consultas: 2 });
-    expect(comerciales.map((r) => r.query)).toEqual([
+    expect(byClass.brand).toEqual({ clicks: 12, impressions: 86, queries: 1 });
+    expect(byClass['ims-collision']).toEqual({ clicks: 0, impressions: 88, queries: 1 });
+    expect(byClass.commercial).toEqual({ clicks: 3, impressions: 110, queries: 2 });
+    expect(commercial.map((r) => r.query)).toEqual([
       'desarrollo de software guadalajara',
       'paginas web guadalajara',
     ]);
@@ -99,7 +99,7 @@ describe('summarizeQueries', () => {
 
   it('limita el top comercial a 15', () => {
     const rows = Array.from({ length: 30 }, (_, i) => q(`consulta ${i}`, 30 - i));
-    expect(summarizeQueries(rows).comerciales).toHaveLength(15);
+    expect(summarizeQueries(rows).commercial).toHaveLength(15);
   });
 });
 
@@ -123,7 +123,7 @@ describe('deltaVsBaseline', () => {
     expect(d.clicks.pct).toBe(100);
     expect(d.impressions.pct).toBe(100);
     expect(d.position.diff).toBe(-10);
-    expect(d.clicks.base).toBe(BASELINE.rendimiento28d.clicks);
+    expect(d.clicks.base).toBe(BASELINE.performance28d.clicks);
   });
 });
 
@@ -138,20 +138,20 @@ describe('outageImpact', () => {
       dia('2026-09-08', 1),
       dia('2026-09-09', 15),
     ]);
-    expect(r.antes).toBe(25);
-    expect(r.durante).toBe(3);
-    expect(r.despues).toBe(15);
-    expect(r.dias).toEqual({ antes: 2, durante: 2, despues: 1 });
+    expect(r.before).toBe(25);
+    expect(r.during).toBe(3);
+    expect(r.after).toBe(15);
+    expect(r.days).toEqual({ before: 2, during: 2, after: 1 });
   });
 
   it('deja "despues" en null cuando GSC aun no entrega esos dias', () => {
     const r = outageImpact([dia('2026-09-01', 10), dia('2026-09-05', 2)]);
-    expect(r.despues).toBeNull();
-    expect(r.dias.despues).toBe(0);
+    expect(r.after).toBeNull();
+    expect(r.days.after).toBe(0);
   });
 
   it('ignora dias anteriores a la ventana de referencia', () => {
-    expect(outageImpact([dia('2026-08-01', 999)]).antes).toBeNull();
+    expect(outageImpact([dia('2026-08-01', 999)]).before).toBeNull();
   });
 });
 
@@ -172,26 +172,26 @@ describe('coverageSummary', () => {
       insp('https://www.imsoft.io/es/contact', 'Submitted and indexed', '2026-09-08T09:00:00Z'),
       insp('https://www.imsoft.io/es/zapopan/paginas-web', 'URL is unknown to Google', null),
     ]);
-    expect(r.porEstado).toEqual({ 'Submitted and indexed': 3, 'URL is unknown to Google': 1 });
-    expect(r.rastreadasTrasCaida).toEqual(['https://www.imsoft.io/es', 'https://www.imsoft.io/es/about']);
-    expect(r.sinRastrearTrasCaida).toHaveLength(2);
+    expect(r.byState).toEqual({ 'Submitted and indexed': 3, 'URL is unknown to Google': 1 });
+    expect(r.crawledAfterOutage).toEqual(['https://www.imsoft.io/es', 'https://www.imsoft.io/es/about']);
+    expect(r.notCrawledAfterOutage).toHaveLength(2);
   });
 });
 
 describe('renderReport', () => {
   it('produce un informe legible con todas las secciones', () => {
     const rows = [q('imsoft', 86, 12), q('paginas web guadalajara', 40, 2)];
-    const { porClase, comerciales } = summarizeQueries(rows);
+    const { byClass, commercial } = summarizeQueries(rows);
     const texto = renderReport({
-      propiedad: 'sc-domain:imsoft.io',
-      rango: { start: '2026-08-12', end: '2026-09-08' },
-      totales: { clicks: 14, impressions: 126, ctr: 0.111, position: 28.3 },
-      porClase,
-      comerciales,
-      paginas: [{ page: 'https://www.imsoft.io/es', clicks: 10, impressions: 90, position: 12 }],
-      impacto: outageImpact([]),
-      cobertura: coverageSummary([]),
-      inspecciones: [],
+      property: 'sc-domain:imsoft.io',
+      range: { start: '2026-08-12', end: '2026-09-08' },
+      totals: { clicks: 14, impressions: 126, ctr: 0.111, position: 28.3 },
+      byClass,
+      commercial,
+      pages: [{ page: 'https://www.imsoft.io/es', clicks: 10, impressions: 90, position: 12 }],
+      impact: outageImpact([]),
+      coverage: coverageSummary([]),
+      inspections: [],
     });
     for (const seccion of ['RENDIMIENTO', 'CONSULTAS', 'COMERCIALES', 'TOP páginas', 'CAÍDA', 'INDEXACIÓN']) {
       expect(texto).toContain(seccion);
@@ -203,15 +203,15 @@ describe('renderReport', () => {
 
   it('muestra la canonica que eligio Google cuando difiere de la declarada', () => {
     const texto = renderReport({
-      propiedad: 'sc-domain:imsoft.io',
-      rango: { start: '2026-08-12', end: '2026-09-08' },
-      totales: { clicks: 0, impressions: 0, ctr: 0, position: 0 },
-      porClase: summarizeQueries([]).porClase,
-      comerciales: [],
-      paginas: [],
-      impacto: outageImpact([]),
-      cobertura: coverageSummary([]),
-      inspecciones: [
+      property: 'sc-domain:imsoft.io',
+      range: { start: '2026-08-12', end: '2026-09-08' },
+      totals: { clicks: 0, impressions: 0, ctr: 0, position: 0 },
+      byClass: summarizeQueries([]).byClass,
+      commercial: [],
+      pages: [],
+      impact: outageImpact([]),
+      coverage: coverageSummary([]),
+      inspections: [
         {
           url: 'https://www.imsoft.io/es/contact',
           verdict: 'NEUTRAL',

@@ -141,17 +141,17 @@ async function main() {
     }
   }
 
-  const { porClase, comerciales } = summarizeQueries(queries);
+  const { byClass, commercial } = summarizeQueries(queries);
   const report = {
-    propiedad: siteUrl,
-    rango: { start, end },
-    totales,
-    porClase,
-    comerciales,
-    paginas,
-    impacto: outageImpact(diario),
-    cobertura: coverageSummary(inspecciones),
-    inspecciones,
+    property: siteUrl,
+    range: { start, end },
+    totals: totales,
+    byClass,
+    commercial,
+    pages: paginas,
+    impact: outageImpact(diario),
+    coverage: coverageSummary(inspecciones),
+    inspections: inspecciones,
   };
 
   console.log(renderReport(report));

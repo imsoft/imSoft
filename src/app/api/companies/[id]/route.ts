@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { esAdmin } from '@/lib/roles'
+import { isAdmin } from '@/lib/roles'
 
 // PUT: Actualizar una empresa
 export async function PUT(
@@ -40,8 +40,8 @@ export async function PUT(
       )
     }
 
-    const isAdmin = esAdmin(user)
-    if (!isAdmin && company.user_id !== user.id) {
+    const admin = isAdmin(user)
+    if (!admin && company.user_id !== user.id) {
       return NextResponse.json(
         { error: 'No tienes permiso para editar esta empresa' },
         { status: 403 }
@@ -135,8 +135,8 @@ export async function DELETE(
       )
     }
 
-    const isAdmin = esAdmin(user)
-    if (!isAdmin && company.user_id !== user.id) {
+    const admin = isAdmin(user)
+    if (!admin && company.user_id !== user.id) {
       return NextResponse.json(
         { error: 'No tienes permiso para eliminar esta empresa' },
         { status: 403 }

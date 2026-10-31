@@ -6,7 +6,7 @@ import { AdminCompaniesTable } from './companies-table'
 import { Button } from '@/components/ui/button'
 import { Plus } from 'lucide-react'
 import Link from 'next/link'
-import { esAdmin } from '@/lib/roles'
+import { isAdmin } from '@/lib/roles'
 
 export default async function AdminCompaniesPage({ params }: {
   params: Promise<{ lang: string }>
@@ -25,7 +25,7 @@ export default async function AdminCompaniesPage({ params }: {
   }
 
   // Verificar que sea admin
-  if (!esAdmin(user)) {
+  if (!isAdmin(user)) {
     redirect(`/${lang}/dashboard/client`)
   }
 

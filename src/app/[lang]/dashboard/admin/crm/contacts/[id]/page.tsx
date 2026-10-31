@@ -16,7 +16,7 @@ import { channelsOf } from '@/lib/social-message'
 import { isInvalidEmail } from '@/lib/invalid-email'
 import { serviceClient } from '@/lib/quotes/server'
 import { emailAction, emailStatusOf, emailStatusLabel, type EmailRow } from '@/lib/email-status'
-import { esAdmin } from '@/lib/roles'
+import { isAdmin } from '@/lib/roles'
 
 // Local SVG brand icons to avoid compilation issues due to lucide-react versions
 const Instagram = (props: React.HTMLAttributes<SVGElement>) => (
@@ -76,7 +76,7 @@ export default async function ContactDetailPage({ params }: {
   }
 
   // Make sure the user is an admin
-  if (!esAdmin(user)) {
+  if (!isAdmin(user)) {
     redirect(`/${lang}/dashboard/client`)
   }
 

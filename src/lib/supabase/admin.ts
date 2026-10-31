@@ -6,7 +6,7 @@
  */
 
 import { createClient } from '@supabase/supabase-js'
-import { esAdmin } from '@/lib/roles'
+import { isAdmin as hasAdminRole } from '@/lib/roles'
 
 /**
  * Crea un cliente de Supabase con permisos de administrador
@@ -84,6 +84,6 @@ export async function isAdmin(userId: string): Promise<boolean> {
     return false
   }
 
-  return esAdmin(data.user)
+  return hasAdminRole(data.user)
 }
 

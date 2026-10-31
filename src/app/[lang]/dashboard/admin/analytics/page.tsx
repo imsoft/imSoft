@@ -15,7 +15,7 @@ import {
   Calendar,
   Languages
 } from 'lucide-react'
-import { esAdmin } from '@/lib/roles'
+import { isAdmin } from '@/lib/roles'
 
 export default async function AdminAnalyticsPage({ params }: {
   params: Promise<{ lang: string }>
@@ -49,7 +49,7 @@ export default async function AdminAnalyticsPage({ params }: {
         const supabaseAdmin = createAdminClient()
         const { data } = await supabaseAdmin.auth.admin.listUsers()
         const clients = (data?.users || []).filter(
-          u => !esAdmin(u)
+          u => !isAdmin(u)
         )
         return { count: clients.length, data: clients }
       } catch {

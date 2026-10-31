@@ -1,7 +1,7 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
-import { esAdmin, rolDe } from '@/lib/roles'
+import { isAdmin, roleOf } from '@/lib/roles'
 
 export async function GET() {
   try {
@@ -13,8 +13,8 @@ export async function GET() {
     }
 
     // Solo admins pueden ver la lista de usuarios
-    const isAdmin = esAdmin(user)
-    if (!isAdmin) {
+    const admin = isAdmin(user)
+    if (!admin) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
@@ -32,7 +32,7 @@ export async function GET() {
                  (user.user_metadata?.first_name && user.user_metadata?.last_name
                    ? `${user.user_metadata.first_name} ${user.user_metadata.last_name}`
                    : user.email?.split('@')[0] || ''),
-      role: rolDe(user),
+      role: roleOf(user),
     }))
 
     return NextResponse.json(users)

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { requireAdmin, SITE_URL } from '@/lib/quotes/server'
-import { conectarCuenta } from '@/lib/gmail/server'
+import { connectAccount } from '@/lib/gmail/server'
 
 /** Vuelta del consentimiento de Google: guarda los tokens y regresa a Prospección. */
 export async function GET(req: NextRequest) {
@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
   jar.delete('gmail_oauth_state')
   if (!code || !state || state !== esperado) return volver('gmail=error&motivo=estado')
   try {
-    const email = await conectarCuenta(auth.userId, code)
+    const email = await connectAccount(auth.userId, code)
     return volver(`gmail=ok&email=${encodeURIComponent(email)}`)
   } catch (err) {
     console.error('[gmail/callback]', err)

@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation'
 import { hasLocale } from '../../../../dictionaries'
 import { CrmTabs } from '../crm-tabs'
 import { requireAdmin, serviceClient } from '@/lib/quotes/server'
-import { cuentaConectada, gmailConfigurado } from '@/lib/gmail/server'
+import { connectedAccount, gmailConfigured } from '@/lib/gmail/server'
 import { CONTACT_COLUMNS, campaignStatus, socialMessageCounts, socialQueueProspects, type MinContact } from '@/lib/outreach-server'
 import { Prospecting, type OutreachRow } from './prospecting'
 
@@ -18,7 +18,7 @@ export default async function AdminProspectingPage({ params }: { params: Promise
   // Drafts are fetched apart from sent emails: with hundreds of emails awaiting a
   // reply, a single limit of 300 left today's drafts out.
   const [gmail, campaign, social, { data: drafts }, { data: sent }, { count: uncontacted }, queue] = await Promise.all([
-    cuentaConectada(auth.userId),
+    connectedAccount(auth.userId),
     campaignStatus(db),
     socialMessageCounts(db),
     db.from('outreach_emails').select('*').eq('status', 'draft').order('scheduled_for', { ascending: true }).order('step', { ascending: true }).limit(500),
@@ -49,7 +49,7 @@ export default async function AdminProspectingPage({ params }: { params: Promise
         </p>
       </div>
       <CrmTabs lang={lang} active="prospecting" />
-      <Prospecting lang={lang} gmail={gmail} gmailConfigured={gmailConfigurado()} campaign={campaign} social={social} rows={rows} uncontacted={uncontacted ?? 0} queue={queue} />
+      <Prospecting lang={lang} gmail={gmail} gmailConfigured={gmailConfigured()} campaign={campaign} social={social} rows={rows} uncontacted={uncontacted ?? 0} queue={queue} />
     </div>
   )
 }

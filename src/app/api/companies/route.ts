@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { esAdmin } from '@/lib/roles'
+import { isAdmin } from '@/lib/roles'
 
 // GET: Obtener todas las empresas o empresas de un usuario específico
 export async function GET(request: Request) {
@@ -18,11 +18,11 @@ export async function GET(request: Request) {
 
     // Si es admin, puede ver todas las empresas (con o sin usuario) o filtrar por user_id
     // Si es cliente, solo puede ver sus propias empresas
-    const isAdmin = esAdmin(user)
+    const admin = isAdmin(user)
     
     let data, error
 
-    if (isAdmin) {
+    if (admin) {
       // Para admins, usar el cliente normal con RLS (las políticas deberían permitir ver todas)
       let query = supabase.from('companies').select('*').order('name', { ascending: true })
       
@@ -108,10 +108,10 @@ export async function POST(request: Request) {
 
     // Los clientes solo pueden crear empresas para sí mismos
     // Los admins pueden crear empresas para cualquier usuario o sin usuario (user_id = null)
-    const isAdmin = esAdmin(user)
+    const admin = isAdmin(user)
     let targetUserId: string | null = null
     
-    if (isAdmin) {
+    if (admin) {
       // Si es admin, puede especificar user_id o dejarlo null
       targetUserId = body.user_id || null
     } else {

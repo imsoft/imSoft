@@ -21,7 +21,7 @@ export default async function AdminQuotesPage({ params }: { params: Promise<{ la
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-3xl font-bold">{dict.dashboard.admin.nav.cotizaciones}</h1>
+          <h1 className="text-3xl font-bold">{dict.dashboard.admin.nav.quotes}</h1>
           <p className="text-muted-foreground">
             {lang === 'en' ? 'Quotes, online acceptance and contracts' : 'Cotizaciones, aceptación en línea y contratos'}
           </p>

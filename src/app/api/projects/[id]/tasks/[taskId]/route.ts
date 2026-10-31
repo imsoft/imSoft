@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
-import { rolDe } from '@/lib/roles'
+import { roleOf } from '@/lib/roles'
 import { serviceClient } from '@/lib/quotes/server'
 import { notifyClient, taskCompletedNotice } from '@/lib/mobile-app/notifications'
 
@@ -23,7 +23,7 @@ export async function PATCH(
     }
 
     // Verificar que el usuario es admin
-    const role = rolDe(user)
+    const role = roleOf(user)
     if (role !== 'admin') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
@@ -117,7 +117,7 @@ export async function DELETE(
     }
 
     // Verificar que el usuario es admin
-    const role = rolDe(user)
+    const role = roleOf(user)
     if (role !== 'admin') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }

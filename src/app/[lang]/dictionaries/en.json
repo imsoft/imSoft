@@ -120,14 +120,14 @@
         "settings": "Settings",
         "analytics": "Analytics",
         "reports": "Reports",
-        "simulador": "Pricing simulator",
+        "feeSimulator": "Pricing simulator",
         "groups": {
           "sales": "Sales",
           "clients": "Clients",
           "website": "Website",
           "insights": "Insights"
         },
-        "cotizaciones": "Quotes and contracts"
+        "quotes": "Quotes and contracts"
       },
       "crud": {
         "create": "Create",

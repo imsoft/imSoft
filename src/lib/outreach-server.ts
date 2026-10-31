@@ -4,7 +4,7 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { resolveMx } from 'node:dns/promises'
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { enviarRaw, estadoDelHilo, messageIdHeader, rebotesRecientes } from '@/lib/gmail/server'
+import { sendRaw, threadStatus, messageIdHeader, recentBounces } from '@/lib/gmail/server'
 import { HOOK_TOOL, listingFromNotes, hookFromNotes, cleanOpener, cleanHook, notesWithoutListing, defaultQuestion, openerPrompt, hookPrompt } from '@/lib/outreach-ai'
 import { emailStatusOf, shortDate, type EmailRow } from '@/lib/email-status'
 import { isNonSalesMailbox } from '@/lib/invalid-email'
@@ -178,7 +178,7 @@ export async function sendDraft(db: SupabaseClient, userId: string, id: string) 
   const { data: account } = await db.from('gmail_accounts').select('email').eq('user_id', userId).maybeSingle()
   if (!account) throw new Error('No hay una cuenta de Gmail conectada')
   const raw = buildMime({ from: `Brandon García · imSoft <${account.email}>`, to: c.email, subject: row.subject, text: row.text, html: row.html, inReplyTo })
-  const sent = await enviarRaw(userId, raw, threadId)
+  const sent = await sendRaw(userId, raw, threadId)
   const now = new Date()
   await db.from('outreach_emails').update({ status: 'sent', sent_at: now.toISOString(), sent_via: 'gmail', gmail_message_id: sent.id, gmail_thread_id: sent.threadId, updated_at: now.toISOString() }).eq('id', id)
   await db.from('contact_emails').insert({ contact_id: row.contact_id, status: 'sent', subject: row.subject, body: row.html, sent_at: now.toISOString(), sent_by: userId })
@@ -331,7 +331,7 @@ export async function syncOutreach(db: SupabaseClient, userId: string) {
 
   // Bounces that arrived as a separate email (outside the thread) or from sends made by hand.
   try {
-    const failed = await rebotesRecientes(userId)
+    const failed = await recentBounces(userId)
     if (failed.length) {
       const { data: affected } = await db.from('contacts').select('id, email, tags').in('email', failed)
       for (const c of affected ?? []) {
@@ -353,7 +353,7 @@ export async function syncOutreach(db: SupabaseClient, userId: string) {
     const last = rows![rows!.length - 1]
     try {
       const thread = rows!.find((f) => f.gmail_thread_id)?.gmail_thread_id as string | undefined
-      const threadState = thread ? await estadoDelHilo(userId, thread) : null
+      const threadState = thread ? await threadStatus(userId, thread) : null
       if (threadState === 'bounce') {
         await markBounce(db, contactId, contactById.get(contactId)?.tags ?? null)
         res.bounced += 1

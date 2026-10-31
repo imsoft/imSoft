@@ -1,7 +1,7 @@
 import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/server'
 import { getResend } from '@/lib/email/resend-client'
-import { esAdmin } from '@/lib/roles'
+import { isAdmin } from '@/lib/roles'
 
 /** Service-role client: for the public token pages and for sending email. */
 export function serviceClient() {
@@ -15,7 +15,7 @@ export async function requireAdmin(): Promise<{ ok: true; userId: string } | { o
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { ok: false, status: 401, error: 'Unauthorized' }
-  if (!esAdmin(user)) return { ok: false, status: 403, error: 'Forbidden' }
+  if (!isAdmin(user)) return { ok: false, status: 403, error: 'Forbidden' }
   return { ok: true, userId: user.id }
 }
 

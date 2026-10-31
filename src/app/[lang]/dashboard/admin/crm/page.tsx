@@ -10,7 +10,7 @@ import { serviceClient } from '@/lib/quotes/server'
 import { emailStatusOf, type EmailRow } from '@/lib/email-status'
 import { campaignStatus } from '@/lib/outreach-server'
 import { dailyQuota } from '@/lib/batch-send'
-import { esAdmin } from '@/lib/roles'
+import { isAdmin } from '@/lib/roles'
 
 export default async function CRMPage({ params }: {
   params: Promise<{ lang: string }>
@@ -29,7 +29,7 @@ export default async function CRMPage({ params }: {
   }
 
   // Make sure the user is an admin
-  if (!esAdmin(user)) {
+  if (!isAdmin(user)) {
     redirect(`/${lang}/dashboard/client`)
   }
 

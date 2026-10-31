@@ -5,14 +5,14 @@
  * y con eso cualquiera que se registrara se volvia administrador (comprobado el
  * 5-oct-2026 con un usuario de prueba: paso a leer los 378 contactos del CRM).
  */
-export type Rol = 'admin' | 'client'
+export type Role = 'admin' | 'client'
 
-type ConMetadatos = { app_metadata?: Record<string, unknown> | null } | null | undefined
+type WithMetadata = { app_metadata?: Record<string, unknown> | null } | null | undefined
 
-export function rolDe(user: ConMetadatos): Rol {
+export function roleOf(user: WithMetadata): Role {
   return user?.app_metadata?.role === 'admin' ? 'admin' : 'client'
 }
 
-export function esAdmin(user: ConMetadatos): boolean {
-  return rolDe(user) === 'admin'
+export function isAdmin(user: WithMetadata): boolean {
+  return roleOf(user) === 'admin'
 }

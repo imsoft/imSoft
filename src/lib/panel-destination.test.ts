@@ -1,22 +1,22 @@
 import { describe, expect, it } from 'vitest'
 import fs from 'node:fs'
 import path from 'node:path'
-import { panelDe } from './panel-destino'
+import { panelFor } from './panel-destination'
 
 const leer = (p: string) => fs.readFileSync(path.join(__dirname, '..', '..', p), 'utf8')
 
 describe('sesion abierta', () => {
   it('cada rol va a su panel, en el idioma pedido', () => {
-    expect(panelDe('admin', 'es')).toBe('/es/dashboard/admin')
-    expect(panelDe('client', 'en')).toBe('/en/dashboard/client')
-    expect(panelDe(undefined, 'fr')).toBe('/es/dashboard/client')
+    expect(panelFor('admin', 'es')).toBe('/es/dashboard/admin')
+    expect(panelFor('client', 'en')).toBe('/en/dashboard/client')
+    expect(panelFor(undefined, 'fr')).toBe('/es/dashboard/client')
   })
 
   it('login y registro mandan al panel a quien ya tiene sesion, en vez de pedirle entrar otra vez', () => {
     for (const p of ['src/app/[lang]/login/page.tsx', 'src/app/[lang]/signup/page.tsx']) {
       const s = leer(p)
       expect(s, p).toContain('auth.getUser()')
-      expect(s, p).toMatch(/if \(user\) redirect\(panelDe\(/)
+      expect(s, p).toMatch(/if \(user\) redirect\(panelFor\(/)
     }
   })
 

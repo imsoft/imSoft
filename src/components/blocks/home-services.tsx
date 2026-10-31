@@ -3,7 +3,7 @@ import { ArrowRight, Check } from 'lucide-react'
 import Image from '@/components/ui/image'
 import { Button } from '@/components/ui/button'
 import { ScrollReveal } from '@/components/animations/scroll-reveal'
-import { SERVICIOS_PRINCIPALES, casoIlustrado, desdeDe, serviciosDeMarketing, serviciosSecundarios } from '@/lib/servicios-principales'
+import { MAIN_SERVICES, showcaseCase, startingPriceOf, marketingServices, secondaryServices } from '@/lib/main-services'
 import type { Service } from '@/types/database'
 
 interface HomeServicesProps {
@@ -24,8 +24,8 @@ const WHATSAPP = '523325365558'
 export function HomeServices({ lang, services, portfolio, title, subtitle }: HomeServicesProps) {
   const es = lang !== 'en'
   const l = es ? 'es' : 'en'
-  const secundarios = serviciosSecundarios(services, lang)
-  const marketing = serviciosDeMarketing(services, lang)
+  const secundarios = secondaryServices(services, lang)
+  const marketing = marketingServices(services, lang)
   const whatsapp = (servicio: string) =>
     `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(es
       ? `Hola imSoft, me interesa ${servicio.toLowerCase()} para mi negocio. ¿Podemos agendar la llamada gratuita?`
@@ -40,17 +40,17 @@ export function HomeServices({ lang, services, portfolio, title, subtitle }: Hom
         </ScrollReveal>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {SERVICIOS_PRINCIPALES.map((s, i) => {
-            const caso = casoIlustrado(s, portfolio)
-            const titulo = s.titulo[l]
+          {MAIN_SERVICES.map((s, i) => {
+            const caso = showcaseCase(s, portfolio)
+            const titulo = s.title[l]
             return (
               <ScrollReveal key={s.slug} direction="up" delay={i * 0.08} className="h-full">
                 <article className="flex h-full flex-col overflow-hidden rounded-2xl bg-background text-foreground shadow-lg">
                   {caso ? (
-                    <Link href={`/${lang}/portfolio/${caso.slug}`} className="relative block aspect-[16/10] overflow-hidden bg-muted" aria-label={`${es ? 'Caso' : 'Case'}: ${caso.nombre}`}>
-                      <Image src={caso.imagen} alt={`${caso.nombre} · ${titulo}`} fill sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-cover object-top transition-transform duration-500 hover:scale-105" />
+                    <Link href={`/${lang}/portfolio/${caso.slug}`} className="relative block aspect-[16/10] overflow-hidden bg-muted" aria-label={`${es ? 'Caso' : 'Case'}: ${caso.name}`}>
+                      <Image src={caso.image} alt={`${caso.name} · ${titulo}`} fill sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-cover object-top transition-transform duration-500 hover:scale-105" />
                       <span className="absolute bottom-3 left-3 rounded-full bg-background/90 px-3 py-1 text-xs font-semibold text-foreground">
-                        {es ? 'Caso real' : 'Real case'}: {caso.nombre}
+                        {es ? 'Caso real' : 'Real case'}: {caso.name}
                       </span>
                     </Link>
                   ) : (
@@ -63,10 +63,10 @@ export function HomeServices({ lang, services, portfolio, title, subtitle }: Hom
                   <div className="flex flex-1 flex-col gap-4 p-6">
                     <div>
                       <h3 className="text-xl font-bold">{titulo}</h3>
-                      <p className="mt-1 text-sm text-muted-foreground">{s.problema[l]}</p>
+                      <p className="mt-1 text-sm text-muted-foreground">{s.problem[l]}</p>
                     </div>
                     <ul className="space-y-2 text-sm">
-                      {s.entregables[l].map((e) => (
+                      {s.deliverables[l].map((e) => (
                         <li key={e} className="flex items-start gap-2">
                           <Check className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
                           <span>{e}</span>
@@ -75,7 +75,7 @@ export function HomeServices({ lang, services, portfolio, title, subtitle }: Hom
                     </ul>
                     <div className="mt-auto flex flex-wrap items-center justify-between gap-3 border-t pt-4">
                       <p className="text-sm font-semibold">
-                        {desdeDe(s, lang)}
+                        {startingPriceOf(s, lang)}
                       </p>
                       <Link href={`/${lang}/services/${s.slug}`} className="text-sm font-medium text-primary hover:underline">
                         {es ? 'Ver detalles' : 'See details'}
@@ -102,7 +102,7 @@ export function HomeServices({ lang, services, portfolio, title, subtitle }: Hom
                 {secundarios.map((s) => (
                   <li key={s.slug}>
                     <Link href={`/${lang}/services/${s.slug}`} className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/5 px-3 py-1 text-sm text-foreground transition-colors hover:bg-primary hover:text-primary-foreground">
-                      {s.icono && <span aria-hidden>{s.icono}</span>}{s.titulo}
+                      {s.icon && <span aria-hidden>{s.icon}</span>}{s.title}
                     </Link>
                   </li>
                 ))}
@@ -113,7 +113,7 @@ export function HomeServices({ lang, services, portfolio, title, subtitle }: Hom
                   {marketing.map((m, i) => (
                     <span key={m.slug}>
                       {i > 0 && ', '}
-                      <Link href={`/${lang}/services/${m.slug}`} className="underline-offset-2 hover:underline">{m.titulo.toLowerCase()}</Link>
+                      <Link href={`/${lang}/services/${m.slug}`} className="underline-offset-2 hover:underline">{m.title.toLowerCase()}</Link>
                     </span>
                   ))}.
                 </p>

@@ -29,7 +29,7 @@ import { createClient } from '@/lib/supabase/client'
 import { Contact, SocialLink } from '@/types/database'
 import { Plus, Trash2 } from 'lucide-react'
 import { SocialLinksEditor } from '@/components/crm/social-links-editor'
-import { AVISO_SIN_CONTACTO, formasDeContacto } from '@/lib/contact-socials'
+import { NO_CONTACT_WARNING, contactMethods } from '@/lib/contact-socials'
 import { tagsAfterEmailChange } from '@/lib/invalid-email'
 
 const emailSchema = z.string().email('Correo inválido')
@@ -160,8 +160,8 @@ export function ContactFormSimple({ contact, lang, userId }: ContactFormProps) {
 
   const onSubmit = async (values: ContactFormValues) => {
     if (!validateAdditionalEmails() || !validateAdditionalPhones()) return
-    if (formasDeContacto({ email: values.email, phone: values.phone, social_links: socialLinks }).length === 0) {
-      toast.error(lang === 'en' ? 'Add at least an email, a social profile or a phone: otherwise there is no way to reach them.' : AVISO_SIN_CONTACTO)
+    if (contactMethods({ email: values.email, phone: values.phone, social_links: socialLinks }).length === 0) {
+      toast.error(lang === 'en' ? 'Add at least an email, a social profile or a phone: otherwise there is no way to reach them.' : NO_CONTACT_WARNING)
       return
     }
 

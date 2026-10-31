@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { MAX_RESULTADOS_EN_TARJETA, portfolioCard, portfolioLookup, portfolioMetaDescription, type PortfolioRow } from './portfolio-card';
+import { MAX_CARD_RESULTS, portfolioCard, portfolioLookup, portfolioMetaDescription, type PortfolioRow } from './portfolio-card';
 
 const fila: PortfolioRow = {
   id: '0a15d020-12a3-416e-a175-50bd5c993d7a',
@@ -32,7 +32,7 @@ describe('portfolioCard', () => {
     const es = portfolioCard(fila, 'es');
     expect(es.challenge).toContain('13 aplicaciones');
     expect(es.results).toEqual(['80% menos tiempo', '0 instalaciones', 'TIGIE con IA']);
-    expect(es.results).toHaveLength(MAX_RESULTADOS_EN_TARJETA);
+    expect(es.results).toHaveLength(MAX_CARD_RESULTS);
 
     const en = portfolioCard(fila, 'en');
     expect(en.title).toBe('Aduvanta - Cloud Customs Software');
