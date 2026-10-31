@@ -63,7 +63,10 @@ export function CardPaymentForm({ token, lang, publishableKey, concept, quoteNum
         : `Your card does not support ${term} interest-free months${others.length ? ` (it supports ${others.join(', ')})` : ''}. Nothing was charged. Try another card or ask us for a different plan.`
     }
     if (j.error === 'declined') return es ? `El banco rechazó el cargo${j.message ? `: ${j.message}` : ''}. No se cobró nada; prueba con otra tarjeta.` : `The bank declined the charge${j.message ? `: ${j.message}` : ''}. Nothing was charged; try another card.`
-    return j.message || j.error || (es ? `No se pudo procesar el pago (${status}).` : `The payment could not be processed (${status}).`)
+    if (j.error === 'invalid-link') return es ? 'Este enlace de pago ya no es válido. Escríbenos y te mandamos uno nuevo.' : 'This payment link is no longer valid. Write to us and we will send a new one.'
+    if (j.error === 'quote-not-found') return es ? 'No encontramos la cotización de este pago. Escríbenos y lo revisamos.' : 'We could not find the quote for this payment. Write to us and we will look into it.'
+    if (j.error === 'stripe-unavailable') return es ? 'El cobro con tarjeta no está disponible en este momento. Intenta de nuevo en unos minutos.' : 'Card payments are unavailable right now. Try again in a few minutes.'
+    return j.message || (es ? `No se pudo procesar el pago (${status}).` : `The payment could not be processed (${status}).`)
   }
 
   async function pay(ev: React.FormEvent) {
