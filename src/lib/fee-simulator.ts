@@ -1,7 +1,7 @@
 /**
  * Fee simulator: what the client pays, what Stripe keeps, what goes to the SAT and what is
  * left, per milestone and per payment method. Pure logic; the UI lives in
- * src/app/[lang]/dashboard/admin/simulador/fee-simulator.tsx.
+ * src/app/[lang]/dashboard/admin/fee-simulator/fee-simulator.tsx.
  *
  * Assumptions (verified 2026-09-14):
  * - Stripe Mexico: 3.6 % + $3 MXN per domestic card charge; installments +5 % (3),

@@ -27,7 +27,7 @@ export default async function AdminQuotesPage({ params }: { params: Promise<{ la
           </p>
         </div>
         <Button asChild>
-          <Link href={`/${lang}/dashboard/admin/cotizaciones/new`}>
+          <Link href={`/${lang}/dashboard/admin/quotes/new`}>
             <Plus className="mr-1.5 size-4" />
             {lang === 'en' ? 'New quote' : 'Nueva cotización'}
           </Link>

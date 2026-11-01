@@ -51,7 +51,7 @@ export function BatchEmails({ lang, selected, clear, quota }: Props) {
     const options = {
       description: r.errors.length ? r.errors.slice(0, 6).join('\n') + (r.errors.length > 6 ? `\n…y ${r.errors.length - 6} más` : '') : undefined,
       duration: 20_000,
-      action: hasDrafts ? { label: es ? 'Revisar y enviar' : 'Review and send', onClick: () => router.push(`/${lang}/dashboard/admin/crm/prospeccion`) } : undefined,
+      action: hasDrafts ? { label: es ? 'Revisar y enviar' : 'Review and send', onClick: () => router.push(`/${lang}/dashboard/admin/crm/prospecting`) } : undefined,
     }
     if (hasDrafts) toast.success(batchSummary(r), options)
     else toast.error(batchSummary(r), options)

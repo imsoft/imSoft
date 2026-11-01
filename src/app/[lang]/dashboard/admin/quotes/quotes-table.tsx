@@ -44,7 +44,7 @@ export function QuotesTable({ quotes, lang }: { quotes: Quote[]; lang: string })
         <tbody>
           {quotes.map((q) => (
             <tr key={q.id} className="border-t hover:bg-muted/30">
-              <td className="p-3 font-mono"><Link className="underline underline-offset-4" href={`/${lang}/dashboard/admin/cotizaciones/${q.id}`}>{q.number}</Link></td>
+              <td className="p-3 font-mono"><Link className="underline underline-offset-4" href={`/${lang}/dashboard/admin/quotes/${q.id}`}>{q.number}</Link></td>
               <td className="p-3">{q.client_name}{q.client_company ? <span className="text-muted-foreground"> · {q.client_company}</span> : null}</td>
               <td className="p-3">{q.title}</td>
               <td className="p-3 text-right font-mono tabular-nums">{formatMoney(quoteTotals(q).total, q.currency)}</td>

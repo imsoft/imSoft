@@ -52,7 +52,7 @@ export function QuoteActions({ lang, quote, contract, publicUrl }: { lang: strin
   const primaryAction = quote.status === 'draft' ? (
     <Button size="sm" className={btn} onClick={markSent} disabled={busy !== null}><Send className="size-4 mr-1.5" />{es ? 'Marcar como enviada' : 'Mark as sent'}</Button>
   ) : quote.status === 'accepted' && !contract ? (
-    <Button size="sm" className={btn} disabled={busy !== null} onClick={async () => { const j = await call(`/api/quotes/${quote.id}/contract`, 'contract', es ? 'Contrato generado' : 'Contract generated'); if (j?.id) router.push(`/${lang}/dashboard/admin/cotizaciones/${quote.id}/contrato`) }}>
+    <Button size="sm" className={btn} disabled={busy !== null} onClick={async () => { const j = await call(`/api/quotes/${quote.id}/contract`, 'contract', es ? 'Contrato generado' : 'Contract generated'); if (j?.id) router.push(`/${lang}/dashboard/admin/quotes/${quote.id}/contract`) }}>
       <FileSignature className="size-4 mr-1.5" />{es ? 'Generar contrato' : 'Generate contract'}
     </Button>
   ) : quote.status === 'accepted' && !quote.project_id ? (
@@ -91,17 +91,17 @@ export function QuoteActions({ lang, quote, contract, publicUrl }: { lang: strin
           }}><CalendarClock className="size-4 mr-1.5" />{es ? 'Enlace del plan' : 'Plan link'}</Button>
         )}
         {contract && (
-          <Button size="sm" variant="outline" className={btn} asChild><Link href={`/${lang}/dashboard/admin/cotizaciones/${quote.id}/contrato`}><FileSignature className="size-4 mr-1.5" />{es ? 'Contrato' : 'Contract'} · {contract.number}</Link></Button>
+          <Button size="sm" variant="outline" className={btn} asChild><Link href={`/${lang}/dashboard/admin/quotes/${quote.id}/contract`}><FileSignature className="size-4 mr-1.5" />{es ? 'Contrato' : 'Contract'} · {contract.number}</Link></Button>
         )}
         {quote.project_id && (
           <Button size="sm" variant="outline" className={btn} asChild><Link href={`/${lang}/dashboard/admin/projects/${quote.project_id}`}><FolderPlus className="size-4 mr-1.5" />{es ? 'Ver proyecto' : 'View project'}</Link></Button>
         )}
         <div className="ml-auto flex items-center gap-2">
           {quote.status !== 'accepted' && (
-            <Button size="sm" variant="ghost" className={btn} asChild><Link href={`/${lang}/dashboard/admin/cotizaciones/${quote.id}/edit`}><Pencil className="size-4 mr-1.5" />{es ? 'Editar' : 'Edit'}</Link></Button>
+            <Button size="sm" variant="ghost" className={btn} asChild><Link href={`/${lang}/dashboard/admin/quotes/${quote.id}/edit`}><Pencil className="size-4 mr-1.5" />{es ? 'Editar' : 'Edit'}</Link></Button>
           )}
           {!quote.project_id && contract?.status !== 'signed' && (
-            <DeleteQuoteButton id={quote.id} number={quote.number} lang={lang} redirectTo={`/${lang}/dashboard/admin/cotizaciones`} />
+            <DeleteQuoteButton id={quote.id} number={quote.number} lang={lang} redirectTo={`/${lang}/dashboard/admin/quotes`} />
           )}
         </div>
       </div>

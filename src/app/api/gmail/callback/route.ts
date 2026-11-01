@@ -6,7 +6,7 @@ import { connectAccount } from '@/lib/gmail/server'
 /** Return from Google consent: stores the tokens and goes back to Prospecting. */
 export async function GET(req: NextRequest) {
   const auth = await requireAdmin()
-  const goBack = (q: string) => NextResponse.redirect(`${SITE_URL}/es/dashboard/admin/crm/prospeccion?${q}`)
+  const goBack = (q: string) => NextResponse.redirect(`${SITE_URL}/es/dashboard/admin/crm/prospecting?${q}`)
   if (!auth.ok) return NextResponse.redirect(`${SITE_URL}/es/login`)
   const code = req.nextUrl.searchParams.get('code')
   const state = req.nextUrl.searchParams.get('state')

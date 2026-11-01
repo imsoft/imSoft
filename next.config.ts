@@ -10,6 +10,12 @@ const nextConfig: NextConfig = {
     return [
       // URLs del sitio anterior que Search Console reporta en 404.
       ...legacyRedirects(),
+      // Admin routes renamed to English (2026-11). Old links in emails and bookmarks keep working.
+      { source: '/:lang(es|en)/dashboard/admin/cotizaciones/:id/contrato', destination: '/:lang/dashboard/admin/quotes/:id/contract', permanent: true },
+      { source: '/:lang(es|en)/dashboard/admin/cotizaciones/:path*', destination: '/:lang/dashboard/admin/quotes/:path*', permanent: true },
+      { source: '/:lang(es|en)/dashboard/admin/crm/prospeccion', destination: '/:lang/dashboard/admin/crm/prospecting', permanent: true },
+      { source: '/:lang(es|en)/dashboard/admin/crm/buscar', destination: '/:lang/dashboard/admin/crm/search', permanent: true },
+      { source: '/:lang(es|en)/dashboard/admin/simulador', destination: '/:lang/dashboard/admin/fee-simulator', permanent: true },
       // Slug del otro idioma -> slug del idioma pedido.
       ...(await blogSlugLanguageRedirects()),
       { source: '/:lang(es|en)/servicios', destination: '/:lang/services', permanent: true },

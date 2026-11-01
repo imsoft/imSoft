@@ -5,8 +5,8 @@ import { cn } from '@/lib/utils'
 export function CrmTabs({ lang, active }: { lang: string; active: 'contacts' | 'prospecting' | 'search' }) {
   const tabs = [
     { key: 'contacts', href: `/${lang}/dashboard/admin/crm`, label: lang === 'en' ? 'Contacts' : 'Contactos' },
-    { key: 'prospecting', href: `/${lang}/dashboard/admin/crm/prospeccion`, label: lang === 'en' ? 'Outreach' : 'Prospección' },
-    { key: 'search', href: `/${lang}/dashboard/admin/crm/buscar`, label: lang === 'en' ? 'Find prospects' : 'Buscar prospectos' },
+    { key: 'prospecting', href: `/${lang}/dashboard/admin/crm/prospecting`, label: lang === 'en' ? 'Outreach' : 'Prospección' },
+    { key: 'search', href: `/${lang}/dashboard/admin/crm/search`, label: lang === 'en' ? 'Find prospects' : 'Buscar prospectos' },
   ] as const
   return (
     <nav className="flex gap-1 border-b">

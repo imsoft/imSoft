@@ -26,7 +26,7 @@ describe('platform emails', () => {
     const [accepted, contract, toClient, contact, task, blog, failed] = all()
     expect(accepted.subject).toBe('✓ Cotización aceptada: COT-2026-001 · Plataforma de avalúos')
     expect(accepted.html).toContain('Valuadores de los Altos')
-    expect(accepted.html).toContain('/es/dashboard/admin/cotizaciones/q1')
+    expect(accepted.html).toContain('/es/dashboard/admin/quotes/q1')
     expect(contract.html).toContain('firmó el contrato CON-2026-001')
     expect(toClient.html).toContain('Revisar y aceptar la cotización')
     expect(toClient.html).toContain('IVA incluido')

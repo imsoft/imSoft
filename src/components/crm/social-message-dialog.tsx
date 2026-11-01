@@ -56,7 +56,7 @@ export function SocialMessageDialog({ contact, lang, open, onClose, initialChann
   useEffect(() => {
     if (!open) return
     let alive = true
-    fetch('/api/outreach/mensaje/conteo')
+    fetch('/api/outreach/message/count')
       .then((r) => (r.ok ? r.json() : null))
       .then((j) => { if (alive && j?.today) { setCounts(j.today); setForce(false) } })
       .catch(() => {})
@@ -69,7 +69,7 @@ export function SocialMessageDialog({ contact, lang, open, onClose, initialChann
     // Deferred: generation starts after render, not inside the effect.
     const t = setTimeout(() => {
       setBusy('generate')
-      fetch('/api/outreach/mensaje', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contactId: contact.id, channel }) })
+      fetch('/api/outreach/message', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contactId: contact.id, channel }) })
         .then(async (r) => { const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error(j.error || r.statusText); return j })
         .then((j) => { if (alive) setText(j.text) })
         .catch((err) => toast.error(err instanceof Error ? err.message : String(err)))
@@ -91,7 +91,7 @@ export function SocialMessageDialog({ contact, lang, open, onClose, initialChann
     if (!channel) return
     setBusy('sent')
     try {
-      const r = await fetch('/api/outreach/mensaje/enviado', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contactId: contact.id, channel, text }) })
+      const r = await fetch('/api/outreach/message/sent', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contactId: contact.id, channel, text }) })
       const j = await r.json().catch(() => ({}))
       if (!r.ok) throw new Error(j.error || r.statusText)
       const sentSoFar = (counts?.[channel] ?? 0) + 1
@@ -109,7 +109,7 @@ export function SocialMessageDialog({ contact, lang, open, onClose, initialChann
   async function discard(reason: SocialDiscardReason) {
     setBusy('discard')
     try {
-      const r = await fetch('/api/outreach/mensaje/descartar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contactId: contact.id, reason }) })
+      const r = await fetch('/api/outreach/message/discard', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contactId: contact.id, reason }) })
       const j = await r.json().catch(() => ({}))
       if (!r.ok) throw new Error(j.error || r.statusText)
       toast.success(es ? 'Descartado de la cola de redes' : 'Removed from the social queue')

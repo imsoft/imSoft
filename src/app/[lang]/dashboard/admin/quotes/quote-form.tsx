@@ -185,7 +185,7 @@ export function QuoteForm({ lang, quote }: { lang: string; quote?: Quote }) {
         const { error } = await supabase.from('quotes').update(payload).eq('id', quote.id)
         if (error) throw error
         toast.success(es ? 'Cotización guardada' : 'Quote saved')
-        router.push(`/${lang}/dashboard/admin/cotizaciones/${quote.id}`)
+        router.push(`/${lang}/dashboard/admin/quotes/${quote.id}`)
       } else {
         const { data: last } = await supabase.from('quotes').select('number').like('number', 'COT-%').order('created_at', { ascending: false }).limit(1).maybeSingle()
         const quoteNumber = nextNumber('COT', last?.number)
@@ -194,7 +194,7 @@ export function QuoteForm({ lang, quote }: { lang: string; quote?: Quote }) {
         const { data, error } = await supabase.from('quotes').insert({ ...payload, number: quoteNumber, token, status: 'draft', created_by: user?.id ?? null }).select('id').single()
         if (error) throw error
         toast.success(`${es ? 'Cotización creada' : 'Quote created'}: ${quoteNumber}`)
-        router.push(`/${lang}/dashboard/admin/cotizaciones/${data.id}`)
+        router.push(`/${lang}/dashboard/admin/quotes/${data.id}`)
       }
       router.refresh()
     } catch (err) {

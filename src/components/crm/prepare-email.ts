@@ -17,7 +17,7 @@ export async function prepareEmail(contactId: string, lang: string, opts: { foll
     if (j.existing) toast.info(es ? 'Este contacto ya tenía un borrador.' : 'This contact already has a draft.')
     // Follow-up before its date: allowed, but on purpose.
     if (j.early) toast.warning(es ? `Este seguimiento tocaba el ${j.early}. Insistir antes de tiempo suele molestar; revísalo antes de enviarlo.` : `This follow-up was due on ${j.early}.`, { duration: 10_000 })
-    return `/${lang}/dashboard/admin/crm/prospeccion?abrir=${j.id}`
+    return `/${lang}/dashboard/admin/crm/prospecting?abrir=${j.id}`
   } catch (err) {
     toast.error(err instanceof Error ? err.message : String(err))
     return null

@@ -66,7 +66,7 @@ export function Prospecting({ lang, gmail, gmailConfigured, campaign, social, ro
       setOpen(f)
       setSubject(f.subject)
       setBody(bodyOf(f.text))
-      router.replace(`/${lang}/dashboard/admin/crm/prospeccion`)
+      router.replace(`/${lang}/dashboard/admin/crm/prospecting`)
     }, 0)
     return () => clearTimeout(t)
   }, [sp, rows, lang, router])

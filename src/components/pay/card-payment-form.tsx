@@ -30,8 +30,8 @@ interface Props {
 
 /**
  * Card payment form on imsoft.io with the link's fixed term. Flow:
- * card -> PaymentMethod in the browser -> /api/pagar/intento (checks that the card supports
- * the term) -> /api/pagar/confirmar (confirms with that plan) -> 3D Secure if the bank asks
+ * card -> PaymentMethod in the browser -> /api/pay/intent (checks that the card supports
+ * the term) -> /api/pay/confirm (confirms with that plan) -> 3D Secure if the bank asks
  * for it -> back to the pay page with ?payment=ok.
  */
 export function CardPaymentForm({ token, lang, publishableKey, concept, quoteNumber, charge, currency, term, returnUrl }: Props) {
@@ -78,10 +78,10 @@ export function CardPaymentForm({ token, lang, publishableKey, concept, quoteNum
     try {
       const pm = await stripe.createPaymentMethod('card', card, { billing_details: { name: name.trim() || undefined } })
       if (pm.error || !pm.paymentMethod) throw new Error(pm.error?.message || 'Tarjeta no válida')
-      const r1 = await fetch('/api/pagar/intento', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token, paymentMethodId: pm.paymentMethod.id }) })
+      const r1 = await fetch('/api/pay/intent', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token, paymentMethodId: pm.paymentMethod.id }) })
       const j1 = await r1.json().catch(() => ({}))
       if (!r1.ok) throw new Error(messageFor(j1, r1.status))
-      const r2 = await fetch('/api/pagar/confirmar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token, intentId: j1.intentId }) })
+      const r2 = await fetch('/api/pay/confirm', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token, intentId: j1.intentId }) })
       const j2 = await r2.json().catch(() => ({}))
       if (!r2.ok) throw new Error(messageFor(j2, r2.status))
       let status: string = j2.status
