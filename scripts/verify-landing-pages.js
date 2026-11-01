@@ -1,6 +1,6 @@
 /**
- * Script para verificar que todas las landing pages estén correctamente generadas
- * Uso: node scripts/verify-landing-pages.js
+ * Lists the generated landing pages so they can be checked by hand.
+ * Usage: node scripts/verify-landing-pages.js
  */
 
 const cities = ['guadalajara', 'cdmx', 'monterrey'];

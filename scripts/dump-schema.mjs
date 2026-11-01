@@ -1,19 +1,19 @@
 #!/usr/bin/env node
 /**
- * Vuelca el esquema `public` de Supabase a un archivo versionable.
+ * Dumps the Supabase `public` schema to a versionable file.
  *
- * Lee el OpenAPI que PostgREST publica en /rest/v1/, asi que NO necesita el
- * Supabase CLI, ni vincular el proyecto, ni la contrasena de la base: le basta
- * la llave que ya esta en .env.
+ * Reads the OpenAPI spec PostgREST serves at /rest/v1/, so it does NOT need the
+ * Supabase CLI, linking the project, or the database password: the key already
+ * in .env is enough.
  *
- * El archivo que genera es la referencia del esquema real para el repo, porque
- * varias tablas (contacts, deals, activities) se crearon con los .sql sueltos
- * de scripts/ y nunca entraron a supabase/migrations.
+ * The generated file is the repo's reference for the real schema, because
+ * several tables (contacts, deals, activities) were created with the loose .sql
+ * files in scripts/ and never made it into supabase/migrations.
  *
- * Solo escribe nombres de tablas, columnas y tipos del esquema `public`.
- * Ningun dato ni secreto.
+ * It only writes table, column and type names of the `public` schema.
+ * No data and no secrets.
  *
- * Uso:
+ * Usage:
  *   pnpm db:schema
  */
 
@@ -41,18 +41,18 @@ if (!response.ok) {
 
 const spec = await response.json()
 const definitions = spec.definitions ?? {}
-const tablas = Object.keys(definitions).sort()
+const tables = Object.keys(definitions).sort()
 
-/** PostgREST anota PK y FK dentro de `description`. */
-function anotaciones(descripcion = '') {
-  const notas = []
-  if (descripcion.includes('<pk/>')) notas.push('PK')
-  const fk = descripcion.match(/<fk table='([^']+)' column='([^']+)'\/>/)
-  if (fk) notas.push(`FK → ${fk[1]}.${fk[2]}`)
-  return notas.join(', ')
+/** PostgREST annotates PK and FK inside `description`. */
+function annotations(description = '') {
+  const notes = []
+  if (description.includes('<pk/>')) notes.push('PK')
+  const fk = description.match(/<fk table='([^']+)' column='([^']+)'\/>/)
+  if (fk) notes.push(`FK → ${fk[1]}.${fk[2]}`)
+  return notes.join(', ')
 }
 
-const lineas = [
+const lines = [
   '# Esquema `public` de Supabase',
   '',
   '> Generado con `pnpm db:schema`. **No lo edites a mano.**',
@@ -61,28 +61,28 @@ const lineas = [
   '> crearon con los `.sql` sueltos de `scripts/` y no estan en `supabase/migrations`,',
   '> asi que este archivo es la unica fuente fiel del estado actual.',
   '',
-  `Tablas y vistas: ${tablas.length}`,
+  `Tablas y vistas: ${tables.length}`,
   '',
 ]
 
-for (const tabla of tablas) {
-  const def = definitions[tabla]
-  const requeridas = new Set(def.required ?? [])
-  const columnas = Object.entries(def.properties ?? {})
+for (const table of tables) {
+  const def = definitions[table]
+  const required = new Set(def.required ?? [])
+  const columns = Object.entries(def.properties ?? {})
 
-  lineas.push(`## ${tabla}`, '')
-  lineas.push('| Columna | Tipo | Nulo | Default | Notas |')
-  lineas.push('| --- | --- | --- | --- | --- |')
+  lines.push(`## ${table}`, '')
+  lines.push('| Columna | Tipo | Nulo | Default | Notas |')
+  lines.push('| --- | --- | --- | --- | --- |')
 
-  for (const [nombre, prop] of columnas) {
-    const tipo = prop.format ?? prop.type ?? ''
-    const nulo = requeridas.has(nombre) ? 'NO' : 'sí'
-    const def_ = prop.default !== undefined ? `\`${prop.default}\`` : ''
-    lineas.push(`| ${nombre} | ${tipo} | ${nulo} | ${def_} | ${anotaciones(prop.description)} |`)
+  for (const [name, prop] of columns) {
+    const type = prop.format ?? prop.type ?? ''
+    const nullable = required.has(name) ? 'NO' : 'sí'
+    const defaultValue = prop.default !== undefined ? `\`${prop.default}\`` : ''
+    lines.push(`| ${name} | ${type} | ${nullable} | ${defaultValue} | ${annotations(prop.description)} |`)
   }
 
-  lineas.push('')
+  lines.push('')
 }
 
-writeFileSync(OUT, lineas.join('\n'))
-console.log(`\n  ✅ ${tablas.length} tablas → ${OUT}\n`)
+writeFileSync(OUT, lines.join('\n'))
+console.log(`\n  ✅ ${tables.length} tablas → ${OUT}\n`)

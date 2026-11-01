@@ -1,5 +1,5 @@
 {
-  "_doc": "Cola de temas del blog automatico. Cada entrada es una busqueda REAL (validada con el autocompletado de Google es-MX o con Search Console). El script publica la primera cuyo slug_es no exista aun en la tabla blog; no hace falta marcarla como usada. Sin entradas pendientes, no publica nada. No agregar temas que ya responde una guia de /es/cuanto-cuesta/ (tienda en linea, software a la medida): competirian con ella en Google.",
+  "_doc": "Topic queue for the automated blog. Each entry is a REAL search query (validated with Google es-MX autocomplete or with Search Console). The script publishes the first one whose slug_es does not exist yet in the blog table; there is no need to mark it as used. With no pending entries, nothing is published. Do not add topics already answered by a /es/cuanto-cuesta/ guide (online store, custom software): they would compete with it on Google.",
   "topics": [
     {
       "slug_es": "cuanto-cuesta-una-pagina-web-en-mexico",

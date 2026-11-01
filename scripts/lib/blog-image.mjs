@@ -1,16 +1,15 @@
 /**
- * Portada de un articulo del blog: ilustracion con Gemini, comprimida con sharp y
- * subida a Supabase Storage. Lo usan scripts/generate-blog.mjs y
- * scripts/backfill-blog-images.mjs.
+ * Blog post cover: Gemini illustration, compressed with sharp and uploaded to Supabase
+ * Storage. Used by scripts/generate-blog.mjs and scripts/backfill-blog-images.mjs.
  */
 import sharp from "sharp";
 
-/** Ancho maximo con el que se muestra una portada; JPEG progresivo a calidad 80. */
+/** Max width a cover is shown at; progressive JPEG at quality 80. */
 export const COVER_MAX_WIDTH = 1600;
 
 /**
- * Desde que las imagenes no pasan por el optimizador de Vercel se sirven tal cual, asi
- * que el peso se decide aqui, al subir: ~350 KB de Gemini pasan a ~120 KB.
+ * Images no longer go through the Vercel optimizer and are served as is, so the weight
+ * is decided here on upload: ~350 KB from Gemini becomes ~120 KB.
  */
 export async function compressCover(buffer) {
   const out = await sharp(buffer)
@@ -23,8 +22,8 @@ export async function compressCover(buffer) {
 export async function generateImage(title_en, GEMINI_API_KEY) {
   const prompt = `2D flat vector illustration, pure white background (#FFFFFF). Topic: "${title_en}". Main character: one friendly cute robot mascot with rounded body, big expressive circular eyes, small antennas on top, smooth geometric limbs, colored in blue #4A7FD4 and white with navy #1e3a5f accents. The robot must be physically interacting with objects that represent the article topic — for example: if the topic is web optimization, the robot is tuning gears or a speedometer; if about e-commerce, the robot holds a shopping cart; if about digital transformation, the robot pushes a rocket; if about mistakes/errors, the robot holds a checklist with X marks. Floating around the robot: 3-5 simple flat icons directly related to "${title_en}" (no UI mockups, just symbolic icons like gears, charts, rockets, locks, stars). Color palette: blue #4A7FD4 dominant on robot, icon fills in soft blue #DBEAFE, background strictly white #FFFFFF, shadows/outlines in #1e3a5f. Art style: Undraw.co clean flat 2D, bold smooth outlines, zero gradients, zero textures. 16:9 wide composition, robot centered or slightly left. Absolutely NO: humans, website screenshots, UI mockups, text labels, logos, watermarks, photo-realism.`;
 
-  // Imagen 4 ya no existe en esta API (404); las imagenes salen de los modelos Gemini
-  // con salida de imagen via generateContent.
+  // Imagen 4 no longer exists in this API (404); images come from the Gemini models
+  // with image output via generateContent.
   const response = await fetch(
     "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-image:generateContent",
     {

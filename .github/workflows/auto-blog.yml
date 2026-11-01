@@ -2,11 +2,11 @@ name: Auto Blog Publisher
 
 on:
   schedule:
-    # Días 1 y 15 de cada mes a las 14:00 UTC (8:00 AM hora México). Fue diario, luego
-    # semanal; con 59 posts que Google no indexa, dos al mes con fuentes reales rinden
-    # más que uno a la semana sin ellas. El tema sale de content/blog-queue.json.
+    # Days 1 and 15 of each month at 14:00 UTC (8:00 AM Mexico time). It was daily, then
+    # weekly; with 59 posts Google does not index, two a month with real sources pay off
+    # more than one a week without them. The topic comes from content/blog-queue.json.
     - cron: "0 14 1,15 * *"
-  workflow_dispatch: # Permite ejecutarlo manualmente desde GitHub
+  workflow_dispatch: # Allows running it manually from GitHub
 
 jobs:
   publish-blog-post:

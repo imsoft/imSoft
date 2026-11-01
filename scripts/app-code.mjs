@@ -1,11 +1,11 @@
 /**
- * Imprime un codigo de un solo uso para entrar a la app movil con una cuenta, sin pasar
- * por el correo ni por el limite de /api/app/login. Sirve para tomar capturas:
+ * Prints a one-time code to sign in to the mobile app with an account, bypassing the
+ * email and the /api/app/login rate limit. Handy for taking screenshots:
  *
- *   pnpm app:code                      # cuenta demo-app@imsoft.io
- *   pnpm app:code cliente@empresa.com  # otra cuenta
+ *   pnpm app:code                      # demo-app@imsoft.io account
+ *   pnpm app:code cliente@empresa.com  # another account
  *
- * El codigo vence a los minutos (vigencia de OTP de Supabase) y solo sirve una vez.
+ * The code expires within minutes (Supabase OTP lifetime) and works only once.
  */
 import { createClient } from '@supabase/supabase-js'
 
@@ -18,9 +18,9 @@ if (!url || !key) {
 }
 const db = createClient(url, key, { auth: { persistSession: false } })
 const { data, error } = await db.auth.admin.generateLink({ type: 'magiclink', email })
-const codigo = data?.properties?.email_otp
-if (error || !codigo) {
+const code = data?.properties?.email_otp
+if (error || !code) {
   console.error(error?.message ?? 'Supabase no devolvió el código')
   process.exit(1)
 }
-console.log(codigo)
+console.log(code)

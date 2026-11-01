@@ -34,15 +34,15 @@ jobs:
       - name: Pruebas
         run: pnpm test
 
-      # No exige cero problemas: el repo arrastra deuda de cuando ESLint estuvo roto.
-      # Solo falla si la cuenta sube respecto a .lint-budget.json.
+      # Does not require zero problems: the repo carries debt from when ESLint was broken.
+      # It only fails if the count goes up versus .lint-budget.json.
       - name: Lint (trinquete)
         run: node scripts/lint-budget.mjs
 
       - name: Build
-        # El build prerenderiza paginas a partir de la BD (sitemap, blog, servicios),
-        # asi que necesita credenciales de Supabase de verdad. Son los mismos secretos
-        # que ya usa auto-blog.yml. Comprobado que con estos dos basta.
+        # The build prerenders pages from the DB (sitemap, blog, services),
+        # so it needs real Supabase credentials. They are the same secrets
+        # auto-blog.yml already uses. Verified that these two are enough.
         env:
           NEXT_PUBLIC_SITE_URL: https://www.imsoft.io
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}

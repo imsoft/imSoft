@@ -1,9 +1,9 @@
 /**
- * Script para asignar rol de administrador a un usuario
- * 
- * Uso:
- * 1. Agrega SUPABASE_SERVICE_ROLE_KEY a tu archivo .env.local
- * 2. Ejecuta: npx tsx scripts/set-admin-role.ts weareimsoft@gmail.com
+ * Grants the admin role to a user.
+ *
+ * Usage:
+ * 1. Add SUPABASE_SERVICE_ROLE_KEY to your .env.local
+ * 2. Run: npx tsx scripts/set-admin-role.ts weareimsoft@gmail.com
  */
 
 import { setAdminRole } from '../src/lib/supabase/admin'

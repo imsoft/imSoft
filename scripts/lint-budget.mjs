@@ -1,15 +1,15 @@
 /**
- * Trinquete de lint.
+ * Lint ratchet.
  *
- * El repo arrastra deuda de cuando ESLint estuvo roto (`eslint-plugin-react` no soporta
- * ESLint 10, ver 8ca076a). Exigir cero problemas hoy significaria bloquear cada commit,
- * asi que en la practica se acabaria ignorando la barrera.
+ * The repo carries debt from when ESLint was broken (`eslint-plugin-react` does not
+ * support ESLint 10, see 8ca076a). Requiring zero problems today would block every
+ * commit, so in practice the gate would end up ignored.
  *
- * En vez de eso se fija un presupuesto: la cuenta actual. Si sube, falla. Si baja, avisa
- * para que se apriete el tornillo. El objetivo es que la deuda solo pueda ir a menos.
+ * Instead a budget is pinned: the current count. If it goes up, it fails. If it goes
+ * down, it says so, so the budget can be tightened. Debt can only go down.
  *
- *   node scripts/lint-budget.mjs           comprueba
- *   node scripts/lint-budget.mjs --update  reescribe el presupuesto con la cuenta actual
+ *   node scripts/lint-budget.mjs           check
+ *   node scripts/lint-budget.mjs --update  rewrite the budget with the current count
  */
 import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
@@ -28,7 +28,7 @@ function runEslint() {
       maxBuffer: 64 * 1024 * 1024,
     });
   } catch (err) {
-    // ESLint sale con codigo 1 cuando hay errores; el JSON sigue viniendo por stdout.
+    // ESLint exits with code 1 when there are errors; the JSON still comes on stdout.
     raw = err.stdout;
     if (!raw) throw err;
   }

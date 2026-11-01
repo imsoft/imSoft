@@ -1,20 +1,20 @@
 #!/usr/bin/env node
 /**
- * Genera y publica un artículo de blog en Supabase, a partir de una cola de búsquedas
- * reales (content/blog-queue.json).
+ * Generates and publishes a blog post to Supabase from a queue of real search queries
+ * (content/blog-queue.json).
  *
- *   node --experimental-strip-types scripts/generate-blog.mjs            # publica
- *   node --experimental-strip-types scripts/generate-blog.mjs --dry-run  # genera y valida, no publica
+ *   node --experimental-strip-types scripts/generate-blog.mjs            # publishes
+ *   node --experimental-strip-types scripts/generate-blog.mjs --dry-run  # generates and validates, does not publish
  *
- * - Tema: la primera entrada de la cola sin post publicado. Sin cola pendiente, no publica.
- * - Texto: Claude Opus 5 con búsqueda web, para que las cifras salgan de fuentes reales.
- * - Validación (src/lib/blog-generator.ts): toda cifra con fuente enlazada en el mismo
- *   párrafo, mínimo 2 fuentes externas y que cada una responda 200. Si no pasa, no publica.
- * - Imagen: Gemini 3.1 Flash Image (Google AI Studio). Si falla, NO se publica sin portada.
- * - Guarda `slug` (inglés) y `slug_es`, que es la URL que ve Google en /es.
+ * - Topic: the first queue entry without a published post. With an empty queue, nothing is published.
+ * - Text: Claude Opus 5 with web search, so figures come from real sources.
+ * - Validation (src/lib/blog-generator.ts): every figure has a linked source in the same
+ *   paragraph, at least 2 external sources, and each must return 200. Otherwise, nothing is published.
+ * - Image: Gemini 3.1 Flash Image (Google AI Studio). If it fails, the post is NOT published without a cover.
+ * - Stores `slug` (English) and `slug_es`, which is the URL Google sees under /es.
  *
- * Variables de entorno: ANTHROPIC_API_KEY, GEMINI_API_KEY, NEXT_PUBLIC_SUPABASE_URL,
- * SUPABASE_SERVICE_ROLE_KEY, BLOG_AUTHOR_ID y, opcional, RESEND_API_KEY.
+ * Environment variables: ANTHROPIC_API_KEY, GEMINI_API_KEY, NEXT_PUBLIC_SUPABASE_URL,
+ * SUPABASE_SERVICE_ROLE_KEY, BLOG_AUTHOR_ID and, optionally, RESEND_API_KEY.
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -62,7 +62,7 @@ const supabaseHeaders = {
   Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
 };
 
-/** Slugs y títulos ya publicados: para elegir tema y para la puerta anti-duplicados. */
+/** Already published slugs and titles: used to pick the topic and for the duplicate gate. */
 async function fetchExistingPosts() {
   const response = await fetch(
     `${SUPABASE_URL}/rest/v1/blog?select=slug,slug_es,title_es,title_en&order=created_at.desc`,
@@ -147,23 +147,23 @@ Cuando termines, llama a publish_blog_post una sola vez con el artículo complet
 }
 
 /**
- * `correcciones`: problemas que el validador encontro en el intento anterior. Con ellos
- * se pide el articulo de nuevo en vez de rendirse (el tema se quedaba atorado en la cola:
- * fallo el 15-sep y el 1-oct-2026 sin que nada cambiara entre un intento y otro).
+ * `corrections`: problems the validator found in the previous attempt. With them the
+ * article is requested again instead of giving up (the topic used to get stuck in the queue:
+ * it failed on 2026-09-15 and 2026-10-01 with nothing changing between attempts).
  */
-async function generateBlogPost(topic, existingTitles, correcciones = []) {
+async function generateBlogPost(topic, existingTitles, corrections = []) {
   const client = new Anthropic({ apiKey: ANTHROPIC_API_KEY });
   const tools = [
     { type: "web_search_20260209", name: "web_search", max_uses: 10, user_location: { type: "approximate", country: "MX" } },
     PUBLISH_TOOL,
   ];
-  const aviso = correcciones.length
-    ? `\n\nUn intento anterior de este mismo artículo fue RECHAZADO por el validador. Corrige exactamente esto y entrega el artículo completo otra vez:\n${correcciones.map((c) => `- ${c}`).join("\n")}\n\nRecuerda: toda cifra (precio, porcentaje, comisión) lleva su fuente enlazada en ese mismo párrafo; si no tienes fuente para una cifra, quítala. El título debe ser claramente distinto de los ya publicados. Los enlaces van en HTML con comillas dobles: <a href=\"https://...\">texto</a>, y cada fuente declarada debe aparecer enlazada en el texto de los dos idiomas.`
+  const notice = corrections.length
+    ? `\n\nUn intento anterior de este mismo artículo fue RECHAZADO por el validador. Corrige exactamente esto y entrega el artículo completo otra vez:\n${corrections.map((c) => `- ${c}`).join("\n")}\n\nRecuerda: toda cifra (precio, porcentaje, comisión) lleva su fuente enlazada en ese mismo párrafo; si no tienes fuente para una cifra, quítala. El título debe ser claramente distinto de los ya publicados. Los enlaces van en HTML con comillas dobles: <a href=\"https://...\">texto</a>, y cada fuente declarada debe aparecer enlazada en el texto de los dos idiomas.`
     : "";
-  const messages = [{ role: "user", content: buildPrompt(topic, existingTitles) + aviso }];
+  const messages = [{ role: "user", content: buildPrompt(topic, existingTitles) + notice }];
 
-  for (let intento = 0; intento < 4; intento += 1) {
-    // Streaming: el SDK lo exige para respuestas largas, y esta puede tardar minutos.
+  for (let attempt = 0; attempt < 4; attempt += 1) {
+    // Streaming: the SDK requires it for long responses, and this one can take minutes.
     const response = await client.messages
       .stream({
         model: "claude-opus-5",
@@ -177,7 +177,7 @@ async function generateBlogPost(topic, existingTitles, correcciones = []) {
     const publish = response.content.find((b) => b.type === "tool_use" && b.name === "publish_blog_post");
     if (publish) return normalizeArticle(publish.input);
     if (response.stop_reason === "pause_turn") {
-      // El bucle de búsqueda del servidor se pausó: se reenvía tal cual y continúa.
+      // The server-side search loop paused: resend as is and continue.
       messages.push({ role: "assistant", content: response.content });
       continue;
     }
@@ -189,18 +189,18 @@ async function generateBlogPost(topic, existingTitles, correcciones = []) {
   throw new Error("Claude no entregó el artículo tras varias pausas de búsqueda.");
 }
 
-/** Cada fuente declarada tiene que responder: una URL alucinada no pasa. */
-async function verifySources(fuentes) {
-  const fallidas = [];
-  for (const f of fuentes) {
+/** Every declared source must respond: a hallucinated URL does not pass. */
+async function verifySources(sources) {
+  const failed = [];
+  for (const f of sources) {
     try {
       const r = await fetch(f.url, { method: "GET", redirect: "follow", headers: { "user-agent": "Mozilla/5.0 (imSoft blog source check)" }, signal: AbortSignal.timeout(15000) });
-      if (!r.ok) fallidas.push(`${f.url} → HTTP ${r.status}`);
+      if (!r.ok) failed.push(`${f.url} → HTTP ${r.status}`);
     } catch (err) {
-      fallidas.push(`${f.url} → ${err.message}`);
+      failed.push(`${f.url} → ${err.message}`);
     }
   }
-  return fallidas;
+  return failed;
 }
 
 async function publishPost(post) {
@@ -239,10 +239,10 @@ function buildSuccessEmail({ title_es, title_en, slug, category, imageUrl }) {
     <tr><td align="center">
       <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.10);">
 
-        <!-- Header con gradiente de marca -->
+        <!-- Header with brand gradient -->
         <tr><td style="background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 60%,#1a4a7a 100%);padding:40px 40px 32px;text-align:center;">
           <img src="${SITE_URL}/logos/logo-imsoft-white.png" alt="imSoft" width="110" style="display:block;margin:0 auto 24px;height:auto;"/>
-          <!-- Badge éxito -->
+          <!-- Success badge -->
           <table cellpadding="0" cellspacing="0" style="margin:0 auto 16px;">
             <tr><td style="background-color:#16a34a;border-radius:100px;padding:5px 18px;">
               <span style="color:#ffffff;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;">✓ &nbsp;Publicación Exitosa</span>
@@ -262,7 +262,7 @@ function buildSuccessEmail({ title_es, title_en, slug, category, imageUrl }) {
             Detalles del artículo
           </p>
 
-          <!-- Tabla de datos -->
+          <!-- Data table -->
           <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;margin-bottom:32px;">
             <tr style="background-color:#f8fafc;">
               <td style="padding:13px 18px;font-size:12px;font-weight:600;color:#64748b;width:110px;border-bottom:1px solid #e2e8f0;white-space:nowrap;">Título ES</td>
@@ -343,7 +343,7 @@ function buildErrorEmail(errorMessage) {
     <tr><td align="center">
       <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.10);">
 
-        <!-- Header con gradiente de marca -->
+        <!-- Header with brand gradient -->
         <tr><td style="background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 60%,#1a4a7a 100%);padding:40px 40px 32px;text-align:center;">
           <img src="${SITE_URL}/logos/logo-imsoft-white.png" alt="imSoft" width="110" style="display:block;margin:0 auto 24px;height:auto;"/>
           <!-- Badge error -->
@@ -357,7 +357,7 @@ function buildErrorEmail(errorMessage) {
           </h1>
         </td></tr>
 
-        <!-- Divider accent rojo -->
+        <!-- Red accent divider -->
         <tr><td style="background:linear-gradient(90deg,#dc2626,#f87171);height:3px;padding:0;font-size:0;line-height:0;">&nbsp;</td></tr>
 
         <!-- Body -->
@@ -366,10 +366,10 @@ function buildErrorEmail(errorMessage) {
             Detalle del error
           </p>
 
-          <!-- Bloque de error estilo terminal -->
+          <!-- Terminal-style error block -->
           <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
             <tr><td style="background-color:#0f172a;border-radius:10px;padding:0;">
-              <!-- Barra de terminal -->
+              <!-- Terminal bar -->
               <table width="100%" cellpadding="0" cellspacing="0">
                 <tr><td style="padding:10px 16px;border-bottom:1px solid #1e293b;">
                   <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#ef4444;margin-right:6px;"></span>
@@ -382,7 +382,7 @@ function buildErrorEmail(errorMessage) {
             </td></tr>
           </table>
 
-          <!-- Tabla fecha -->
+          <!-- Date table -->
           <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;margin-bottom:32px;">
             <tr style="background-color:#f8fafc;">
               <td style="padding:13px 18px;font-size:12px;font-weight:600;color:#64748b;width:110px;white-space:nowrap;">Fecha</td>
@@ -390,7 +390,7 @@ function buildErrorEmail(errorMessage) {
             </tr>
           </table>
 
-          <!-- Pasos sugeridos -->
+          <!-- Suggested steps -->
           <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#fefce8;border:1px solid #fde68a;border-radius:12px;margin-bottom:32px;">
             <tr><td style="padding:16px 20px;">
               <p style="margin:0 0 8px;font-size:12px;font-weight:700;color:#92400e;text-transform:uppercase;letter-spacing:0.08em;">¿Qué hacer?</p>
@@ -466,34 +466,34 @@ async function main() {
 
   const existingTitles = existing.map((p) => p.title_es).filter(Boolean);
 
-  const validar = async (g) => {
-    const problemas = [...validateArticle(g, "es"), ...validateArticle(g, "en")];
+  const validate = async (g) => {
+    const problems = [...validateArticle(g, "es"), ...validateArticle(g, "en")];
     const clash = existingTitles
       .map((t) => ({ t, score: titleOverlap(g.title_es, t) }))
       .sort((a, b) => b.score - a.score)[0];
     if (clash && clash.score >= MAX_TITLE_OVERLAP) {
-      problemas.push(`el título solapa ${(clash.score * 100).toFixed(0)}% con uno publicado: "${clash.t}"`);
+      problems.push(`el título solapa ${(clash.score * 100).toFixed(0)}% con uno publicado: "${clash.t}"`);
     }
-    problemas.push(...(await verifySources(g.sources)).map((f) => `fuente que no responde: ${f}`));
-    return problemas;
+    problems.push(...(await verifySources(g.sources)).map((f) => `fuente que no responde: ${f}`));
+    return problems;
   };
 
-  // Dos intentos: si el primero no pasa la validación, el segundo recibe la lista de
-  // problemas para corregirlos. Si tampoco pasa, no se publica y se avisa por correo.
+  // Two attempts: if the first fails validation, the second gets the list of problems
+  // to fix. If that one fails too, nothing is published and an email is sent.
   let generated = await generateBlogPost(topic, existingTitles);
   console.log(`Título: ${generated.title_es}`);
-  let problemas = await validar(generated);
-  if (problemas.length > 0) {
-    console.log(`Primer intento rechazado (${problemas.length} problemas). Reintentando con las correcciones...`);
-    for (const pr of problemas) console.log(`  primer intento: ${pr}`);
-    generated = await generateBlogPost(topic, existingTitles, problemas);
+  let problems = await validate(generated);
+  if (problems.length > 0) {
+    console.log(`Primer intento rechazado (${problems.length} problemas). Reintentando con las correcciones...`);
+    for (const pr of problems) console.log(`  primer intento: ${pr}`);
+    generated = await generateBlogPost(topic, existingTitles, problems);
     console.log(`Título (segundo intento): ${generated.title_es}`);
-    problemas = await validar(generated);
+    problems = await validate(generated);
   }
 
-  if (problemas.length > 0) {
-    const detalle = problemas.map((p) => `- ${p}`).join("\n");
-    throw new Error(`El artículo no pasó la validación tras dos intentos y NO se publicó:\n${detalle}`);
+  if (problems.length > 0) {
+    const details = problems.map((p) => `- ${p}`).join("\n");
+    throw new Error(`El artículo no pasó la validación tras dos intentos y NO se publicó:\n${details}`);
   }
   console.log(`Validado: ${generated.sources.length} fuentes, todas responden.`);
 
@@ -504,7 +504,7 @@ async function main() {
     return;
   }
 
-  // Sin portada no se publica: antes se publicaba igual y quedaron 11 posts sin imagen.
+  // No cover, no publish: it used to publish anyway and 11 posts ended up without an image.
   console.log("Generando imagen...");
   const { buffer, mimeType } = await generateImage(generated.title_en, GEMINI_API_KEY);
   const imageUrl = await uploadImageToSupabase(buffer, topic.slug_en, mimeType, { SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY });

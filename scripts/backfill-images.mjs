@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 /**
- * Genera imágenes con Gemini 2.0 Flash para los posts del blog que tienen image_url = null.
- * Ejecutar: node scripts/backfill-images.mjs
+ * Generates images with Gemini 2.0 Flash for blog posts with image_url = null.
+ * Run: node scripts/backfill-images.mjs
  *
- * Variables de entorno requeridas:
- *   GEMINI_API_KEY            — API key de Google AI Studio
- *   NEXT_PUBLIC_SUPABASE_URL  — URL del proyecto Supabase
+ * Required environment variables:
+ *   GEMINI_API_KEY            — Google AI Studio API key
+ *   NEXT_PUBLIC_SUPABASE_URL  — Supabase project URL
  *   SUPABASE_SERVICE_ROLE_KEY — Service role key
  */
 

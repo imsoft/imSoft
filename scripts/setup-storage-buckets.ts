@@ -1,15 +1,15 @@
 /**
- * Script para crear y configurar todos los buckets de Supabase Storage
+ * Creates and configures all Supabase Storage buckets.
  *
- * Este script crea los siguientes buckets:
- * - company-logos: Logos de empresas (estructura: /<company_id>/logo.ext)
- * - images: Imágenes generales (servicios, blog, portfolio, proyectos, perfil)
+ * It creates the following buckets:
+ * - company-logos: company logos (layout: /<company_id>/logo.ext)
+ * - images: general images (services, blog, portfolio, projects, profile)
  *
- * Estructura de archivos: /<id>/imagen.ext
+ * File layout: /<id>/image.ext
  *
- * Uso:
- * 1. Asegúrate de tener SUPABASE_SERVICE_ROLE_KEY en tu .env.local
- * 2. Ejecuta: npx tsx scripts/setup-storage-buckets.ts
+ * Usage:
+ * 1. Make sure SUPABASE_SERVICE_ROLE_KEY is in your .env.local
+ * 2. Run: npx tsx scripts/setup-storage-buckets.ts
  */
 
 import { createClient } from '@supabase/supabase-js'
@@ -30,7 +30,7 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey, {
   }
 })
 
-// Configuración de buckets
+// Bucket settings
 const BUCKETS_CONFIG = [
   {
     id: 'company-logos',
@@ -139,7 +139,7 @@ async function createBucket(config: typeof BUCKETS_CONFIG[number]) {
   console.log(`\n📦 Configurando bucket: ${config.id}`)
 
   try {
-    // Verificar si el bucket ya existe
+    // Check whether the bucket already exists
     const { data: existingBuckets, error: listError } = await supabase.storage.listBuckets()
 
     if (listError) {
@@ -151,7 +151,7 @@ async function createBucket(config: typeof BUCKETS_CONFIG[number]) {
     if (bucketExists) {
       console.log(`   ℹ️  El bucket '${config.id}' ya existe`)
 
-      // Actualizar configuración del bucket existente
+      // Update the existing bucket's settings
       const { error: updateError } = await supabase.storage.updateBucket(config.id, {
         public: config.public,
         fileSizeLimit: config.fileSizeLimit,
@@ -164,7 +164,7 @@ async function createBucket(config: typeof BUCKETS_CONFIG[number]) {
         console.log(`   ✅ Configuración actualizada`)
       }
     } else {
-      // Crear nuevo bucket
+      // Create a new bucket
       const { error: createError } = await supabase.storage.createBucket(config.id, {
         public: config.public,
         fileSizeLimit: config.fileSizeLimit,
@@ -240,15 +240,15 @@ async function main() {
   console.log('='.repeat(60))
 
   try {
-    // Crear todos los buckets
+    // Create all buckets
     for (const config of BUCKETS_CONFIG) {
       await createBucket(config)
     }
 
-    // Mostrar información sobre políticas
+    // Show policy information
     await setupPolicies()
 
-    // Verificar que todo está correcto
+    // Check that everything is correct
     await testBuckets()
 
     console.log('\n' + '='.repeat(60))

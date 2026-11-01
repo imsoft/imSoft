@@ -1,15 +1,15 @@
 /**
- * Genera las templates de correo de Supabase Auth con el diseño de imSoft
- * (src/lib/email/layout.ts). Supabase las guarda en su panel, no aqui: este script
- * solo produce el HTML en supabase/templates/ para copiarlo en
+ * Builds the Supabase Auth email templates with the imSoft design
+ * (src/lib/email/layout.ts). Supabase stores them in its dashboard, not here: this script
+ * only outputs the HTML to supabase/templates/ to be copied into
  * Authentication > Email Templates.
  *
- * Uso: node --experimental-strip-types scripts/build-auth-emails.mjs
+ * Usage: node --experimental-strip-types scripts/build-auth-emails.mjs
  */
 import { writeFileSync } from 'node:fs'
 import { button, callout, emailLayout, paragraph } from '../src/lib/email/layout.ts'
 
-// El layout solo acepta URLs http(s): se usa un marcador y luego se cambia por la variable de Supabase.
+// The layout only accepts http(s) URLs: a marker is used and later swapped for the Supabase variable.
 const URL_MARKER = 'https://imsoft-confirmation-url.invalid/'
 const withVariables = (html) =>
   html
@@ -102,10 +102,10 @@ const templates = [
 ]
 
 const index = ['# Plantillas de correo de Supabase Auth', '', 'Generadas con `node --experimental-strip-types scripts/build-auth-emails.mjs`.', 'Se pegan a mano en Supabase: Authentication > Email Templates.', '', '| Plantilla en Supabase | Asunto | Archivo |', '|---|---|---|']
-for (const p of templates) {
-  const html = withVariables(p.html)
-  writeFileSync(new URL(`../supabase/templates/${p.file}.html`, import.meta.url), html)
-  index.push(`| ${p.panel} | ${p.subject} | \`${p.file}.html\` |`)
+for (const t of templates) {
+  const html = withVariables(t.html)
+  writeFileSync(new URL(`../supabase/templates/${t.file}.html`, import.meta.url), html)
+  index.push(`| ${t.panel} | ${t.subject} | \`${t.file}.html\` |`)
 }
 writeFileSync(new URL('../supabase/templates/README.md', import.meta.url), index.join('\n') + '\n')
 console.log(`${templates.length} templates en supabase/templates/`)

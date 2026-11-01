@@ -1,16 +1,16 @@
 /**
- * Reporte de Search Console contra los baselines de agosto de 2026.
+ * Search Console report against the August 2026 baselines.
  *
  *   node --experimental-strip-types scripts/gsc-report.mjs
  *
- * Necesita en .env: GSC_KEY_FILE (llave JSON de la cuenta de servicio, que vive FUERA
- * del repo) y GSC_PROPERTY (p. ej. sc-domain:imsoft.io). Solo lee: la cuenta tiene
- * permiso restringido en GSC. "Solicitar indexacion" no tiene API para paginas
- * normales, asi que eso sigue siendo manual.
+ * Needs in .env: GSC_KEY_FILE (service account JSON key, which lives OUTSIDE the
+ * repo) and GSC_PROPERTY (e.g. sc-domain:imsoft.io). Read-only: the account has
+ * restricted permission in GSC. "Request indexing" has no API for regular pages,
+ * so that stays manual.
  *
- * Toda la logica esta en src/lib/gsc-report.ts, cubierta por vitest; aqui solo hay
- * E/S. Guarda un snapshot JSON en ~/.config/imsoft/gsc-snapshots/<fecha>.json, fuera
- * del repo porque son datos del negocio, para comparar en el futuro.
+ * All logic lives in src/lib/gsc-report.ts, covered by vitest; this file is only
+ * I/O. It saves a JSON snapshot to ~/.config/imsoft/gsc-snapshots/<date>.json, outside
+ * the repo because it is business data, for future comparison.
  */
 import fs from 'node:fs';
 import os from 'node:os';
@@ -30,39 +30,39 @@ const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SITE = 'https://www.imsoft.io';
 
 /**
- * Lector minimo de .env. Los scripts del repo se lanzan con las variables exportadas,
- * pero si faltan se leen de aqui para no depender de un "set -a" previo.
+ * Minimal .env reader. Repo scripts are launched with the variables exported, but
+ * if they are missing they are read from here so a prior "set -a" is not required.
  */
-function cargarEnv() {
+function loadEnv() {
   const p = path.join(ROOT, '.env');
   if (!fs.existsSync(p)) return;
-  for (const linea of fs.readFileSync(p, 'utf8').split('\n')) {
-    const m = linea.match(/^\s*([A-Z0-9_]+)\s*=\s*(.*?)\s*$/);
+  for (const line of fs.readFileSync(p, 'utf8').split('\n')) {
+    const m = line.match(/^\s*([A-Z0-9_]+)\s*=\s*(.*?)\s*$/);
     if (m && process.env[m[1]] === undefined) {
       process.env[m[1]] = m[2].replace(/^["']|["']$/g, '');
     }
   }
 }
 
-const fecha = (d) => d.toISOString().slice(0, 10);
-const diasAtras = (n) => {
+const isoDate = (d) => d.toISOString().slice(0, 10);
+const daysAgo = (n) => {
   const d = new Date();
   d.setUTCDate(d.getUTCDate() - n);
   return d;
 };
 
-/** Las 10 URLs del lote 1 de reindexacion tras la caida del dominio. */
-const LOTE1 = [
+/** The 10 URLs in reindexing batch 1 after the domain outage. */
+const BATCH1 = [
   `${SITE}/es`,
   `${SITE}/es/services`,
-  `${SITE}/es/zapopan/paginas-web`,
-  ...LANDING_INDUSTRIES.map((industria) => `${SITE}/es/guadalajara/${industria}`),
+  `${SITE}/es/zapopan/pages-web`,
+  ...LANDING_INDUSTRIES.map((industry) => `${SITE}/es/guadalajara/${industry}`),
   `${SITE}/es/contact`,
   `${SITE}/es/about`,
 ];
 
 async function main() {
-  cargarEnv();
+  loadEnv();
 
   const keyFile = process.env.GSC_KEY_FILE;
   if (!keyFile || !fs.existsSync(keyFile)) {
@@ -82,11 +82,11 @@ async function main() {
     if (!siteUrl) throw new Error('La cuenta de servicio no ve ninguna propiedad en GSC.');
   }
 
-  // GSC entrega datos con ~2 dias de retraso: la ventana de 28 dias termina anteayer.
-  const end = fecha(diasAtras(2));
-  const start = fecha(diasAtras(29));
+  // GSC data lags ~2 days: the 28-day window ends the day before yesterday.
+  const end = isoDate(daysAgo(2));
+  const start = isoDate(daysAgo(29));
 
-  const consulta = async (dimensions, startDate, rowLimit = 500) => {
+  const runQuery = async (dimensions, startDate, rowLimit = 500) => {
     const { data } = await gsc.searchanalytics.query({
       siteUrl,
       requestBody: { startDate, endDate: end, dimensions, rowLimit },
@@ -95,39 +95,39 @@ async function main() {
   };
 
   const [totRows, qRows, pRows, dRows] = await Promise.all([
-    consulta([], start, 1),
-    consulta(['query'], start),
-    consulta(['page'], start, 200),
-    // Desde una semana antes de la caida, para tener "antes / durante / despues".
-    consulta(['date'], '2026-08-26'),
+    runQuery([], start, 1),
+    runQuery(['query'], start),
+    runQuery(['page'], start, 200),
+    // From one week before the outage, to get "before / during / after".
+    runQuery(['date'], '2026-08-26'),
   ]);
 
   const tot = totRows[0] ?? {};
-  const totales = {
+  const totals = {
     clicks: tot.clicks ?? 0,
     impressions: tot.impressions ?? 0,
     ctr: tot.ctr ?? 0,
     position: tot.position ?? 0,
   };
-  const fila = (r) => ({
+  const metrics = (r) => ({
     clicks: r.clicks ?? 0,
     impressions: r.impressions ?? 0,
     ctr: r.ctr ?? 0,
     position: r.position ?? 0,
   });
-  const queries = qRows.map((r) => ({ query: r.keys?.[0] ?? '', ...fila(r) }));
-  const paginas = pRows.map((r) => ({ page: r.keys?.[0] ?? '', ...fila(r) }));
-  const diario = dRows.map((r) => ({ date: r.keys?.[0] ?? '', ...fila(r) }));
+  const queries = qRows.map((r) => ({ query: r.keys?.[0] ?? '', ...metrics(r) }));
+  const pages = pRows.map((r) => ({ page: r.keys?.[0] ?? '', ...metrics(r) }));
+  const daily = dRows.map((r) => ({ date: r.keys?.[0] ?? '', ...metrics(r) }));
 
-  // La inspeccion de URL tiene cuota propia (2000/dia); 10 en serie va sobrado.
-  const inspecciones = [];
-  for (const url of LOTE1) {
+  // URL inspection has its own quota (2000/day); 10 in series is plenty.
+  const inspections = [];
+  for (const url of BATCH1) {
     try {
       const { data } = await gsc.urlInspection.index.inspect({
         requestBody: { inspectionUrl: url, siteUrl },
       });
       const s = data.inspectionResult?.indexStatusResult ?? {};
-      inspecciones.push({
+      inspections.push({
         url,
         verdict: s.verdict ?? 'UNKNOWN',
         coverageState: s.coverageState ?? 'sin dato',
@@ -136,8 +136,8 @@ async function main() {
         userCanonical: s.userCanonical ?? null,
       });
     } catch (err) {
-      const motivo = String(err?.message ?? err).split('\n')[0].slice(0, 60);
-      inspecciones.push({ url, verdict: 'ERROR', coverageState: `error: ${motivo}`, lastCrawlTime: null });
+      const reason = String(err?.message ?? err).split('\n')[0].slice(0, 60);
+      inspections.push({ url, verdict: 'ERROR', coverageState: `error: ${reason}`, lastCrawlTime: null });
     }
   }
 
@@ -145,23 +145,23 @@ async function main() {
   const report = {
     property: siteUrl,
     range: { start, end },
-    totals: totales,
+    totals,
     byClass,
     commercial,
-    pages: paginas,
-    impact: outageImpact(diario),
-    coverage: coverageSummary(inspecciones),
-    inspections: inspecciones,
+    pages,
+    impact: outageImpact(daily),
+    coverage: coverageSummary(inspections),
+    inspections,
   };
 
   console.log(renderReport(report));
 
   const dir = path.join(os.homedir(), '.config', 'imsoft', 'gsc-snapshots');
   fs.mkdirSync(dir, { recursive: true });
-  const out = path.join(dir, `${fecha(new Date())}.json`);
+  const out = path.join(dir, `${isoDate(new Date())}.json`);
   fs.writeFileSync(
     out,
-    JSON.stringify({ generadoEn: new Date().toISOString(), ...report, queries, diario }, null, 2),
+    JSON.stringify({ generatedAt: new Date().toISOString(), ...report, queries, daily }, null, 2),
   );
   console.log(`\nsnapshot: ${out}`);
 }

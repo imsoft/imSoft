@@ -39,7 +39,7 @@ notificaciones push y modo sin conexión. Se agregan cuando se vea qué usan los
   tabla y una vista por pantalla, con los mismos nombres. Así un cambio se replica leyendo
   un archivo y escribiendo su gemelo.
 - **Por imsoft.io pasan solo tres cosas:** pedir el código (`/api/app/login`, con límite de
-  1 por minuto y 5 por hora por cuenta), eliminar la cuenta (`DELETE /api/app/cuenta`) y el
+  1 por minuto y 5 por hora por cuenta), eliminar la cuenta (`DELETE /api/app/account`) y el
   pago (el enlace `/pagar/…` que ya existe). Los datos se leen directo de Supabase con la
   sesión del cliente; la sesión se guarda cifrada (Keychain / Android Keystore).
 - **Repositorios:** aparte de este, en `~/Proyectos/imSoft/aplicaciones-moviles/`
@@ -72,13 +72,13 @@ notificaciones push y modo sin conexión. Se agregan cuando se vea qué usan los
 - **Avisos:** la app registra su token en `app_devices` (migración `20261006_app_devices.sql`).
   El servidor avisa al cliente cuando se marca una tarea (`PATCH /api/projects/[id]/tasks/[taskId]`),
   cuando el panel registra un pago (`POST /api/projects/[id]/payments`) y cuando Stripe completa
-  un pago (webhook). `src/lib/push.ts` manda a iPhone por APNs (HTTP/2, llave .p8) y a Android
+  un pago (webhook). `src/lib/mobile-app/push.ts` manda a iPhone por APNs (HTTP/2, llave .p8) y a Android
   por Firebase Cloud Messaging (cuenta de servicio). Sin variables, no manda nada y no falla.
   Variables en Vercel: `APNS_KEY_ID`, `APNS_TEAM_ID`, `APNS_KEY_P8` (contenido del .p8, en
   base64 o PEM), `APNS_SANDBOX=1` solo para compilaciones de desarrollo, y
   `FIREBASE_SERVICE_ACCOUNT` (JSON de la cuenta de servicio del proyecto de Firebase).
   Android además necesita `app/google-services.json` (no va en git).
-- **Cotizaciones:** `GET /api/app/cotizaciones` filtra por correo del cliente o por su empresa y
+- **Cotizaciones:** `GET /api/app/quotes` filtra por correo del cliente o por su empresa y
   nunca devuelve borradores. La app muestra folio, total, vigencia y estado; el documento y el
   botón de aceptar siguen en la página pública.
 - **Entrar con Google:** iPhone usa el navegador del sistema con PKCE (sin SDK); necesita un
