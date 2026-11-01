@@ -6,7 +6,7 @@ import {
 } from './service-seo';
 
 describe('localizedServiceTitle', () => {
-  it('mete la ciudad en los servicios que si son desarrollo', () => {
+  it('puts the city in the services that are actually development', () => {
     expect(localizedServiceTitle('web-pages', 'Páginas Web', 'es')).toBe(
       'Desarrollo de Páginas Web en Guadalajara',
     );
@@ -18,8 +18,8 @@ describe('localizedServiceTitle', () => {
     );
   });
 
-  it('no fuerza "Desarrollo de" donde no aplica', () => {
-    // "Desarrollo de Paid Media" no lo dice nadie y delata la plantilla.
+  it('does not force "Desarrollo de" where it does not apply', () => {
+    // Nobody says "Desarrollo de Paid Media" and it gives away the template.
     expect(localizedServiceTitle('paid-media', 'Paid Media', 'es')).toBe(
       'Paid Media en Guadalajara',
     );
@@ -28,51 +28,51 @@ describe('localizedServiceTitle', () => {
     );
   });
 
-  it('un slug desconocido sigue recibiendo la ciudad, sin prefijo', () => {
+  it('an unknown slug still gets the city, without a prefix', () => {
     expect(localizedServiceTitle('servicio-nuevo', 'Servicio Nuevo', 'es')).toBe(
       'Servicio Nuevo en Guadalajara',
     );
   });
 
-  it('en ingles nombra el pais, que es lo que ubica a un lector de fuera', () => {
+  it('in English it names the country, which is what places a foreign reader', () => {
     expect(localizedServiceTitle('web-pages', 'Websites', 'en')).toBe(
       'Web Development in Guadalajara, Mexico',
     );
   });
 
-  it('un titulo vacio se devuelve tal cual, sin construir "en Guadalajara" suelto', () => {
+  it('an empty title is returned as is, without building a loose "en Guadalajara"', () => {
     expect(localizedServiceTitle('web-pages', '', 'es')).toBe('');
   });
 });
 
 describe('localizedServiceDescription', () => {
-  it('antepone la señal local sin perder la descripcion real', () => {
+  it('prepends the local signal without losing the real description', () => {
     const out = localizedServiceDescription('Creamos páginas web profesionales.', 'es');
     expect(out).toContain('Guadalajara');
     expect(out).toContain('páginas web profesionales');
   });
 
-  it('no pasa del limite util de Google', () => {
-    const larga = 'palabra '.repeat(80);
-    expect(localizedServiceDescription(larga, 'es').length).toBeLessThanOrEqual(155);
+  it("does not exceed Google's useful limit", () => {
+    const longText = 'palabra '.repeat(80);
+    expect(localizedServiceDescription(longText, 'es').length).toBeLessThanOrEqual(155);
   });
 
-  it('normaliza los espacios del texto que viene de la base de datos', () => {
+  it('normalizes the whitespace of the text coming from the database', () => {
     expect(localizedServiceDescription('uno   dos\n\ntres', 'es')).toContain('uno dos tres');
   });
 });
 
 describe('serviceAreaSentence', () => {
-  it('nombra los municipios de la zona metropolitana', () => {
+  it('names the municipalities of the metropolitan area', () => {
     const es = serviceAreaSentence('es');
     for (const m of ['Zapopan', 'Tlaquepaque', 'Tonalá', 'Tlajomulco']) {
       expect(es).toContain(m);
     }
   });
 
-  it('el horario que muestra es el mismo que declara el schema', () => {
+  it('the hours it shows are the same ones the schema declares', () => {
     const es = serviceAreaSentence('es');
-    // El texto visible no puede contradecir a openingHoursSpecification.
+    // The visible text must not contradict openingHoursSpecification.
     expect(es).toContain('09:00');
     expect(es).toContain('18:00');
     expect(es).toContain('13:00');

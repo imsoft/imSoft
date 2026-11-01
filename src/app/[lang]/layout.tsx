@@ -71,7 +71,7 @@ export default async function RootLayout({
         <link rel="icon" type="image/png" sizes="32x32" href="/manifest/ios/32.png" />
         <link rel="icon" type="image/png" sizes="16x16" href="/manifest/ios/16.png" />
         <link rel="apple-touch-icon" sizes="180x180" href="/manifest/ios/180.png" />
-        {/* Preconnect a recursos críticos para mejorar FCP */}
+        {/* Preconnect to critical resources to improve FCP */}
         <link rel="preconnect" href="https://wuttmqoohdsgbsdbanoj.supabase.co" />
         <link rel="preconnect" href="https://ik.imagekit.io" />
         <link rel="dns-prefetch" href="https://lh3.googleusercontent.com" />
@@ -97,7 +97,7 @@ export default async function RootLayout({
             }
           `}
         </Script>
-        {/* Identidad del negocio, en todas las paginas. */}
+        {/* Business identity, on every page. */}
         <StructuredData data={businessSchema(lang)} id="business-schema" />
         <StructuredData data={websiteSchema(lang)} id="website-schema" />
         {/* Google Analytics 4 */}
@@ -118,8 +118,8 @@ export default async function RootLayout({
           </>
         )}
       </head>
-      {/* Sin overflow-x-hidden en body: con <html> ya recortado, body se volveria un
-          contenedor de scroll que nunca se desplaza y anularia todo position: sticky. */}
+      {/* No overflow-x-hidden on body: with <html> already clipped, body would become a
+          scroll container that never scrolls and would break every position: sticky. */}
       <body className={`${montserrat.variable} antialiased`}>
         <ThemeProvider
           attribute="class"

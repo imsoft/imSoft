@@ -69,14 +69,14 @@ export function ClientSidebar({ dict, lang }: ClientSidebarProps) {
   ]
 
 
-  // Función para verificar si una ruta está activa
-  // Compara si el pathname actual coincide exactamente o comienza con la URL del item
+  // Checks whether a route is active
+  // Matches if the current pathname is exactly the item URL or starts with it
   const isRouteActive = (itemUrl: string) => {
-    // Si es la ruta overview (/dashboard/client), solo activar si coincide exactamente
+    // For the overview route (/dashboard/client), only active on an exact match
     if (itemUrl === `/${lang}/dashboard/client`) {
       return pathname === itemUrl
     }
-    // Para otras rutas, activar si el pathname comienza con la URL del item
+    // For other routes, active if the pathname starts with the item URL
     return pathname.startsWith(itemUrl)
   }
 

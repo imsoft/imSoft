@@ -19,7 +19,7 @@ export async function PATCH(
       )
     }
 
-    // Verificar que el usuario sea admin
+    // Check the user is admin
     if (!isAdmin(user)) {
       return NextResponse.json(
         { error: 'Forbidden' },
@@ -39,7 +39,7 @@ export async function PATCH(
 
     const targetEmail = email.trim().toLowerCase()
 
-    // Obtener el contacto para ver su estado actual
+    // Get the contact to see its current state
     const { data: contact, error: fetchError } = await supabase
       .from('contacts')
       .select('invalid_emails')
@@ -57,20 +57,20 @@ export async function PATCH(
     let updatedInvalidEmails: string[] = []
 
     if (isInvalid) {
-      // Agregar a inválidos si no existe
+      // Add to invalid emails if not already there
       if (!currentInvalidEmails.some(e => e.toLowerCase() === targetEmail)) {
         updatedInvalidEmails = [...currentInvalidEmails, email.trim()]
       } else {
         updatedInvalidEmails = currentInvalidEmails
       }
     } else {
-      // Eliminar de inválidos
+      // Remove from invalid emails
       updatedInvalidEmails = currentInvalidEmails.filter(
         e => e.toLowerCase() !== targetEmail
       )
     }
 
-    // Actualizar en base de datos
+    // Update in the database
     const { error: updateError } = await supabase
       .from('contacts')
       .update({

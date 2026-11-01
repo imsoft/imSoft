@@ -14,7 +14,7 @@ export default async function ContactMessagesPage({
 
   const supabase = await createClient()
 
-  // Verificar autenticación
+  // Check authentication
   const {
     data: { user },
   } = await supabase.auth.getUser()
@@ -23,7 +23,7 @@ export default async function ContactMessagesPage({
     redirect(`/${lang}/login`)
   }
 
-  // Obtener mensajes de contacto
+  // Fetch contact messages
   const { data: messages, error } = await supabase
     .from('contact_messages')
     .select('*')

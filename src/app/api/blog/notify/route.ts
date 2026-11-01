@@ -8,7 +8,7 @@ import { buildUnsubscribeUrl } from '@/lib/email/unsubscribe'
 import { isAdmin } from '@/lib/roles'
 
 
-// Resend acepta hasta 100 correos por lote en batch.send().
+// Resend accepts up to 100 emails per batch in batch.send().
 const BATCH_SIZE = 100
 
 interface Recipient {
@@ -18,19 +18,19 @@ interface Recipient {
 }
 
 /**
- * Envía el aviso de un nuevo artículo del blog a todos los usuarios confirmados
- * y suscritos (modelo soft opt-in: solo se excluye a quien se dio de baja).
+ * Sends the new blog article notice to every confirmed and subscribed user
+ * (soft opt-in model: only those who unsubscribed are excluded).
  *
- * Garantías:
- *  - Idempotente: si el post ya tiene notification_sent_at, no reenvía.
- *  - Pre-flight: valida config y datos ANTES de enviar; si algo falla, no sale
- *    ningún correo a los usuarios.
- *  - Ante cualquier error, notifica al admin (no a los usuarios).
+ * Guarantees:
+ *  - Idempotent: if the post already has notification_sent_at, it doesn't resend.
+ *  - Pre-flight: validates config and data BEFORE sending; if anything fails, no
+ *    email goes out to users.
+ *  - On any error, notifies the admin (not the users).
  */
 export async function POST(request: NextRequest) {
   let postTitle = ''
   try {
-    // ---- Autenticación: solo admins ----
+    // ---- Auth: admins only ----
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'postId requerido' }, { status: 400 })
     }
 
-    // ---- Pre-flight: configuración ----
+    // ---- Pre-flight: configuration ----
     if (!process.env.RESEND_API_KEY) {
       throw new Error('RESEND_API_KEY no está configurada')
     }
@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
 
     const admin = createAdminClient()
 
-    // ---- Cargar el artículo y validar idempotencia ----
+    // ---- Load the article and check idempotency ----
     const { data: post, error: postError } = await admin
       .from('blog')
       .select('id, slug, title_es, title_en, title, excerpt_es, excerpt_en, excerpt, image_url, published, notification_sent_at')
@@ -70,11 +70,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Artículo no encontrado' }, { status: 404 })
     }
     if (!post.published) {
-      // No es un error: simplemente no se notifica un borrador.
+      // Not an error: a draft simply isn't announced.
       return NextResponse.json({ skipped: true, reason: 'not_published' })
     }
     if (post.notification_sent_at) {
-      // Candado de idempotencia: ya se envió antes.
+      // Idempotency lock: already sent before.
       return NextResponse.json({ skipped: true, reason: 'already_sent' })
     }
 
@@ -92,7 +92,7 @@ export async function POST(request: NextRequest) {
       null
     const postUrl = `${siteUrl}/${lang}/blog/${post.slug}`
 
-    // ---- Dirección física para el pie (CAN-SPAM) ----
+    // ---- Physical address for the footer (CAN-SPAM) ----
     const { data: contactData } = await admin
       .from('contact')
       .select('address')
@@ -100,7 +100,7 @@ export async function POST(request: NextRequest) {
       .maybeSingle()
     const companyAddress = contactData?.address || null
 
-    // ---- Construir la lista de destinatarios (paginado) ----
+    // ---- Build the recipient list (paginated) ----
     const recipients: Recipient[] = []
     const seen = new Set<string>()
     let page = 1
@@ -117,11 +117,11 @@ export async function POST(request: NextRequest) {
       for (const u of batch) {
         const email = u.email?.trim().toLowerCase()
         if (!email || seen.has(email)) continue
-        // Solo humanos confirmados.
+        // Confirmed humans only.
         if (!u.email_confirmed_at) continue
-        // Soft opt-in: se excluye únicamente a quien explícitamente se dio de baja.
+        // Soft opt-in: only those who explicitly unsubscribed are excluded.
         if (u.user_metadata?.email_opt_in === false) continue
-        // No nos enviamos la newsletter a nosotros mismos (admins).
+        // We don't send the newsletter to ourselves (admins).
         if (isAdmin(u)) continue
 
         seen.add(email)
@@ -140,12 +140,12 @@ export async function POST(request: NextRequest) {
     }
 
     if (recipients.length === 0) {
-      // Nada que enviar: marcamos como notificado para no reintentar en vano.
+      // Nothing to send: mark as notified so it isn't retried in vain.
       await admin.from('blog').update({ notification_sent_at: new Date().toISOString() }).eq('id', post.id)
       return NextResponse.json({ sent: 0, reason: 'no_recipients' })
     }
 
-    // ---- Envío por lotes (si el primer lote falla, no continuamos) ----
+    // ---- Batch sending (if a batch fails, we stop) ----
     let sent = 0
     for (let start = 0; start < recipients.length; start += BATCH_SIZE) {
       const chunk = recipients.slice(start, start + BATCH_SIZE)
@@ -167,7 +167,7 @@ export async function POST(request: NextRequest) {
 
       const { error: sendError } = await getResend().batch.send(emails)
       if (sendError) {
-        // Detenemos el envío inmediatamente y reportamos al admin.
+        // Stop sending right away and report to the admin.
         throw new Error(
           `Falló el envío en el lote ${start / BATCH_SIZE + 1} (${sent} enviados antes del fallo): ${sendError.message}`
         )
@@ -175,7 +175,7 @@ export async function POST(request: NextRequest) {
       sent += chunk.length
     }
 
-    // ---- Marcar como notificado (idempotencia) ----
+    // ---- Mark as notified (idempotency) ----
     await admin.from('blog').update({ notification_sent_at: new Date().toISOString() }).eq('id', post.id)
 
     return NextResponse.json({ sent, total: recipients.length })
@@ -183,14 +183,14 @@ export async function POST(request: NextRequest) {
     const message = error instanceof Error ? error.message : 'Error desconocido'
     console.error('[blog/notify] Error:', message)
 
-    // Notificar al admin (no a los usuarios) para poder diagnosticar.
+    // Notify the admin (not the users) so it can be diagnosed.
     await notifyAdminOfError(postTitle, message)
 
     return NextResponse.json({ error: 'Error al enviar las notificaciones', details: message }, { status: 500 })
   }
 }
 
-/** Manda al admin un correo con el detalle del fallo. Nunca lanza. */
+/** Emails the admin the failure details. Never throws. */
 async function notifyAdminOfError(postTitle: string, message: string) {
   try {
     if (!process.env.RESEND_API_KEY) return

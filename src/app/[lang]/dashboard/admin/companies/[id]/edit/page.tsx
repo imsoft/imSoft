@@ -20,12 +20,12 @@ export default async function EditAdminCompanyPage({ params }: {
     redirect(`/${lang}/login`)
   }
 
-  // Verificar que sea admin
+  // Make sure the user is an admin
   if (!isAdmin(user)) {
     redirect(`/${lang}/dashboard/client`)
   }
 
-  // Obtener la empresa (admins pueden ver todas, incluyendo las sin usuario)
+  // Fetch the company (admins can see all, including those without a user)
   const { data: company, error } = await supabase
     .from('companies')
     .select('*')

@@ -24,14 +24,14 @@ import { X, Image as ImageIcon, Plus, Trash2 } from 'lucide-react'
 import Image from '@/components/ui/image'
 import { TranslateButton } from '@/components/ui/translate-button'
 
-// Función para generar slug desde un texto
+// Builds a slug from a text
 function generateSlug(text: string): string {
   return text
     .toLowerCase()
     .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '') // Eliminar acentos
-    .replace(/[^a-z0-9]+/g, '-') // Reemplazar caracteres especiales con guiones
-    .replace(/^-+|-+$/g, '') // Eliminar guiones al inicio y final
+    .replace(/[\u0300-\u036f]/g, '') // Strip accents
+    .replace(/[^a-z0-9]+/g, '-') // Replace special characters with dashes
+    .replace(/^-+|-+$/g, '') // Trim leading and trailing dashes
 }
 
 const serviceSchema = z.object({
@@ -69,7 +69,7 @@ export function ServiceForm({ dict, lang, service }: ServiceFormProps) {
     },
   })
 
-  // Generar slug automáticamente basado en el título en inglés
+  // Auto-generate the slug from the English title
   const titleEn = form.watch('title_en')
   const currentSlug = form.watch('slug')
 
@@ -81,7 +81,7 @@ export function ServiceForm({ dict, lang, service }: ServiceFormProps) {
           form.setValue('slug', newSlug, { shouldValidate: false })
         }
       } else {
-        // Si el título está vacío, limpiar el slug
+        // If the title is empty, clear the slug
         if (currentSlug) {
           form.setValue('slug', '', { shouldValidate: false })
         }
@@ -89,7 +89,7 @@ export function ServiceForm({ dict, lang, service }: ServiceFormProps) {
     }
   }, [titleEn, isEditing, form, currentSlug])
 
-  // Función helper para extraer el path del storage desde la URL pública
+  // Extracts the storage path from the public URL
   function getStoragePathFromUrl(url: string, bucketName: string): string | null {
     try {
       const urlParts = url.split(`/storage/v1/object/public/${bucketName}/`)
@@ -99,7 +99,7 @@ export function ServiceForm({ dict, lang, service }: ServiceFormProps) {
     }
   }
 
-  // Función para eliminar imagen del storage
+  // Deletes an image from storage
   async function deleteImageFromStorage(imageUrl: string) {
     try {
       const supabase = createClient()
@@ -127,7 +127,7 @@ export function ServiceForm({ dict, lang, service }: ServiceFormProps) {
     try {
       const supabase = createClient()
 
-      // Obtener el slug actual del formulario
+      // Get the current slug from the form
       const currentSlug = form.getValues('slug')
 
       if (!currentSlug) {
@@ -136,20 +136,20 @@ export function ServiceForm({ dict, lang, service }: ServiceFormProps) {
         return
       }
 
-      // Eliminar imagen anterior si existe
+      // Delete the previous image if any
       const currentImageUrl = form.getValues('image_url')
       if (currentImageUrl) {
         await deleteImageFromStorage(currentImageUrl)
       }
 
-      // Nueva estructura: /<slug>/nombre-original.ext
+      // New layout: /<slug>/original-name.ext
       const filePath = `${currentSlug}/${file.name}`
 
       const { error: uploadError } = await supabase.storage
         .from('service-images')
         .upload(filePath, file, {
           cacheControl: '3600',
-          upsert: true // Permitir sobrescribir la imagen existente
+          upsert: true // Allow overwriting the existing image
         })
 
       if (uploadError) throw uploadError
@@ -188,12 +188,12 @@ export function ServiceForm({ dict, lang, service }: ServiceFormProps) {
   async function handleRemoveImage() {
     const currentImageUrl = form.getValues('image_url')
 
-    // Eliminar del storage
+    // Delete from storage
     if (currentImageUrl) {
       await deleteImageFromStorage(currentImageUrl)
     }
 
-    // Limpiar el formulario
+    // Clear the form field
     form.setValue('image_url', '')
     setPreviewImage(null)
     if (fileInputRef.current) {

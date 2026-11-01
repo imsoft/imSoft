@@ -21,8 +21,8 @@ export async function generateStaticParams() {
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
     { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } }
   );
-  // `slug_es` puede no existir todavia (la migracion se aplica a mano): en ese caso
-  // PostgREST falla y se usa solo `slug`, como antes.
+  // `slug_es` may not exist yet (the migration is applied by hand): in that case
+  // PostgREST fails and only `slug` is used, as before.
   let posts: Array<{ slug: string | null; slug_es?: string | null }> = [];
   const withEs = await supabase
     .from('blog')
@@ -62,15 +62,15 @@ export async function generateMetadata({
 
   const post = await findBlogPostBySlug(supabase, slug);
 
-  // Con blog/loading.tsx la respuesta empieza a enviarse antes de que el render llame a
-  // notFound(), y un slug inexistente salia con 200 e "index, follow". Los metadatos se
-  // resuelven antes de enviar nada, asi que aqui el 404 si llega al cliente.
+  // With blog/loading.tsx the response starts streaming before the render calls
+  // notFound(), and a missing slug went out with 200 and "index, follow". Metadata is
+  // resolved before anything is sent, so here the 404 does reach the client.
   if (!post) {
     notFound();
   }
 
 
-  // La canonica siempre apunta al slug del idioma, aunque se haya entrado por el otro.
+  // The canonical always points to the language's slug, even if reached through the other one.
   const canonicalSlug = canonicalBlogSlug(post, lang);
 
   const title = lang === 'en'
@@ -114,8 +114,8 @@ export default async function BlogPostPage({ params }: {
 
   const dict = await getDictionary(lang);
 
-  // Crear cliente de Supabase con service role para bypass RLS temporalmente
-  // TODO: Arreglar las políticas RLS y volver a usar ANON_KEY
+  // Service-role Supabase client to bypass RLS for now
+  // TODO: fix the RLS policies and go back to ANON_KEY
   const supabase = createSupabaseClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
@@ -128,7 +128,7 @@ export default async function BlogPostPage({ params }: {
     }
   );
 
-  // Obtener datos de contacto
+  // Fetch contact info
   let contactData = undefined;
   try {
     const { data } = await supabase
@@ -141,14 +141,14 @@ export default async function BlogPostPage({ params }: {
     // Error fetching contact data - silently fail
   }
 
-  // Obtener el post por cualquiera de sus dos slugs (es / en)
+  // Fetch the post by either of its two slugs (es / en)
   const post = await findBlogPostBySlug(supabase, slug);
 
   if (!post) {
     notFound();
   }
 
-  // Enlaces internos: el servicio que corresponde a este articulo (si hay).
+  // Internal links: the service that matches this article (if any).
   const relatedServiceSlugs = relatedServicesForPost(post.slug_es || '');
   const { data: relatedServicesRaw } = relatedServiceSlugs.length
     ? await supabase.from('services').select('slug, title_es, title_en, description_es, description_en').in('slug', relatedServiceSlugs)
@@ -159,18 +159,18 @@ export default async function BlogPostPage({ params }: {
     description: (lang === 'en' ? s.description_en : s.description_es) || '',
   }));
 
-  // El 301 del slug del otro idioma al del idioma pedido NO se hace aqui: esta ruta se
-  // prerenderiza por ISR (`revalidate` arriba) y una redireccion lanzada dentro de un
-  // render cacheado se traga, devolviendo 200. Se resuelve en `next.config.ts`, con el
-  // mapa que genera `blogSlugLanguageRedirects()` leyendo la BD en build.
+  // The 301 from the other language's slug to the requested one is NOT done here: this route is
+  // prerendered with ISR (`revalidate` above) and a redirect thrown inside a cached
+  // render is swallowed, returning 200. It is handled in `next.config.ts`, with the
+  // map `blogSlugLanguageRedirects()` builds by reading the DB at build time.
   //
-  // Que la busqueda acepte los dos slugs se queda como red de seguridad: si un post
-  // nuevo aun no tiene su regla, la pagina responde con el contenido correcto y la
-  // canonica correcta en vez de un 404.
+  // Accepting both slugs in the lookup stays as a safety net: if a new post
+  // doesn't have its rule yet, the page responds with the right content and the
+  // right canonical instead of a 404.
 
   const isEs = lang === 'es'
 
-  // Obtener el contenido según el idioma
+  // Get the content for the language
   const title = lang === 'en'
     ? (post.title_en || post.title || '')
     : (post.title_es || post.title || '');
@@ -192,28 +192,28 @@ export default async function BlogPostPage({ params }: {
   const publishedTime = post.created_at || new Date().toISOString();
   const modifiedTime = post.updated_at || publishedTime;
 
-  // Obtener excerpt para structured data
+  // Get the excerpt for structured data
   const excerpt = lang === 'en'
     ? (post.excerpt_en || post.excerpt || '')
     : (post.excerpt_es || post.excerpt || '');
   
-  // Limpiar HTML del contenido para obtener texto plano
+  // Strip HTML from the content to get plain text
   const plainContent = content.replace(/<[^>]*>/g, '').substring(0, 200);
 
-  // Tiempo de lectura estimado
+  // Estimated reading time
   const wordCount = content.replace(/<[^>]*>/g, '').split(/\s+/).filter(Boolean).length;
   const readingMinutes = Math.max(1, Math.ceil(wordCount / 200));
   const readingLabel = isEs ? `${readingMinutes} min de lectura` : `${readingMinutes} min read`;
 
-  // Nombre del autor
+  // Author name
   const authorName = post.author_name || 'Brandon Garcia';
 
-  // Categoría con label legible
+  // Category with a readable label
   const categoryLabel = post.category
     ? post.category.charAt(0).toUpperCase() + post.category.slice(1)
     : null;
 
-  // Structured data para Article
+  // Structured data for Article
   const articleStructuredData = generateStructuredData({
     type: 'Article',
     data: {

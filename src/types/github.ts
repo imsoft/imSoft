@@ -1,4 +1,4 @@
-// Tipos para la API de GitHub
+// Types for the GitHub API
 
 export interface GitHubCommit {
   sha: string

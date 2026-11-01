@@ -1,26 +1,26 @@
 /**
- * Servicios que se venden en la portada. La seccion de servicios mostraba 19 tarjetas
- * iguales (13 de software, 6 de marketing) con foto de banco y solo el nombre, y en
- * celular eran seis pantallas de scroll. Desde el 26-oct-2026 la portada muestra cinco
- * servicios principales con problema, entregables, precio y un caso real, y el resto en
- * una lista compacta. La pagina /services sigue mostrando todo.
+ * Services sold on the home page. The services section showed 19 identical cards
+ * (13 software, 6 marketing) with a stock photo and only the name, and on
+ * mobile it was six screens of scrolling. Since 2026-10-26 the home page shows five
+ * main services with problem, deliverables, price and a real case, and the rest in
+ * a compact list. The /services page still shows everything.
  *
- * Los precios "desde" salen de src/config/pricing.ts, la misma fuente que la referencia de
- * precios. Los ganchos usan el mismo lenguaje que los mensajes de prospeccion del CRM.
+ * The "desde" prices come from src/config/pricing.ts, the same source as the pricing
+ * reference. The hooks use the same language as the CRM prospecting messages.
  */
 import type { Service } from '@/types/database'
 import { startingPriceLabel, type PriceKey } from '@/config/pricing'
 
 export interface MainService {
-  /** Slug del servicio en la tabla `services` (enlace a /services/<slug>). */
+  /** Service slug in the `services` table (link to /services/<slug>). */
   slug: string
   title: { es: string; en: string }
-  /** El problema del cliente, en una frase. */
+  /** The client's problem, in one sentence. */
   problem: { es: string; en: string }
   deliverables: { es: [string, string, string]; en: [string, string, string] }
-  /** Clave del piso de precio en src/config/pricing.ts. */
+  /** Key of the price floor in src/config/pricing.ts. */
   price: PriceKey
-  /** Slug del proyecto del portafolio que ilustra el servicio, si hay uno. */
+  /** Slug of the portfolio project that illustrates the service, if any. */
   showcase: { slug: string; name: string } | null
 }
 
@@ -97,7 +97,7 @@ export const MAIN_SERVICES: MainService[] = [
   },
 ]
 
-/** Etiqueta "Desde $X" del servicio en el idioma pedido. */
+/** "Desde $X" label of the service in the requested language. */
 export function startingPriceOf(service: MainService, lang: string): string {
   return startingPriceLabel(service.price, lang)
 }
@@ -108,7 +108,7 @@ export interface ShowcaseCase {
   image: string
 }
 
-/** Imagen del portafolio para el caso de cada servicio; null si el proyecto no esta. */
+/** Portfolio image for each service's case; null if the project isn't there. */
 export function showcaseCase(service: MainService, portfolio: Array<{ slug?: string | null; image_url?: string | null }>): ShowcaseCase | null {
   if (!service.showcase) return null
   const p = portfolio.find((x) => x.slug === service.showcase!.slug)
@@ -123,8 +123,8 @@ export interface SecondaryService {
 }
 
 /**
- * Lo demas que se ofrece, para la lista compacta: servicios de tecnologia que no son
- * principales, en el orden en que estan en la base. El marketing va aparte, en una linea.
+ * Everything else on offer, for the compact list: technology services that aren't
+ * main ones, in the order they are in the database. Marketing goes separately, on one line.
  */
 export function secondaryServices(services: Service[], lang: string): SecondaryService[] {
   const mainSlugs = new Set(MAIN_SERVICES.map((s) => s.slug))

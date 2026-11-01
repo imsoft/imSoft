@@ -9,25 +9,25 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io';
 const LOGO = `${SITE_URL}/logos/logo-imsoft-blue.png`;
 
 /**
- * Identidad del negocio en JSON-LD, emitida una sola vez en el layout raiz.
+ * Business identity in JSON-LD, emitted once in the root layout.
  *
- * Un unico nodo `ProfessionalService`, que por herencia (ProfessionalService <-
- * LocalBusiness <- Organization) ya ES una Organization: hereda name, url, logo,
- * sameAs, contactPoint, address, areaServed y legalName. Por eso no hace falta un
- * segundo nodo Organization, y publicarlo aparte enlazado con `parentOrganization`
- * seria peor: declararia que imSoft tiene una empresa matriz llamada imSoft.
+ * A single `ProfessionalService` node, which through inheritance (ProfessionalService <-
+ * LocalBusiness <- Organization) already IS an Organization: it inherits name, url, logo,
+ * sameAs, contactPoint, address, areaServed and legalName. That's why there's no need for a
+ * second Organization node, and publishing it separately linked with `parentOrganization`
+ * would be worse: it would declare that imSoft has a parent company called imSoft.
  *
- * Se probo tambien `"@type": ["ProfessionalService", "Organization"]`. Es JSON-LD
- * valido, pero validator.schema.org descarta el nodo entero sin dar error, asi que no
- * merece la pena arriesgarse a que el parser de Google haga lo mismo y la entidad
- * quede invisible.
+ * `"@type": ["ProfessionalService", "Organization"]` was tried too. It's valid
+ * JSON-LD, but validator.schema.org drops the whole node without an error, so it's
+ * not worth risking Google's parser doing the same and the entity
+ * becoming invisible.
  *
- * NINGUN otro bloque de la pagina debe referenciar este nodo con `{'@id': ...}`.
- * Verificado en produccion contra validator.schema.org: en cuanto `WebSite.publisher` o
- * `Service.provider` apuntaban aqui por @id, el validador descartaba este nodo entero
- * sin reportar error y la empresa desaparecia de las entidades detectadas. Al quitar
- * esas referencias reaparece. Los demas bloques describen a imSoft en linea con
- * nombre y url, que es lo que Google usa para reconciliar la entidad.
+ * NO other block of the page may reference this node with `{'@id': ...}`.
+ * Verified in production against validator.schema.org: as soon as `WebSite.publisher` or
+ * `Service.provider` pointed here by @id, the validator dropped this whole node
+ * without reporting an error and the company disappeared from the detected entities. Removing
+ * those references brings it back. The other blocks describe imSoft inline with
+ * name and url, which is what Google uses to reconcile the entity.
  */
 
 export function businessSchema(lang: string) {
@@ -49,22 +49,22 @@ export function businessSchema(lang: string) {
     telephone: BUSINESS.telephone,
     address: postalAddress(),
     areaServed: [...BUSINESS_AREA_SERVED],
-    openingHoursSpecification: BUSINESS.openingHours.map((tramo) => ({
+    openingHoursSpecification: BUSINESS.openingHours.map((slot) => ({
       '@type': 'OpeningHoursSpecification',
-      dayOfWeek: [...tramo.days],
-      opens: tramo.opens,
-      closes: tramo.closes,
+      dayOfWeek: [...slot.days],
+      opens: slot.opens,
+      closes: slot.closes,
     })),
     sameAs: [...BUSINESS.sameAs],
-    // Un punto de contacto por funcion: Google los muestra en el panel de conocimiento.
+    // One contact point per function: Google shows them in the knowledge panel.
     contactPoint: [
       { '@type': 'ContactPoint', contactType: 'customer service', email: BUSINESS.email, telephone: BUSINESS.telephone, areaServed: 'MX', availableLanguage: [...BUSINESS.languages] },
       { '@type': 'ContactPoint', contactType: 'sales', email: BUSINESS.contactEmails.sales, telephone: BUSINESS.telephone, areaServed: 'MX', availableLanguage: [...BUSINESS.languages] },
       { '@type': 'ContactPoint', contactType: 'billing support', email: BUSINESS.contactEmails.billing, areaServed: 'MX', availableLanguage: [...BUSINESS.languages] },
       { '@type': 'ContactPoint', contactType: 'technical support', email: BUSINESS.contactEmails.support, areaServed: 'MX', availableLanguage: [...BUSINESS.languages] },
     ],
-    // `knowsLanguage` si es valido en Organization; `availableLanguage` no lo es en
-    // LocalBusiness ni sus subtipos, solo dentro de ContactPoint.
+    // `knowsLanguage` is valid on Organization; `availableLanguage` isn't on
+    // LocalBusiness or its subtypes, only inside ContactPoint.
     knowsLanguage: isEs ? ['es-MX', 'en'] : ['en', 'es-MX'],
   };
 }

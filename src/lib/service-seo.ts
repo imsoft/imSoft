@@ -2,22 +2,22 @@ import { truncateDescription } from './seo';
 import { BUSINESS } from '@/config/business';
 
 /**
- * Titulos y descripciones locales para las paginas de servicio.
+ * Local titles and descriptions for the service pages.
  *
- * Las 19 paginas de /services/<slug> se titulaban solo con el nombre del servicio
- * ("Páginas Web | imSoft"), sin ninguna senal geografica, asi que no competian por las
- * consultas que si tienen intencion comercial ("desarrollo web en Guadalajara").
+ * The 19 /services/<slug> pages were titled with just the service name
+ * ("Páginas Web | imSoft"), with no geographic signal, so they didn't compete for the
+ * queries that do have commercial intent ("desarrollo web en Guadalajara").
  *
- * Se optimizan las paginas que ya existen en vez de crear una variante por ciudad:
- * duplicar la URL pondria dos paginas propias a pelear por la misma consulta, que es
- * exactamente el problema de canibalizacion que ya costo retirar 36 articulos del blog.
+ * The existing pages are optimized instead of creating a variant per city:
+ * duplicating the URL would put two of our own pages fighting for the same query, which is
+ * exactly the cannibalization problem that already cost removing 36 blog articles.
  */
 
 const CITY_ES = 'Guadalajara';
 
 /**
- * Verbo con el que se nombra cada servicio en el titulo. No todos son "desarrollo":
- * paid media o produccion audiovisual no se "desarrollan", y forzarlo suena a plantilla.
+ * Verb each service is named with in the title. Not all of them are "desarrollo":
+ * paid media or video production aren't "developed", and forcing it sounds like a template.
  */
 const PREFIX_ES: Record<string, string> = {
   'web-pages': 'Desarrollo de',
@@ -44,7 +44,7 @@ const PREFIX_EN: Record<string, string> = {
   'tiendas-en-linea': 'E-commerce Development',
 };
 
-/** "Desarrollo de Páginas Web en Guadalajara" — o "Paid Media en Guadalajara". */
+/** "Desarrollo de Páginas Web en Guadalajara", or "Paid Media en Guadalajara". */
 export function localizedServiceTitle(slug: string, title: string, lang: string): string {
   if (!title) return title;
   if (lang === 'en') {
@@ -56,8 +56,8 @@ export function localizedServiceTitle(slug: string, title: string, lang: string)
 }
 
 /**
- * Meta description con senal local. Se antepone la ciudad a la descripcion real del
- * servicio en vez de sustituirla, para no perder lo que ya describe la oferta.
+ * Meta description with a local signal. The city is prepended to the service's real
+ * description instead of replacing it, so nothing the offer already describes is lost.
  */
 export function localizedServiceDescription(description: string, lang: string): string {
   const clean = (description || '').replace(/\s+/g, ' ').trim();
@@ -65,11 +65,11 @@ export function localizedServiceDescription(description: string, lang: string): 
     lang === 'en'
       ? 'Software agency based in Guadalajara, Jalisco. '
       : `Agencia de software en ${CITY_ES}, Jalisco. `;
-  // El limite util de Google ronda los 155 caracteres.
+  // Google's useful limit is around 155 characters.
   return truncateDescription(`${lead}${clean}`);
 }
 
-/** Zona de servicio en texto, para el bloque local visible de la pagina. */
+/** Service area as text, for the visible local block of the page. */
 export function serviceAreaSentence(lang: string): string {
   return lang === 'en'
     ? 'We work with companies across the Guadalajara metro area — Zapopan, Tlaquepaque, Tonalá and Tlajomulco — and remotely throughout Mexico. We are available Monday to Saturday from 09:00 to 18:00, and Sundays from 09:00 to 13:00.'

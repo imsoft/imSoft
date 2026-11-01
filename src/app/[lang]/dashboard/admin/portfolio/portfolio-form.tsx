@@ -38,17 +38,17 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover'
 
-// Función para generar slug desde un texto
+// Builds a slug from a text
 function generateSlug(text: string): string {
   return text
     .toLowerCase()
     .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '') // Eliminar acentos
-    .replace(/[^a-z0-9]+/g, '-') // Reemplazar caracteres especiales con guiones
-    .replace(/^-+|-+$/g, '') // Eliminar guiones al inicio y final
+    .replace(/[\u0300-\u036f]/g, '') // Strip accents
+    .replace(/[^a-z0-9]+/g, '-') // Replace special characters with dashes
+    .replace(/^-+|-+$/g, '') // Trim leading and trailing dashes
 }
 
-// Las empresas se cargarán dinámicamente desde la API
+// Companies are loaded dynamically from the API
 
 const projectTypes = [
   { value: 'web-development', label_es: 'Desarrollo Web', label_en: 'Web Development' },
@@ -116,7 +116,7 @@ export function PortfolioForm({ dict, lang, portfolio }: PortfolioFormProps) {
     },
   })
 
-  // Cargar empresas desde la API
+  // Load companies from the API
   useEffect(() => {
     async function fetchCompanies() {
       try {
@@ -143,7 +143,7 @@ export function PortfolioForm({ dict, lang, portfolio }: PortfolioFormProps) {
     fetchCompanies()
   }, [])
 
-  // Generar slug automáticamente basado en el título en inglés
+  // Auto-generate the slug from the English title
   const titleEn = form.watch('title_en')
   const currentSlug = form.watch('slug')
 
@@ -155,7 +155,7 @@ export function PortfolioForm({ dict, lang, portfolio }: PortfolioFormProps) {
           form.setValue('slug', newSlug, { shouldValidate: false })
         }
       } else {
-        // Si el título está vacío, limpiar el slug
+        // If the title is empty, clear the slug
         if (currentSlug) {
           form.setValue('slug', '', { shouldValidate: false })
         }
@@ -163,7 +163,7 @@ export function PortfolioForm({ dict, lang, portfolio }: PortfolioFormProps) {
     }
   }, [titleEn, isEditing, form, currentSlug])
 
-  // Función helper para extraer el path del storage desde la URL pública
+  // Extracts the storage path from the public URL
   function getStoragePathFromUrl(url: string, bucketName: string): string | null {
     try {
       const urlParts = url.split(`/storage/v1/object/public/${bucketName}/`)
@@ -173,7 +173,7 @@ export function PortfolioForm({ dict, lang, portfolio }: PortfolioFormProps) {
     }
   }
 
-  // Función para eliminar imagen del storage
+  // Deletes an image from storage
   async function deleteImageFromStorage(imageUrl: string) {
     try {
       const supabase = createClient()
@@ -208,13 +208,13 @@ export function PortfolioForm({ dict, lang, portfolio }: PortfolioFormProps) {
         return
       }
 
-      // Eliminar imagen anterior si existe
+      // Delete the previous image if any
       const currentImageUrl = form.getValues('image_url')
       if (currentImageUrl) {
         await deleteImageFromStorage(currentImageUrl)
       }
 
-      // Nueva estructura: /<slug>/nombre-original.ext
+      // New layout: /<slug>/original-name.ext
       const filePath = `${portfolioSlug}/${file.name}`
 
       const { error: uploadError } = await supabase.storage
@@ -260,12 +260,12 @@ export function PortfolioForm({ dict, lang, portfolio }: PortfolioFormProps) {
   async function handleRemoveImage() {
     const currentImageUrl = form.getValues('image_url')
 
-    // Eliminar del storage
+    // Delete from storage
     if (currentImageUrl) {
       await deleteImageFromStorage(currentImageUrl)
     }
 
-    // Limpiar el formulario
+    // Clear the form field
     form.setValue('image_url', '')
     setPreviewImage(null)
     if (fileInputRef.current) {
@@ -278,7 +278,7 @@ export function PortfolioForm({ dict, lang, portfolio }: PortfolioFormProps) {
     try {
       const supabase = createClient()
       
-      // Obtener el nombre de la empresa para mantener compatibilidad con el campo client
+      // Get the company name to stay compatible with the client field
       const selectedCompany = companies.find(c => c.value === values.company_id)
       const companyName = selectedCompany?.label || ''
 
@@ -644,7 +644,7 @@ export function PortfolioForm({ dict, lang, portfolio }: PortfolioFormProps) {
           )}
         />
 
-        {/* ── Caso de estudio ── */}
+        {/* ── Case study ── */}
         <div className="border-t pt-6 space-y-6">
           <h3 className="font-semibold text-lg">
             {lang === 'en' ? 'Case Study (optional)' : 'Caso de estudio (opcional)'}

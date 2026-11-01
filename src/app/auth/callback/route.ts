@@ -13,13 +13,13 @@ export async function GET(request: NextRequest) {
     const { error } = await supabase.auth.exchangeCodeForSession(code)
 
     if (!error) {
-      // Obtener el usuario para verificar su rol y redirigir apropiadamente
+      // Get the user to check their role and redirect accordingly
       const { data: { user } } = await supabase.auth.getUser()
 
       if (user) {
         const userRole = roleOf(user)
 
-        // Si es la primera vez que inicia sesión con Google y no tiene rol, asignarlo como cliente
+        // First Google sign-in with no role yet: assign the client role
         if (!user.user_metadata?.role) {
           await supabase.auth.updateUser({
             data: {
@@ -28,11 +28,11 @@ export async function GET(request: NextRequest) {
             }
           })
 
-          // Redirigir a dashboard de cliente
+          // Redirect to the client dashboard
           return NextResponse.redirect(`${requestUrl.origin}/${lang}/dashboard/client`)
         }
 
-        // Redirigir según el rol
+        // Redirect by role
         if (userRole === 'admin') {
           return NextResponse.redirect(`${requestUrl.origin}/${lang}/dashboard/admin`)
         } else {
@@ -42,6 +42,6 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  // Si hay error, redirigir al login
+  // On error, redirect to login
   return NextResponse.redirect(`${requestUrl.origin}/${lang}/login?error=auth_error`)
 }

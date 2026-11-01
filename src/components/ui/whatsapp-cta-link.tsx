@@ -11,9 +11,9 @@ interface Props extends AnchorHTMLAttributes<HTMLAnchorElement> {
 }
 
 /**
- * Enlace a WhatsApp con el mensaje precargado segun la pagina (como el boton
- * flotante). Sirve como `asChild` de <Button>: los CTAs de cabecera y hero van
- * aqui, que es el canal que se atiende, en vez de al formulario.
+ * WhatsApp link with the message prefilled for the page (like the floating
+ * button). Works as the `asChild` of <Button>: the header and hero CTAs go
+ * here, the channel we answer, instead of to the form.
  */
 export const WhatsAppCtaLink = forwardRef<HTMLAnchorElement, Props>(function WhatsAppCtaLink(
   { lang, children, ...rest },

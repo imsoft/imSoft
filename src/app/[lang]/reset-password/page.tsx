@@ -50,7 +50,7 @@ export default async function ResetPasswordPage({ params }: {
   const dict = await getDictionary(locale)
   const supabase = await createClient()
   
-  // Obtener datos de contacto
+  // Fetch contact info
   const { data: contactData } = await supabase
     .from('contact')
     .select('*')

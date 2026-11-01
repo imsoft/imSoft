@@ -11,14 +11,14 @@ import { blogCategoryLabel } from '@/lib/blog-categories';
 interface BlogFiltersProps {
   lang: string;
   dict: Record<string, any>;
-  /** Categorías con al menos un post publicado, con su conteo. */
+  /** Categories with at least one published post, with their count. */
   categories: { value: string; count: number }[];
   activeCategory?: string;
   query?: string;
   totalCount: number;
 }
 
-/** Construye la URL del listado conservando los filtros indicados. */
+/** Builds the listing URL keeping the given filters. */
 function buildHref(
   lang: string,
   { category, q }: { category?: string; q?: string }
@@ -41,10 +41,10 @@ export function BlogFilters({
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [value, setValue] = useState(query);
-  // Evita relanzar la navegación cuando el valor ya coincide con la URL actual.
+  // Avoid relaunching navigation when the value already matches the current URL.
   const lastPushed = useRef(query);
 
-  // Sincroniza el input si el usuario navega (atrás/adelante o limpiar filtros).
+  // Sync the input if the user navigates (back/forward or clearing filters).
   useEffect(() => {
     setValue(query);
     lastPushed.current = query;

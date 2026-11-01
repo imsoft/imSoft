@@ -19,7 +19,7 @@ export default async function EditServicePage({ params }: {
     redirect(`/${lang}/login`)
   }
 
-  // Obtener el servicio
+  // Fetch the service
   const { data: service } = await supabase
     .from('services')
     .select('*')

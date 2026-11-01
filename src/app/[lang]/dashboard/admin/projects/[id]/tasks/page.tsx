@@ -22,7 +22,7 @@ export default async function ProjectTasksPage({ params }: {
     redirect(`/${lang}/login`)
   }
 
-  // Verificar que el proyecto existe
+  // Make sure the project exists
   const { data: project } = await supabase
     .from('projects')
     .select('id, title_es, title_en, title')

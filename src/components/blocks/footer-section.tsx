@@ -15,7 +15,7 @@ import {
 } from '@/config/landing-pages-index'
 import { cityServiceHref, cityServicePages, cityServiceTitle } from '@/config/city-services'
 
-// Iconos para redes sociales
+// Social network icons
 const FacebookIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg fill="currentColor" viewBox="0 0 24 24" {...props}>
     <path
@@ -91,8 +91,8 @@ const ThreadsIcon = (props: React.SVGProps<SVGSVGElement>) => (
 export function FooterSection({ dict, lang, contactData }: FooterSectionProps) {
   const { openPreferences } = useCookieStore();
 
-  // Construir array de enlaces de redes sociales desde contactData
-  // Solo incluir redes sociales que tienen URL y están marcadas como visibles
+  // Build the social links array from contactData
+  // Only include networks that have a URL and are marked as visible
   const socialLinks = []
   
   if (contactData?.facebook && (contactData?.facebook_visible ?? true)) {
@@ -125,8 +125,8 @@ export function FooterSection({ dict, lang, contactData }: FooterSectionProps) {
   if (contactData?.threads && (contactData?.threads_visible ?? true)) {
     socialLinks.push({ name: 'Threads', href: contactData.threads, icon: ThreadsIcon })
   }
-  // Enlaces site-wide a las landings de industria: sin ellos Google las descubre por el
-  // sitemap pero nunca las rastrea ("Descubierta: actualmente sin indexar").
+  // Site-wide links to the industry landings: without them Google discovers them through
+  // the sitemap but never crawls them ("Discovered - currently not indexed").
   const industryLinks = LANDING_INDUSTRIES.map((industry) => ({
     id: industry,
     name: INDUSTRY_LABELS[industry][lang === 'en' ? 'en' : 'es'],
@@ -136,7 +136,7 @@ export function FooterSection({ dict, lang, contactData }: FooterSectionProps) {
 
   const navigation = {
     solutions: [
-      // Slugs deben coincidir con la tabla services (p. ej. seed: aplicaciones-web, aplicaciones-moviles, consultoria-tecnologica)
+      // Slugs must match the services table (e.g. seed: aplicaciones-web, aplicaciones-moviles, consultoria-tecnologica)
       { id: 'marketing', name: dict.footer.solutions.items.marketing, href: `/${lang}/services/gestion-de-redes-sociales` },
       { id: 'analytics', name: dict.footer.solutions.items.analytics, href: `/${lang}/services/aplicaciones-moviles` },
       { id: 'automation', name: dict.footer.solutions.items.automation, href: `/${lang}/services/consultoria-tecnologica` },
@@ -169,9 +169,9 @@ export function FooterSection({ dict, lang, contactData }: FooterSectionProps) {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 py-16 sm:py-24 lg:px-8 lg:py-32">
         <div className="mx-auto max-w-2xl text-center">
           {/*
-            * La jerarquia estaba invertida: el antetitulo era <h2> y el titular real un
-            * <p>, asi que en las paginas con poco contenido el unico h2 que veia Google
-            * era la palabra suelta del antetitulo.
+            * The hierarchy was inverted: the eyebrow was an <h2> and the real headline a
+            * <p>, so on pages with little content the only h2 Google saw was the
+            * eyebrow's lone word.
             */}
           <hgroup>
             <p className="text-base/7 font-semibold text-primary">{dict.footer.cta.title}</p>
@@ -200,9 +200,9 @@ export function FooterSection({ dict, lang, contactData }: FooterSectionProps) {
             </Link>
 
             {/*
-              * Telefono, correo y WhatsApp clicables en TODAS las paginas. Antes solo
-              * existian en /contact: quien leia un articulo del blog en el movil y
-              * queria llamar tenia que navegar primero.
+              * Phone, email and WhatsApp clickable on EVERY page. They used to exist
+              * only on /contact: someone reading a blog article on their phone who
+              * wanted to call had to navigate first.
               */}
             <ul className="mt-6 space-y-3 text-sm/6">
               {contactData?.phone && (

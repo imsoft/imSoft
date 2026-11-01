@@ -20,7 +20,7 @@ export default async function ClientDashboardLayout({
   const dict = await getDictionary(lang)
   const supabase = await createClient()
   
-  // Verificar autenticación
+  // Check authentication
   const { data: { user }, error } = await supabase.auth.getUser()
   
   if (error || !user) {

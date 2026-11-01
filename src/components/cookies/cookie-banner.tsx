@@ -12,15 +12,15 @@ interface CookieBannerProps {
 }
 
 /**
- * Una sola linea al pie. La version anterior era una tarjeta que en movil tapaba mas
- * de media pantalla, el CTA del hero y el boton de WhatsApp, en cada pagina. En
- * Mexico basta con el aviso de privacidad; las preferencias detalladas siguen en el
- * pie ("Configuracion de cookies") y aqui con "Preferencias".
+ * A single line at the bottom. The previous version was a card that on mobile covered
+ * more than half the screen, the hero CTA and the WhatsApp button, on every page. In
+ * Mexico the privacy notice is enough; detailed preferences are still in the footer
+ * ("Configuracion de cookies") and here under "Preferencias".
  */
 export function CookieBanner({ lang, dict }: CookieBannerProps) {
   const { hasConsent, acceptAll, openPreferences } = useCookieStore();
   const pathname = usePathname();
-  // En una cotizacion o contrato el cliente no tiene que lidiar con cookies.
+  // On a quote or contract the client shouldn't have to deal with cookies.
   if (hasConsent || /\/(cotizacion|contrato)\//.test(pathname)) return null;
 
   const b = dict.cookies?.banner ?? {};

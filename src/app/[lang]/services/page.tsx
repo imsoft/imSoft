@@ -17,7 +17,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { lang } = await params;
   return generateSEOMetadata({
-    // 77 caracteres se truncaban en resultados; Google muestra ~60 con el sufijo.
+    // 77 characters got truncated in results; Google shows ~60 with the suffix.
     title: lang === 'es'
       ? 'Servicios de Desarrollo de Software en Guadalajara'
       : 'Software Development Services in Guadalajara, Mexico',
@@ -46,14 +46,14 @@ export default async function ServicesPage({ params }: {
   const dict = await getDictionary(lang);
   const supabase = await createClient();
 
-  // Obtener datos de contacto
+  // Fetch contact info
   const { data: contactData } = await supabase
     .from('contact')
     .select('*')
     .limit(1)
     .maybeSingle();
 
-  // Obtener servicios de la base de datos
+  // Fetch services from the database
   const { data: services = [] } = await supabase
     .from('services')
     .select('*')

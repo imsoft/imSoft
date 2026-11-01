@@ -114,7 +114,7 @@ export function ContactForm({ dict, lang, contactData }: AdminContactFormProps) 
       }
 
       if (contactData) {
-        // Actualizar
+        // Update
         const { error } = await supabase
           .from('contact')
           .update(data)
@@ -135,7 +135,7 @@ export function ContactForm({ dict, lang, contactData }: AdminContactFormProps) 
           )
         }
       } else {
-        // Crear
+        // Create
         const { error } = await supabase
           .from('contact')
           .insert([data])
@@ -159,7 +159,7 @@ export function ContactForm({ dict, lang, contactData }: AdminContactFormProps) 
       router.refresh()
     } catch (error) {
       console.error('Error saving contact data:', error)
-      // El error ya se mostró en el toast arriba
+      // The error was already shown in the toast above
     } finally {
       setIsSubmitting(false)
     }

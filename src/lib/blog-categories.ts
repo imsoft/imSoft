@@ -1,6 +1,6 @@
 /**
- * Categorías del blog. Fuente única de verdad para el formulario del dashboard
- * y para los filtros públicos de /[lang]/blog.
+ * Blog categories. Single source of truth for the dashboard form
+ * and for the public filters on /[lang]/blog.
  */
 export const BLOG_CATEGORIES = [
   { value: 'technology', label_es: 'Tecnología', label_en: 'Technology' },
@@ -21,7 +21,7 @@ export function isBlogCategory(value: string): value is BlogCategoryValue {
   return BLOG_CATEGORY_VALUES.includes(value)
 }
 
-/** Etiqueta legible de una categoría, con fallback al valor crudo. */
+/** Readable label of a category, falling back to the raw value. */
 export function blogCategoryLabel(value: string, lang: string): string {
   const category = BLOG_CATEGORIES.find((c) => c.value === value)
   if (!category) return value

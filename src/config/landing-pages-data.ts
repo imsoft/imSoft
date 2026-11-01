@@ -1,8 +1,8 @@
 import type { LandingPageConfig } from '@/types/landing-pages';
 
 /**
- * Configuración completa de contenido para las 15 landing pages
- * Cada combinación ciudad + industria tiene contenido único y específico
+ * Full content config for the 15 landing pages.
+ * Each city + industry combination has unique, specific content.
  */
 export const landingPagesData: LandingPageConfig = {
   guadalajara: {

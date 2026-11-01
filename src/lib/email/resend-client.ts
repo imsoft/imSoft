@@ -1,13 +1,13 @@
 import { Resend } from 'resend';
 
 /**
- * Cliente de Resend instanciado bajo demanda.
+ * Resend client created on demand.
  *
- * `new Resend(undefined)` lanza en cuanto se evalua el modulo, asi que tenerlo en el
- * ambito superior de una route handler hacia que la ruta ni siquiera cargara sin la
- * clave: `next build` fallaba entero al recolectar /api/contact en cualquier entorno
- * sin `.env` (CI, un clon limpio). Creandolo dentro del handler, la falta de clave es
- * un error de esa peticion y no algo que tumbe el build.
+ * `new Resend(undefined)` throws as soon as the module is evaluated, so having it at the
+ * top level of a route handler meant the route wouldn't even load without the
+ * key: `next build` failed entirely while collecting /api/contact in any environment
+ * without `.env` (CI, a clean clone). Creating it inside the handler, a missing key is
+ * an error of that request and not something that takes down the build.
  */
 let client: Resend | null = null;
 

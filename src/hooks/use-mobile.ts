@@ -3,13 +3,13 @@ import * as React from 'react';
 const MOBILE_BREAKPOINT = 768;
 
 /**
- * Lee una media query sin provocar un render de mas.
+ * Reads a media query without causing an extra render.
  *
- * El patron anterior era `useState(false)` + `useEffect` que hacia `setState` con el
- * valor real justo despues de montar. Funciona, pero cada componente que lo usaba
- * renderizaba dos veces en cada carga: una con el valor falso y otra con el bueno.
- * `useSyncExternalStore` esta hecho exactamente para esto: React lee el valor durante
- * el render y se suscribe a los cambios, con un snapshot aparte para el servidor.
+ * The previous pattern was `useState(false)` + `useEffect` calling `setState` with the
+ * real value right after mounting. It works, but every component using it rendered
+ * twice on each load: once with the false value and once with the right one.
+ * `useSyncExternalStore` is made exactly for this: React reads the value during
+ * render and subscribes to changes, with a separate snapshot for the server.
  */
 function useMediaQuery(query: string, serverFallback = false): boolean {
   const subscribe = React.useCallback(
@@ -24,7 +24,7 @@ function useMediaQuery(query: string, serverFallback = false): boolean {
   return React.useSyncExternalStore(
     subscribe,
     () => window.matchMedia(query).matches,
-    // En el servidor no hay matchMedia; el valor real llega al hidratar.
+    // There's no matchMedia on the server; the real value arrives on hydration.
     () => serverFallback,
   );
 }

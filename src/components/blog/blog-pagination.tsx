@@ -25,8 +25,8 @@ function buildHref(
 }
 
 /**
- * Devuelve los números de página a mostrar, con `null` como separador ("…").
- * Siempre incluye la primera, la última y una ventana alrededor de la actual.
+ * Returns the page numbers to show, with `null` as a separator ("…").
+ * Always includes the first, the last and a window around the current one.
  */
 function pageItems(currentPage: number, totalPages: number): (number | null)[] {
   if (totalPages <= 7) {

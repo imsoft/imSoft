@@ -53,17 +53,17 @@ const RichTextEditor = dynamic(
 )
 import { TranslateButton } from '@/components/ui/translate-button'
 
-// Función para generar slug desde un texto
+// Builds a slug from a text
 function generateSlug(text: string): string {
   return text
     .toLowerCase()
     .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '') // Eliminar acentos
-    .replace(/[^a-z0-9]+/g, '-') // Reemplazar caracteres especiales con guiones
-    .replace(/^-+|-+$/g, '') // Eliminar guiones al inicio y final
+    .replace(/[\u0300-\u036f]/g, '') // Strip accents
+    .replace(/[^a-z0-9]+/g, '-') // Replace special characters with dashes
+    .replace(/^-+|-+$/g, '') // Trim leading and trailing dashes
 }
 
-// Lista de categorías para el combobox (compartida con los filtros públicos del blog)
+// Category list for the combobox (shared with the public blog filters)
 const categories = BLOG_CATEGORIES
 
 const blogSchema = z.object({
@@ -96,7 +96,7 @@ export function BlogForm({ dict, lang, post }: BlogFormProps) {
   const [pendingFile, setPendingFile] = useState<File | null>(null)
   const isEditing = !!post
 
-  // Obtener usuario actual y lista de autores
+  // Get the current user and the author list
   useEffect(() => {
     async function fetchCurrentUserAndAuthors() {
       try {
@@ -107,7 +107,7 @@ export function BlogForm({ dict, lang, post }: BlogFormProps) {
           setCurrentUserId(user.id)
         }
 
-        // Obtener lista de usuarios (solo admins)
+        // Get the user list (admins only)
         const response = await fetch('/api/users')
         if (response.ok) {
           const usersData = await response.json()
@@ -144,14 +144,14 @@ export function BlogForm({ dict, lang, post }: BlogFormProps) {
     },
   })
 
-  // Actualizar author_id cuando se obtiene el usuario actual
+  // Update author_id once the current user is known
   useEffect(() => {
     if (currentUserId && !post?.author_id && !isEditing) {
       form.setValue('author_id', currentUserId)
     }
   }, [currentUserId, post, isEditing, form])
 
-  // Generar slug automáticamente basado en el título en inglés
+  // Auto-generate the slug from the English title
   const titleEn = form.watch('title_en')
   const currentSlug = form.watch('slug')
 
@@ -163,7 +163,7 @@ export function BlogForm({ dict, lang, post }: BlogFormProps) {
           form.setValue('slug', newSlug, { shouldValidate: false })
         }
       } else {
-        // Si el título está vacío, limpiar el slug
+        // If the title is empty, clear the slug
         if (currentSlug) {
           form.setValue('slug', '', { shouldValidate: false })
         }
@@ -171,14 +171,14 @@ export function BlogForm({ dict, lang, post }: BlogFormProps) {
     }
   }, [titleEn, isEditing, form, currentSlug])
 
-  // Intentar subir archivo pendiente cuando el slug esté disponible
+  // Try to upload the pending file once the slug is available
   useEffect(() => {
     if (pendingFile && currentSlug && currentSlug.trim() && !isUploading) {
       handleFileUpload(pendingFile)
     }
   }, [currentSlug, pendingFile, isUploading])
 
-  // Función helper para extraer el path del storage desde la URL pública
+  // Extracts the storage path from the public URL
   function getStoragePathFromUrl(url: string, bucketName: string): string | null {
     try {
       const urlParts = url.split(`/storage/v1/object/public/${bucketName}/`)
@@ -188,7 +188,7 @@ export function BlogForm({ dict, lang, post }: BlogFormProps) {
     }
   }
 
-  // Función para eliminar imagen del storage
+  // Deletes an image from storage
   async function deleteImageFromStorage(imageUrl: string) {
     try {
       const supabase = createClient()
@@ -218,20 +218,20 @@ export function BlogForm({ dict, lang, post }: BlogFormProps) {
       const blogSlug = form.getValues('slug')
 
       if (!blogSlug) {
-        // Guardar el archivo pendiente para subirlo cuando haya slug
+        // Keep the pending file to upload once there is a slug
         setPendingFile(file)
         toast.error(lang === 'en' ? 'Please enter a title first to generate the slug' : 'Por favor ingresa un título primero para generar el slug')
         setIsUploading(false)
         return
       }
 
-      // Eliminar imagen anterior si existe
+      // Delete the previous image if any
       const currentImageUrl = form.getValues('image_url')
       if (currentImageUrl) {
         await deleteImageFromStorage(currentImageUrl)
       }
 
-      // Nueva estructura: /<slug>/nombre-original.ext
+      // New layout: /<slug>/original-name.ext
       const filePath = `${blogSlug}/${file.name}`
 
       const { error: uploadError } = await supabase.storage
@@ -249,7 +249,7 @@ export function BlogForm({ dict, lang, post }: BlogFormProps) {
 
       form.setValue('image_url', data.publicUrl)
       setPreviewImage(data.publicUrl)
-      setPendingFile(null) // Limpiar archivo pendiente
+      setPendingFile(null) // Clear the pending file
       toast.success(lang === 'en' ? 'Image uploaded successfully' : 'Imagen subida exitosamente')
     } catch (error) {
       console.error('Error uploading image:', error)
@@ -279,12 +279,12 @@ export function BlogForm({ dict, lang, post }: BlogFormProps) {
   async function handleRemoveImage() {
     const currentImageUrl = form.getValues('image_url')
 
-    // Eliminar del storage
+    // Delete from storage
     if (currentImageUrl) {
       await deleteImageFromStorage(currentImageUrl)
     }
 
-    // Limpiar el formulario
+    // Clear the form field
     form.setValue('image_url', '')
     setPreviewImage(null)
     if (fileInputRef.current) {
@@ -322,9 +322,9 @@ export function BlogForm({ dict, lang, post }: BlogFormProps) {
         postId = inserted?.id ?? null
       }
 
-      // Si el artículo está publicado, notificar a los usuarios por correo.
-      // La route es idempotente (no reenvía si ya se notificó antes), así que
-      // es seguro llamarla tanto al crear como al publicar desde una edición.
+      // If the article is published, notify users by email.
+      // The route is idempotent (it doesn't resend if already notified), so
+      // it's safe to call it both on create and when publishing from an edit.
       if (postId && data.published) {
         try {
           await fetch('/api/blog/notify', {
@@ -333,8 +333,8 @@ export function BlogForm({ dict, lang, post }: BlogFormProps) {
             body: JSON.stringify({ postId, lang }),
           })
         } catch (notifyError) {
-          // No bloqueamos el guardado si falla el aviso: la route ya avisa al
-          // admin por correo del error.
+          // Saving isn't blocked if the notice fails: the route already emails the
+          // admin about the error.
           console.error('Error triggering blog notification:', notifyError)
         }
       }

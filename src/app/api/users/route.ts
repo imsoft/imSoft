@@ -12,7 +12,7 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Solo admins pueden ver la lista de usuarios
+    // Only admins can see the user list
     const admin = isAdmin(user)
     if (!admin) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
@@ -59,16 +59,16 @@ export async function POST(request: Request) {
 
     const supabase = createAdminClient()
 
-    // Crear usuario con el admin client (no requiere confirmación de email)
+    // Create the user with the admin client (no email confirmation required)
     const { data, error } = await supabase.auth.admin.createUser({
       email,
       password,
-      email_confirm: true, // Confirmar email automáticamente
+      email_confirm: true, // Confirm the email automatically
       user_metadata: {
         first_name: firstName,
         last_name: lastName,
         full_name: `${firstName} ${lastName}`,
-        role: 'client', // Asignar rol de cliente por defecto
+        role: 'client', // Client role by default
       },
     })
 

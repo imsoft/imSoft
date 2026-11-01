@@ -24,12 +24,12 @@ export default async function AdminCompaniesPage({ params }: {
     redirect(`/${lang}/login`)
   }
 
-  // Verificar que sea admin
+  // Make sure the user is an admin
   if (!isAdmin(user)) {
     redirect(`/${lang}/dashboard/client`)
   }
 
-  // Obtener todas las empresas (con y sin usuario)
+  // Fetch all companies (with and without a user)
   const { data: companies, error } = await supabase
     .from('companies')
     .select('*')
@@ -42,11 +42,11 @@ export default async function AdminCompaniesPage({ params }: {
       hint: error.hint,
       code: error.code,
     })
-    // Si es un error de tabla no encontrada, mostrar mensaje más claro
+    // If it's a table-not-found error, show a clearer message
     if (error.code === '42P01' || error.message?.includes('does not exist')) {
       console.error('La tabla "companies" no existe. Por favor, ejecuta el script create-companies-table.sql en Supabase.')
     }
-    // Si es un error de permisos (RLS), mostrar mensaje más claro
+    // If it's a permissions (RLS) error, show a clearer message
     if (error.code === '42501' || error.message?.includes('permission denied') || error.message?.includes('new row violates row-level security')) {
       console.error('Error de permisos RLS. Por favor, ejecuta el script fix-companies-rls-for-admin.sql en Supabase.')
     }

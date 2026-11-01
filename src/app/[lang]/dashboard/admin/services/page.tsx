@@ -23,7 +23,7 @@ export default async function AdminServicesPage({ params }: {
     redirect(`/${lang}/login`)
   }
 
-  // Obtener servicios desde Supabase (por ahora simulamos datos vacíos)
+  // Fetch services from Supabase (empty data for now)
   const { data: services = [] } = await supabase
     .from('services')
     .select('*')

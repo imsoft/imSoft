@@ -21,7 +21,7 @@ export default async function AdminFeedbacksPage({ params }: {
     redirect(`/${lang}/login`)
   }
 
-  // Obtener todos los feedbacks
+  // Fetch all feedback
   const { data: feedbacks, error } = await supabase
     .from('feedbacks')
     .select('*')
@@ -31,12 +31,12 @@ export default async function AdminFeedbacksPage({ params }: {
     console.error('Error fetching feedbacks:', error)
   }
 
-  // Obtener información de usuarios usando el admin client
+  // Fetch user info with the admin client
   const supabaseAdmin = createAdminClient()
   const userIds = [...new Set((feedbacks || []).map(f => f.user_id))]
   const usersMap = new Map()
 
-  // Obtener información de cada usuario
+  // Fetch each user's info
   for (const userId of userIds) {
     try {
       const { data: userData } = await supabaseAdmin.auth.admin.getUserById(userId)
@@ -48,7 +48,7 @@ export default async function AdminFeedbacksPage({ params }: {
     }
   }
 
-  // Mapear los feedbacks para incluir información del usuario
+  // Map feedback to include user info
   const feedbacksWithUser = (feedbacks || []).map((feedback: any) => {
     const userData = usersMap.get(feedback.user_id)
     return {

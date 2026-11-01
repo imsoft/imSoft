@@ -23,20 +23,20 @@ export default async function ClientDashboardPage({ params }: {
     redirect(`/${lang}/login`)
   }
 
-  // Obtener el nombre completo del usuario
+  // Get the user's full name
   const fullName = user.user_metadata?.full_name ||
                    (user.user_metadata?.first_name && user.user_metadata?.last_name
                      ? `${user.user_metadata.first_name} ${user.user_metadata.last_name}`
                      : user.email?.split('@')[0] || user.email)
 
-  // Obtener la empresa del usuario
+  // Fetch the user's company
   const { data: company } = await supabase
     .from('companies')
     .select('id')
     .eq('user_id', user.id)
     .single()
 
-  // Obtener proyectos del usuario
+  // Fetch the user's projects
   const { data: projects } = await supabase
     .from('projects')
     .select('*')

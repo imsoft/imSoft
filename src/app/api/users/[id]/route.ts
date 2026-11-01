@@ -19,7 +19,7 @@ export async function PUT(
 
     const supabase = createAdminClient()
 
-    // Preparar los datos de actualización
+    // Prepare the update data
     const updateData: {
       user_metadata: {
         first_name: string
@@ -35,12 +35,12 @@ export async function PUT(
       },
     }
 
-    // Solo actualizar contraseña si se proporciona
+    // Only update the password if provided
     if (password && password.length >= 6) {
       updateData.password = password
     }
 
-    // Actualizar usuario
+    // Update the user
     const { data, error } = await supabase.auth.admin.updateUserById(id, updateData)
 
     if (error) {

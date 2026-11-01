@@ -1,21 +1,20 @@
 /**
- * Landings de ciudad + servicio: "paginas web guadalajara", "empresas de desarrollo de
- * software monterrey", etc. Distintas de las de ciudad + industria (landing-pages-data.ts).
+ * City + service landings: "paginas web guadalajara", "empresas de desarrollo de
+ * software monterrey", etc. Separate from the city + industry ones (landing-pages-data.ts).
  *
- * Reglas que salen de los datos de Search Console y del autocompletado de Google
- * (validado el 21-sep-2026 en 26 ciudades):
+ * Rules derived from Search Console data and Google autocomplete
+ * (validated on 2026-09-21 across 26 cities):
  *
- * - Cada pagina tiene texto propio. Las 31 landings de industria con plantilla suman
- *   0 clics en 90 dias y aparecen en la posicion 80: Google no premia "misma pagina,
- *   otra ciudad". Una prueba (city-services.test.ts) impide que dos paginas compartan
- *   parrafos.
- * - Los slugs siguen lo que la gente teclea: "paginas web", "empresas de desarrollo de
- *   software", "tienda en linea", "desarrollo de apps". Nadie busca "software a la
- *   medida <ciudad>": ese servicio se atiende desde "empresas de software".
- * - Los proyectos citados son reales (tabla portfolio). No se afirma que un cliente
- *   este en la ciudad salvo que conste.
- * - Los precios "desde" son los publicados en la seccion de precios del sitio.
- * - Solo en español: en ingles estas busquedas no tienen volumen. /en canonicaliza a /es.
+ * - Every page has its own copy. The 31 templated industry landings add up to 0 clicks
+ *   in 90 days and sit at position 80: Google doesn't reward "same page, another city".
+ *   A test (city-services.test.ts) prevents two pages from sharing paragraphs.
+ * - Slugs follow what people type: "paginas web", "empresas de desarrollo de software",
+ *   "tienda en linea", "desarrollo de apps". Nobody searches "software a la medida
+ *   <city>": that service is covered by "empresas de software".
+ * - The projects cited are real (portfolio table). We never claim a client is in the
+ *   city unless that's on record.
+ * - "From" prices are the ones published in the site's pricing section.
+ * - Spanish only: these searches have no volume in English. /en canonicalizes to /es.
  */
 
 import { ONLINE_STORE_PRICE } from './online-store-price.ts';
@@ -29,16 +28,16 @@ export interface CityServiceContent {
   seoDescription: string;
   h1: string;
   heroSubtitle: string;
-  /** Tipos de negocio o zonas de la ciudad para los que aplica. */
+  /** Business types or areas of the city it applies to. */
   audience: { title: string; items: Array<{ title: string; description: string }> };
   problems: { title: string; items: string[] };
   solutions: { title: string; items: Array<{ title: string; description: string }> };
-  /** Precios de referencia publicados; solo si aplican a este servicio. */
+  /** Published reference prices; only when they apply to this service. */
   pricing?: { title: string; description: string; items: Array<{ name: string; price: string; includes: string }>; note?: string };
-  /** Proyectos reales del portafolio, con su slug para enlazar la ficha. */
+  /** Real portfolio projects, with their slug to link the project page. */
   proof: { title: string; description: string; items: Array<{ name: string; description: string; slug?: string }> };
   faq: { title: string; items: Array<{ question: string; answer: string }> };
-  /** Articulos del blog que responden lo que la gente busca antes de contratar. */
+  /** Blog articles that answer what people search for before hiring. */
   relatedPosts?: string[];
   cta: { title: string; description: string; buttonText: string };
 }
@@ -60,7 +59,7 @@ export const CITY_SERVICE_LABELS: Record<CityServiceSlug, string> = {
   'desarrollo-de-apps': 'Desarrollo de apps',
 };
 
-/** "Páginas web en Guadalajara", "Desarrollo de apps en Guadalajara"... */
+/** e.g. "Páginas web en Guadalajara", "Desarrollo de apps en Guadalajara". */
 export function cityServiceTitle(city: CityKey, slug: CityServiceSlug): string {
   return `${CITY_SERVICE_LABELS[slug]} en ${CITY_SERVICE_CITY_LABELS[city]}`;
 }
@@ -69,7 +68,7 @@ export function cityServiceHref(lang: string, city: CityKey, slug: CityServiceSl
   return `/${lang}/${city}/${slug}`;
 }
 
-const HORARIO = 'Atendemos de lunes a sábado de 9:00 a 18:00, y los domingos de 9:00 a 13:00.';
+const BUSINESS_HOURS = 'Atendemos de lunes a sábado de 9:00 a 18:00, y los domingos de 9:00 a 13:00.';
 
 const GUADALAJARA: Record<CityServiceSlug, CityServiceContent> = {
   'paginas-web': {
@@ -183,7 +182,7 @@ const GUADALAJARA: Record<CityServiceSlug, CityServiceContent> = {
     relatedPosts: ['cuanto-cuesta-una-pagina-web-en-mexico'],
     cta: {
       title: '¿Hablamos de tu página?',
-      description: `Cuéntanos qué tienes hoy y qué quieres que haga tu sitio. En 24 horas te decimos precio y tiempo, sin compromiso. ${HORARIO}`,
+      description: `Cuéntanos qué tienes hoy y qué quieres que haga tu sitio. En 24 horas te decimos precio y tiempo, sin compromiso. ${BUSINESS_HOURS}`,
       buttonText: 'Pedir cotización',
     },
   },
@@ -299,7 +298,7 @@ const GUADALAJARA: Record<CityServiceSlug, CityServiceContent> = {
     relatedPosts: ['cuanto-cuesta-desarrollar-una-app-en-mexico'],
     cta: {
       title: '¿Platicamos de tu operación?',
-      description: `En una llamada de 15 minutos te decimos si un sistema a la medida tiene sentido para tu caso y en qué rango de precio quedaría. ${HORARIO}`,
+      description: `En una llamada de 15 minutos te decimos si un sistema a la medida tiene sentido para tu caso y en qué rango de precio quedaría. ${BUSINESS_HOURS}`,
       buttonText: 'Agendar llamada',
     },
   },
@@ -402,7 +401,7 @@ const GUADALAJARA: Record<CityServiceSlug, CityServiceContent> = {
     relatedPosts: ['cuanto-cuesta-una-pagina-web-en-mexico'],
     cta: {
       title: '¿Vemos tu catálogo?',
-      description: `Cuéntanos qué vendes, cómo cobras hoy y qué te frena. Te decimos si conviene tienda propia o plataforma, y cuánto costaría. ${HORARIO}`,
+      description: `Cuéntanos qué vendes, cómo cobras hoy y qué te frena. Te decimos si conviene tienda propia o plataforma, y cuánto costaría. ${BUSINESS_HOURS}`,
       buttonText: 'Pedir cotización',
     },
   },
@@ -514,16 +513,16 @@ const GUADALAJARA: Record<CityServiceSlug, CityServiceContent> = {
     relatedPosts: ['cuanto-cuesta-desarrollar-una-app-en-mexico'],
     cta: {
       title: '¿Platicamos de tu app?',
-      description: `Cuéntanos qué quieres que haga y quién la va a usar. En 15 minutos te decimos si va web o móvil y en qué rango de precio queda. ${HORARIO}`,
+      description: `Cuéntanos qué quieres que haga y quién la va a usar. En 15 minutos te decimos si va web o móvil y en qué rango de precio queda. ${BUSINESS_HOURS}`,
       buttonText: 'Agendar llamada',
     },
   },
 };
 
 /**
- * Monterrey y CDMX: se atienden a distancia desde Guadalajara. Ninguna pagina afirma
- * oficina ni clientes en la ciudad; lo que si es propio de cada una es el tipo de
- * empresa, las zonas y los problemas que se cotizan desde ahi.
+ * Monterrey and CDMX are served remotely from Guadalajara. No page claims an office or
+ * clients in the city; what is specific to each one is the type of company, the areas
+ * and the problems quoted from there.
  */
 const MONTERREY: Record<CityServiceSlug, CityServiceContent> = {
   'paginas-web': {
@@ -632,7 +631,7 @@ const MONTERREY: Record<CityServiceSlug, CityServiceContent> = {
     relatedPosts: ['cuanto-cuesta-una-pagina-web-en-mexico'],
     cta: {
       title: '¿Revisamos tu sitio actual?',
-      description: `Mándanos la dirección de tu sitio o cuéntanos qué necesitas. En 24 horas te decimos qué haríamos, cuánto costaría y cuándo estaría. ${HORARIO}`,
+      description: `Mándanos la dirección de tu sitio o cuéntanos qué necesitas. En 24 horas te decimos qué haríamos, cuánto costaría y cuándo estaría. ${BUSINESS_HOURS}`,
       buttonText: 'Pedir cotización',
     },
   },
@@ -743,7 +742,7 @@ const MONTERREY: Record<CityServiceSlug, CityServiceContent> = {
     relatedPosts: ['cuanto-cuesta-desarrollar-una-app-en-mexico'],
     cta: {
       title: '¿Vemos tu operación?',
-      description: `Una videollamada de 15 minutos para entender qué controlas hoy en Excel y decirte si un sistema a la medida tiene sentido y en qué rango de precio. ${HORARIO}`,
+      description: `Una videollamada de 15 minutos para entender qué controlas hoy en Excel y decirte si un sistema a la medida tiene sentido y en qué rango de precio. ${BUSINESS_HOURS}`,
       buttonText: 'Agendar videollamada',
     },
   },
@@ -845,7 +844,7 @@ const MONTERREY: Record<CityServiceSlug, CityServiceContent> = {
     relatedPosts: ['cuanto-cuesta-una-pagina-web-en-mexico'],
     cta: {
       title: '¿Vemos tu catálogo y cómo cobras?',
-      description: `Cuéntanos qué vendes, a quién y cómo tomas pedidos hoy. Todo a distancia, por videollamada, desde Guadalajara. Te decimos si conviene tienda propia o plataforma, y cuánto costaría. ${HORARIO}`,
+      description: `Cuéntanos qué vendes, a quién y cómo tomas pedidos hoy. Todo a distancia, por videollamada, desde Guadalajara. Te decimos si conviene tienda propia o plataforma, y cuánto costaría. ${BUSINESS_HOURS}`,
       buttonText: 'Pedir cotización',
     },
   },
@@ -956,7 +955,7 @@ const MONTERREY: Record<CityServiceSlug, CityServiceContent> = {
     relatedPosts: ['cuanto-cuesta-desarrollar-una-app-en-mexico'],
     cta: {
       title: '¿Platicamos de tu app?',
-      description: `Cuéntanos qué debe hacer y quién la usará. En una videollamada de 15 minutos te decimos si va web o nativa y en qué rango de precio queda. ${HORARIO}`,
+      description: `Cuéntanos qué debe hacer y quién la usará. En una videollamada de 15 minutos te decimos si va web o nativa y en qué rango de precio queda. ${BUSINESS_HOURS}`,
       buttonText: 'Agendar videollamada',
     },
   },
@@ -1069,7 +1068,7 @@ const CDMX: Partial<Record<CityServiceSlug, CityServiceContent>> = {
     relatedPosts: ['cuanto-cuesta-una-pagina-web-en-mexico'],
     cta: {
       title: '¿Revisamos tu sitio?',
-      description: `Mándanos tu sitio actual o cuéntanos qué necesitas. En 24 horas te decimos qué haríamos, cuánto costaría y cuándo estaría. ${HORARIO}`,
+      description: `Mándanos tu sitio actual o cuéntanos qué necesitas. En 24 horas te decimos qué haríamos, cuánto costaría y cuándo estaría. ${BUSINESS_HOURS}`,
       buttonText: 'Pedir cotización',
     },
   },
@@ -1180,7 +1179,7 @@ const CDMX: Partial<Record<CityServiceSlug, CityServiceContent>> = {
     relatedPosts: ['cuanto-cuesta-desarrollar-una-app-en-mexico'],
     cta: {
       title: '¿Platicamos de tu proyecto?',
-      description: `Una videollamada de 15 minutos para entender qué quieres resolver y decirte si tiene sentido, cómo lo haríamos y en qué rango de precio. ${HORARIO}`,
+      description: `Una videollamada de 15 minutos para entender qué quieres resolver y decirte si tiene sentido, cómo lo haríamos y en qué rango de precio. ${BUSINESS_HOURS}`,
       buttonText: 'Agendar videollamada',
     },
   },
@@ -1282,7 +1281,7 @@ const CDMX: Partial<Record<CityServiceSlug, CityServiceContent>> = {
     relatedPosts: ['cuanto-cuesta-una-pagina-web-en-mexico'],
     cta: {
       title: '¿Vemos tu catálogo?',
-      description: `Cuéntanos qué vendes, dónde vendes hoy y qué te frena. Te decimos si conviene tienda propia y cuánto costaría. ${HORARIO}`,
+      description: `Cuéntanos qué vendes, dónde vendes hoy y qué te frena. Te decimos si conviene tienda propia y cuánto costaría. ${BUSINESS_HOURS}`,
       buttonText: 'Pedir cotización',
     },
   },
@@ -1395,7 +1394,7 @@ const QUERETARO: Record<CityServiceSlug, CityServiceContent> = {
     relatedPosts: ['cuanto-cuesta-una-pagina-web-en-mexico'],
     cta: {
       title: '¿Revisamos tu sitio?',
-      description: `Mándanos tu sitio actual o cuéntanos qué necesitas. En 24 horas te decimos qué haríamos, cuánto costaría y cuándo estaría. ${HORARIO}`,
+      description: `Mándanos tu sitio actual o cuéntanos qué necesitas. En 24 horas te decimos qué haríamos, cuánto costaría y cuándo estaría. ${BUSINESS_HOURS}`,
       buttonText: 'Pedir cotización',
     },
   },
@@ -1506,7 +1505,7 @@ const QUERETARO: Record<CityServiceSlug, CityServiceContent> = {
     relatedPosts: ['cuanto-cuesta-desarrollar-una-app-en-mexico'],
     cta: {
       title: '¿Vemos tu operación?',
-      description: `Una videollamada de 15 minutos para entender qué llevas hoy en Excel y decirte si un sistema a la medida tiene sentido y en qué rango de precio queda. ${HORARIO}`,
+      description: `Una videollamada de 15 minutos para entender qué llevas hoy en Excel y decirte si un sistema a la medida tiene sentido y en qué rango de precio queda. ${BUSINESS_HOURS}`,
       buttonText: 'Agendar videollamada',
     },
   },
@@ -1608,7 +1607,7 @@ const QUERETARO: Record<CityServiceSlug, CityServiceContent> = {
     relatedPosts: ['cuanto-cuesta-una-pagina-web-en-mexico'],
     cta: {
       title: '¿Vemos tu catálogo?',
-      description: `Cuéntanos qué vendes, a quién y cómo cobras hoy. Te decimos si conviene tienda propia y cuánto costaría. ${HORARIO}`,
+      description: `Cuéntanos qué vendes, a quién y cómo cobras hoy. Te decimos si conviene tienda propia y cuánto costaría. ${BUSINESS_HOURS}`,
       buttonText: 'Pedir cotización',
     },
   },
@@ -1719,7 +1718,7 @@ const QUERETARO: Record<CityServiceSlug, CityServiceContent> = {
     relatedPosts: ['cuanto-cuesta-desarrollar-una-app-en-mexico'],
     cta: {
       title: '¿Platicamos de tu app?',
-      description: `Cuéntanos qué debe hacer y quién la usará. En 15 minutos por videollamada te decimos si va web o nativa y en qué rango de precio queda. ${HORARIO}`,
+      description: `Cuéntanos qué debe hacer y quién la usará. En 15 minutos por videollamada te decimos si va web o nativa y en qué rango de precio queda. ${BUSINESS_HOURS}`,
       buttonText: 'Agendar videollamada',
     },
   },
@@ -1832,7 +1831,7 @@ const PUEBLA: Record<CityServiceSlug, CityServiceContent> = {
     relatedPosts: ['cuanto-cuesta-una-pagina-web-en-mexico'],
     cta: {
       title: '¿Revisamos tu sitio o tu página de Facebook?',
-      description: `Cuéntanos qué tienes hoy y qué quieres que haga tu sitio. En 24 horas te decimos precio y tiempo, sin compromiso. ${HORARIO}`,
+      description: `Cuéntanos qué tienes hoy y qué quieres que haga tu sitio. En 24 horas te decimos precio y tiempo, sin compromiso. ${BUSINESS_HOURS}`,
       buttonText: 'Pedir cotización',
     },
   },
@@ -1943,7 +1942,7 @@ const PUEBLA: Record<CityServiceSlug, CityServiceContent> = {
     relatedPosts: ['cuanto-cuesta-desarrollar-una-app-en-mexico'],
     cta: {
       title: '¿Platicamos de tu operación?',
-      description: `Una videollamada de 15 minutos para entender qué llevas hoy a mano y decirte si un sistema a la medida tiene sentido y en qué rango de precio queda. ${HORARIO}`,
+      description: `Una videollamada de 15 minutos para entender qué llevas hoy a mano y decirte si un sistema a la medida tiene sentido y en qué rango de precio queda. ${BUSINESS_HOURS}`,
       buttonText: 'Agendar videollamada',
     },
   },
@@ -2045,7 +2044,7 @@ const PUEBLA: Record<CityServiceSlug, CityServiceContent> = {
     relatedPosts: ['cuanto-cuesta-una-pagina-web-en-mexico'],
     cta: {
       title: '¿Vemos tu catálogo?',
-      description: `Cuéntanos qué vendes, dónde vendes hoy y a quién. Te decimos si conviene tienda propia y cuánto costaría. ${HORARIO}`,
+      description: `Cuéntanos qué vendes, dónde vendes hoy y a quién. Te decimos si conviene tienda propia y cuánto costaría. ${BUSINESS_HOURS}`,
       buttonText: 'Pedir cotización',
     },
   },
@@ -2156,7 +2155,7 @@ const PUEBLA: Record<CityServiceSlug, CityServiceContent> = {
     relatedPosts: ['cuanto-cuesta-desarrollar-una-app-en-mexico'],
     cta: {
       title: '¿Platicamos de tu app?',
-      description: `Cuéntanos qué debe hacer y quién la usará. En 15 minutos por videollamada te decimos si va web o nativa y en qué rango de precio. ${HORARIO}`,
+      description: `Cuéntanos qué debe hacer y quién la usará. En 15 minutos por videollamada te decimos si va web o nativa y en qué rango de precio. ${BUSINESS_HOURS}`,
       buttonText: 'Agendar videollamada',
     },
   },
@@ -2178,7 +2177,7 @@ export function cityServiceContent(city: string, slug: string): CityServiceConte
   return c[slug as CityServiceSlug] ?? null;
 }
 
-/** Todas las combinaciones publicadas, para sitemap, generateStaticParams y enlaces. */
+/** Every published combination, for the sitemap, generateStaticParams and links. */
 export function cityServicePages(): Array<{ city: CityKey; slug: CityServiceSlug }> {
   return CITY_SERVICE_CITIES.flatMap((city) => (Object.keys(CITY_SERVICES[city]) as CityServiceSlug[]).map((slug) => ({ city, slug })));
 }

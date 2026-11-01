@@ -5,15 +5,15 @@ import Negotiator from 'negotiator'
 import { createServerClient } from '@supabase/ssr'
 
 const locales = ['en', 'es']
-// Negocio mexicano con mercado principal en español: el idioma por defecto debe
-// ser 'es' para usuarios/bots sin preferencia clara (coincide con x-default=es).
+// Mexican business whose main market speaks Spanish: the default language must be
+// 'es' for users/bots without a clear preference (matches x-default=es).
 const defaultLocale = 'es'
 
 function getLocale(request: NextRequest): string {
   const headers = {
-    // Sin cabecera (Googlebot y la mayoria de crawlers no la envian) usamos el
-    // idioma por defecto del negocio, no 'en'. Este fallback pisaba a defaultLocale
-    // y hacia que Google indexara todo el sitio en ingles.
+    // Without the header (Googlebot and most crawlers don't send it) we use the
+    // business's default language, not 'en'. This fallback used to override
+    // defaultLocale and made Google index the whole site in English.
     'accept-language': request.headers.get('accept-language') || defaultLocale,
   }
   const languages = new Negotiator({ headers }).languages()
@@ -26,14 +26,14 @@ export async function proxy(request: NextRequest) {
     (locale) => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`
   )
 
-  // `let`: si Supabase renueva la sesion, la respuesta se rehace con la peticion ya
-  // actualizada, para que la pagina lea las cookies nuevas y no las vencidas.
-  const crear = () => pathnameHasLocale
+  // `let`: if Supabase refreshes the session, the response is rebuilt from the updated
+  // request, so the page reads the new cookies instead of the expired ones.
+  const createResponse = () => pathnameHasLocale
     ? NextResponse.next({ request })
     : NextResponse.redirect(new URL(`/${getLocale(request)}${pathname}`, request.url))
-  let response = crear()
+  let response = createResponse()
 
-  // Configurar cliente de Supabase para actualizar sesiones
+  // Supabase client that refreshes sessions
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
@@ -44,16 +44,16 @@ export async function proxy(request: NextRequest) {
         },
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
-          response = crear()
+          response = createResponse()
           cookiesToSet.forEach(({ name, value, options }) => {
-            // Establecer cookie en la respuesta con opciones que aseguren persistencia
+            // Set the cookie on the response with options that ensure it persists
             response.cookies.set(name, value, {
               ...options,
               path: options?.path || '/',
               sameSite: (options?.sameSite as 'lax' | 'strict' | 'none') || 'lax',
               secure: options?.secure ?? (process.env.NODE_ENV === 'production'),
               httpOnly: options?.httpOnly ?? false,
-              // Si no hay maxAge, establecer uno por defecto para cookies de sesión
+              // Without maxAge, set a default one for session cookies
               maxAge: options?.maxAge || (name.includes('auth-token') || name.includes('supabase') ? 60 * 60 * 24 * 7 : undefined),
             })
           })
@@ -62,8 +62,8 @@ export async function proxy(request: NextRequest) {
     }
   )
 
-  // Refrescar la sesión automáticamente
-  // Esto actualiza las cookies de sesión si están cerca de expirar
+  // Refresh the session automatically: this updates the session cookies
+  // when they're close to expiring
   await supabase.auth.getSession()
 
   return response

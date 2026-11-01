@@ -24,11 +24,11 @@ const SpotlightCard: React.FC<SpotlightCardProps> = ({
     
     setPosition({ x, y });
     
-    // Calcular rotación basada en la posición del mouse
+    // Compute rotation from the mouse position
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
-    const rotateX = ((y - centerY) / centerY) * -3; // Máximo 10 grados
-    const rotateY = ((x - centerX) / centerX) * 3; // Máximo 10 grados
+    const rotateX = ((y - centerY) / centerY) * -3; // Max 3 degrees
+    const rotateY = ((x - centerX) / centerX) * 3; // Max 3 degrees
     
     setRotation({ x: rotateX, y: rotateY });
   };

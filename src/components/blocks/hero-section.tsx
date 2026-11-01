@@ -35,25 +35,25 @@ const transitionVariants: { item: Variants } = {
 }
 
 export function HeroSection({ dict, lang, companies = [], portfolioProjects = [], blogTitles = [] }: HeroSectionProps) {
-    // Filtrar títulos válidos (no vacíos) usando useMemo para evitar recálculos innecesarios
+    // Filter valid (non-empty) titles with useMemo to avoid needless recalculation
     const validTitles = React.useMemo(() => {
         return blogTitles.filter(t => t.title && t.title.trim() !== '');
     }, [blogTitles]);
     
-    // El titulo inicial es el primero, igual en servidor y cliente: elegirlo al azar aqui
-    // daba un texto distinto en cada lado y React fallaba la hidratacion. El azar va en el efecto.
+    // The initial title is the first one, same on server and client: picking it at random here
+    // gave a different text on each side and React failed hydration. The randomness goes in the effect.
     const [randomBlogTitle, setRandomBlogTitle] = useState<{ title: string; slug: string } | null>(null);
 
     useEffect(() => {
         if (validTitles.length > 0) {
-            // Seleccionar un título inicial siempre (para asegurar que se muestre)
+            // Always pick an initial title (to make sure it shows)
             const randomIndex = Math.floor(Math.random() * validTitles.length);
             setRandomBlogTitle({
                 title: validTitles[randomIndex].title,
                 slug: validTitles[randomIndex].slug,
             });
 
-            // Cambiar el título cada 5 segundos
+            // Change the title every 5 seconds
             const interval = setInterval(() => {
                 const newRandomIndex = Math.floor(Math.random() * validTitles.length);
                 setRandomBlogTitle({
@@ -64,13 +64,13 @@ export function HeroSection({ dict, lang, companies = [], portfolioProjects = []
 
             return () => clearInterval(interval);
         } else {
-            // Si no hay títulos válidos, limpiar el estado
+            // If there are no valid titles, clear the state
             setRandomBlogTitle(null);
         }
     }, [validTitles]);
 
-    // Solo mostrar el anuncio si hay títulos del blog disponibles y válidos
-    // Si hay títulos válidos pero el estado aún no está listo, usar el primer título válido
+    // Only show the announcement if there are valid blog titles available
+    // If there are valid titles but the state isn't ready yet, use the first valid title
     const hasValidTitles = validTitles.length > 0;
     const announcementText = randomBlogTitle?.title || (hasValidTitles ? validTitles[0]?.title : '');
     const announcementLink = randomBlogTitle 
@@ -117,12 +117,12 @@ export function HeroSection({ dict, lang, companies = [], portfolioProjects = []
                                     </div>
                                 )}
                                 {/*
-                                  * El h1 es el elemento LCP de la home y NO se anima.
-                                  * Envuelto en AnimatedGroup salia del servidor con
-                                  * `opacity:0; filter:blur(12px)` y no se pintaba hasta
-                                  * que el bundle de motion se descargaba e hidrataba:
-                                  * 6.5s de render delay sobre un LCP de 7.2s. El texto
-                                  * ahora es visible en el primer paint.
+                                  * The h1 is the home page's LCP element and is NOT animated.
+                                  * Wrapped in AnimatedGroup it left the server with
+                                  * `opacity:0; filter:blur(12px)` and wasn't painted until
+                                  * the motion bundle downloaded and hydrated:
+                                  * 6.5s of render delay on a 7.2s LCP. The text is
+                                  * now visible on first paint.
                                   */}
                                 <h1
                                     className="mt-8 max-w-4xl mx-auto text-balance text-4xl sm:text-5xl md:text-7xl lg:mt-16 xl:text-[5.25rem]">
@@ -294,10 +294,10 @@ export const HeroHeader = ({ dict, lang }: HeroHeaderProps) => {
                             </div>
                             <div className="flex w-full flex-col space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit items-center">
                                 {/*
-                                  * Un solo boton, y a WhatsApp con el contexto de la
-                                  * pagina: es el canal que se atiende. Acceso y registro
-                                  * son para clientes con panel y viven en el pie; en la
-                                  * cabecera competian con el CTA.
+                                  * A single button, to WhatsApp with the page context:
+                                  * it's the channel we answer. Sign-in and sign-up are
+                                  * for clients with a panel and live in the footer; in the
+                                  * header they competed with the CTA.
                                   */}
                                 <Button asChild size="sm">
                                     <WhatsAppCtaLink lang={lang}>
@@ -320,11 +320,11 @@ export const HeroHeader = ({ dict, lang }: HeroHeaderProps) => {
 
 const PortfolioCarousel = ({ portfolioProjects }: { portfolioProjects: Array<{ id: string; title: string; description: string; image: string }> }) => {
     const [currentIndex, setCurrentIndex] = useState(0)
-    // Solo cargamos las imágenes ya mostradas: evita descargar TODO el carrusel
-    // en el primer render, que era la causa del LCP alto en móvil.
+    // Only load the images already shown: avoids downloading the WHOLE carousel
+    // on first render, which caused the high LCP on mobile.
     const [loaded, setLoaded] = useState<Set<number>>(() => new Set([0]))
 
-    // Si no hay proyectos, usar imágenes por defecto
+    // If there are no projects, use default images
     const displayProjects = portfolioProjects.length > 0
         ? portfolioProjects
         : [
@@ -343,7 +343,7 @@ const PortfolioCarousel = ({ portfolioProjects }: { portfolioProjects: Array<{ i
                 setLoaded((prev) => new Set(prev).add(next))
                 return next
             })
-        }, 2000) // Cambiar cada 2 segundos
+        }, 2000) // Change every 2 seconds
 
         return () => clearInterval(interval)
     }, [images.length])
@@ -398,7 +398,7 @@ const PortfolioCarousel = ({ portfolioProjects }: { portfolioProjects: Array<{ i
                     </div>
                 )
             })}
-            {/* Indicadores */}
+            {/* Indicators */}
             {images.length > 1 && (
                 <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2 z-20">
                     {images.map((_, index) => (

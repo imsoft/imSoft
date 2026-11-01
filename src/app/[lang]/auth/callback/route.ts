@@ -16,37 +16,37 @@ export async function GET(
     const { error } = await supabase.auth.exchangeCodeForSession(code)
 
     if (!error) {
-      // Obtener el usuario para verificar su rol y redirigir apropiadamente
+      // Get the user to check their role and redirect accordingly
       const { data: { user } } = await supabase.auth.getUser()
 
       if (user) {
-        // Verificar si es un usuario nuevo de Google OAuth
+        // Check whether this is a new Google OAuth user
         const isNewGoogleUser = !user.user_metadata?.role && user.app_metadata?.provider === 'google'
 
         if (isNewGoogleUser) {
-          // Extraer nombre completo de Google
+          // Extract the full name from Google
           const fullName = user.user_metadata?.full_name || user.user_metadata?.name || ''
           const nameParts = fullName.split(' ')
           const firstName = nameParts[0] || ''
           const lastName = nameParts.slice(1).join(' ') || ''
 
-          // Actualizar metadata del usuario con información completa
+          // Update the user's metadata with the full info
           await supabase.auth.updateUser({
             data: {
               role: 'client',
               full_name: fullName,
               first_name: firstName,
               last_name: lastName,
-              company_name: '', // El usuario puede completar esto después
+              company_name: '', // The user can fill this in later
               avatar_url: user.user_metadata?.avatar_url || user.user_metadata?.picture || '',
             }
           })
 
-          // Redirigir a dashboard de cliente
+          // Redirect to the client dashboard
           return NextResponse.redirect(`${requestUrl.origin}/${lang}/dashboard/client`)
         }
 
-        // Para usuarios existentes, redirigir según el rol
+        // For existing users, redirect by role
         const userRole = roleOf(user)
 
         if (userRole === 'admin') {
@@ -58,7 +58,7 @@ export async function GET(
     }
   }
 
-  // Si hay error, redirigir al login
+  // On error, redirect to login
   return NextResponse.redirect(`${requestUrl.origin}/${lang}/login?error=auth_error`)
 }
 

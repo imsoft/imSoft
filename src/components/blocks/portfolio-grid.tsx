@@ -9,7 +9,7 @@ import { CheckCircle2 } from 'lucide-react'
 import { ScrollReveal } from "@/components/animations/scroll-reveal"
 
 export function PortfolioGrid({ dict, lang, projects = [] }: PortfolioSectionProps) {
-  // Proyectos de ejemplo solo si la base de datos no devolvio nada.
+  // Sample projects only if the database returned nothing.
   const displayProjects: PortfolioCard[] = projects.length > 0 ? projects : [
     {
       id: '1',
@@ -51,7 +51,7 @@ export function PortfolioGrid({ dict, lang, projects = [] }: PortfolioSectionPro
     <section className="py-16 md:py-24 bg-background overflow-x-hidden">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <ScrollReveal className="text-center mb-12" direction="up">
-          {/* h1 de /portfolio: este componente solo se usa en esa pagina */}
+          {/* h1 of /portfolio: this component is only used on that page */}
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
             {dict.portfolio.title}
           </h1>
@@ -60,7 +60,7 @@ export function PortfolioGrid({ dict, lang, projects = [] }: PortfolioSectionPro
           </p>
         </ScrollReveal>
 
-        {/* Grid de proyectos */}
+        {/* Projects grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {displayProjects.map((project, i) => {
             const cardContent = (

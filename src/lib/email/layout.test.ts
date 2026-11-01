@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { progressBar, button, dataTable, callout, emailLayout, esc, plainText, url } from './layout'
 
-describe('plantilla de correos de imSoft', () => {
-  it('arma el correo con logo, etiqueta, título, cuerpo y pie', () => {
+describe('imSoft email template', () => {
+  it('builds the email with logo, label, title, body and footer', () => {
     const html = emailLayout({ preheader: 'Vista previa', label: 'Cotización aceptada', title: 'Álvaro aceptó', body: '<p>hola</p>', footer: ['Motivo del correo'] })
     expect(html).toContain('imsoft-isotipo-correo-v3.png')
     expect(html).toContain('Cotización aceptada')
@@ -11,11 +11,11 @@ describe('plantilla de correos de imSoft', () => {
     expect(html).toContain('Motivo del correo')
     expect(html).toContain('Vista previa')
     expect(html).toContain('#1e88e5')
-    // Nada de los morados de las plantillas anteriores
+    // None of the purples from the old templates
     expect(html).not.toMatch(/#667eea|#764ba2|#6366f1/i)
   })
 
-  it('escapa lo que viene de usuarios y bloquea URLs peligrosas', () => {
+  it('escapes what comes from users and blocks dangerous URLs', () => {
     expect(esc('<script>"x"&')).toBe('&lt;script&gt;&quot;x&quot;&amp;')
     expect(plainText('hola\n<b>')).toBe('hola<br>&lt;b&gt;')
     expect(url('javascript:alert(1)')).toBe('#')
@@ -25,7 +25,7 @@ describe('plantilla de correos de imSoft', () => {
     expect(html).not.toContain('<img src=x')
   })
 
-  it('piezas: datos omite vacíos, destacado usa el tono y la barra se acota a 0-100', () => {
+  it('pieces: dataTable skips empty values, callout uses the tone and the bar is clamped to 0-100', () => {
     const t = dataTable([['Cliente', 'Ana'], ['Teléfono', ''], ['Total', '$1']])
     expect(t).toContain('Cliente')
     expect(t).not.toContain('Teléfono')

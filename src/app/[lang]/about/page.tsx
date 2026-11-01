@@ -128,7 +128,7 @@ export default async function AboutPage({
             </ScrollReveal>
           </section>
 
-          {/* ── Historia ── */}
+          {/* ── Story ── */}
           <section className="py-16 md:py-24 bg-primary text-primary-foreground">
             <div className="mx-auto max-w-5xl px-6">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
@@ -190,7 +190,7 @@ export default async function AboutPage({
             </div>
           </section>
 
-          {/* ── Valores ── */}
+          {/* ── Values ── */}
           <section className="py-16 md:py-24 bg-background">
             <div className="mx-auto max-w-7xl px-6">
               <ScrollReveal className="text-center mb-14" direction="up">
@@ -217,7 +217,7 @@ export default async function AboutPage({
             </div>
           </section>
 
-          {/* ── Por qué elegirnos ── */}
+          {/* ── Why choose us ── */}
           <section className="py-16 md:py-24 bg-background">
             <div className="mx-auto max-w-4xl px-6">
               <ScrollReveal className="text-center mb-12" direction="up">

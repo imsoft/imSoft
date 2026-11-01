@@ -19,7 +19,7 @@ export async function PUT(request: Request) {
 
     const supabaseAdmin = createAdminClient()
 
-    // Actualizar user_metadata con la nueva URL del avatar
+    // Update user_metadata with the new avatar URL
     const { data, error } = await supabaseAdmin.auth.admin.updateUserById(
       user.id,
       {

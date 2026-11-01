@@ -4,7 +4,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io'
 
 export const dynamic = 'force-dynamic'
-export const revalidate = 86400 // 24 horas
+export const revalidate = 86400 // 24 hours
 
 export async function GET() {
   let blogSection = `- [Blog](${SITE_URL}/es/blog): Artículos prácticos sobre desarrollo de software, transformación digital y tecnología para empresarios.\n`
@@ -75,7 +75,7 @@ ${portfolioEntries}
 `
     }
   } catch {
-    // Si falla Supabase, se usan los fallbacks estáticos
+    // If Supabase fails, the static fallbacks are used
   }
 
   const content = `# imSoft

@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { isAdmin } from '@/lib/roles'
 
-// GET: Obtener todas las empresas o empresas de un usuario específico
+// GET: all companies, or the companies of a specific user
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url)
@@ -16,17 +16,17 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Si es admin, puede ver todas las empresas (con o sin usuario) o filtrar por user_id
-    // Si es cliente, solo puede ver sus propias empresas
+    // Admins can see every company (with or without a user) or filter by user_id
+    // Clients can only see their own companies
     const admin = isAdmin(user)
     
     let data, error
 
     if (admin) {
-      // Para admins, usar el cliente normal con RLS (las políticas deberían permitir ver todas)
+      // For admins, use the regular client with RLS (the policies should allow seeing all)
       let query = supabase.from('companies').select('*').order('name', { ascending: true })
       
-      // Admin puede filtrar por user_id si se especifica
+      // Admins can filter by user_id if given
       if (userId) {
         query = query.eq('user_id', userId)
       }
@@ -35,7 +35,7 @@ export async function GET(request: Request) {
       data = result.data
       error = result.error
       
-      // Si hay error de permisos, intentar con admin client como fallback
+      // On a permissions error, fall back to the admin client
       if (error && (error.code === '42501' || error.message?.includes('permission denied'))) {
         console.warn('RLS blocked admin access, using admin client as fallback')
         const supabaseAdmin = createAdminClient()
@@ -50,7 +50,7 @@ export async function GET(request: Request) {
         error = adminResult.error
       }
     } else {
-      // Cliente solo ve sus propias empresas
+      // Clients only see their own companies
       const result = await supabase
         .from('companies')
         .select('*')
@@ -63,7 +63,7 @@ export async function GET(request: Request) {
 
     if (error) {
       console.error('Error fetching companies:', error)
-      // Si la tabla no existe, devolver un mensaje más claro
+      // If the table doesn't exist, return a clearer message
       if (error.code === '42P01' || error.message?.includes('does not exist')) {
         return NextResponse.json(
           { 
@@ -86,7 +86,7 @@ export async function GET(request: Request) {
   }
 }
 
-// POST: Crear una nueva empresa
+// POST: create a new company
 export async function POST(request: Request) {
   try {
     const supabase = await createClient()
@@ -106,16 +106,16 @@ export async function POST(request: Request) {
       )
     }
 
-    // Los clientes solo pueden crear empresas para sí mismos
-    // Los admins pueden crear empresas para cualquier usuario o sin usuario (user_id = null)
+    // Clients can only create companies for themselves
+    // Admins can create companies for any user or with no user (user_id = null)
     const admin = isAdmin(user)
     let targetUserId: string | null = null
     
     if (admin) {
-      // Si es admin, puede especificar user_id o dejarlo null
+      // Admins can set user_id or leave it null
       targetUserId = body.user_id || null
     } else {
-      // Si es cliente, solo puede crear para sí mismo
+      // Clients can only create for themselves
       targetUserId = user.id
     }
 

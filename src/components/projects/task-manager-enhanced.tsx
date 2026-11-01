@@ -111,7 +111,7 @@ function SortableTask({ task, lang, onToggle, onDelete, onEdit }: SortableTaskPr
         task.completed ? 'opacity-60' : ''
       }`}
       onClick={(e) => {
-        // No abrir edición si se hace click en el checkbox, botón de eliminar o grip
+        // Don't open editing when clicking the checkbox, the delete button or the grip
         if (
           (e.target as HTMLElement).closest('button') ||
           (e.target as HTMLElement).closest('[role="checkbox"]') ||
@@ -198,7 +198,7 @@ export function TaskManagerEnhanced({ projectId, lang }: TaskManagerProps) {
   const [filterPriority, setFilterPriority] = useState<string>('all')
   const [taskToDelete, setTaskToDelete] = useState<string | null>(null)
 
-  // Categorías predefinidas
+  // Predefined categories
   const predefinedCategories = [
     'Frontend',
     'Backend',
@@ -553,7 +553,7 @@ export function TaskManagerEnhanced({ projectId, lang }: TaskManagerProps) {
                             {category}
                           </SelectItem>
                         ))}
-                        {/* Agregar categorías existentes que no estén en la lista predefinida */}
+                        {/* Add existing categories that aren't in the predefined list */}
                         {categories
                           .filter(cat => !predefinedCategories.includes(cat))
                           .map(category => (

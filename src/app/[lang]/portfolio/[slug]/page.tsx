@@ -199,7 +199,7 @@ export default async function PortfolioDetailPage({
                 )}
               </div>
 
-              {/* Imagen principal */}
+              {/* Main image */}
               {project.image_url && (
                 <div className="relative w-full h-[480px] rounded-2xl overflow-hidden">
                   <Image
@@ -214,7 +214,7 @@ export default async function PortfolioDetailPage({
             </div>
           </section>
 
-          {/* ── El reto + La solución ── */}
+          {/* ── The challenge + The solution ── */}
           {challenge && (
             <section className="py-16 md:py-20 bg-muted/40">
               <div className="mx-auto max-w-5xl px-6">
@@ -246,7 +246,7 @@ export default async function PortfolioDetailPage({
             </section>
           )}
 
-          {/* ── Resultados ── */}
+          {/* ── Results ── */}
           {results.length > 0 && (
             <section className="py-16 md:py-20 bg-primary">
               <div className="mx-auto max-w-5xl px-6">
@@ -272,7 +272,7 @@ export default async function PortfolioDetailPage({
             </section>
           )}
 
-          {/* ── Testimonio ── */}
+          {/* ── Testimonial ── */}
           {clientQuote && (
             <section className="py-16 md:py-20 bg-background">
               <div className="mx-auto max-w-3xl px-6 text-center">

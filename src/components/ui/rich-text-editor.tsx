@@ -277,13 +277,13 @@ function InitialContentPlugin({ content }: { content: string }) {
         const root = $getRoot()
         root.clear()
 
-        // Convertir HTML a nodos de Lexical
+        // Convert HTML to Lexical nodes
         const nodes = $generateNodesFromDOM(editor, dom)
 
-        // Filtrar solo nodos válidos para el root (ElementNode o DecoratorNode)
+        // Keep only nodes valid for the root (ElementNode or DecoratorNode)
         const validNodes = nodes.filter(node => {
           const nodeType = node.getType()
-          // Permitir solo nodos que pueden ser hijos del root
+          // Allow only nodes that can be children of the root
           return nodeType === 'paragraph' ||
                  nodeType === 'heading' ||
                  nodeType === 'list' ||

@@ -4,35 +4,35 @@ import path from 'node:path'
 import { isAdmin, roleOf } from './roles'
 
 describe('roles', () => {
-  it('solo es admin quien lo tiene en app_metadata', () => {
+  it('only someone who has it in app_metadata is admin', () => {
     expect(isAdmin({ app_metadata: { role: 'admin' } })).toBe(true)
     expect(roleOf({ app_metadata: { role: 'admin' } })).toBe('admin')
     expect(roleOf({ app_metadata: { provider: 'google' } })).toBe('client')
     expect(roleOf(null)).toBe('client')
   })
 
-  it('lo que el usuario escriba en user_metadata no lo vuelve admin', () => {
-    // supabase.auth.updateUser({ data: { role: 'admin' } }) lo puede hacer cualquiera sobre si mismo.
-    const tramposo = { user_metadata: { role: 'admin' }, app_metadata: {} }
-    expect(isAdmin(tramposo)).toBe(false)
+  it('whatever the user writes in user_metadata does not make them admin', () => {
+    // supabase.auth.updateUser({ data: { role: 'admin' } }) can be done by anyone on themselves.
+    const cheater = { user_metadata: { role: 'admin' }, app_metadata: {} }
+    expect(isAdmin(cheater)).toBe(false)
   })
 
-  it('ningun archivo decide permisos leyendo el rol de user_metadata', () => {
-    const raiz = path.join(__dirname, '..')
-    const malos: string[] = []
-    const recorrer = (dir: string) => {
+  it('no file decides permissions by reading the role from user_metadata', () => {
+    const root = path.join(__dirname, '..')
+    const offenders: string[] = []
+    const walk = (dir: string) => {
       for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
         const p = path.join(dir, e.name)
-        if (e.isDirectory()) recorrer(p)
+        if (e.isDirectory()) walk(p)
         else if (/\.(ts|tsx)$/.test(e.name) && !e.name.includes('.test.')) {
           const s = fs.readFileSync(p, 'utf8')
-          // Unica excepcion: los callbacks de Google usan `!user_metadata.role` como marca de "primera vez", no como permiso.
-          const sinMarca = s.replace(/!user\.user_metadata\?\.role/g, '')
-          if (/user_metadata\??\.role/.test(sinMarca)) malos.push(path.relative(raiz, p))
+          // Only exception: the Google callbacks use `!user_metadata.role` as a "first time" marker, not as a permission.
+          const withoutMarker = s.replace(/!user\.user_metadata\?\.role/g, '')
+          if (/user_metadata\??\.role/.test(withoutMarker)) offenders.push(path.relative(root, p))
         }
       }
     }
-    recorrer(raiz)
-    expect(malos).toEqual([])
+    walk(root)
+    expect(offenders).toEqual([])
   })
 })

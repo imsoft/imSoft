@@ -33,14 +33,14 @@ export default async function ClientBillingPage({ params }: {
 
   const isEs = lang === 'es'
 
-  // Obtener la empresa del usuario
+  // Fetch the user's company
   const { data: company } = await supabase
     .from('companies')
     .select('id')
     .eq('user_id', user.id)
     .maybeSingle()
 
-  // Obtener proyectos de la empresa con sus pagos
+  // Fetch the company's projects with their payments
   let payments: PaymentWithProject[] = []
   let totalInvoiced = 0
 

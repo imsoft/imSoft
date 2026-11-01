@@ -3,10 +3,10 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { verifyUnsubscribe } from '@/lib/email/unsubscribe'
 
 /**
- * Baja de correos del blog. Enlace público firmado con HMAC.
- * No requiere sesión: el token del enlace prueba que el dueño del correo lo abrió.
+ * Blog email unsubscribe. Public link signed with HMAC.
+ * No session required: the link token proves the mailbox owner opened it.
  *
- * Marca user_metadata.email_opt_in = false y redirige a una página de confirmación.
+ * Sets user_metadata.email_opt_in = false and redirects to a confirmation page.
  */
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url)
@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
   try {
     const admin = createAdminClient()
 
-    // Conservamos el resto del metadata y solo cambiamos el opt-in.
+    // Keep the rest of the metadata and only change the opt-in.
     const { data: userData, error: getError } = await admin.auth.admin.getUserById(userId)
     if (getError || !userData?.user) {
       return redirect('invalid')

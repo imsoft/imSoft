@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { MAX_CARD_RESULTS, portfolioCard, portfolioLookup, portfolioMetaDescription, type PortfolioRow } from './portfolio-card';
 
-const fila: PortfolioRow = {
+const row: PortfolioRow = {
   id: '0a15d020-12a3-416e-a175-50bd5c993d7a',
   slug: 'aduvanta',
   title_es: 'Aduvanta - Software Aduanero en la Nube',
@@ -19,38 +19,38 @@ const fila: PortfolioRow = {
 };
 
 describe('portfolioCard', () => {
-  it('enlaza por slug con nombre, no por el id', () => {
-    expect(portfolioCard(fila, 'es').slug).toBe('aduvanta');
+  it('links by named slug, not by id', () => {
+    expect(portfolioCard(row, 'es').slug).toBe('aduvanta');
   });
 
-  it('cae al id cuando no hay slug, para que la ficha siga abriendo', () => {
-    expect(portfolioCard({ ...fila, slug: null }, 'es').slug).toBe(fila.id);
-    expect(portfolioCard({ ...fila, slug: '  ' }, 'es').slug).toBe(fila.id);
+  it('falls back to the id when there is no slug, so the detail page still opens', () => {
+    expect(portfolioCard({ ...row, slug: null }, 'es').slug).toBe(row.id);
+    expect(portfolioCard({ ...row, slug: '  ' }, 'es').slug).toBe(row.id);
   });
 
-  it('saca el reto y los resultados a la tarjeta, en el idioma pedido', () => {
-    const es = portfolioCard(fila, 'es');
+  it('brings the challenge and results to the card, in the requested language', () => {
+    const es = portfolioCard(row, 'es');
     expect(es.challenge).toContain('13 aplicaciones');
     expect(es.results).toEqual(['80% menos tiempo', '0 instalaciones', 'TIGIE con IA']);
     expect(es.results).toHaveLength(MAX_CARD_RESULTS);
 
-    const en = portfolioCard(fila, 'en');
+    const en = portfolioCard(row, 'en');
     expect(en.title).toBe('Aduvanta - Cloud Customs Software');
     expect(en.challenge).toContain('desktop apps');
     expect(en.results[0]).toBe('80% less time');
   });
 
-  it('cae al otro idioma cuando falta la traduccion, y al campo neutro al final', () => {
-    const sinIngles = portfolioCard({ ...fila, title_en: null, challenge_en: '' }, 'en');
-    expect(sinIngles.title).toBe(fila.title_es);
-    expect(sinIngles.challenge).toContain('13 aplicaciones');
+  it('falls back to the other language when the translation is missing, and to the neutral field last', () => {
+    const noEnglish = portfolioCard({ ...row, title_en: null, challenge_en: '' }, 'en');
+    expect(noEnglish.title).toBe(row.title_es);
+    expect(noEnglish.challenge).toContain('13 aplicaciones');
 
-    const neutro = portfolioCard({ id: 'x', title: 'Solo título', description: 'Solo desc' }, 'es');
-    expect(neutro.title).toBe('Solo título');
-    expect(neutro.description).toBe('Solo desc');
+    const neutral = portfolioCard({ id: 'x', title: 'Solo título', description: 'Solo desc' }, 'es');
+    expect(neutral.title).toBe('Solo título');
+    expect(neutral.description).toBe('Solo desc');
   });
 
-  it('no inventa nada cuando la fila esta vacia', () => {
+  it('makes nothing up when the row is empty', () => {
     const c = portfolioCard({ id: 'x' }, 'es');
     expect(c.challenge).toBeNull();
     expect(c.results).toEqual([]);
@@ -60,33 +60,33 @@ describe('portfolioCard', () => {
     expect(c.image).toMatch(/^https:\/\//);
   });
 
-  it('descarta resultados vacios', () => {
+  it('drops empty results', () => {
     expect(portfolioCard({ id: 'x', results_es: ['', '  ', 'Real'] }, 'es').results).toEqual(['Real']);
   });
 });
 
 describe('portfolioLookup', () => {
-  it('busca por id cuando la URL trae el uuid viejo', () => {
+  it('looks up by id when the URL carries the old uuid', () => {
     expect(portfolioLookup('0a15d020-12a3-416e-a175-50bd5c993d7a')).toEqual({
       column: 'id',
       value: '0a15d020-12a3-416e-a175-50bd5c993d7a',
     });
   });
 
-  it('busca por slug con nombre, que no es un uuid valido', () => {
+  it('looks up by named slug, which is not a valid uuid', () => {
     expect(portfolioLookup('aduvanta')).toEqual({ column: 'slug', value: 'aduvanta' });
     expect(portfolioLookup('steridantal-order-generator').column).toBe('slug');
   });
 });
 
 describe('portfolioMetaDescription', () => {
-  it('completa con el reto las descripciones de una linea', () => {
+  it('completes one-line descriptions with the challenge', () => {
     const d = portfolioMetaDescription({ id: 'x', description_es: 'Aplicación web para pedidos', challenge_es: 'Los clientes llamaban para pedir.' }, 'es');
     expect(d).toBe('Aplicación web para pedidos. Los clientes llamaban para pedir.');
   });
 
-  it('deja en paz las descripciones ya completas', () => {
-    const larga = 'x'.repeat(80);
-    expect(portfolioMetaDescription({ id: 'x', description_es: larga, challenge_es: 'reto' }, 'es')).toBe(larga);
+  it('leaves already complete descriptions alone', () => {
+    const long = 'x'.repeat(80);
+    expect(portfolioMetaDescription({ id: 'x', description_es: long, challenge_es: 'reto' }, 'es')).toBe(long);
   });
 });

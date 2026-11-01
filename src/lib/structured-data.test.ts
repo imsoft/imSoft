@@ -5,15 +5,15 @@ import { BUSINESS } from '@/config/business';
 const SITE = 'https://www.imsoft.io';
 
 /**
- * Estas pruebas existen sobre todo para impedir que vuelva a colarse un dato inventado.
- * El schema anterior declaraba coordenadas del centro de Guadalajara y un radio de
- * servicio de 50 km que nadie confirmo; si eso no coincide con Google Business Profile,
- * resta credibilidad a la ficha en vez de sumarla.
+ * These tests exist mainly to stop a made-up fact from slipping in again.
+ * The previous schema declared coordinates of downtown Guadalajara and a 50 km
+ * service radius nobody confirmed; if that doesn't match Google Business Profile,
+ * it takes credibility away from the listing instead of adding it.
  */
-describe('schema del negocio', () => {
+describe('business schema', () => {
   const org = businessSchema('es');
 
-  it('no declara datos que nadie confirmo', () => {
+  it('does not declare data nobody confirmed', () => {
     for (const schema of [org] as Record<string, unknown>[]) {
       expect(schema).not.toHaveProperty('geo');
       expect(schema).not.toHaveProperty('serviceArea');
@@ -22,75 +22,75 @@ describe('schema del negocio', () => {
     }
   });
 
-  it('no declara un domicilio visitable: no hay local que reciba clientes', () => {
+  it('does not declare a visitable address: there is no premises that receives clients', () => {
     expect(org).not.toHaveProperty('geo');
     expect(org).not.toHaveProperty('hasMap');
     expect(org.address).not.toHaveProperty('streetAddress');
   });
 
-  it('publica el horario exacto de Google Business Profile, domingo incluido', () => {
-    const [semana, domingo] = org.openingHoursSpecification;
-    expect(semana.dayOfWeek).toHaveLength(6);
-    expect(semana.dayOfWeek).toContain('Saturday');
-    expect(semana.opens).toBe('09:00');
-    expect(semana.closes).toBe('18:00');
+  it('publishes the exact Google Business Profile hours, Sunday included', () => {
+    const [weekdays, sunday] = org.openingHoursSpecification;
+    expect(weekdays.dayOfWeek).toHaveLength(6);
+    expect(weekdays.dayOfWeek).toContain('Saturday');
+    expect(weekdays.opens).toBe('09:00');
+    expect(weekdays.closes).toBe('18:00');
 
-    // El domingo cierra antes; declararlo igual que el resto contradiria la ficha.
-    expect(domingo.dayOfWeek).toEqual(['Sunday']);
-    expect(domingo.closes).toBe('13:00');
+    // Sunday closes earlier; declaring it the same as the rest would contradict the listing.
+    expect(sunday.dayOfWeek).toEqual(['Sunday']);
+    expect(sunday.closes).toBe('13:00');
   });
 
-  it('los siete dias estan cubiertos, sin repetirse', () => {
-    const dias = org.openingHoursSpecification.flatMap((s) => s.dayOfWeek);
-    expect(new Set(dias).size).toBe(7);
-    expect(dias).toHaveLength(7);
+  it('all seven days are covered, without repeats', () => {
+    const days = org.openingHoursSpecification.flatMap((s) => s.dayOfWeek);
+    expect(new Set(days).size).toBe(7);
+    expect(days).toHaveLength(7);
   });
 
-  it('el telefono va en E.164', () => {
+  it('the phone is in E.164', () => {
     expect(org.telephone).toBe('+523325365558');
     expect(org.telephone).toMatch(/^\+[1-9]\d{7,14}$/);
   });
 
-  it('sameAs solo lleva URLs publicas', () => {
+  it('sameAs only carries public URLs', () => {
     expect(org.sameAs.length).toBeGreaterThan(0);
     for (const url of org.sameAs) {
       expect(url).toMatch(/^https:\/\//);
-      // La URL de LinkedIn que habia en la BD era el panel de administracion.
+      // The LinkedIn URL that was in the DB was the admin panel.
       expect(url).not.toContain('/admin');
       expect(url).not.toContain('/dashboard');
     }
   });
 
-  it('es un solo nodo ProfessionalService, no dos empresas enlazadas', () => {
-    // ProfessionalService ya hereda de Organization. Un segundo nodo unido por
-    // parentOrganization declararia que imSoft tiene una matriz llamada imSoft.
+  it('is a single ProfessionalService node, not two linked companies', () => {
+    // ProfessionalService already inherits from Organization. A second node joined by
+    // parentOrganization would declare that imSoft has a parent company called imSoft.
     expect(org['@type']).toBe('ProfessionalService');
     expect(org['@id']).toBe(`${SITE}/#organization`);
     expect(org).not.toHaveProperty('parentOrganization');
   });
 
-  it('el @type es una cadena, no un array', () => {
-    // validator.schema.org descarta el nodo entero, sin dar error, cuando @type es
-    // un array de tipos. Verificado en produccion.
+  it('the @type is a string, not an array', () => {
+    // validator.schema.org drops the whole node, without an error, when @type is
+    // an array of types. Verified in production.
     expect(Array.isArray(org['@type'])).toBe(false);
   });
 
-  it('no usa availableLanguage fuera de ContactPoint', () => {
-    // El validador de schema.org lo marca como UNKNOWN_FIELD en LocalBusiness.
+  it('does not use availableLanguage outside ContactPoint', () => {
+    // The schema.org validator flags it as UNKNOWN_FIELD on LocalBusiness.
     expect(org).not.toHaveProperty('availableLanguage');
     expect(org.contactPoint[0].availableLanguage).toEqual(['Spanish', 'English']);
     expect(org.contactPoint.map((c: { contactType: string }) => c.contactType)).toEqual(['customer service', 'sales', 'billing support', 'technical support']);
     expect(org.contactPoint[3].email).toBe('soporte@imsoft.io');
   });
 
-  it('el @id no colisiona con la URL de una pagina real', () => {
-    // Antes LocalBusiness usaba `@id: https://www.imsoft.io/es`, que es la home.
+  it('the @id does not collide with the URL of a real page', () => {
+    // LocalBusiness used to use `@id: https://www.imsoft.io/es`, which is the home page.
     for (const schema of [org, websiteSchema('es')]) {
       expect(schema['@id']).toContain('#');
     }
   });
 
-  it('la direccion declara Guadalajara, Jalisco, MX', () => {
+  it('the address declares Guadalajara, Jalisco, MX', () => {
     expect(org.address).toMatchObject({
       '@type': 'PostalAddress',
       addressLocality: 'Guadalajara',
@@ -99,11 +99,11 @@ describe('schema del negocio', () => {
     });
   });
 
-  it('areaServed coincide con las areas de Google Business Profile', () => {
-    // Si la ficha y el schema declaran zonas distintas, Google recibe dos versiones
-    // del alcance del negocio.
+  it('areaServed matches the Google Business Profile areas', () => {
+    // If the listing and the schema declare different areas, Google gets two versions
+    // of the business's reach.
     const names = org.areaServed.map((a) => a.name);
-    for (const zona of [
+    for (const area of [
       'Guadalajara',
       'Zapopan',
       'Tlaquepaque',
@@ -112,27 +112,27 @@ describe('schema del negocio', () => {
       'Mexico City',
       'Monterrey',
     ]) {
-      expect(names).toContain(zona);
+      expect(names).toContain(area);
     }
     expect(names).toContain('Jalisco');
   });
 
-  it('todo el bloque serializa a JSON valido', () => {
+  it('the whole block serializes to valid JSON', () => {
     for (const schema of [org, websiteSchema('en')]) {
       expect(() => JSON.parse(JSON.stringify(schema))).not.toThrow();
       expect(schema['@context']).toBe('https://schema.org');
     }
   });
 
-  it('el correo coincide con el configurado', () => {
+  it('the email matches the configured one', () => {
     expect(org.email).toBe(BUSINESS.email);
   });
 });
 
-describe('referencias entre bloques', () => {
-  it('WebSite no referencia al negocio por @id', () => {
-    // Ver el comentario de structured-data.ts: una referencia `{'@id': ...}` desde otro
-    // bloque hace que validator.schema.org descarte el nodo del negocio en silencio.
+describe('references between blocks', () => {
+  it('WebSite does not reference the business by @id', () => {
+    // See the comment in structured-data.ts: a `{'@id': ...}` reference from another
+    // block makes validator.schema.org silently drop the business node.
     expect(websiteSchema('es')).not.toHaveProperty('publisher');
   });
 });

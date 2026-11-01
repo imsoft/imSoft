@@ -55,7 +55,7 @@ export default function ResetPasswordForm({ dict, lang }: ResetPasswordFormProps
     },
   })
 
-  // Verificar que hay un token en la URL
+  // Check that there is a token in the URL
   useEffect(() => {
     const token = searchParams.get('token')
     const type = searchParams.get('type')
@@ -72,13 +72,13 @@ export default function ResetPasswordForm({ dict, lang }: ResetPasswordFormProps
     try {
       const supabase = createClient()
       
-      // Actualizar la contraseña
+      // Update the password
       const { error: updateError } = await supabase.auth.updateUser({
         password: values.password,
       })
 
       if (updateError) {
-        // Si el error es por token inválido o expirado
+        // If the error is an invalid or expired token
         if (updateError.message.includes('token') || updateError.message.includes('expired')) {
           setError(dict.auth.resetPassword.errors.invalidToken)
         } else {
@@ -90,7 +90,7 @@ export default function ResetPasswordForm({ dict, lang }: ResetPasswordFormProps
 
       setSuccess(true)
       
-      // Redirigir al login después de 2 segundos
+      // Redirect to login after 2 seconds
       setTimeout(() => {
         router.push(`/${lang}/login`)
         router.refresh()

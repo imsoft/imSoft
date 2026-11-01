@@ -4,19 +4,19 @@ interface StructuredDataProps {
 }
 
 /**
- * Inserta JSON-LD en el HTML renderizado en servidor.
+ * Inserts JSON-LD into the server-rendered HTML.
  *
- * Antes usaba `next/script`, cuya estrategia por defecto (`afterInteractive`) inyecta
- * la etiqueta despues de hidratar: el schema no aparecia en el HTML servido y ningun
- * rastreador lo veia en el primer pase. Un <script> normal si se serializa en el SSR,
- * que es lo que documenta Next para JSON-LD en el App Router.
+ * It used to use `next/script`, whose default strategy (`afterInteractive`) injects
+ * the tag after hydration: the schema wasn't in the served HTML and no crawler
+ * saw it on the first pass. A plain <script> does get serialized in SSR, which is
+ * what Next documents for JSON-LD in the App Router.
  */
 export function StructuredData({ data, id = 'structured-data' }: StructuredDataProps) {
   return (
     <script
       id={id}
       type="application/ld+json"
-      // El contenido es JSON generado por nosotros, nunca entrada de usuario sin escapar.
+      // The content is JSON we generate, never unescaped user input.
       dangerouslySetInnerHTML={{
         __html: JSON.stringify(data).replace(/</g, '\\u003c'),
       }}

@@ -7,11 +7,11 @@ import { ScrollReveal } from "@/components/animations/scroll-reveal"
 import { useMediaQuery } from '@/hooks/use-mobile'
 
 export function PortfolioSection({ dict, lang, projects = [] }: PortfolioSectionProps) {
-  // useSyncExternalStore en vez de useState + useEffect: evita el render extra con el
-  // valor provisional en cada carga.
+  // useSyncExternalStore instead of useState + useEffect: avoids the extra render with the
+  // provisional value on every load.
   const isDesktop = useMediaQuery('(min-width: 1024px)')
 
-  // Usar proyectos de la prop o proyectos de ejemplo si está vacío
+  // Use the projects from the prop, or sample projects if it's empty
   const displayProjects = projects.length > 0 ? projects : [
     {
       id: '1',
@@ -51,7 +51,7 @@ export function PortfolioSection({ dict, lang, projects = [] }: PortfolioSection
   return (
     <section className="py-16 md:py-24 bg-background overflow-x-hidden">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        {/* Título arriba solo en móvil */}
+        {/* Title on top, mobile only */}
         <ScrollReveal className="text-center mb-8 lg:hidden" direction="up">
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
             {dict.portfolio.title}
@@ -61,9 +61,9 @@ export function PortfolioSection({ dict, lang, projects = [] }: PortfolioSection
           </p>
         </ScrollReveal>
 
-        {/* Grid de 2 columnas en desktop, solo cards en móvil */}
+        {/* 2-column grid on desktop, cards only on mobile */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-          {/* Texto a la izquierda - solo en desktop */}
+          {/* Text on the left, desktop only */}
           <ScrollReveal className="hidden lg:block" direction="left">
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
               {dict.portfolio.title}
@@ -73,7 +73,7 @@ export function PortfolioSection({ dict, lang, projects = [] }: PortfolioSection
             </p>
           </ScrollReveal>
 
-          {/* Cards apiladas */}
+          {/* Stacked cards */}
           <ScrollReveal direction="right" delay={0.2} className="relative w-full overflow-visible mx-auto lg:mx-0 px-4 lg:px-0 lg:pr-32 pb-8 lg:pb-16" style={{ height: isDesktop ? '650px' : '450px', minHeight: isDesktop ? '650px' : '450px' }}>
             <CardSwap
               cardDistance={isDesktop ? 60 : 40}

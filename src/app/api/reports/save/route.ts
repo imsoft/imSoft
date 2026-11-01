@@ -15,7 +15,7 @@ export async function POST(request: Request) {
       )
     }
 
-    // Verificar que sea admin
+    // Check the user is admin
     if (!isAdmin(user)) {
       return NextResponse.json(
         { error: 'Forbidden' },

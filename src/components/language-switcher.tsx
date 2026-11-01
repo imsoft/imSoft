@@ -12,9 +12,9 @@ export function LanguageSwitcher({ currentLang, className }: LanguageSwitcherPro
   const router = useRouter()
 
   const toggleLanguage = () => {
-    // Cambiar al otro idioma
+    // Switch to the other language
     const newLang: Locale = currentLang === 'en' ? 'es' : 'en'
-    // Reemplazar el locale actual en la ruta
+    // Replace the current locale in the path
     const segments = pathname.split('/')
     segments[1] = newLang
     const newPath = segments.join('/')

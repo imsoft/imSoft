@@ -27,9 +27,9 @@ export async function generateMetadata({
   const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io';
 
   return generateSEOMetadata({
-    // El title es la senal on-page mas fuerte y es la pagina mas importante del sitio:
-    // lleva servicio + ciudad, no un lema. "Soluciones Tecnológicas Modernas para
-    // Empresas" no lo busca nadie.
+    // The title is the strongest on-page signal and this is the site's most important page:
+    // it carries service + city, not a tagline. Nobody searches for "Soluciones Tecnológicas
+    // Modernas para Empresas".
     title: lang === 'es'
       ? 'Desarrollo de Software y Páginas Web en Guadalajara'
       : 'Custom Software and Web Development Agency in Mexico',
@@ -45,7 +45,7 @@ export async function generateMetadata({
   }, lang);
 }
 
-// Revalidar la página cada 5 minutos para mantener datos frescos sin golpear Supabase en cada request
+// Revalidate the page every 5 minutes to keep data fresh without hitting Supabase on every request
 export const revalidate = 300;
 
 export default async function Home({ params }: {
@@ -60,7 +60,7 @@ export default async function Home({ params }: {
     createClient(),
   ]);
 
-  // Todas las queries en paralelo para eliminar el waterfall de red
+  // All queries in parallel to avoid a network waterfall
   const [
     { data: contactData },
     { data: testimonials },
@@ -82,7 +82,7 @@ export default async function Home({ params }: {
       .order('created_at', { ascending: false })
       .limit(8),
     supabase.from('services').select('*').order('created_at', { ascending: true }),
-    // Blog: intentar con admin client para bypass RLS
+    // Blog: try the admin client to bypass RLS
     (async () => {
       try {
         const adminSupabase = createAdminClient();
@@ -107,7 +107,7 @@ export default async function Home({ params }: {
 
   const blogPosts = blogResult.data;
 
-  // Formatear testimonios para incluir logo de empresa
+  // Shape testimonials to include the company logo
   const formattedTestimonials = (testimonials || []).map((testimonial: any) => ({
     id: testimonial.id,
     company: testimonial.companies?.name || testimonial.company || '',
@@ -120,7 +120,7 @@ export default async function Home({ params }: {
 
   const projects = (portfolioData || []).map((project) => portfolioCard(project, lang));
 
-  // Mapear los títulos según el idioma (para el hero)
+  // Map titles by language (for the hero)
   const blogTitles = (blogPosts || []).map((post) => {
     const title = lang === 'en'
       ? (post.title_en || post.title || '')
@@ -132,7 +132,7 @@ export default async function Home({ params }: {
     };
   });
 
-  // Mapear posts para el blog preview con datos enriquecidos
+  // Map posts for the blog preview with enriched data
   const blogPreviews = (blogPosts || []).slice(0, 3).map((post) => ({
     id: post.id,
     title: lang === 'en'
@@ -148,15 +148,15 @@ export default async function Home({ params }: {
   }));
 
   
-  // Structured data para WebSite
+  // Structured data for WebSite
 
-  // Structured data para Organization con datos de contacto
+  // Structured data for Organization with contact info
 
-  // Structured data Reviews — testimonios como schema Review
+  // Structured data Reviews — testimonials as Review schema
 
-  // Structured data LocalBusiness — refuerza posicionamiento local
+  // Structured data LocalBusiness — strengthens local ranking
 
-  // Structured data FAQPage — habilita rich snippets de preguntas frecuentes en Google
+  // Structured data FAQPage — enables FAQ rich snippets in Google
   const faqStructuredData = generateStructuredData({
     type: 'FAQPage',
     data: {
@@ -172,7 +172,7 @@ export default async function Home({ params }: {
       <StructuredData data={faqStructuredData} id="faq-structured-data" />
       <div className="overflow-x-hidden w-full">
         <HeroSection dict={dict} lang={lang} companies={companies || []} portfolioProjects={projects} blogTitles={blogTitles} />
-        <ServicesSection dict={dict} lang={lang} services={services || []} variant="portada" portfolio={portfolioData || []} />
+        <ServicesSection dict={dict} lang={lang} services={services || []} variant="home" portfolio={portfolioData || []} />
         <ProcessSection lang={lang} />
         <PricingSection dict={dict} lang={lang} />
         <PortfolioSection dict={dict} lang={lang} projects={projects} />

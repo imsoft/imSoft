@@ -6,69 +6,69 @@ const ROOT = path.join(__dirname, '..', '..');
 const read = (p: string) => fs.readFileSync(path.join(ROOT, p), 'utf8');
 
 /**
- * Estas pruebas vigilan que contactar a imSoft no vuelva a requerir navegar.
+ * These tests make sure that contacting imSoft never again requires navigating.
  *
- * El sitio venia de una plantilla de SaaS: los tres botones destacados del header
- * apuntaban a /signup, o sea que a un prospecto que busca agencia se le pedia darse de
- * alta en el panel de clientes antes que escribir. Y el telefono y el correo solo eran
- * clicables en /contact.
+ * The site came from a SaaS template: the three highlighted header buttons
+ * pointed to /signup, meaning a prospect looking for an agency was asked to sign up
+ * for the client panel before writing. And the phone and email were only
+ * clickable on /contact.
  */
 
-describe('el header empuja a contactar, no a registrarse', () => {
+describe('the header pushes to contact, not to sign up', () => {
   const header = read('src/components/blocks/hero-section.tsx');
   const landing = read('src/components/landing/hero-section-landing.tsx');
-  const botones = header.slice(header.indexOf('const menuItems'));
-  const botonesLanding = landing.slice(landing.indexOf('const menuItems'));
+  const headerButtons = header.slice(header.indexOf('const menuItems'));
+  const landingButtons = landing.slice(landing.indexOf('const menuItems'));
 
-  it('el unico boton de la cabecera lleva a WhatsApp con el contexto de la pagina', () => {
-    expect(botones).toMatch(/<Button asChild size="sm">\s*<WhatsAppCtaLink lang=\{lang\}>/);
-    expect(botonesLanding).toMatch(/<Button asChild size="sm">\s*<WhatsAppCtaLink lang=\{lang\}>/);
+  it('the only header button goes to WhatsApp with the page context', () => {
+    expect(headerButtons).toMatch(/<Button asChild size="sm">\s*<WhatsAppCtaLink lang=\{lang\}>/);
+    expect(landingButtons).toMatch(/<Button asChild size="sm">\s*<WhatsAppCtaLink lang=\{lang\}>/);
   });
 
-  it('acceso y registro ya no compiten con el CTA en la cabecera', () => {
-    for (const b of [botones, botonesLanding]) {
+  it('sign-in and sign-up no longer compete with the CTA in the header', () => {
+    for (const b of [headerButtons, landingButtons]) {
       expect(b).not.toContain('/login`}');
       expect(b).not.toContain('/signup`}');
     }
   });
 
-  it('el acceso de clientes sigue disponible en el pie', () => {
+  it('client sign-in is still available in the footer', () => {
     expect(read('src/components/blocks/footer-section.tsx')).toContain('href={`/${lang}/login`}');
   });
 
-  it('los clics de contacto se registran en analitica desde el layout', () => {
+  it('contact clicks are tracked in analytics from the layout', () => {
     expect(read('src/app/[lang]/layout.tsx')).toContain('<CtaTracker />');
     expect(read('src/app/[lang]/contact/contact-form.tsx')).toContain('new CustomEvent(LEAD_EVENT)');
   });
 });
 
-describe('el footer permite contactar desde cualquier pagina', () => {
+describe('the footer allows contacting from any page', () => {
   const footer = read('src/components/blocks/footer-section.tsx');
 
-  it('el telefono es un enlace tel: en E.164', () => {
+  it('the phone is a tel: link in E.164', () => {
     expect(footer).toContain('href={`tel:+52');
   });
 
-  it('el correo es un enlace mailto:', () => {
+  it('the email is a mailto: link', () => {
     expect(footer).toContain('href={`mailto:');
   });
 
-  it('hay un enlace de WhatsApp con mensaje precargado', () => {
+  it('there is a WhatsApp link with a prefilled message', () => {
     expect(footer).toContain('wa.me/523325365558');
     expect(footer).toContain('?text=');
   });
 });
 
-describe('el formulario de contacto no pide de mas', () => {
+describe('the contact form does not ask for too much', () => {
   const form = read('src/app/[lang]/contact/contact-form.tsx');
   const api = read('src/app/api/contact/route.ts');
 
-  it('el apellido es opcional en el formulario', () => {
+  it('the last name is optional in the form', () => {
     expect(form).toContain('lastName: z.string().optional()');
   });
 
-  it('y la API tampoco lo exige', () => {
-    // Si la API siguiera exigiendolo, el envio fallaria con 400 pese al formulario.
+  it('and the API does not require it either', () => {
+    // If the API still required it, the submission would fail with 400 despite the form.
     const guard = api.match(/if \(!firstName[^)]*\)/)?.[0] ?? '';
     expect(guard).not.toContain('lastName');
     expect(guard).toContain('firstName');
@@ -76,7 +76,7 @@ describe('el formulario de contacto no pide de mas', () => {
     expect(guard).toContain('message');
   });
 
-  it('el correo al admin no deja un "undefined" cuando falta el apellido', () => {
+  it('the email to the admin does not leave an "undefined" when the last name is missing', () => {
     expect(api).not.toMatch(/\$\{firstName\} \$\{lastName\}/);
     expect(api).toContain("[firstName, lastName].filter(Boolean).join(' ')");
   });

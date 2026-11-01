@@ -30,8 +30,8 @@ interface PageProps {
 }
 
 /**
- * Genera todas las rutas estáticas en build time
- * Esto crea las 30 combinaciones de lang + ciudad + servicio (15 en español, 15 en inglés)
+ * Generates every static route at build time.
+ * This creates the 30 lang + city + service combinations (15 in Spanish, 15 in English)
  */
 export async function generateStaticParams() {
   const langs = ['es', 'en'];
@@ -48,8 +48,8 @@ export async function generateStaticParams() {
     )
   );
 
-  // Landings de ciudad + servicio ("paginas web guadalajara"...). Solo en español; la
-  // version /en existe para canonicalizar a /es y no dar 404.
+  // City + service landings ("paginas web guadalajara"...). Spanish only; the
+  // /en version exists to canonicalize to /es and not return 404.
   for (const { city, slug } of cityServicePages()) {
     for (const lang of langs) params.push({ lang, city, service: slug });
   }
@@ -59,7 +59,7 @@ export async function generateStaticParams() {
 
 
 /**
- * Genera metadata dinámica para SEO
+ * Generates dynamic SEO metadata
  */
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { lang, city, service } = await params;
@@ -76,7 +76,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
   }
 
-  // Validar que la combinación exista
+  // Make sure the combination exists
   if (
     !LANDING_CITIES.includes(city as City) ||
     !landingPagesData[city as City] ||
@@ -91,8 +91,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const pageData = resolved.data;
   const esUrl = `${SITE}/es/${city}/${service}`;
 
-  // Si se pidio /en y aun no hay traduccion, se sirve el contenido en español: la
-  // canonica apunta a /es y no se declara hreflang, para no registrar un duplicado.
+  // If /en is requested and there is no translation yet, the Spanish content is served: the
+  // canonical points to /es and no hreflang is declared, to avoid registering a duplicate.
   const canonical = resolved.isTranslated
     ? `${SITE}/${lang}/${city}/${service}`
     : esUrl;
@@ -149,7 +149,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 /**
- * Página principal - Landing page dinámica
+ * Main page - dynamic landing page
  */
 export default async function LandingPage({ params }: PageProps) {
   const { lang, city, service } = await params;
@@ -157,7 +157,7 @@ export default async function LandingPage({ params }: PageProps) {
   const cs = cityServiceContent(city, service);
   if (cs) return <CityServicePage lang={lang} city={city as CityKey} slug={service as CityServiceSlug} />;
 
-  // Validar que la combinación ciudad + servicio exista
+  // Make sure the city + service combination exists
   if (
     !LANDING_CITIES.includes(city as City) ||
     !landingPagesData[city as City] ||
@@ -170,20 +170,20 @@ export default async function LandingPage({ params }: PageProps) {
   const dict = await getDictionary(lang as 'es' | 'en');
   const supabase = await createClient();
 
-  // Obtener datos de contacto para el footer
+  // Fetch contact info for the footer
   const { data: contactData } = await supabase
     .from('contact')
     .select('*')
     .limit(1)
     .maybeSingle();
 
-  // Obtener servicios de la base de datos
+  // Fetch services from the database
   const { data: services = [] } = await supabase
     .from('services')
     .select('*')
     .order('created_at', { ascending: true });
 
-  // Structured Data para SEO
+  // Structured data for SEO
   const structuredData = {
     '@context': 'https://schema.org',
     '@type': 'WebPage',
@@ -211,7 +211,7 @@ export default async function LandingPage({ params }: PageProps) {
     },
   };
 
-  // BreadcrumbList — migas de pan en el SERP (Inicio › Servicios › esta landing)
+  // BreadcrumbList — breadcrumbs in the SERP (Inicio › Servicios › this landing)
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io';
   const breadcrumbStructuredData = generateStructuredData({
     type: 'BreadcrumbList',
@@ -255,7 +255,7 @@ export default async function LandingPage({ params }: PageProps) {
   );
 }
 
-/** Landing de ciudad + servicio: texto propio por pagina (ver src/config/city-services.ts). */
+/** City + service landing: its own copy per page (see src/config/city-services.ts). */
 async function CityServicePage({ lang, city, slug }: { lang: string; city: CityKey; slug: CityServiceSlug }) {
   const content = cityServiceContent(city, slug)!;
   const dict = await getDictionary(lang as 'es' | 'en');
@@ -280,14 +280,14 @@ async function CityServicePage({ lang, city, slug }: { lang: string; city: CityK
     },
   });
 
-  // Las otras landings de la misma ciudad, para que Google y el visitante las encuentren.
+  // The other landings in the same city, so Google and visitors find them.
   const related = cityServicePages()
     .filter((p) => p.city === city && p.slug !== slug)
     .map((p) => ({ name: cityServiceTitle(p.city, p.slug), href: cityServiceHref(lang, p.city, p.slug) }));
   if (city === 'guadalajara' && slug === 'paginas-web') related.unshift({ name: 'Páginas web en Zapopan', href: `/${lang}/zapopan/paginas-web` });
-  // La pagina de precio del servicio: responde la duda que frena a quien ya compara.
-  const precio = servicePriceGuide(slug);
-  if (precio) related.unshift(precio);
+  // The service's pricing page: answers the question that holds back someone already comparing.
+  const priceGuide = servicePriceGuide(slug);
+  if (priceGuide) related.unshift(priceGuide);
 
   return (
     <div>

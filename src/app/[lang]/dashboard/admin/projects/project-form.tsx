@@ -42,17 +42,17 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover'
 
-// Función para generar slug desde un texto
+// Builds a slug from a text
 function generateSlug(text: string): string {
   return text
     .toLowerCase()
     .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '') // Eliminar acentos
-    .replace(/[^a-z0-9]+/g, '-') // Reemplazar caracteres especiales con guiones
-    .replace(/^-+|-+$/g, '') // Eliminar guiones al inicio y final
+    .replace(/[\u0300-\u036f]/g, '') // Strip accents
+    .replace(/[^a-z0-9]+/g, '-') // Replace special characters with dashes
+    .replace(/^-+|-+$/g, '') // Trim leading and trailing dashes
 }
 
-// Las empresas se cargarán dinámicamente desde la API
+// Companies are loaded dynamically from the API
 
 const projectTypes = [
   { value: 'web-development', label_es: 'Desarrollo Web', label_en: 'Web Development' },
@@ -153,7 +153,7 @@ export function ProjectForm({ dict, lang, project }: ProjectFormProps) {
     },
   })
 
-  // Cargar empresas desde la API
+  // Load companies from the API
   useEffect(() => {
     async function fetchCompanies() {
       setIsLoadingCompanies(true)
@@ -163,7 +163,7 @@ export function ProjectForm({ dict, lang, project }: ProjectFormProps) {
           const errorData = await response.json().catch(() => ({ error: 'Error desconocido' }))
           console.error('Error fetching companies:', errorData)
           
-          // Si la tabla no existe, mostrar un mensaje más útil
+          // If the table doesn't exist, show a more useful message
           if (errorData.code === 'TABLE_NOT_FOUND' || response.status === 404) {
             toast.error(
               lang === 'en' 
@@ -213,7 +213,7 @@ export function ProjectForm({ dict, lang, project }: ProjectFormProps) {
     fetchCompanies()
   }, [lang])
 
-  // Cargar tecnologías
+  // Load technologies
   useEffect(() => {
     async function fetchTechnologies() {
       setIsLoadingTechnologies(true)
@@ -242,7 +242,7 @@ export function ProjectForm({ dict, lang, project }: ProjectFormProps) {
     fetchTechnologies()
   }, [])
 
-  // Cargar tecnologías existentes si estamos editando
+  // Load existing technologies when editing
   useEffect(() => {
     async function fetchProjectTechnologies() {
       if (!project?.id) return
@@ -281,7 +281,7 @@ export function ProjectForm({ dict, lang, project }: ProjectFormProps) {
     }
   }, [titleEn, isEditing, form, currentSlug])
 
-  // Función helper para extraer el path del storage desde la URL pública
+  // Extracts the storage path from the public URL
   function getStoragePathFromUrl(url: string, bucketName: string): string | null {
     try {
       const urlParts = url.split(`/storage/v1/object/public/${bucketName}/`)
@@ -291,7 +291,7 @@ export function ProjectForm({ dict, lang, project }: ProjectFormProps) {
     }
   }
 
-  // Función para eliminar imagen del storage
+  // Deletes an image from storage
   async function deleteImageFromStorage(imageUrl: string) {
     try {
       const supabase = createClient()
@@ -326,13 +326,13 @@ export function ProjectForm({ dict, lang, project }: ProjectFormProps) {
         return
       }
 
-      // Eliminar imagen anterior si existe
+      // Delete the previous image if any
       const currentImageUrl = form.getValues('image_url')
       if (currentImageUrl) {
         await deleteImageFromStorage(currentImageUrl)
       }
 
-      // Nueva estructura: /<slug>/nombre-original.ext
+      // New layout: /<slug>/original-name.ext
       const filePath = `${projectSlug}/${file.name}`
 
       const { error: uploadError } = await supabase.storage
@@ -378,12 +378,12 @@ export function ProjectForm({ dict, lang, project }: ProjectFormProps) {
   async function handleRemoveImage() {
     const currentImageUrl = form.getValues('image_url')
 
-    // Eliminar del storage
+    // Delete from storage
     if (currentImageUrl) {
       await deleteImageFromStorage(currentImageUrl)
     }
 
-    // Limpiar el formulario
+    // Clear the form field
     form.setValue('image_url', '')
     setPreviewImage(null)
     if (fileInputRef.current) {
@@ -396,11 +396,11 @@ export function ProjectForm({ dict, lang, project }: ProjectFormProps) {
     try {
       const supabase = createClient()
 
-      // Obtener el nombre de la empresa para mantener compatibilidad con el campo client
+      // Get the company name to stay compatible with the client field
       const selectedCompany = companies.find(c => c.value === values.company_id)
       const companyName = selectedCompany?.label || ''
 
-      // Extraer owner y repo name de la URL de GitHub
+      // Extract owner and repo name from the GitHub URL
       let github_owner = null
       let github_repo_name = null
       if (values.github_enabled && values.github_repo_url && values.github_repo_url.trim() !== '') {
@@ -446,7 +446,7 @@ export function ProjectForm({ dict, lang, project }: ProjectFormProps) {
       let projectId: string
 
       if (project) {
-        // Actualizar
+        // Update
         const { error } = await supabase
           .from('projects')
           .update(data)
@@ -456,7 +456,7 @@ export function ProjectForm({ dict, lang, project }: ProjectFormProps) {
         projectId = project.id
         toast.success(lang === 'en' ? 'Project updated successfully' : 'Proyecto actualizado exitosamente')
       } else {
-        // Crear
+        // Create
         const { data: insertedData, error } = await supabase
           .from('projects')
           .insert([data])
@@ -468,15 +468,15 @@ export function ProjectForm({ dict, lang, project }: ProjectFormProps) {
         toast.success(lang === 'en' ? 'Project created successfully' : 'Proyecto creado exitosamente')
       }
 
-      // Guardar relaciones de tecnologías
+      // Save technology relations
       if (projectId && values.technology_ids.length > 0) {
-        // Eliminar relaciones existentes
+        // Delete existing relations
         await supabase
           .from('project_technologies')
           .delete()
           .eq('project_id', projectId)
 
-        // Insertar nuevas relaciones
+        // Insert the new relations
         const technologyRelations = values.technology_ids.map(techId => ({
           project_id: projectId,
           technology_id: techId,
@@ -496,7 +496,7 @@ export function ProjectForm({ dict, lang, project }: ProjectFormProps) {
           )
         }
       } else if (projectId && values.technology_ids.length === 0) {
-        // Si no hay tecnologías seleccionadas, eliminar todas las relaciones
+        // If no technologies are selected, delete all relations
         await supabase
           .from('project_technologies')
           .delete()
@@ -514,7 +514,7 @@ export function ProjectForm({ dict, lang, project }: ProjectFormProps) {
         errorMessage = error.message || errorMessage
         errorDescription = error.message
       } else if (typeof error === 'object' && error !== null) {
-        // Manejar errores de Supabase
+        // Handle Supabase errors
         const supabaseError = error as any
         if (supabaseError.message) {
           errorDescription = supabaseError.message

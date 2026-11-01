@@ -6,8 +6,8 @@ export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
 /**
- * Imagen para compartir de cada servicio. Antes era la foto de stock de Unsplash del
- * servicio: al compartir el enlace se veia una foto ajena sin marca ni titulo.
+ * Share image for each service. It used to be the service's Unsplash stock photo:
+ * sharing the link showed an unrelated photo with no brand or title.
  */
 export default async function Image({ params }: { params: Promise<{ lang: string; slug: string }> }) {
   const { lang, slug } = await params;

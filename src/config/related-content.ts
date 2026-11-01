@@ -1,19 +1,18 @@
 /**
- * Enlaces internos entre servicios y articulos del blog.
+ * Internal links between services and blog articles.
  *
- * Google pondera una pagina por quien la enlaza. Los articulos de precios ("cuanto
- * cuesta...") no enlazaban a ningun servicio ni los servicios a ellos. Aqui se declara
- * la relacion una vez y la usan la pagina de servicio (bloque "Lecturas utiles") y la
- * ficha del articulo (tarjeta "Servicio relacionado"). Los slugs de blog que aun no
- * existan en la BD simplemente no se muestran: se pueden mapear temas de la cola
- * (content/blog-queue.json) antes de que se publiquen.
+ * Google weighs a page by who links to it. The pricing articles ("cuanto cuesta...")
+ * didn't link to any service, nor the services to them. The relation is declared once
+ * here and used by the service page ("Lecturas utiles" block) and the article page
+ * ("Servicio relacionado" card). Blog slugs not yet in the DB are simply not shown, so
+ * queued topics (content/blog-queue.json) can be mapped before they're published.
  */
 export const RELATED_POSTS_BY_SERVICE: Record<string, string[]> = {
   'aplicaciones-moviles': ['cuanto-cuesta-desarrollar-una-app-en-mexico', 'cuanto-cuesta-mantener-una-app-al-mes'],
   'desarrollo-de-mvp': ['cuanto-cuesta-desarrollar-una-app-en-mexico'],
   'mantenimiento-y-soporte': ['cuanto-cuesta-mantener-una-app-al-mes'],
   'web-pages': ['cuanto-cuesta-una-pagina-web-en-mexico', 'cuanto-cobra-un-programador-por-hacer-una-pagina-web'],
-  // El precio de una tienda lo responde la guia /es/cuanto-cuesta/tienda-en-linea, no un articulo.
+  // A store's price is answered by the /es/cuanto-cuesta/tienda-en-linea guide, not an article.
   'tiendas-en-linea': ['cuanto-cuesta-una-pagina-web-en-mexico'],
   'software-a-medida': [
     'cuanto-cuesta-un-sistema-de-inventario',
@@ -27,7 +26,7 @@ export function relatedPostsForService(serviceSlug: string): string[] {
   return RELATED_POSTS_BY_SERVICE[serviceSlug] ?? [];
 }
 
-/** Inversa: servicios que enlazan a un articulo, en el orden en que aparecen arriba. */
+/** Inverse: services that link to an article, in the order they appear above. */
 export function relatedServicesForPost(postSlugEs: string): string[] {
   return Object.entries(RELATED_POSTS_BY_SERVICE)
     .filter(([, posts]) => posts.includes(postSlugEs))

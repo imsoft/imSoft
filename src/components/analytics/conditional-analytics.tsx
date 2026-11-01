@@ -4,12 +4,12 @@ import { Analytics } from '@vercel/analytics/next';
 import { useCookieStore } from '@/stores/cookie-store';
 
 /**
- * Componente que carga Vercel Analytics solo si el usuario ha aceptado cookies analíticas
+ * Loads Vercel Analytics only if the user accepted analytics cookies
  */
 export function ConditionalAnalytics() {
   const { consent, hasConsent } = useCookieStore();
 
-  // Solo cargar analytics si el usuario ha dado consentimiento y ha aceptado cookies analíticas
+  // Only load analytics if the user gave consent and accepted analytics cookies
   if (!hasConsent || !consent.analytics) {
     return null;
   }

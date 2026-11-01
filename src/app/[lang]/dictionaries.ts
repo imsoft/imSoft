@@ -48,7 +48,7 @@ export type DictionaryStrict = DictFromJson & {
   };
 }
 
-/** Diccionario con acceso a cualquier clave (para claves no inferidas del JSON). */
+/** Dictionary that accepts any key (for keys not inferred from the JSON). */
 export type Dictionary = DictionaryStrict & Record<string, any>
 
 export const getDictionary = async (locale: Locale): Promise<Dictionary> =>

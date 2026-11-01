@@ -4,8 +4,8 @@ export interface Faq {
 }
 
 /**
- * Preguntas frecuentes de la home. Fuente única para el componente visual
- * (FaqSection) y para el JSON-LD FAQPage que habilita rich snippets en Google.
+ * Home page FAQs. Single source for the visual component (FaqSection) and for the
+ * FAQPage JSON-LD that enables rich snippets in Google.
  */
 export const faqs: Record<'es' | 'en', Faq[]> = {
   es: [

@@ -23,14 +23,14 @@ import { X, Image as ImageIcon, Upload } from 'lucide-react'
 import Image from '@/components/ui/image'
 import { Card } from '@/components/ui/card'
 
-// Función para generar slug desde un texto
+// Builds a slug from a text
 function generateSlug(text: string): string {
   return text
     .toLowerCase()
     .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '') // Eliminar acentos
-    .replace(/[^a-z0-9]+/g, '-') // Reemplazar caracteres especiales con guiones
-    .replace(/^-+|-+$/g, '') // Eliminar guiones al inicio y final
+    .replace(/[\u0300-\u036f]/g, '') // Strip accents
+    .replace(/[^a-z0-9]+/g, '-') // Replace special characters with dashes
+    .replace(/^-+|-+$/g, '') // Trim leading and trailing dashes
 }
 
 const companySchema = z.object({
@@ -63,7 +63,7 @@ export function CompanyForm({ dict, lang, company }: CompanyFormProps) {
     },
   })
 
-  // Actualizar previewImage cuando cambie la empresa
+  // Update previewImage when the company changes
   useEffect(() => {
     if (company?.logo_url) {
       setPreviewImage(company.logo_url)
@@ -77,7 +77,7 @@ export function CompanyForm({ dict, lang, company }: CompanyFormProps) {
     try {
       const supabase = createClient()
 
-      // Obtener el nombre actual del formulario
+      // Get the current name from the form
       const companyName = form.getValues('name')
 
       if (!companyName) {
@@ -86,17 +86,17 @@ export function CompanyForm({ dict, lang, company }: CompanyFormProps) {
         return
       }
 
-      // Generar slug desde el nombre de la empresa
+      // Build the slug from the company name
       const companySlug = generateSlug(companyName)
 
-      // Nueva estructura: /<slug>/nombre-original.ext
+      // New layout: /<slug>/original-name.ext
       const filePath = `${companySlug}/${file.name}`
 
       const { error: uploadError } = await supabase.storage
         .from('company-logos')
         .upload(filePath, file, {
           cacheControl: '3600',
-          upsert: true // Permitir sobrescribir el logo existente
+          upsert: true // Allow overwriting the existing logo
         })
 
       if (uploadError) throw uploadError
@@ -133,7 +133,7 @@ export function CompanyForm({ dict, lang, company }: CompanyFormProps) {
       }
       handleFileUpload(file)
     }
-    // Limpiar el input para permitir seleccionar el mismo archivo nuevamente
+    // Clear the input so the same file can be picked again
     if (fileInputRef.current) {
       fileInputRef.current.value = ''
     }

@@ -20,7 +20,7 @@ export default async function EditUserPage({ params }: {
     redirect(`/${lang}/login`)
   }
 
-  // Obtener el usuario a editar usando el admin client
+  // Fetch the user to edit with the admin client
   const supabaseAdmin = createAdminClient()
   const { data: userData, error } = await supabaseAdmin.auth.admin.getUserById(id)
 

@@ -30,20 +30,20 @@ export function TranslateButton({
   const [lastSourceText, setLastSourceText] = useState<string>('')
   const [translationState, setTranslationState] = useState<'idle' | 'modified' | 'translated'>('idle')
 
-  // Detectar cambios en el texto fuente y destino
+  // Detect changes in the source and target text
   useEffect(() => {
     if (!text || !text.trim()) {
       setTranslationState('idle')
       return
     }
 
-    // Si el texto fuente cambió después de traducir
+    // If the source text changed after translating
     if (lastSourceText && text !== lastSourceText) {
       setTranslationState('modified')
       return
     }
 
-    // Si el targetValue fue modificado manualmente después de traducir
+    // If targetValue was edited by hand after translating
     if (lastTranslatedText && targetValue !== lastTranslatedText) {
       setTranslationState('modified')
     } else if (targetValue && targetValue.trim() && lastTranslatedText === targetValue) {
@@ -53,7 +53,7 @@ export function TranslateButton({
     }
   }, [text, targetValue, lastTranslatedText, lastSourceText])
 
-  // Decodificar entidades HTML
+  // Decode HTML entities
   const decodeHtmlEntities = (html: string): string => {
     const textarea = document.createElement('textarea')
     textarea.innerHTML = html
@@ -90,7 +90,7 @@ export function TranslateButton({
       }
 
       const data = await response.json()
-      // Decodificar entidades HTML (como &#39; a ')
+      // Decode HTML entities (like &#39; to ')
       const decodedText = decodeHtmlEntities(data.translatedText)
       setLastTranslatedText(decodedText)
       setLastSourceText(textToTranslate)
@@ -103,7 +103,7 @@ export function TranslateButton({
     }
   }
 
-  // Determinar variante y contenido basado en el estado
+  // Pick variant and content based on the state
   const getButtonVariant = () => {
     if (translationState === 'translated') return 'default'
     if (translationState === 'modified') return 'secondary'

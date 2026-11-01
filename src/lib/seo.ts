@@ -4,7 +4,7 @@ import { BUSINESS_AREA_SERVED } from '@/config/business';
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io';
 const SITE_NAME = 'imSoft';
 
-/** Países donde ofrecéis servicio (schema.org / coherencia con SEO internacional). */
+/** Countries where we offer service (schema.org / consistency with international SEO). */
 export const SEO_AREA_SERVED_COUNTRIES = [
   { '@type': 'Country', name: 'Mexico' },
   { '@type': 'Country', name: 'United States' },
@@ -13,8 +13,8 @@ export const SEO_AREA_SERVED_COUNTRIES = [
 ] as const;
 
 /**
- * Hreflang para sitio bilingüe: español orientado a México (es-MX) e inglés genérico (en)
- * para búsquedas en EE. UU., Canadá, Alemania, etc. x-default = versión principal (ES).
+ * Hreflang for a bilingual site: Spanish aimed at Mexico (es-MX) and generic English (en)
+ * for searches in the US, Canada, Germany, etc. x-default = main version (ES).
  */
 export function hreflangLanguageAlternates(esUrl: string, enUrl: string): Record<string, string> {
   return {
@@ -46,14 +46,14 @@ export interface SEOConfig {
 }
 
 /**
- * Google muestra ~155 caracteres de la meta description. Se corta en la ultima palabra
- * completa y se marca con puntos suspensivos para que no quede una frase a medias.
+ * Google shows ~155 characters of the meta description. It's cut at the last full
+ * word and marked with an ellipsis so no sentence is left halfway.
  */
 export function truncateDescription(text: string, max = 155): string {
   const clean = (text || '').replace(/\s+/g, ' ').trim();
   if (clean.length <= max) return clean;
-  const corte = clean.lastIndexOf(' ', max - 1);
-  return `${clean.slice(0, corte > 60 ? corte : max - 1).replace(/[,;:.]$/, '')}…`;
+  const cut = clean.lastIndexOf(' ', max - 1);
+  return `${clean.slice(0, cut > 60 ? cut : max - 1).replace(/[,;:.]$/, '')}…`;
 }
 
 export function generateMetadata(config: SEOConfig, lang: string = 'es'): Metadata {
@@ -216,18 +216,18 @@ export function generateStructuredData(config: {
         '@context': 'https://schema.org',
         '@type': 'Service',
         serviceType: data.serviceType || 'Technology Consulting',
-        // Proveedor descrito en linea, NO como referencia `{'@id': ...}`. Verificado
-        // en produccion: cuando otro bloque de la pagina referencia por @id al nodo del
-        // negocio, validator.schema.org descarta ese nodo entero sin dar ningun error y
-        // la empresa deja de aparecer entre las entidades detectadas. Repetir dos campos
-        // sale mas barato que arriesgarse a que la ficha del negocio quede invisible.
+        // Provider described inline, NOT as a `{'@id': ...}` reference. Verified
+        // in production: when another block of the page references the business node by @id,
+        // validator.schema.org drops that whole node without any error and
+        // the company disappears from the detected entities. Repeating two fields
+        // is cheaper than risking the business listing becoming invisible.
         provider: {
           '@type': 'Organization',
           name: SITE_NAME,
           url: baseUrl,
         },
-        // La zona de servicio es la real del negocio (ZMG + Jalisco + Mexico), no la
-        // lista de paises a la que se aspira a vender.
+        // The service area is the business's real one (ZMG + Jalisco + Mexico), not the
+        // list of countries it aspires to sell to.
         areaServed: [...BUSINESS_AREA_SERVED],
         description: data.description || '',
         name: data.name || '',
@@ -341,7 +341,7 @@ export function getCanonicalUrl(path: string): string {
   return `${baseUrl}${cleanPath}`;
 }
 
-// Helper para obtener información de ciudades para LocalBusiness schema
+// Helper to get city info for the LocalBusiness schema
 export function getCityInfo(city: string): {
   displayName: { es: string; en: string };
   state: string;

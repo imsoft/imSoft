@@ -1,27 +1,26 @@
 import type { Redirect } from 'next/dist/lib/load-custom-routes';
 
 /**
- * Redirecciones de las URLs del sitio anterior.
+ * Redirects for URLs from the previous site.
  *
- * Search Console reportaba 31 URLs en 404 (25 rutas distintas), todas heredadas de la
- * version previa de imsoft.io: slugs de servicio en ingles que nunca existieron en la
- * tabla `services`, rutas sin prefijo de idioma (`/servicios/...`, `/portafolio/`),
- * dos idiomas retirados (`/ru/`, `/zh/`) y articulos de blog que ya no existen.
+ * Search Console reported 31 URLs returning 404 (25 distinct paths), all inherited from the
+ * previous version of imsoft.io: English service slugs that never existed in the
+ * `services` table, paths without a language prefix (`/servicios/...`, `/portafolio/`),
+ * two retired languages (`/ru/`, `/zh/`) and blog articles that no longer exist.
  *
- * Solo se redirige a una pagina realmente equivalente. Cuando no la hay, el destino es
- * la seccion padre: enviar una URL muerta a algo que no le corresponde hace que Google
- * lo trate como soft 404 y no aporta nada al usuario.
+ * We only redirect to a truly equivalent page. When there is none, the target is the
+ * parent section: sending a dead URL to something unrelated makes Google treat it as a
+ * soft 404 and gives the user nothing.
  *
- * `imsoft.io` sin www ya redirige a `www.imsoft.io` en Vercel, asi que basta con cubrir
- * la ruta. Next normaliza la barra final en un salto propio, asi que `/portafolio/` pasa
- * por `/portafolio` antes de llegar al destino: son dos saltos, dentro de lo que Google
- * sigue sin problema.
+ * `imsoft.io` without www already redirects to `www.imsoft.io` on Vercel, so covering the
+ * path is enough. Next normalizes the trailing slash in its own hop, so `/portafolio/` goes
+ * through `/portafolio` before reaching the target: two hops, which Google follows fine.
  *
- * Se usa `statusCode: 301` en vez de `permanent: true` (que emite 308), igual que en
- * blog-redirects.ts: cualquier rastreador o auditor entiende el 301.
+ * We use `statusCode: 301` instead of `permanent: true` (which emits 308), same as in
+ * blog-redirects.ts: every crawler or auditor understands 301.
  */
 
-/** Slugs de servicio en ingles del sitio viejo -> slug real en la tabla `services`. */
+/** English service slugs from the old site -> actual slug in the `services` table. */
 const LEGACY_SERVICE_SLUGS: Record<string, string> = {
   'technology-consulting': 'consultoria-tecnologica',
   'mobile-applications': 'aplicaciones-moviles',
@@ -30,8 +29,8 @@ const LEGACY_SERVICE_SLUGS: Record<string, string> = {
   'website-development': 'web-pages',
 };
 
-/** Rutas `/servicios/<slug>` del sitio viejo -> slug real. */
-const LEGACY_SERVICIOS_SLUGS: Record<string, string> = {
+/** Old-site `/servicios/<slug>` paths -> actual slug. */
+const LEGACY_SPANISH_SERVICE_PATHS: Record<string, string> = {
   'analisis-de-datos': 'data-analysis',
   'consultoria-en-ia-y-ml': 'inteligencia-artificial',
   'sitios-web': 'web-pages',
@@ -41,12 +40,12 @@ const LEGACY_SERVICIOS_SLUGS: Record<string, string> = {
 };
 
 /**
- * Articulos del blog viejo que si tienen un equivalente vivo.
- * Los que no lo tienen van al indice del blog mas abajo.
+ * Old blog articles that do have a live equivalent.
+ * Those without one go to the blog index further down.
  */
 const LEGACY_BLOG_POSTS: Record<string, string> = {
-  // Era la URL con mas demanda del sitio viejo ("cuanto cuesta una app", pos. 24 en 2025).
-  // Apuntaba a un post que no respondia la pregunta; ahora hay uno que si.
+  // The most-searched URL of the old site ("cuanto cuesta una app", pos. 24 in 2025).
+  // It pointed to a post that didn't answer the question; now there is one that does.
   'cuanto-cuesta-desarrollar-una-app-movil-en-mexico-precios-tiempos-y-factores-clave':
     '/es/blog/cuanto-cuesta-desarrollar-una-app-en-mexico',
   'las-mejores-ideas-para-digitalizar-tu-negocio-este-ano-y-como-empezar':
@@ -57,40 +56,40 @@ const LEGACY_BLOG_POSTS: Record<string, string> = {
 
 export function legacyRedirects(): Redirect[] {
   return [
-    // --- Servicios con el slug en ingles, en ambos idiomas ---
+    // --- Services with the English slug, in both languages ---
     ...Object.entries(LEGACY_SERVICE_SLUGS).map(([from, to]) => ({
       source: `/:lang(es|en)/services/${from}`,
       destination: `/:lang/services/${to}`,
       statusCode: 301 as const,
     })),
 
-    // --- `/servicios/<slug>` sin prefijo de idioma (el sitio viejo no lo tenia) ---
-    ...Object.entries(LEGACY_SERVICIOS_SLUGS).map(([from, to]) => ({
+    // --- `/servicios/<slug>` without a language prefix (the old site had none) ---
+    ...Object.entries(LEGACY_SPANISH_SERVICE_PATHS).map(([from, to]) => ({
       source: `/servicios/${from}`,
       destination: `/es/services/${to}`,
       statusCode: 301 as const,
     })),
-    // Cualquier otro /servicios/<slug> que no este mapeado: al listado, no a un 404.
+    // Any other unmapped /servicios/<slug>: to the listing, not a 404.
     { source: '/servicios/:slug', destination: '/es/services', statusCode: 301 as const },
     { source: '/servicios', destination: '/es/services', statusCode: 301 as const },
 
-    // El slug de la landing de Zapopan cambio de `desarrollo-web` a `paginas-web`:
-    // el autocompletado de Google no devuelve nada para "desarrollo web zapopan" y si
-    // para "paginas web zapopan". Estuvo un dia en linea, asi que se redirige.
+    // The Zapopan landing slug changed from `desarrollo-web` to `paginas-web`: Google
+    // autocomplete returns nothing for "desarrollo web zapopan" but does for
+    // "paginas web zapopan". It was live for a day, so it gets redirected.
     {
       source: '/:lang(es|en)/zapopan/desarrollo-web',
       destination: '/es/zapopan/paginas-web',
       statusCode: 301 as const,
     },
 
-    // --- Landings de industria de Monterrey y CDMX (ene-2026 → sep-2026) ---
-    // Eran la plantilla de Guadalajara con otra ciudad: 0 clics en 90 dias. Van a la
-    // landing de desarrollo de software de su ciudad, que ahora tiene texto propio.
+    // --- Monterrey and CDMX industry landings (Jan 2026 → Sep 2026) ---
+    // They were the Guadalajara template with another city: 0 clicks in 90 days. They go
+    // to their city's software development landing, which now has its own copy.
     ...(['monterrey', 'cdmx'] as const).flatMap((city) => [
-      { source: `/:lang(es|en)/${city}/software-para-:industria`, destination: `/es/${city}/empresas-de-software`, statusCode: 301 as const },
+      { source: `/:lang(es|en)/${city}/software-para-:industry`, destination: `/es/${city}/empresas-de-software`, statusCode: 301 as const },
     ]),
 
-    // --- Rutas sueltas del sitio viejo ---
+    // --- Miscellaneous old-site paths ---
     { source: '/portafolio', destination: '/es/portfolio', statusCode: 301 as const },
     { source: '/historia', destination: '/es/about', statusCode: 301 as const },
     { source: '/aviso-de-privacidad', destination: '/es/privacy-policy', statusCode: 301 as const },
@@ -98,23 +97,23 @@ export function legacyRedirects(): Redirect[] {
     { source: '/:lang(es|en)/privacy-notice', destination: '/:lang/privacy-policy', statusCode: 301 as const },
     { source: '/privacy-notice', destination: '/en/privacy-policy', statusCode: 301 as const },
 
-    // --- Idiomas retirados: nunca hubo contenido real en ruso ni en chino ---
+    // --- Retired languages: there was never real Russian or Chinese content ---
     { source: '/ru', destination: '/es', statusCode: 301 as const },
     { source: '/ru/:path*', destination: '/es', statusCode: 301 as const },
     { source: '/zh', destination: '/es', statusCode: 301 as const },
     { source: '/zh/:path*', destination: '/es', statusCode: 301 as const },
 
-    // --- Blog viejo con equivalente vivo ---
+    // --- Old blog posts with a live equivalent ---
     ...Object.entries(LEGACY_BLOG_POSTS).map(([from, to]) => ({
       source: `/blog/${from}`,
       destination: to,
       statusCode: 301 as const,
     })),
-    // Resto del blog viejo (sin prefijo de idioma): al indice, que es su seccion padre.
+    // Rest of the old blog (no language prefix): to the index, its parent section.
     { source: '/blog/:slug', destination: '/es/blog', statusCode: 301 as const },
     { source: '/blog', destination: '/es/blog', statusCode: 301 as const },
 
-    // Articulos en ingles que ya no existen y no tienen equivalente.
+    // English articles that no longer exist and have no equivalent.
     {
       source: '/en/blog/our-step-by-step-process-to-create-a-successful-website-at-imsoft',
       destination: '/en/about',

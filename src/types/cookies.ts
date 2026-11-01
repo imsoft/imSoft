@@ -10,15 +10,15 @@ export interface CookieConsent {
 export interface CookiePreferences {
   consent: CookieConsent;
   timestamp: number;
-  version: string; // Para manejar actualizaciones de política
+  version: string; // To handle policy updates
 }
 
 export const defaultConsent: CookieConsent = {
-  essential: true, // Siempre true, no se puede desactivar
+  essential: true, // Always true, can't be disabled
   functional: false,
   analytics: false,
   marketing: false,
 };
 
 export const COOKIE_CONSENT_KEY = 'imsoft_cookie_consent';
-export const COOKIE_VERSION = 1; // Version número para Zustand persist
+export const COOKIE_VERSION = 1; // Version number for Zustand persist

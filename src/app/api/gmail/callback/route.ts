@@ -3,22 +3,22 @@ import { cookies } from 'next/headers'
 import { requireAdmin, SITE_URL } from '@/lib/quotes/server'
 import { connectAccount } from '@/lib/gmail/server'
 
-/** Vuelta del consentimiento de Google: guarda los tokens y regresa a Prospección. */
+/** Return from Google consent: stores the tokens and goes back to Prospecting. */
 export async function GET(req: NextRequest) {
   const auth = await requireAdmin()
-  const volver = (q: string) => NextResponse.redirect(`${SITE_URL}/es/dashboard/admin/crm/prospeccion?${q}`)
+  const goBack = (q: string) => NextResponse.redirect(`${SITE_URL}/es/dashboard/admin/crm/prospeccion?${q}`)
   if (!auth.ok) return NextResponse.redirect(`${SITE_URL}/es/login`)
   const code = req.nextUrl.searchParams.get('code')
   const state = req.nextUrl.searchParams.get('state')
   const jar = await cookies()
-  const esperado = jar.get('gmail_oauth_state')?.value
+  const expected = jar.get('gmail_oauth_state')?.value
   jar.delete('gmail_oauth_state')
-  if (!code || !state || state !== esperado) return volver('gmail=error&motivo=estado')
+  if (!code || !state || state !== expected) return goBack('gmail=error&motivo=estado')
   try {
     const email = await connectAccount(auth.userId, code)
-    return volver(`gmail=ok&email=${encodeURIComponent(email)}`)
+    return goBack(`gmail=ok&email=${encodeURIComponent(email)}`)
   } catch (err) {
     console.error('[gmail/callback]', err)
-    return volver(`gmail=error&motivo=${encodeURIComponent(err instanceof Error ? err.message : 'desconocido')}`)
+    return goBack(`gmail=error&motivo=${encodeURIComponent(err instanceof Error ? err.message : 'desconocido')}`)
   }
 }

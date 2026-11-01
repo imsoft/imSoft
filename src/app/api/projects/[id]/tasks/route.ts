@@ -4,7 +4,7 @@ import { roleOf } from '@/lib/roles'
 
 /**
  * GET /api/projects/[id]/tasks
- * Obtiene todas las tareas de un proyecto
+ * Gets all of a project's tasks
  */
 export async function GET(
   request: NextRequest,
@@ -20,7 +20,7 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Obtener tareas del proyecto ordenadas por order_index
+    // Get the project's tasks ordered by order_index
     const { data: tasks, error } = await supabase
       .from('project_tasks')
       .select('*')
@@ -29,7 +29,7 @@ export async function GET(
 
     if (error) {
       console.error('Error fetching tasks:', error)
-      // Si es un error de permisos RLS, devolver un mensaje más claro
+      // If it's an RLS permissions error, return a clearer message
       if (error.code === '42501' || error.message?.includes('permission denied')) {
         return NextResponse.json(
           { error: 'Permission denied. Please check RLS policies.' },
@@ -51,7 +51,7 @@ export async function GET(
 
 /**
  * POST /api/projects/[id]/tasks
- * Crea una nueva tarea para un proyecto
+ * Creates a new task for a project
  */
 export async function POST(
   request: NextRequest,
@@ -67,7 +67,7 @@ export async function POST(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Verificar que el usuario es admin
+    // Check the user is admin
     const role = roleOf(user)
     if (role !== 'admin') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
@@ -83,7 +83,7 @@ export async function POST(
       )
     }
 
-    // Obtener el siguiente order_index
+    // Get the next order_index
     const { data: existingTasks } = await supabase
       .from('project_tasks')
       .select('order_index')

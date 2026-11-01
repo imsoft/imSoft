@@ -2,11 +2,11 @@ import 'server-only'
 import { createHmac, timingSafeEqual } from 'crypto'
 
 /**
- * Token firmado (HMAC) para los enlaces de baja de correo.
+ * Signed (HMAC) token for the email unsubscribe links.
  *
- * No usamos tabla ni guardamos tokens: el enlace lleva el id del usuario y una
- * firma HMAC. Al recibir la baja verificamos que la firma coincide, así nadie
- * puede dar de baja a otro usuario adivinando su id.
+ * No table and no stored tokens: the link carries the user id and an
+ * HMAC signature. On unsubscribe we check the signature matches, so nobody
+ * can unsubscribe another user by guessing their id.
  */
 
 function getSecret(): string {
@@ -17,12 +17,12 @@ function getSecret(): string {
   return secret
 }
 
-/** Genera la firma HMAC (hex) para un id de usuario. */
+/** Builds the HMAC signature (hex) for a user id. */
 export function signUnsubscribe(userId: string): string {
   return createHmac('sha256', getSecret()).update(userId).digest('hex')
 }
 
-/** Verifica en tiempo constante que el token corresponde al userId. */
+/** Checks in constant time that the token matches the userId. */
 export function verifyUnsubscribe(userId: string, token: string): boolean {
   if (!userId || !token) return false
   try {
@@ -37,8 +37,8 @@ export function verifyUnsubscribe(userId: string, token: string): boolean {
 }
 
 /**
- * Construye la URL absoluta de baja para un usuario.
- * @param lang  idioma del correo ('es' | 'en') para la página de confirmación.
+ * Builds the absolute unsubscribe URL for a user.
+ * @param lang  language of the email ('es' | 'en') for the confirmation page.
  */
 export function buildUnsubscribeUrl(userId: string, lang: string = 'es'): string {
   const base = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'

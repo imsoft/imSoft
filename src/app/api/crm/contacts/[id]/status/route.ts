@@ -20,7 +20,7 @@ export async function PATCH(
       )
     }
 
-    // Verificar que el usuario sea admin
+    // Check the user is admin
     if (!isAdmin(user)) {
       return NextResponse.json(
         { error: 'Forbidden' },
@@ -31,7 +31,7 @@ export async function PATCH(
     const body = await request.json()
     const { status } = body
 
-    // Validar que status sea válido
+    // Validate that status is valid
     const validStatuses: ContactStatus[] = ['no_contact', 'qualification', 'negotiation', 'closed_won', 'closed_lost']
     if (!status || !validStatuses.includes(status)) {
       return NextResponse.json(
@@ -40,7 +40,7 @@ export async function PATCH(
       )
     }
 
-    // Actualizar el estado del contacto
+    // Update the contact's status
     const { error } = await supabase
       .from('contacts')
       .update({

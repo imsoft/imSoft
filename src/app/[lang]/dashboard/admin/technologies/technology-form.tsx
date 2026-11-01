@@ -51,7 +51,7 @@ interface Technology {
   name?: string
   description_es?: string
   description_en?: string
-  category?: string | string[] // Puede ser string (legacy) o array (nuevo)
+  category?: string | string[] // Can be a string (legacy) or an array (new)
   logo_url?: string
   website_url?: string
   technology_companies?: Array<{
@@ -95,7 +95,7 @@ export function TechnologyForm({ dict, lang, technology }: TechnologyFormProps) 
     },
   })
 
-  // Función helper para extraer el path del storage desde la URL pública
+  // Extracts the storage path from the public URL
   function getStoragePathFromUrl(url: string, bucketName: string): string | null {
     try {
       const urlParts = url.split(`/storage/v1/object/public/${bucketName}/`)
@@ -105,7 +105,7 @@ export function TechnologyForm({ dict, lang, technology }: TechnologyFormProps) 
     }
   }
 
-  // Función para eliminar logo del storage
+  // Deletes a logo from storage
   async function deleteLogoFromStorage(logoUrl: string) {
     try {
       const supabase = createClient()
@@ -133,17 +133,17 @@ export function TechnologyForm({ dict, lang, technology }: TechnologyFormProps) 
     try {
       const supabase = createClient()
 
-      // Si estamos editando, usar el ID real
-      // Si estamos creando, usar un nombre temporal único
+      // When editing, use the real ID
+      // When creating, use a unique temporary name
       const technologyId = technology?.id || `temp-${Date.now()}-${Math.random().toString(36).substring(7)}`
 
-      // Eliminar logo anterior si existe
+      // Delete the previous logo if any
       const currentLogoUrl = form.getValues('logo_url')
       if (currentLogoUrl && !currentLogoUrl.includes('/temp-')) {
         await deleteLogoFromStorage(currentLogoUrl)
       }
 
-      // Estructura: /<technology_id>/logo.ext
+      // Layout: /<technology_id>/logo.ext
       const fileExtension = file.name.split('.').pop()
       const fileName = `logo.${fileExtension}`
       const filePath = `${technologyId}/${fileName}`
@@ -192,12 +192,12 @@ export function TechnologyForm({ dict, lang, technology }: TechnologyFormProps) 
   async function handleRemoveLogo() {
     const currentLogoUrl = form.getValues('logo_url')
 
-    // Eliminar del storage
+    // Delete from storage
     if (currentLogoUrl) {
       await deleteLogoFromStorage(currentLogoUrl)
     }
 
-    // Limpiar el formulario
+    // Clear the form field
     form.setValue('logo_url', '')
     setPreviewLogo(null)
     if (fileInputRef.current) {
@@ -246,7 +246,7 @@ export function TechnologyForm({ dict, lang, technology }: TechnologyFormProps) 
         toast.success((dict as any).technologies?.saveSuccess || (lang === 'en' ? 'Technology saved successfully' : 'Tecnología guardada exitosamente'))
       }
 
-      // Si se subió un logo con ID temporal, moverlo al ID real
+      // If a logo was uploaded with a temporary ID, move it to the real ID
       if (previewLogo && previewLogo.includes('/temp-')) {
         const tempPath = getStoragePathFromUrl(previewLogo, 'technology-logos')
         if (tempPath) {
@@ -254,7 +254,7 @@ export function TechnologyForm({ dict, lang, technology }: TechnologyFormProps) 
           const fileName = tempPath.split('/').pop()
           const newPath = `${technologyId}/${fileName}`
           
-          // Descargar el archivo temporal
+          // Download the temporary file
           const { data: downloadData, error: downloadError } = await supabase.storage
             .from('technology-logos')
             .download(tempPath)
@@ -262,7 +262,7 @@ export function TechnologyForm({ dict, lang, technology }: TechnologyFormProps) 
           if (downloadError) {
             console.error('Error downloading temp logo:', downloadError)
           } else if (downloadData) {
-            // Subir al nuevo path
+            // Upload to the new path
             const { error: uploadError } = await supabase.storage
               .from('technology-logos')
               .upload(newPath, downloadData, { upsert: true })
@@ -270,23 +270,23 @@ export function TechnologyForm({ dict, lang, technology }: TechnologyFormProps) 
             if (uploadError) {
               console.error('Error uploading logo to new path:', uploadError)
             } else {
-              // Obtener la nueva URL
+              // Get the new URL
               const { data: newUrl } = supabase.storage
                 .from('technology-logos')
                 .getPublicUrl(newPath)
               
-              // Actualizar en la base de datos
+              // Update it in the database
               await supabase
                 .from('technologies')
                 .update({ logo_url: newUrl.publicUrl })
                 .eq('id', technologyId)
               
-              // Eliminar archivo temporal
+              // Delete the temporary file
               await supabase.storage
                 .from('technology-logos')
                 .remove([tempPath])
               
-              // Intentar eliminar la carpeta temporal si está vacía
+              // Try to delete the temporary folder if empty
               const { data: folderContents } = await supabase.storage
                 .from('technology-logos')
                 .list(tempFolder)
@@ -300,8 +300,8 @@ export function TechnologyForm({ dict, lang, technology }: TechnologyFormProps) 
         }
       }
 
-      // Gestionar empresas (nombres de empresas famosas con logos)
-      // Primero eliminar todas las relaciones existentes
+      // Manage companies (well-known company names with logos)
+      // First delete all existing relations
       const { error: deleteError } = await supabase
         .from('technology_companies')
         .delete()
@@ -309,7 +309,7 @@ export function TechnologyForm({ dict, lang, technology }: TechnologyFormProps) 
 
       if (deleteError) throw deleteError
 
-      // Luego crear las nuevas relaciones con nombres de empresas y logos
+      // Then create the new relations with company names and logos
       if (values.companies.length > 0) {
         const relations = values.companies
           .filter(company => company.name.trim() !== '')
@@ -587,7 +587,7 @@ export function TechnologyForm({ dict, lang, technology }: TechnologyFormProps) 
                           const companyName = field.value[companyIndex].name || `company-${companyIndex}`
                           const companySlug = companyName.toLowerCase().replace(/[^a-z0-9]+/g, '-')
                           
-                          // Eliminar logo anterior si existe
+                          // Delete the previous logo if any
                           const currentLogoUrl = field.value[companyIndex].logo_url
                           if (currentLogoUrl && !currentLogoUrl.includes('/temp-')) {
                             const filePath = getStoragePathFromUrl(currentLogoUrl, 'technology-logos')
@@ -596,7 +596,7 @@ export function TechnologyForm({ dict, lang, technology }: TechnologyFormProps) 
                             }
                           }
                           
-                          // Subir nuevo logo
+                          // Upload the new logo
                           const fileExtension = file.name.split('.').pop()
                           const fileName = `company-${companyIndex}-${Date.now()}.${fileExtension}`
                           const filePath = `${technologyId}/companies/${fileName}`
@@ -614,7 +614,7 @@ export function TechnologyForm({ dict, lang, technology }: TechnologyFormProps) 
                             .from('technology-logos')
                             .getPublicUrl(filePath)
                           
-                          // Actualizar el logo en el formulario
+                          // Update the logo in the form
                           const newCompanies = [...(field.value || [])]
                           newCompanies[companyIndex] = {
                             ...newCompanies[companyIndex],
@@ -732,12 +732,12 @@ export function TechnologyForm({ dict, lang, technology }: TechnologyFormProps) 
                               variant="outline"
                               size="icon"
                               onClick={() => {
-                                // Eliminar logo del storage si existe
+                                // Delete the logo from storage if any
                                 const companyToRemove = field.value[index]
                                 if (companyToRemove.logo_url) {
                                   handleRemoveCompanyLogo(index)
                                 }
-                                // Eliminar la empresa del array
+                                // Remove the company from the array
                                 const newCompanies = field.value?.filter((_, i) => i !== index)
                                 field.onChange(newCompanies)
                               }}

@@ -127,7 +127,7 @@ export function ProjectPaymentsManager({ projectId, projectCurrency = 'MXN', pro
       const response = await fetch(`/api/projects/${projectId}/stripe-payment-link`)
       if (response.ok) {
         const data = await response.json()
-        // Lo que dijo la cotizacion (o el ultimo enlace generado) es el valor inicial.
+        // What the quote said (or the last generated link) is the initial value.
         setEnableInstallments(Boolean(data.enableInstallments))
         setInstallmentOptions(data.installmentOptions || [])
         if (data.paymentLinkUrl) {
@@ -228,7 +228,7 @@ export function ProjectPaymentsManager({ projectId, projectCurrency = 'MXN', pro
         if (error) throw error
         toast.success(lang === 'en' ? 'Payment updated successfully' : 'Pago actualizado exitosamente')
       } else {
-        // Pasa por el servidor para que el cliente reciba el aviso en su telefono.
+        // Goes through the server so the client gets the notification on their phone.
         const r = await fetch(`/api/projects/${projectId}/payments`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -393,13 +393,13 @@ export function ProjectPaymentsManager({ projectId, projectCurrency = 'MXN', pro
           ) : (
             <div className="space-y-3">
               {(() => {
-                const saldo = pendingBalance(projectTotalPrice, payments)
-                const sugerido = suggestedMilestone(projectTotalPrice, payments)
+                const balance = pendingBalance(projectTotalPrice, payments)
+                const suggested = suggestedMilestone(projectTotalPrice, payments)
                 return (
                   <p className="text-sm text-muted-foreground">
                     {lang === 'en'
-                      ? `Outstanding: ${formatCurrency(saldo, projectCurrency)}. Suggested milestone: ${formatCurrency(sugerido, projectCurrency)}.`
-                      : `Por cobrar: ${formatCurrency(saldo, projectCurrency)}. Hito sugerido: ${formatCurrency(sugerido, projectCurrency)}.`}
+                      ? `Outstanding: ${formatCurrency(balance, projectCurrency)}. Suggested milestone: ${formatCurrency(suggested, projectCurrency)}.`
+                      : `Por cobrar: ${formatCurrency(balance, projectCurrency)}. Hito sugerido: ${formatCurrency(suggested, projectCurrency)}.`}
                   </p>
                 )
               })()}

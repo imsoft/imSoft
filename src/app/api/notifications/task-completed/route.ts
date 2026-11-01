@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
   try {
     const supabase = await createClient()
 
-    // Verificar autenticación
+    // Check authentication
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Obtener información del proyecto
+    // Get the project info
     const { data: project, error: projectError } = await supabase
       .from('projects')
       .select(`
@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Dueño del proyecto (cliente). auth.users no se consulta por PostgREST: se usa la API de admin.
+    // Project owner (client). auth.users can't be queried through PostgREST: the admin API is used.
     const clientUserId = project.companies?.user_id
     const { data: authData, error: clientError } = clientUserId
       ? await serviceClient().auth.admin.getUserById(clientUserId)
@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
     const clientEmail = clientUser.email
     const clientName = (clientUser.user_metadata?.full_name as string | undefined)?.split(' ')[0] || 'Cliente'
 
-    // Obtener todas las tareas del proyecto para calcular progreso
+    // Get all the project's tasks to compute progress
     const { data: allTasks } = await supabase
       .from('project_tasks')
       .select('id, completed')
@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
     const totalTasks = allTasks?.length || 0
     const completedTasks = allTasks?.filter(task => task.completed).length || 0
 
-    // Enviar email con Resend
+    // Send the email with Resend
     const { data: emailData, error: emailError } = await getResend().emails.send({
       from: `imSoft <${process.env.RESEND_FROM_EMAIL || 'contacto@imsoft.io'}>`,
       replyTo: process.env.ADMIN_NOTIFICATION_EMAIL || 'contacto@imsoft.io',

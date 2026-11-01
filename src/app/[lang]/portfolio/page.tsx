@@ -44,20 +44,20 @@ export default async function PortfolioPage({ params }: {
   const dict = await getDictionary(lang);
   const supabase = await createClient();
 
-  // Obtener datos de contacto
+  // Fetch contact info
   const { data: contactData } = await supabase
     .from('contact')
     .select('*')
     .limit(1)
     .maybeSingle();
 
-  // Obtener proyectos de portafolio
+  // Fetch portfolio projects
   const { data: portfolioData } = await supabase
     .from('portfolio')
     .select('*')
     .order('created_at', { ascending: false });
 
-  // Reto y resultados incluidos: la lista solo con la frase corta era contenido delgado.
+  // Challenge and results included: a list with just the short line was thin content.
   const projects = (portfolioData || []).map((project) => portfolioCard(project, lang));
 
   const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io';

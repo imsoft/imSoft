@@ -51,7 +51,7 @@ interface Technology {
   description_es?: string
   description_en?: string
   icon?: string
-  category?: string | string[] // Puede ser string (legacy) o array (nuevo)
+  category?: string | string[] // Can be a string (legacy) or an array (new)
   logo_url?: string
   website_url?: string
   order_index?: number
@@ -80,7 +80,7 @@ export function TechnologiesTable({ technologies, dict, lang }: TechnologiesTabl
     try {
       const supabase = createClient()
 
-      // Eliminar relaciones con empresas primero
+      // Delete company relations first
       const { error: deleteRelationsError } = await supabase
         .from('technology_companies')
         .delete()
@@ -88,7 +88,7 @@ export function TechnologiesTable({ technologies, dict, lang }: TechnologiesTabl
 
       if (deleteRelationsError) throw deleteRelationsError
 
-      // Luego eliminar la tecnología
+      // Then delete the technology
       const { error: deleteError } = await supabase
         .from('technologies')
         .delete()
@@ -128,7 +128,7 @@ export function TechnologiesTable({ technologies, dict, lang }: TechnologiesTabl
               fill
               className="object-contain p-1"
               onError={(e) => {
-                // Si la imagen falla al cargar, ocultar el contenedor
+                // If the image fails to load, hide the container
                 const target = e.target as HTMLImageElement
                 if (target.parentElement) {
                   target.parentElement.style.display = 'none'
@@ -173,11 +173,11 @@ export function TechnologiesTable({ technologies, dict, lang }: TechnologiesTabl
         const category = row.original.category
         if (!category) return <span className="text-muted-foreground">-</span>
         
-        // Manejar tanto string (legacy) como array (nuevo)
+        // Handle both string (legacy) and array (new)
         const categoryArray = Array.isArray(category) ? category : [category]
         const categoriesDict = (dict as any).technologies?.categories || {}
         
-        // Mapeo manual como fallback
+        // Manual mapping as a fallback
         const categoryMap: Record<string, string> = {
           frontend: lang === 'es' ? 'Frontend' : 'Frontend',
           backend: lang === 'es' ? 'Backend' : 'Backend',
@@ -202,7 +202,7 @@ export function TechnologiesTable({ technologies, dict, lang }: TechnologiesTabl
         return (
           <div className="flex flex-wrap gap-1">
             {categoryArray.map((cat, index) => {
-              // Obtener la traducción del diccionario o del mapeo manual
+              // Get the translation from the dictionary or the manual mapping
               const categoryKey = String(cat)
               const categoryLabel = categoriesDict[categoryKey] || categoryMap[categoryKey] || cat
               return (
@@ -336,11 +336,11 @@ export function TechnologiesTable({ technologies, dict, lang }: TechnologiesTabl
     },
   ]
 
-  // Filtrar datos según los filtros seleccionados
+  // Filter data by the selected filters
   const filteredTechnologies = useMemo(() => {
     let filtered = technologies
 
-    // Filtro por categoría (soporta tanto string como array)
+    // Category filter (supports both string and array)
     if (categoryFilter !== 'all') {
       filtered = filtered.filter(tech => {
         if (!tech.category) return false
@@ -349,7 +349,7 @@ export function TechnologiesTable({ technologies, dict, lang }: TechnologiesTabl
       })
     }
 
-    // Filtro por empresas (con/sin empresas)
+    // Companies filter (with/without companies)
     if (hasCompaniesFilter === 'with') {
       filtered = filtered.filter(tech => 
         tech.technology_companies && tech.technology_companies.length > 0
@@ -363,12 +363,12 @@ export function TechnologiesTable({ technologies, dict, lang }: TechnologiesTabl
     return filtered
   }, [technologies, categoryFilter, hasCompaniesFilter])
 
-  // Obtener categorías únicas para el filtro
+  // Get unique categories for the filter
   const uniqueCategories = useMemo(() => {
     const categories = new Set<string>()
     technologies.forEach(tech => {
       if (tech.category) {
-        // Manejar tanto string (legacy) como array (nuevo)
+        // Handle both string (legacy) and array (new)
         const categoryArray = Array.isArray(tech.category) ? tech.category : [tech.category]
         categoryArray.forEach(cat => {
           if (cat) categories.add(cat)
@@ -410,9 +410,9 @@ export function TechnologiesTable({ technologies, dict, lang }: TechnologiesTabl
 
   return (
     <div className="space-y-4">
-      {/* Filtros adicionales */}
+      {/* Extra filters */}
       <div className="flex flex-wrap items-center gap-4 p-4 bg-card rounded-lg">
-        {/* Filtro por categoría */}
+        {/* Category filter */}
         <div className="flex items-center gap-2 flex-1 min-w-[200px]">
           <label className="text-sm text-muted-foreground whitespace-nowrap">
             {lang === 'en' ? 'Category' : 'Categoría'}:
@@ -454,7 +454,7 @@ export function TechnologiesTable({ technologies, dict, lang }: TechnologiesTabl
           </Select>
         </div>
 
-        {/* Filtro por empresas */}
+        {/* Companies filter */}
         <div className="flex items-center gap-2 flex-1 min-w-[200px]">
           <label className="text-sm text-muted-foreground whitespace-nowrap">
             {lang === 'en' ? 'Companies' : 'Empresas'}:
@@ -477,7 +477,7 @@ export function TechnologiesTable({ technologies, dict, lang }: TechnologiesTabl
           </Select>
         </div>
 
-        {/* Contador de resultados */}
+        {/* Results counter */}
         <div className="text-sm text-muted-foreground whitespace-nowrap">
           {filteredTechnologies.length} {filteredTechnologies.length === 1 
             ? (lang === 'en' ? 'technology' : 'tecnología')

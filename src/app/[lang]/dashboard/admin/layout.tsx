@@ -21,18 +21,18 @@ export default async function AdminDashboardLayout({
   const dict = await getDictionary(lang)
   const supabase = await createClient()
   
-  // Verificar autenticación
+  // Check authentication
   const { data: { user }, error } = await supabase.auth.getUser()
   
   if (error || !user) {
     redirect(`/${lang}/login`)
   }
 
-  // Verificar que el usuario tenga rol de administrador
+  // Make sure the user has the admin role
   const userRole = roleOf(user)
   
   if (userRole !== 'admin') {
-    // Si no es admin, redirigir al dashboard de cliente
+    // If not an admin, redirect to the client dashboard
     redirect(`/${lang}/dashboard/client`)
   }
 
@@ -51,7 +51,7 @@ export default async function AdminDashboardLayout({
             labels={{ profile: dict.dashboard.common.profile, logout: dict.dashboard.common.logout }}
           />
         </header>
-        {/* overflow-x-clip y no -hidden: hidden convierte este div en contenedor de scroll y anula los sticky del contenido. */}
+        {/* overflow-x-clip, not -hidden: hidden turns this div into a scroll container and breaks the content's sticky elements. */}
         <div className="flex min-w-0 flex-1 flex-col gap-4 overflow-x-clip p-4">
           {children}
         </div>

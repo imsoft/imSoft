@@ -1,5 +1,5 @@
 /**
- * Tipos para las landing pages de ciudad + industria
+ * Types for the city + industry landing pages
  */
 
 export type City = 'guadalajara' | 'cdmx' | 'monterrey';

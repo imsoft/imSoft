@@ -109,7 +109,7 @@ export default function SignupForm({ dict, lang }: SignupFormProps) {
       })
 
       if (signUpError) {
-        // El token se consume en cada intento: regenerar uno nuevo.
+        // The token is consumed on every attempt: get a new one.
         captchaRef.current?.reset()
         setCaptchaToken(undefined)
         if (signUpError.message.includes('already registered')) {
@@ -124,7 +124,7 @@ export default function SignupForm({ dict, lang }: SignupFormProps) {
       setSuccess(true)
       form.reset()
       
-      // Redirigir después de 2 segundos
+      // Redirect after 2 seconds
       setTimeout(() => {
         router.push(`/${lang}/login`)
       }, 2000)

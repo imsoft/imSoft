@@ -1,9 +1,9 @@
 /**
- * Quien es administrador. El rol vive en `app_metadata`, que solo puede escribir el
- * servidor con la llave de servicio. NUNCA leerlo de `user_metadata`: ese campo lo puede
- * cambiar el propio usuario con `supabase.auth.updateUser({ data: { role: 'admin' } })`,
- * y con eso cualquiera que se registrara se volvia administrador (comprobado el
- * 5-oct-2026 con un usuario de prueba: paso a leer los 378 contactos del CRM).
+ * Who is an administrator. The role lives in `app_metadata`, which only the server
+ * can write with the service key. NEVER read it from `user_metadata`: that field can be
+ * changed by the user themselves with `supabase.auth.updateUser({ data: { role: 'admin' } })`,
+ * and with that anyone who signed up became an administrator (verified on
+ * 2026-10-05 with a test user: it could read the CRM's 378 contacts).
  */
 export type Role = 'admin' | 'client'
 

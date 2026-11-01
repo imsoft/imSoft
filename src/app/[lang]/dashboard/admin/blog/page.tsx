@@ -28,7 +28,7 @@ export default async function AdminBlogPage({ params }: {
     .select('*')
     .order('created_at', { ascending: false })
 
-  // Obtener información de los autores
+  // Fetch author info
   const { createAdminClient } = await import('@/lib/supabase/admin')
   const supabaseAdmin = createAdminClient()
   const { data: usersData } = await supabaseAdmin.auth.admin.listUsers()

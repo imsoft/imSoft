@@ -24,12 +24,12 @@ interface UserMenuProps {
   labels: { profile: string; logout: string }
 }
 
-/** Avatar arriba a la derecha con Perfil y Cerrar sesion, al estilo de las apps de Google. */
+/** Top-right avatar with Profile and Sign out, Google-apps style. */
 export function UserMenu({ lang, email, name, avatarUrl, profileHref, labels }: UserMenuProps) {
   const router = useRouter()
-  const inicial = (name || email || '?').trim().charAt(0).toUpperCase()
+  const initial = (name || email || '?').trim().charAt(0).toUpperCase()
 
-  async function cerrarSesion() {
+  async function signOut() {
     await createClient().auth.signOut()
     router.push(`/${lang}/login`)
     router.refresh()
@@ -42,7 +42,7 @@ export function UserMenu({ lang, email, name, avatarUrl, profileHref, labels }: 
           {avatarUrl ? (
             <Image src={avatarUrl} alt="" width={32} height={32} className="size-8 rounded-full object-cover" />
           ) : (
-            <span className="flex size-8 items-center justify-center rounded-full bg-primary text-primary-foreground text-sm font-semibold">{inicial}</span>
+            <span className="flex size-8 items-center justify-center rounded-full bg-primary text-primary-foreground text-sm font-semibold">{initial}</span>
           )}
         </Button>
       </DropdownMenuTrigger>
@@ -55,7 +55,7 @@ export function UserMenu({ lang, email, name, avatarUrl, profileHref, labels }: 
         <DropdownMenuItem asChild>
           <Link href={profileHref}><User className="size-4" />{labels.profile}</Link>
         </DropdownMenuItem>
-        <DropdownMenuItem onSelect={cerrarSesion} className="text-red-600 focus:text-red-600">
+        <DropdownMenuItem onSelect={signOut} className="text-red-600 focus:text-red-600">
           <LogOut className="size-4" />{labels.logout}
         </DropdownMenuItem>
       </DropdownMenuContent>

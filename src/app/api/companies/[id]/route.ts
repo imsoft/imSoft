@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { isAdmin } from '@/lib/roles'
 
-// PUT: Actualizar una empresa
+// PUT: update a company
 export async function PUT(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -26,7 +26,7 @@ export async function PUT(
       )
     }
 
-    // Verificar que la empresa existe y pertenece al usuario (o es admin)
+    // Check the company exists and belongs to the user (or they're admin)
     const { data: company, error: fetchError } = await supabase
       .from('companies')
       .select('user_id, logo_url')
@@ -48,17 +48,17 @@ export async function PUT(
       )
     }
 
-    // Obtener el logo_url actual antes de actualizar
+    // Get the current logo_url before updating
     const { data: currentCompany } = await supabase
       .from('companies')
       .select('logo_url')
       .eq('id', id)
       .single()
 
-    // Si se está actualizando el logo, eliminar el logo anterior del storage
+    // If the logo is being updated, delete the previous logo from storage
     if (currentCompany?.logo_url && logo_url !== currentCompany.logo_url) {
       try {
-        // Extraer la ruta del archivo de la URL
+        // Extract the file path from the URL
         const urlParts = currentCompany.logo_url.split('/')
         const logoIndex = urlParts.findIndex((part: string) => part === 'company-logos')
         
@@ -72,13 +72,13 @@ export async function PUT(
             
             if (deleteError) {
               console.error('Error deleting old logo:', deleteError)
-              // No fallar la actualización si no se puede eliminar el logo anterior
+              // Don't fail the update if the previous logo can't be deleted
             }
           }
         }
       } catch (error) {
         console.error('Error deleting old logo:', error)
-        // Continuar con la actualización
+        // Continue with the update
       }
     }
 
@@ -107,7 +107,7 @@ export async function PUT(
   }
 }
 
-// DELETE: Eliminar una empresa
+// DELETE: delete a company
 export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -121,7 +121,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Verificar que la empresa existe y pertenece al usuario (o es admin)
+    // Check the company exists and belongs to the user (or they're admin)
     const { data: company, error: fetchError } = await supabase
       .from('companies')
       .select('user_id, logo_url')
@@ -143,7 +143,7 @@ export async function DELETE(
       )
     }
 
-    // Verificar si hay proyectos asociados
+    // Check for associated projects
     const { data: projects, error: projectsError } = await supabase
       .from('projects')
       .select('id')
@@ -161,7 +161,7 @@ export async function DELETE(
       )
     }
 
-    // Eliminar el logo del storage si existe
+    // Delete the logo from storage if there is one
     if (company.logo_url) {
       try {
         const urlParts = company.logo_url.split('/')
@@ -177,13 +177,13 @@ export async function DELETE(
             
             if (deleteError) {
               console.error('Error deleting logo:', deleteError)
-              // Continuar con la eliminación de la empresa aunque falle la eliminación del logo
+              // Continue deleting the company even if deleting the logo fails
             }
           }
         }
       } catch (error) {
         console.error('Error deleting logo:', error)
-        // Continuar con la eliminación de la empresa
+        // Continue deleting the company
       }
     }
 

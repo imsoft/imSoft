@@ -17,19 +17,19 @@ interface HomeServicesProps {
 const WHATSAPP = '523325365558'
 
 /**
- * Servicios en la portada: cinco principales con problema, entregables, precio y un caso
- * real del portafolio, y el resto en una lista compacta. La pagina /services sigue usando
- * la cuadricula completa (ServicesSection).
+ * Services on the home page: five main ones with problem, deliverables, price and a real
+ * portfolio case, and the rest in a compact list. The /services page still uses the full
+ * grid (ServicesSection).
  */
 export function HomeServices({ lang, services, portfolio, title, subtitle }: HomeServicesProps) {
   const es = lang !== 'en'
   const l = es ? 'es' : 'en'
-  const secundarios = secondaryServices(services, lang)
+  const secondary = secondaryServices(services, lang)
   const marketing = marketingServices(services, lang)
-  const whatsapp = (servicio: string) =>
+  const whatsapp = (serviceName: string) =>
     `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(es
-      ? `Hola imSoft, me interesa ${servicio.toLowerCase()} para mi negocio. ¿Podemos agendar la llamada gratuita?`
-      : `Hi imSoft, I'm interested in ${servicio.toLowerCase()} for my business. Can we schedule the free call?`)}`
+      ? `Hola imSoft, me interesa ${serviceName.toLowerCase()} para mi negocio. ¿Podemos agendar la llamada gratuita?`
+      : `Hi imSoft, I'm interested in ${serviceName.toLowerCase()} for my business. Can we schedule the free call?`)}`
 
   return (
     <section id="services" className="py-16 md:py-24 bg-primary text-primary-foreground">
@@ -41,16 +41,16 @@ export function HomeServices({ lang, services, portfolio, title, subtitle }: Hom
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {MAIN_SERVICES.map((s, i) => {
-            const caso = showcaseCase(s, portfolio)
-            const titulo = s.title[l]
+            const showcase = showcaseCase(s, portfolio)
+            const serviceTitle = s.title[l]
             return (
               <ScrollReveal key={s.slug} direction="up" delay={i * 0.08} className="h-full">
                 <article className="flex h-full flex-col overflow-hidden rounded-2xl bg-background text-foreground shadow-lg">
-                  {caso ? (
-                    <Link href={`/${lang}/portfolio/${caso.slug}`} className="relative block aspect-[16/10] overflow-hidden bg-muted" aria-label={`${es ? 'Caso' : 'Case'}: ${caso.name}`}>
-                      <Image src={caso.image} alt={`${caso.name} · ${titulo}`} fill sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-cover object-top transition-transform duration-500 hover:scale-105" />
+                  {showcase ? (
+                    <Link href={`/${lang}/portfolio/${showcase.slug}`} className="relative block aspect-[16/10] overflow-hidden bg-muted" aria-label={`${es ? 'Caso' : 'Case'}: ${showcase.name}`}>
+                      <Image src={showcase.image} alt={`${showcase.name} · ${serviceTitle}`} fill sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-cover object-top transition-transform duration-500 hover:scale-105" />
                       <span className="absolute bottom-3 left-3 rounded-full bg-background/90 px-3 py-1 text-xs font-semibold text-foreground">
-                        {es ? 'Caso real' : 'Real case'}: {caso.name}
+                        {es ? 'Caso real' : 'Real case'}: {showcase.name}
                       </span>
                     </Link>
                   ) : (
@@ -62,7 +62,7 @@ export function HomeServices({ lang, services, portfolio, title, subtitle }: Hom
                   )}
                   <div className="flex flex-1 flex-col gap-4 p-6">
                     <div>
-                      <h3 className="text-xl font-bold">{titulo}</h3>
+                      <h3 className="text-xl font-bold">{serviceTitle}</h3>
                       <p className="mt-1 text-sm text-muted-foreground">{s.problem[l]}</p>
                     </div>
                     <ul className="space-y-2 text-sm">
@@ -82,7 +82,7 @@ export function HomeServices({ lang, services, portfolio, title, subtitle }: Hom
                       </Link>
                     </div>
                     <Button asChild className="w-full rounded-xl">
-                      <a href={whatsapp(titulo)} target="_blank" rel="noopener noreferrer">
+                      <a href={whatsapp(serviceTitle)} target="_blank" rel="noopener noreferrer">
                         {es ? 'Agenda una llamada gratis' : 'Book a free call'} <ArrowRight className="ml-1 size-4" aria-hidden />
                       </a>
                     </Button>
@@ -99,7 +99,7 @@ export function HomeServices({ lang, services, portfolio, title, subtitle }: Hom
                 {es ? 'Casi siempre como parte de un proyecto de los de arriba.' : 'Usually as part of one of the projects above.'}
               </p>
               <ul className="mt-4 flex flex-wrap gap-2">
-                {secundarios.map((s) => (
+                {secondary.map((s) => (
                   <li key={s.slug}>
                     <Link href={`/${lang}/services/${s.slug}`} className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/5 px-3 py-1 text-sm text-foreground transition-colors hover:bg-primary hover:text-primary-foreground">
                       {s.icon && <span aria-hidden>{s.icon}</span>}{s.title}

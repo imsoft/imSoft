@@ -39,7 +39,7 @@ export function ProfileForm({ dict, lang, user }: ProfileFormProps) {
       const fileName = `${user.id}-${Date.now()}.${fileExt}`
       const filePath = `avatars/${fileName}`
 
-      // Eliminar avatar anterior si existe
+      // Delete the previous avatar if any
       if (user.user_metadata?.avatar_url) {
         const oldPath = user.user_metadata.avatar_url.split('/').pop()
         if (oldPath) {
@@ -62,7 +62,7 @@ export function ProfileForm({ dict, lang, user }: ProfileFormProps) {
         .from('profile-images')
         .getPublicUrl(filePath)
 
-      // Actualizar user_metadata con la nueva URL del avatar
+      // Update user_metadata with the new avatar URL
       const response = await fetch('/api/profile/avatar', {
         method: 'PUT',
         headers: {
@@ -109,7 +109,7 @@ export function ProfileForm({ dict, lang, user }: ProfileFormProps) {
     try {
       const supabase = createClient()
       
-      // Eliminar avatar del storage si existe
+      // Delete the avatar from storage if any
       if (user.user_metadata?.avatar_url) {
         const oldPath = user.user_metadata.avatar_url.split('/').pop()
         if (oldPath) {
@@ -119,7 +119,7 @@ export function ProfileForm({ dict, lang, user }: ProfileFormProps) {
         }
       }
 
-      // Actualizar user_metadata para eliminar la URL del avatar
+      // Update user_metadata to remove the avatar URL
       const response = await fetch('/api/profile/avatar', {
         method: 'PUT',
         headers: {

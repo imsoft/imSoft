@@ -78,7 +78,7 @@ export default function ForgotPasswordForm({ dict, lang }: ForgotPasswordFormPro
         return
       }
 
-      // Siempre mostrar éxito por seguridad (no revelar si el email existe)
+      // Always show success for security (don't reveal whether the email exists)
       setSuccess(true)
       setIsSubmitting(false)
       form.reset()

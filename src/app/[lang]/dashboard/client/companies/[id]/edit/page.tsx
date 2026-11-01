@@ -20,7 +20,7 @@ export default async function EditCompanyPage({ params }: {
     redirect(`/${lang}/login`)
   }
 
-  // Obtener la empresa
+  // Fetch the company
   const { data: company, error } = await supabase
     .from('companies')
     .select('*')

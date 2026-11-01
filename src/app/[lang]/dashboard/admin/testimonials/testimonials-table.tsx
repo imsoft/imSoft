@@ -45,7 +45,7 @@ export function TestimonialsTable({ testimonials, dict, lang }: TestimonialsTabl
   const [isDeleting, setIsDeleting] = useState(false)
   const [companiesMap, setCompaniesMap] = useState<Map<string, string>>(new Map())
 
-  // Cargar empresas para mostrar sus nombres
+  // Load companies to show their names
   useEffect(() => {
     async function fetchCompanies() {
       try {

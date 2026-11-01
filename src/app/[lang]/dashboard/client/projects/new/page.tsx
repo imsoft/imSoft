@@ -5,7 +5,7 @@ export default async function NewClientProjectPage({ params }: {
 }) {
   const { lang } = await params
 
-  // Los clientes no pueden crear proyectos, redirigir a la página de proyectos
+  // Clients can't create projects, redirect to the projects page
   redirect(`/${lang}/dashboard/client/projects`)
 }
 

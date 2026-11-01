@@ -23,7 +23,7 @@ export default async function ClientFeedbackPage({ params }: {
     redirect(`/${lang}/login`)
   }
 
-  // Obtener feedbacks del usuario
+  // Fetch the user's feedback
   const { data: feedbacks, error } = await supabase
     .from('feedbacks')
     .select('*')

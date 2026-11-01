@@ -4,7 +4,7 @@ import { cookies } from 'next/headers'
 import { requireAdmin } from '@/lib/quotes/server'
 import { gmailConfigured, consentUrl } from '@/lib/gmail/server'
 
-/** Manda al admin a la pantalla de consentimiento de Google. */
+/** Sends the admin to Google's consent screen. */
 export async function GET() {
   const auth = await requireAdmin()
   if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status })

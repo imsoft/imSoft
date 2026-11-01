@@ -3,10 +3,10 @@ import { MetadataRoute } from 'next';
 export default function robots(): MetadataRoute.Robots {
   const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io';
 
-  // Las rutas reales llevan prefijo de idioma (/es/dashboard, /en/login...), asi que
-  // un Disallow de '/dashboard/' a secas no bloquea nada. Cubrimos ambas formas.
-  // /_next/ NO se bloquea: ahi viven el CSS, el JS y las imagenes que Google necesita para
-  // renderizar la pagina como la ve una persona. Bloquearlo va contra su guia.
+  // Real routes carry a language prefix (/es/dashboard, /en/login...), so
+  // a bare Disallow of '/dashboard/' blocks nothing. We cover both forms.
+  // /_next/ is NOT blocked: it holds the CSS, JS and images Google needs to
+  // render the page as a person sees it. Blocking it goes against its guidelines.
   const disallow = [
     '/api/',
     '/auth/',

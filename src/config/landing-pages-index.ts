@@ -1,17 +1,17 @@
 import type { City, Industry } from '@/types/landing-pages';
 
 /**
- * Indice navegable de las landings ciudad + industria.
+ * Browsable index of the city + industry landings.
  *
- * Existe para resolver el problema de indexacion: las 30 landings solo vivian en el
- * sitemap, sin un solo enlace interno apuntandolas. Google las marcaba como
- * "Descubierta: actualmente sin indexar" y nunca las rastreaba. Cualquier pagina nueva
- * de este tipo debe quedar enlazada desde aqui.
+ * It exists to fix an indexing problem: the 30 landings only lived in the sitemap, with
+ * not a single internal link pointing at them. Google flagged them as "Discovered -
+ * currently not indexed" and never crawled them. Any new page of this kind must be
+ * linked from here.
  */
 
 /**
- * Solo Guadalajara. Las de Monterrey y CDMX (misma plantilla, 0 clics en 90 dias) se
- * redirigen a las landings de ciudad + servicio con texto propio (city-services.ts).
+ * Guadalajara only. The Monterrey and CDMX ones (same template, 0 clicks in 90 days)
+ * redirect to the city + service landings with their own copy (city-services.ts).
  */
 export const LANDING_CITIES: City[] = ['guadalajara'];
 
@@ -41,7 +41,7 @@ export function landingHref(lang: string, city: City, industry: Industry): strin
   return `/${lang}/${city}/${industry}`;
 }
 
-/** Texto del enlace: "Software para Inmobiliarias en Guadalajara". */
+/** Link text, e.g. "Software para Inmobiliarias en Guadalajara". */
 export function landingLinkText(lang: string, city: City, industry: Industry): string {
   const l = lang === 'en' ? 'en' : 'es';
   const industryLabel = INDUSTRY_LABELS[industry][l];

@@ -8,22 +8,22 @@ import { HomeServices } from './home-services'
 interface ServicesSectionClientProps extends ServicesSectionProps {
   services: Service[]
   /**
-   * 'portada': cinco servicios principales con problema, entregables, precio y un caso del
-   * portafolio, y el resto en una lista compacta. 'completa' (por omision): la cuadricula
-   * con todos los servicios, que usan /services y las landings por ciudad.
+   * 'home': five main services with problem, deliverables, price and a portfolio
+   * case, and the rest in a compact list. 'full' (default): the grid with every
+   * service, used by /services and the city landings.
    */
-  variant?: 'portada' | 'completa'
-  /** Proyectos del portafolio, para ilustrar cada servicio principal en la portada. */
+  variant?: 'home' | 'full'
+  /** Portfolio projects, to illustrate each main service on the home page. */
   portfolio?: Array<{ slug?: string | null; image_url?: string | null }>
   /**
-   * En /services esta seccion es el contenido principal, asi que su titulo debe ser el
-   * h1 de la pagina. En el home y en las landings ya hay un h1 antes, y se queda en h2.
+   * On /services this section is the main content, so its title must be the page's
+   * h1. On the home page and the landings there's already an h1 before it, so it stays h2.
    */
   headingLevel?: 'h1' | 'h2'
 }
 
-export function ServicesSection({ dict, lang, services, headingLevel = 'h2', variant = 'completa', portfolio = [] }: ServicesSectionClientProps) {
-  if (variant === 'portada') {
+export function ServicesSection({ dict, lang, services, headingLevel = 'h2', variant = 'full', portfolio = [] }: ServicesSectionClientProps) {
+  if (variant === 'home') {
     return <HomeServices lang={lang} services={services} portfolio={portfolio} title={dict.services.title} subtitle={dict.services.subtitle} />
   }
   const SectionHeading = headingLevel

@@ -113,7 +113,7 @@ export async function GET(request: Request) {
       let csvContent: string
       
       if (type === 'all') {
-        // Para "all", crear un CSV con múltiples secciones
+        // For "all", build a CSV with multiple sections
         const sections = Object.entries(data as any).map(([key, value]: [string, any]) => {
           return `\n=== ${key.toUpperCase()} ===\n${convertToCSV(Array.isArray(value) ? value : [])}`
         })

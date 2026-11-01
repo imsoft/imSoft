@@ -53,8 +53,8 @@ export interface BlogPost {
 
 export interface Testimonial {
   id: string
-  company?: string // Mantener para compatibilidad
-  company_id?: string // Nueva relación con empresas
+  company?: string // Kept for compatibility
+  company_id?: string // New relation to companies
   content_es?: string
   content_en?: string
   content?: string
@@ -122,8 +122,8 @@ export interface Project {
   image_url?: string
   project_url?: string
   resources_url?: string
-  client?: string // Mantener para compatibilidad
-  company_id?: string // Nueva relación con empresas
+  client?: string // Kept for compatibility
+  company_id?: string // New relation to companies
   project_type?: string
   status?: string
   start_date?: string
@@ -187,7 +187,7 @@ export interface Contact {
   id: string
   first_name: string
   last_name: string
-  /** Opcional: los prospectos de WhatsApp e Instagram no siempre tienen correo. */
+  /** Optional: WhatsApp and Instagram prospects don't always have an email. */
   email?: string
   additional_emails?: string[]
   invalid_emails?: string[]

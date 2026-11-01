@@ -1,9 +1,9 @@
 /**
- * Logica pura del generador automatico del blog (scripts/generate-blog.mjs).
+ * Pure logic of the automatic blog generator (scripts/generate-blog.mjs).
  *
- * Aqui vive todo lo que se puede probar sin red: elegir el siguiente tema de la cola,
- * construir slugs, medir el solapamiento con titulos ya publicados y validar que el
- * articulo cumpla las reglas de fuentes antes de publicarlo.
+ * Everything that can be tested without network lives here: picking the next topic in the
+ * queue, building slugs, measuring overlap with already published titles and checking that
+ * the article meets the sourcing rules before publishing it.
  */
 
 export interface QueueTopic {
@@ -30,7 +30,7 @@ export interface GeneratedArticle {
   sources: ArticleSource[];
 }
 
-/** Primera entrada de la cola cuyo slug (es o en) no exista todavia en la tabla blog. */
+/** First queue entry whose slug (es or en) doesn't exist yet in the blog table. */
 export function pickNextTopic(queue: QueueTopic[], existingSlugs: Iterable<string>): QueueTopic | null {
   const used = new Set(Array.from(existingSlugs).filter(Boolean));
   return queue.find((t) => !used.has(t.slug_es) && !used.has(t.slug_en)) ?? null;
@@ -52,7 +52,7 @@ const STOP = new Set([
   'el', 'la', 'los', 'las', 'un', 'una', 'de', 'del', 'para', 'por', 'que', 'tu', 'tus', 'en', 'y', 'o',
   'como', 'cual', 'sin', 'con', 'mas', 'the', 'a', 'an', 'of', 'for', 'to', 'your', 'in', 'and', 'or',
   'how', 'what', 'why', 'without', 'with', 'more', 'es', 'is', 'al', 'lo', 'se',
-  // Palabras de encuadre de la serie "cuanto cuesta X": no distinguen un tema de otro.
+  // Framing words of the "cuanto cuesta X" series: they don't tell one topic from another.
   'cuanto', 'cuesta', 'cuestan', 'costo', 'costos', 'precio', 'precios', 'rangos', 'reales', 'real',
   'mexico', 'guia', 'much', 'does', 'cost', 'costs', 'price', 'prices', 'ranges', 'mexican',
   '2025', '2026', '2027',
@@ -70,7 +70,7 @@ function titleFingerprint(title: string): Set<string> {
   );
 }
 
-/** Solapamiento de palabras significativas entre dos titulos (0 a 1). */
+/** Overlap of meaningful words between two titles (0 to 1). */
 export function titleOverlap(a: string, b: string): number {
   const A = titleFingerprint(a);
   const B = titleFingerprint(b);
@@ -80,7 +80,7 @@ export function titleOverlap(a: string, b: string): number {
   return shared / Math.min(A.size, B.size);
 }
 
-/** Solapamiento maximo tolerado con un titulo ya publicado. */
+/** Maximum overlap tolerated with an already published title. */
 export const MAX_TITLE_OVERLAP = 0.6;
 export const MIN_SOURCES = 2;
 export const MIN_WORDS = 900;
@@ -115,24 +115,24 @@ export function countWords(html: string): number {
   return t ? t.split(' ').length : 0;
 }
 
-/** Parrafos y elementos de lista que contienen una cifra "de dato": porcentaje, dinero o "segun". */
-/** Números "de dato" tal como aparecen: 5,000 / 15.5% / 2026 no, los años no cuentan. */
+/** Paragraphs and list items that contain a "data" figure: percentage, money or "según". */
+/** "Data" numbers as they appear: 5,000 / 15.5% / not 2026, years don't count. */
 const NUMBER_PATTERN = /(?<!\d)(?:\d{1,3}(?:[.,]\d{3})+|\d+(?:[.,]\d+)?)(?:\s?%)?(?!\d)/g;
 const FIGURE_PATTERN = /\d+(?:[.,]\d+)?\s?%|\$\s?\d|\bmxn\b|\busd\b|\bseg[uú]n\b|\bde acuerdo (?:a|con)\b/i;
 
 /**
- * Reglas que un articulo debe cumplir antes de publicarse. Devuelve la lista de
- * problemas; vacia significa que pasa.
+ * Rules an article must meet before being published. Returns the list of
+ * problems; empty means it passes.
  *
- * La regla central: toda cifra tiene que ir acompanada de un enlace a la fuente en el
- * mismo parrafo o item de lista. El generador anterior pedia "datos concretos" sin
- * fuentes y el modelo se los inventaba ("segun datos de 2026, el 80%...").
+ * The core rule: every figure must come with a link to the source in the
+ * same paragraph or list item. The previous generator asked for "concrete data" without
+ * sources and the model made it up ("segun datos de 2026, el 80%...").
  */
 /**
- * Deja el HTML del articulo en la forma que espera el validador y el sitio: atributos con
- * comillas dobles y sin comillas escapadas. El modelo a veces entrega href='...' o
- * href=\\"...\\" (paso en el reintento del 3-oct-2026) y el validador, que solo veia
- * href="...", concluia que el articulo no enlazaba ninguna fuente.
+ * Puts the article HTML in the shape the validator and the site expect: attributes in
+ * double quotes and no escaped quotes. The model sometimes returns href='...' or
+ * href=\\"...\\" (it happened on the 2026-10-03 retry) and the validator, which only saw
+ * href="...", concluded the article linked no source at all.
  */
 export function normalizeHtml(html: string): string {
   return (html ?? '')
@@ -141,7 +141,7 @@ export function normalizeHtml(html: string): string {
     .replace(/(\s(?:href|src|target|rel|class|title|alt)=)'([^'<>]*)'/gi, '$1"$2"');
 }
 
-/** Normaliza los dos idiomas del articulo. */
+/** Normalizes both languages of the article. */
 export function normalizeArticle<T extends { content_es: string; content_en: string }>(a: T): T {
   return { ...a, content_es: normalizeHtml(a.content_es), content_en: normalizeHtml(a.content_en) };
 }
@@ -181,8 +181,8 @@ export function validateArticle(
     if (!links.includes(f.url)) problems.push(`${lang}: la fuente ${f.url} está declarada pero no se enlaza en el texto`);
   }
 
-  // Cada bloque con cifra necesita su enlace en el mismo bloque, salvo que la cifra ya
-  // haya aparecido antes en un bloque con fuente (repetirla al argumentar es legítimo).
+  // Each block with a figure needs its link in the same block, unless the figure already
+  // appeared earlier in a block with a source (repeating it while arguing is legitimate).
   const blocks = Array.from(html.matchAll(/<(p|li)\b[^>]*>([\s\S]*?)<\/\1>/gi), (m) => m[2]);
   const sourcedFigures = new Set<string>();
   for (const b of blocks) {
@@ -195,7 +195,7 @@ export function validateArticle(
     }
     if (!FIGURE_PATTERN.test(text)) continue;
     const alreadyCited = figures.length > 0 && figures.every((c) => sourcedFigures.has(c));
-    const attributionOnly = figures.length === 0; // "según…" sin número tampoco pasa sin enlace
+    const attributionOnly = figures.length === 0; // "según…" without a number does not pass without a link either
     if (!alreadyCited || attributionOnly) {
       problems.push(`${lang}: cifra sin fuente enlazada en el mismo párrafo: "${text.slice(0, 90)}…"`);
     }

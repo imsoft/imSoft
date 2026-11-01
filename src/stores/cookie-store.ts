@@ -46,7 +46,7 @@ export const useCookieStore = create<CookieStore>()(
 
       rejectAll: () => {
         const allRejected: CookieConsent = {
-          essential: true, // Essential cookies siempre activas
+          essential: true, // Essential cookies always on
           functional: false,
           analytics: false,
           marketing: false,
@@ -59,7 +59,7 @@ export const useCookieStore = create<CookieStore>()(
       },
 
       updateConsent: (category: CookieCategory, value: boolean) => {
-        // No permitir desactivar cookies esenciales
+        // Essential cookies can't be disabled
         if (category === 'essential') return
 
         set((state) => ({
@@ -102,7 +102,7 @@ export const useCookieStore = create<CookieStore>()(
       }),
       version: COOKIE_VERSION,
       migrate: (persistedState: any, version: number) => {
-        // Si la versión es diferente, resetear el consentimiento
+        // If the version differs, reset the consent
         if (version !== COOKIE_VERSION) {
           return {
             consent: defaultConsent,

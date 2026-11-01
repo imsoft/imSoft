@@ -1,9 +1,9 @@
 /**
- * Plantilla unica de los correos que manda la plataforma (Resend): avisos al admin,
- * cotizaciones al cliente, avances de proyecto y blog. Tablas y estilos en linea para
- * que Gmail y Outlook los pinten igual. Logica pura, probada en layout.test.ts.
+ * Single template for the emails the platform sends (Resend): admin notices,
+ * quotes to the client, project updates and blog. Tables and inline styles so
+ * Gmail and Outlook render them the same. Pure logic, tested in layout.test.ts.
  *
- * La prospeccion en frio NO usa esto: va por Gmail con su propio diseño en src/lib/outreach.ts.
+ * Cold prospecting does NOT use this: it goes through Gmail with its own design in src/lib/outreach.ts.
  */
 
 export const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io'
@@ -33,7 +33,7 @@ export function esc(s: unknown): string {
     .replace(/"/g, '&quot;')
 }
 
-/** URL segura para href/src: solo http(s), mailto y tel. */
+/** Safe URL for href/src: only http(s), mailto and tel. */
 export function url(u: string): string {
   const t = String(u ?? '').trim()
   return /^(https?:|mailto:|tel:)/i.test(t) ? esc(t) : '#'
@@ -49,7 +49,7 @@ export function subtitle(text: string): string {
   return `<p style="margin:24px 0 10px;font-family:${FONT};font-size:12px;font-weight:bold;letter-spacing:1.5px;text-transform:uppercase;color:${COLOR.brand}">${esc(text)}</p>`
 }
 
-/** Boton ancho de color de marca (en tabla: Outlook no respeta padding en <a>). */
+/** Full-width brand-color button (in a table: Outlook ignores padding on <a>). */
 export function button(text: string, href: string): string {
   return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:8px 0 20px"><tr>
   <td align="center" style="background:${COLOR.brand};border-radius:8px">
@@ -57,7 +57,7 @@ export function button(text: string, href: string): string {
   </td></tr></table>`
 }
 
-/** Tabla de datos: etiqueta a la izquierda, valor (HTML ya escapado) a la derecha. */
+/** Data table: label on the left, value (already escaped HTML) on the right. */
 export function dataTable(rows: Array<[string, string]>): string {
   const visible = rows.filter(([, v]) => v !== '' && v !== null && v !== undefined)
   if (visible.length === 0) return ''
@@ -70,7 +70,7 @@ export function dataTable(rows: Array<[string, string]>): string {
   return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 20px;border:1px solid ${COLOR.border};border-radius:10px;border-collapse:separate">${tr}</table>`
 }
 
-/** Recuadro con borde de color a la izquierda: mensaje citado, tarea completada, aviso. */
+/** Box with a colored left border: quoted message, completed task, notice. */
 export function callout(html: string, tone: 'info' | 'success' | 'warning' = 'info', title?: string): string {
   const c = tone === 'success' ? [COLOR.success, COLOR.successBg] : tone === 'warning' ? [COLOR.warning, COLOR.warningBg] : [COLOR.brand, COLOR.soft]
   return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 20px"><tr>
@@ -80,7 +80,7 @@ export function callout(html: string, tone: 'info' | 'success' | 'warning' = 'in
   </td></tr></table>`
 }
 
-/** Texto libre de un usuario (mensaje de contacto): escapado y con saltos de linea. */
+/** Free text from a user (contact message): escaped and with line breaks. */
 export function plainText(s: string): string {
   return esc(s).replace(/\r?\n/g, '<br>')
 }
@@ -107,21 +107,21 @@ export function codeBlock(text: string): string {
 }
 
 export interface LayoutOpts {
-  /** Texto de vista previa en la bandeja (no se ve dentro del correo). */
+  /** Inbox preview text (not visible inside the email). */
   preheader: string
-  /** Etiqueta chica sobre el titulo: "Cotización aceptada", "Formulario de contacto"... */
+  /** Small label above the title: "Cotización aceptada", "Formulario de contacto"... */
   label?: string
   title: string
-  /** HTML del cuerpo, armado con las piezas de este modulo. */
+  /** Body HTML, built with the pieces of this module. */
   body: string
-  /** Imagen de portada a todo lo ancho (blog). */
+  /** Full-width cover image (blog). */
   cover?: { src: string; alt: string }
-  /** Lineas extra del pie (HTML ya escapado): motivo del correo, baja, direccion. */
+  /** Extra footer lines (already escaped HTML): reason for the email, unsubscribe, address. */
   footer?: string[]
   lang?: string
 }
 
-/** Correo completo con la marca de imSoft. */
+/** Complete email with the imSoft branding. */
 export function emailLayout(o: LayoutOpts): string {
   const year = new Date().getFullYear()
   const footer = [

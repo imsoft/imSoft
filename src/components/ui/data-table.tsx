@@ -44,8 +44,8 @@ export function DataTable<TData, TValue>({
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
-  // pageIndex tambien vive en estado: si se fija en 0, "Siguiente" cambia de pagina y la
-  // tabla vuelve a la primera en el mismo render.
+  // pageIndex also lives in state: if it's pinned to 0, "Next" changes the page and the
+  // table goes back to the first one in the same render.
   const [pagination, setPagination] = React.useState<PaginationState>({ pageIndex: 0, pageSize: 10 })
   const pageSize = pagination.pageSize
   const setPageSize = (size: number) => setPagination({ pageIndex: 0, pageSize: size })
@@ -85,7 +85,7 @@ export function DataTable<TData, TValue>({
             />
           )}
           <div className="flex items-center gap-2 ml-auto">
-            {/* Dropdown para seleccionar número de filas */}
+            {/* Dropdown to pick the number of rows */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm">
@@ -106,7 +106,7 @@ export function DataTable<TData, TValue>({
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {/* Dropdown para mostrar/ocultar columnas */}
+            {/* Dropdown to show/hide columns */}
             {table.getAllColumns().filter((column) => column.getCanHide()).length > 0 && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -119,8 +119,8 @@ export function DataTable<TData, TValue>({
                     .getAllColumns()
                     .filter((column) => column.getCanHide())
                     .map((column) => {
-                      // Obtener el nombre traducido de la columna
-                      // Primero intenta con el id, luego con el accessorKey si existe
+                      // Get the column's translated name
+                      // Try the id first, then the accessorKey if there is one
                       const columnNames = dict.dashboard.table.columnNames as Record<string, string>
                       const columnId = column.id
                       const accessorKey = (column.columnDef as any).accessorKey as string | undefined

@@ -25,14 +25,14 @@ import { X, Image as ImageIcon } from 'lucide-react'
 import Image from '@/components/ui/image'
 import { TranslateButton } from '@/components/ui/translate-button'
 
-// Función para generar slug desde un texto
+// Builds a slug from a text
 function generateSlug(text: string): string {
   return text
     .toLowerCase()
     .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '') // Eliminar acentos
-    .replace(/[^a-z0-9]+/g, '-') // Reemplazar caracteres especiales con guiones
-    .replace(/^-+|-+$/g, '') // Eliminar guiones al inicio y final
+    .replace(/[\u0300-\u036f]/g, '') // Strip accents
+    .replace(/[^a-z0-9]+/g, '-') // Replace special characters with dashes
+    .replace(/^-+|-+$/g, '') // Trim leading and trailing dashes
 }
 
 const projectTypes = [
@@ -115,7 +115,7 @@ export function ClientProjectForm({ dict, lang, companyId, companyName }: Client
     }
   }, [titleEn, form, currentSlug])
 
-  // Función helper para extraer el path del storage desde la URL pública
+  // Extracts the storage path from the public URL
   function getStoragePathFromUrl(url: string, bucketName: string): string | null {
     try {
       const urlParts = url.split(`/storage/v1/object/public/${bucketName}/`)
@@ -137,7 +137,7 @@ export function ClientProjectForm({ dict, lang, companyId, companyName }: Client
         return
       }
 
-      // Eliminar imagen anterior si existe
+      // Delete the previous image if any
       const currentImageUrl = form.getValues('image_url')
       if (currentImageUrl) {
         const filePath = getStoragePathFromUrl(currentImageUrl, 'project-images')
@@ -146,7 +146,7 @@ export function ClientProjectForm({ dict, lang, companyId, companyName }: Client
         }
       }
 
-      // Nueva estructura: /<slug>/nombre-original.ext
+      // New layout: /<slug>/original-name.ext
       const filePath = `${projectSlug}/${file.name}`
 
       const { error: uploadError } = await supabase.storage

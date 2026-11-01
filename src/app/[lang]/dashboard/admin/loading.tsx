@@ -1,9 +1,9 @@
 import { Skeleton } from '@/components/ui/skeleton'
 
 /**
- * Esqueleto mientras el servidor arma la pagina del panel. Sin esto, al navegar entre
- * pantallas del admin el navegador no pinta nada hasta que llega la respuesta completa,
- * y cada clic se mide como una interaccion de varios segundos.
+ * Skeleton while the server builds the panel page. Without it, when navigating between
+ * admin screens the browser paints nothing until the full response arrives, and each
+ * click is measured as a multi-second interaction.
  */
 export default function AdminLoading() {
   return (

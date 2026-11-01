@@ -11,8 +11,8 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { firstName, lastName, email, phoneNumber, message, captchaToken } = body;
 
-    // El apellido es opcional: para un primer contacto no aporta nada y exigirlo
-    // cuesta envios. El formulario tampoco lo pide ya.
+    // Last name is optional: it adds nothing to a first contact and requiring it
+    // costs submissions. The form no longer asks for it either.
     if (!firstName || !email || !message) {
       return NextResponse.json(
         { error: 'Faltan campos requeridos' },
@@ -20,7 +20,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // Verificar el captcha anti-bot antes de procesar nada.
+    // Verify the anti-bot captcha before processing anything.
     const remoteIp = request.headers.get('cf-connecting-ip')
       || request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
       || undefined;
@@ -32,14 +32,14 @@ export async function POST(request: Request) {
       );
     }
 
-    // Crear cliente de Supabase con SERVICE_ROLE_KEY para bypass de RLS
-    // Esto es seguro porque estamos en una API route del servidor
+    // Create a Supabase client with SERVICE_ROLE_KEY to bypass RLS
+    // This is safe because we're in a server API route
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!
     );
 
-    // Guardar mensaje en la base de datos
+    // Save the message in the database
     const { data: messageData, error: dbError } = await supabase
       .from('contact_messages')
       .insert([
@@ -63,7 +63,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // Obtener email del administrador desde la tabla contact
+    // Get the admin email from the contact table
     const { data: contactData } = await supabase
       .from('contact')
       .select('email')
@@ -72,7 +72,7 @@ export async function POST(request: Request) {
 
     const adminEmail = contactData?.email || 'contacto@imsoft.io';
 
-    // Enviar email de notificación al administrador
+    // Send the notification email to the admin
     const fromEmail = process.env.RESEND_FROM_EMAIL || 'contacto@imsoft.io';
 
     try {
@@ -96,7 +96,7 @@ export async function POST(request: Request) {
         from: fromEmail,
         to: adminEmail,
       });
-      // El mensaje ya está guardado en BD — devolvemos éxito pero avisamos
+      // The message is already saved in the DB: return success but warn
       return NextResponse.json({
         success: true,
         message: 'Mensaje guardado. Hubo un problema al enviar la notificación por email.',

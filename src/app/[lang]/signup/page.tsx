@@ -24,12 +24,12 @@ export default async function SignupPage({ params }: {
   const dict = await getDictionary(lang);
   const supabase = await createClient();
 
-  // Con la sesion abierta no se muestra el formulario: parecia que la sesion se habia
-  // cerrado cuando solo se habia entrado por /login (marcador o enlace).
+  // With an open session the form isn't shown: it looked like the session had been
+  // closed when the user had just come in through /login (bookmark or link).
   const { data: { user } } = await supabase.auth.getUser();
   if (user) redirect(panelFor(roleOf(user), lang));
   
-  // Obtener datos de contacto
+  // Fetch contact info
   const { data: contactData } = await supabase
     .from('contact')
     .select('*')

@@ -1,6 +1,6 @@
 /**
- * A que panel va alguien que ya tiene sesion. Lo usan el login (para no mostrarle el
- * formulario a quien ya entro) y el regreso de Google.
+ * Which panel someone already signed in goes to. Used by the login (so it doesn't show the
+ * form to someone already in) and the Google callback.
  */
 export function panelFor(role: unknown, lang: string): string {
   const l = lang === 'en' ? 'en' : 'es'

@@ -42,7 +42,7 @@ export function ReportsGenerator({ dict, lang }: ReportsGeneratorProps) {
     try {
       const fileName = `report-${reportType}-${new Date().toISOString().split('T')[0]}.${reportFormat}`
       
-      // Generar el reporte
+      // Generate the report
       const response = await fetch(`/api/reports?type=${reportType}&format=${reportFormat}`)
       
       if (!response.ok) {
@@ -51,7 +51,7 @@ export function ReportsGenerator({ dict, lang }: ReportsGeneratorProps) {
 
       const blob = await response.blob()
       
-      // Descargar el archivo
+      // Download the file
       const url = window.URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
@@ -61,7 +61,7 @@ export function ReportsGenerator({ dict, lang }: ReportsGeneratorProps) {
       window.URL.revokeObjectURL(url)
       document.body.removeChild(a)
 
-      // Guardar el reporte en la base de datos
+      // Save the report to the database
       const saveResponse = await fetch('/api/reports/save', {
         method: 'POST',
         headers: {
@@ -77,7 +77,7 @@ export function ReportsGenerator({ dict, lang }: ReportsGeneratorProps) {
 
       if (!saveResponse.ok) {
         console.error('Error saving report to database')
-        // No fallar si no se puede guardar, solo mostrar advertencia
+        // Don't fail if it can't be saved, just show a warning
         toast.warning(lang === 'en' ? 'Report generated but could not be saved' : 'Reporte generado pero no se pudo guardar')
       }
 

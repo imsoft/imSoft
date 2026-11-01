@@ -20,7 +20,7 @@ export default async function AdminContactPage({ params }: {
     redirect(`/${lang}/login`)
   }
 
-  // Obtener datos de contacto (asumiendo que solo hay un registro)
+  // Fetch contact info (assuming there is a single row)
   const { data: contactData, error } = await supabase
     .from('contact')
     .select('*')

@@ -1,16 +1,16 @@
 /**
- * Funciones helper para operaciones administrativas de Supabase
+ * Helper functions for Supabase admin operations
  * 
- * NOTA: Estas funciones requieren el SERVICE_ROLE_KEY de Supabase
- * y solo deben ejecutarse en el servidor con las debidas precauciones de seguridad.
+ * NOTE: These functions require the Supabase SERVICE_ROLE_KEY
+ * and must only run on the server with due security precautions.
  */
 
 import { createClient } from '@supabase/supabase-js'
 import { isAdmin as hasAdminRole } from '@/lib/roles'
 
 /**
- * Crea un cliente de Supabase con permisos de administrador
- * Requiere la variable de entorno SUPABASE_SERVICE_ROLE_KEY
+ * Creates a Supabase client with admin permissions
+ * Requires the SUPABASE_SERVICE_ROLE_KEY environment variable
  */
 export function createAdminClient() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -33,13 +33,13 @@ export function createAdminClient() {
 }
 
 /**
- * Asigna el rol de administrador a un usuario por su email
- * @param email Email del usuario
+ * Grants the admin role to a user by email
+ * @param email User's email
  */
 export async function setAdminRole(email: string) {
   const supabase = createAdminClient()
   
-  // Buscar el usuario por email
+  // Find the user by email
   const { data: users, error: searchError } = await supabase.auth.admin.listUsers()
   
   if (searchError) {
@@ -52,8 +52,8 @@ export async function setAdminRole(email: string) {
     throw new Error(`Usuario con email ${email} no encontrado`)
   }
 
-  // El rol va en app_metadata: solo el servidor puede escribirlo. En user_metadata lo
-  // podria cambiar el propio usuario (ver src/lib/roles.ts).
+  // The role goes in app_metadata: only the server can write it. In user_metadata the
+  // user could change it themselves (see src/lib/roles.ts).
   const { data, error } = await supabase.auth.admin.updateUserById(
     user.id,
     {
@@ -72,8 +72,8 @@ export async function setAdminRole(email: string) {
 }
 
 /**
- * Verifica si un usuario tiene rol de administrador
- * @param userId ID del usuario
+ * Checks whether a user has the admin role
+ * @param userId User ID
  */
 export async function isAdmin(userId: string): Promise<boolean> {
   const supabase = createAdminClient()

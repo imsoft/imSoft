@@ -50,7 +50,7 @@ export default async function ContactPage({ params }: {
   const dict = await getDictionary(lang);
   const supabase = await createClient();
   
-  // Obtener datos de contacto
+  // Fetch contact info
   const { data: contactData } = await supabase
     .from('contact')
     .select('*')
@@ -59,7 +59,7 @@ export default async function ContactPage({ params }: {
 
   const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io';
   
-  // Structured data para ContactPage
+  // Structured data for ContactPage
   const contactStructuredData = contactData ? {
     '@context': 'https://schema.org',
     '@type': 'ContactPage',
@@ -97,7 +97,7 @@ export default async function ContactPage({ params }: {
         <main className="pt-24">
         <div className="relative isolate bg-background overflow-hidden">
           <div className="mx-auto grid max-w-7xl grid-cols-1 lg:grid-cols-2">
-            {/* Columna izquierda - Información de contacto */}
+            {/* Left column - contact info */}
             <ScrollReveal direction="left" className="relative px-6 pt-24 pb-20 sm:pt-32 lg:static lg:px-8 lg:py-48">
               <div className="mx-auto max-w-xl lg:mx-0 lg:max-w-lg">
                 <h1 className="text-4xl font-semibold tracking-tight text-pretty text-foreground sm:text-5xl">
@@ -151,7 +151,7 @@ export default async function ContactPage({ params }: {
                     </div>
                   )}
                 </dl>
-                {/* Alias por funcion: el cliente escribe a la direccion correcta desde el primer correo. */}
+                {/* Alias per role: the client writes to the right address from the first email. */}
                 <div className="mt-10 border-t border-border pt-8">
                   <p className="text-sm font-semibold mb-3">{lang === 'en' ? 'Write to the right inbox' : 'Escríbenos según lo que necesites'}</p>
                   <dl className="space-y-2 text-base text-muted-foreground">
@@ -170,7 +170,7 @@ export default async function ContactPage({ params }: {
               </div>
             </ScrollReveal>
             
-            {/* Columna derecha - Formulario */}
+            {/* Right column - form */}
             <ScrollReveal direction="right" delay={0.2} className="px-6 pt-20 pb-24 sm:pb-32 lg:px-8 lg:py-48">
               <div className="mx-auto max-w-xl lg:mr-0 lg:max-w-lg">
                 <ContactForm dict={dict} />

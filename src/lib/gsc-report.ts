@@ -1,9 +1,9 @@
 /**
- * Logica pura del reporte de Search Console. Sin E/S: todo lo que toca la API vive en
- * scripts/gsc-report.mjs, para que esto se pueda probar con vitest sin credenciales.
+ * Pure logic of the Search Console report. No I/O: everything that touches the API lives in
+ * scripts/gsc-report.mjs, so this can be tested with vitest without credentials.
  *
- * El reporte compara contra dos baselines fijados antes de desplegar la auditoria de
- * agosto de 2026, y mide el efecto de la caida del dominio (2 al 8 de septiembre).
+ * The report compares against two baselines set before deploying the August 2026
+ * audit, and measures the effect of the domain outage (September 2 to 8).
  */
 
 export type QueryClass = 'brand' | 'ims-collision' | 'commercial';
@@ -37,7 +37,7 @@ export interface InspectionRow {
   verdict: string;
   coverageState: string;
   lastCrawlTime: string | null;
-  /** Canonica que eligio Google. Solo dice algo cuando difiere de la declarada. */
+  /** Canonical Google chose. Only meaningful when it differs from the declared one. */
   googleCanonical?: string | null;
   userCanonical?: string | null;
 }
@@ -50,7 +50,7 @@ export interface Totals {
 }
 
 export const BASELINE = {
-  /** Informe de indexacion de GSC del 20-ago-2026, antes de desplegar nada. */
+  /** GSC indexing report of 2026-08-20, before deploying anything. */
   indexing: {
     date: '2026-08-20',
     indexed: 42,
@@ -58,7 +58,7 @@ export const BASELINE = {
     discoveredNotIndexed: 172,
     crawledNotIndexed: 34,
   },
-  /** Rendimiento de 28 dias reportado por Brandon el 27-ago-2026. */
+  /** 28-day performance reported by Brandon on 2026-08-27. */
   performance28d: {
     date: '2026-08-27',
     clicks: 15,
@@ -67,9 +67,9 @@ export const BASELINE = {
     position: 39.4,
   },
   /**
-   * El dominio estuvo apuntando a una pagina de parking en este rango. Volvio el 8 de
-   * septiembre a media tarde (UTC), asi que un rastreo de ese dia puede ser de antes o
-   * de despues: se corta por la hora, no por la fecha.
+   * The domain pointed to a parking page during this range. It came back on September 8
+   * in the mid-afternoon (UTC), so a crawl from that day may be from before or
+   * after: it's cut by the hour, not by the date.
    */
   outage: { from: '2026-09-02', to: '2026-09-08', recoveredAt: '2026-09-08T16:30:00Z' },
 } as const;
@@ -83,27 +83,27 @@ function normalize(text: string): string {
 }
 
 /**
- * Casi todas las impresiones historicas venian de gente buscando "IMS", otra empresa.
- * Separar eso de la marca propia y de las consultas comerciales es lo que permite ver
- * si el SEO funciona: solo la clase `comercial` es trafico que se puede ganar.
+ * Almost all historical impressions came from people searching for "IMS", another company.
+ * Separating that from our own brand and from commercial queries is what shows
+ * whether SEO works: only the `commercial` class is traffic that can be won.
  */
 export function classifyQuery(query: string): QueryClass {
   const q = normalize(query);
 
-  // Primero lo que se reconoce por como esta escrito con espacios o puntuacion: "im
-  // software", "i soft", "i'm soft" e "i.soft" son gente buscando IMS u otra cosa, aunque
-  // pegadas se parezcan a la marca.
+  // First what's recognized by how it's written with spaces or punctuation: "im
+  // software", "i soft", "i'm soft" and "i.soft" are people searching for IMS or something else, even
+  // though they look like the brand when joined.
   if (/\bims\b/.test(q) || /\bim software\b/.test(q) || /\bi'?m?[ .-]+soft/.test(q)) {
     return 'ims-collision';
   }
 
-  // Sin puntuacion ni espacios: "im soft" y "imsoft" son la misma cosa.
+  // Without punctuation or spaces: "im soft" and "imsoft" are the same thing.
   const compact = q.replace(/[^a-z0-9]/g, '');
   if (compact.includes('imsoft') || compact.includes('imsof') || compact.includes('insoft')) {
     return 'brand';
   }
-  // Otras marcas ajenas que vinieron en los reportes reales: imsdatawise, imhosys, iosoft,
-  // oisoft, inisoft, "oims software", "international micro systems" (lo que significa IMS).
+  // Other unrelated brands that came up in the real reports: imsdatawise, imhosys, iosoft,
+  // oisoft, inisoft, "oims software", "international micro systems" (what IMS stands for).
   if (
     /^ims[a-z]*$/.test(compact) ||
     /^imh[a-z]*$/.test(compact) ||
@@ -147,7 +147,7 @@ export function summarizeQueries(rows: QueryRow[]): {
   return { byClass: byClass, commercial: commercial.slice(0, 15) };
 }
 
-/** De las propiedades visibles, la de dominio manda; si no, el prefijo www. */
+/** Of the visible properties, the domain one wins; otherwise the www prefix. */
 export function pickProperty(sites: Array<{ siteUrl?: string | null }>): string | null {
   const urls = sites.map((s) => s.siteUrl ?? '').filter(Boolean);
   return (
@@ -180,9 +180,9 @@ export function deltaVsBaseline(actual: Totals) {
 }
 
 /**
- * Media diaria de impresiones antes, durante y despues de la caida. "Despues" queda
- * en null hasta que GSC entregue dias posteriores al 8 de septiembre (tiene ~2 dias
- * de retraso).
+ * Daily average of impressions before, during and after the outage. "After" stays
+ * null until GSC delivers days after September 8 (it lags ~2 days
+ * behind).
  */
 export function outageImpact(daily: DateRow[]) {
   const { from: from, to: to } = BASELINE.outage;
@@ -202,8 +202,8 @@ export function outageImpact(daily: DateRow[]) {
 }
 
 /**
- * Agrupa las inspecciones por estado y separa las URLs que Google ya volvio a rastrear
- * despues de la caida de las que siguen con un rastreo anterior (o sea, del parking).
+ * Groups the inspections by status and separates the URLs Google already recrawled
+ * after the outage from those still on an earlier crawl (i.e. of the parking page).
  */
 export function coverageSummary(rows: InspectionRow[]) {
   const cutoff = BASELINE.outage.recoveredAt;

@@ -23,7 +23,7 @@ import { BlogFilters } from "@/components/blog/blog-filters";
 import { BlogPagination } from "@/components/blog/blog-pagination";
 import { blogCategoryLabel, isBlogCategory } from "@/lib/blog-categories";
 
-/** Artículos por página. */
+/** Articles per page. */
 const POSTS_PER_PAGE = 9;
 
 type SearchParams = Record<string, string | string[] | undefined>;
@@ -34,7 +34,7 @@ function firstValue(value: string | string[] | undefined): string | undefined {
   return trimmed ? trimmed : undefined;
 }
 
-/** Normaliza los parámetros de la URL a filtros seguros para la consulta. */
+/** Normalizes the URL params into safe filters for the query. */
 function parseFilters(searchParams: SearchParams) {
   const rawPage = Number.parseInt(firstValue(searchParams.page) ?? '1', 10);
   const page = Number.isFinite(rawPage) && rawPage > 0 ? rawPage : 1;
@@ -42,8 +42,8 @@ function parseFilters(searchParams: SearchParams) {
   const rawCategory = firstValue(searchParams.categoria ?? searchParams.category);
   const category = rawCategory && isBlogCategory(rawCategory) ? rawCategory : undefined;
 
-  // Se eliminan los caracteres que rompen el filtro `.or()` de PostgREST y los
-  // comodines de `ilike`, para que la búsqueda sea siempre literal.
+  // Strip the characters that break PostgREST's `.or()` filter and the
+  // `ilike` wildcards, so the search is always literal.
   const query = firstValue(searchParams.q)
     ?.replace(/[,()%*\\]/g, ' ')
     .replace(/\s+/g, ' ')
@@ -54,8 +54,8 @@ function parseFilters(searchParams: SearchParams) {
 }
 
 function createAdminClient() {
-  // Cliente con service role para hacer bypass de RLS temporalmente.
-  // TODO: Arreglar las políticas RLS y volver a usar ANON_KEY
+  // Service-role client to bypass RLS for now.
+  // TODO: fix the RLS policies and go back to ANON_KEY
   return createSupabaseClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
@@ -81,8 +81,8 @@ export async function generateMetadata({
   const { page, category, query } = parseFilters(await searchParams);
   const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io';
 
-  // La canónica conserva la categoría y la página (son vistas distintas), pero
-  // nunca la búsqueda libre, que se marca como noindex.
+  // The canonical keeps the category and the page (they are distinct views), but
+  // never the free-text search, which is marked noindex.
   const canonicalParams = new URLSearchParams();
   if (category) canonicalParams.set('categoria', category);
   if (page > 1) canonicalParams.set('page', String(page));
@@ -123,7 +123,7 @@ export default async function BlogPage({ params, searchParams }: {
 
   const supabase = createAdminClient();
 
-  // Obtener datos de contacto
+  // Fetch contact info
   let contactData = undefined;
   try {
     const { data } = await supabase
@@ -136,8 +136,8 @@ export default async function BlogPage({ params, searchParams }: {
     // Error fetching contact data - silently fail
   }
 
-  // Construye la consulta base con los filtros activos (se reutiliza para el
-  // conteo y para la página de resultados).
+  // Builds the base query with the active filters (reused for the
+  // count and for the results page).
   const buildPostsQuery = ({ head = false }: { head?: boolean } = {}) => {
     let postsQuery = supabase.from('blog').select(
       'id, title_es, title_en, title, excerpt_es, excerpt_en, excerpt, slug, image_url, category, created_at',
@@ -159,13 +159,13 @@ export default async function BlogPage({ params, searchParams }: {
     return postsQuery;
   };
 
-  // Conteos por categoría (solo la columna `category`, sin traer contenido).
+  // Counts per category (only the `category` column, no content).
   const categoryCountsPromise = supabase
     .from('blog')
     .select('category')
     .eq('published', true);
 
-  // Conteo total con los filtros aplicados, para saber cuántas páginas hay.
+  // Total count with the filters applied, to know how many pages there are.
   const totalCountPromise = buildPostsQuery({ head: true });
 
   const [{ data: categoryRows }, { count }] = await Promise.all([
@@ -175,7 +175,7 @@ export default async function BlogPage({ params, searchParams }: {
 
   const totalCount = count ?? 0;
   const totalPages = Math.max(1, Math.ceil(totalCount / POSTS_PER_PAGE));
-  // Si piden una página fuera de rango se muestra la última disponible.
+  // If a page out of range is requested, the last available one is shown.
   const currentPage = Math.min(page, totalPages);
   const from = (currentPage - 1) * POSTS_PER_PAGE;
 
@@ -195,7 +195,7 @@ export default async function BlogPage({ params, searchParams }: {
     .map(([value, count]) => ({ value, count }))
     .sort((a, b) => b.count - a.count || a.value.localeCompare(b.value));
 
-  // Mapear los datos del blog al formato esperado
+  // Map blog data to the expected shape
   const blogPosts = (blogPostsData || []).map((post) => ({
     id: post.id,
     title: lang === 'en'

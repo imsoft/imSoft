@@ -3,57 +3,57 @@ import { ZAPOPAN_WEB } from './zapopan-web';
 import { landingPagesData } from './landing-pages-data';
 
 /**
- * El riesgo de una landing por ciudad es que acabe siendo la de otra ciudad con el
- * nombre cambiado. Google trata eso como duplicado y no rankea ninguna de las dos, que
- * es justo lo que ya costo retirar 36 articulos del blog.
+ * The risk with a per-city landing is that it ends up being another city's with the name
+ * swapped. Google treats that as a duplicate and ranks neither, which is exactly what
+ * already cost us 36 retired blog articles.
  */
-describe('landing de Zapopan', () => {
-  const texto = JSON.stringify(ZAPOPAN_WEB).toLowerCase();
+describe('Zapopan landing', () => {
+  const text = JSON.stringify(ZAPOPAN_WEB).toLowerCase();
 
-  it('habla de Zapopan y de su zona corporativa, no de Guadalajara en generico', () => {
-    expect(texto).toContain('zapopan');
-    expect(texto).toContain('andares');
-    expect(texto).toContain('puerta de hierro');
+  it('talks about Zapopan and its corporate area, not generic Guadalajara', () => {
+    expect(text).toContain('zapopan');
+    expect(text).toContain('andares');
+    expect(text).toContain('puerta de hierro');
   });
 
-  it('el titulo y el h1 llevan la ciudad', () => {
+  it('the title and h1 include the city', () => {
     expect(ZAPOPAN_WEB.seoTitle).toContain('Zapopan');
     expect(ZAPOPAN_WEB.h1).toContain('Zapopan');
   });
 
-  it('apunta a "paginas web", que es como lo busca quien contrata', () => {
-    // El autocompletado de Google (es-MX) sugiere "paginas web zapopan" y no devuelve
-    // nada para "desarrollo web zapopan": ese segundo termino lo usa quien programa.
+  it('targets "paginas web", which is how buyers search for it', () => {
+    // Google autocomplete (es-MX) suggests "paginas web zapopan" and returns nothing for
+    // "desarrollo web zapopan": that second term is what developers use.
     expect(ZAPOPAN_WEB.seoTitle.toLowerCase()).toContain('páginas web');
     expect(ZAPOPAN_WEB.h1.toLowerCase()).toContain('páginas web');
   });
 
-  it('la meta description cabe en lo que Google muestra', () => {
+  it('the meta description fits in what Google shows', () => {
     expect(ZAPOPAN_WEB.seoDescription.length).toBeLessThanOrEqual(160);
   });
 
-  it('no es una copia de ninguna landing de ciudad + industria', () => {
-    const bloques = [
+  it('is not a copy of any city + industry landing', () => {
+    const blocks = [
       ...ZAPOPAN_WEB.problems.items,
       ...ZAPOPAN_WEB.solutions.items.map((s) => s.description),
     ].map((t) => t.toLowerCase());
 
-    const existentes = new Set<string>();
-    for (const ciudad of Object.values(landingPagesData)) {
-      for (const landing of Object.values(ciudad)) {
-        landing.problems.items.forEach((i) => existentes.add(i.toLowerCase()));
-        landing.solutions.items.forEach((i) => existentes.add(i.description.toLowerCase()));
+    const existing = new Set<string>();
+    for (const city of Object.values(landingPagesData)) {
+      for (const landing of Object.values(city)) {
+        landing.problems.items.forEach((i) => existing.add(i.toLowerCase()));
+        landing.solutions.items.forEach((i) => existing.add(i.description.toLowerCase()));
       }
     }
 
-    for (const bloque of bloques) {
-      expect(existentes.has(bloque)).toBe(false);
+    for (const block of blocks) {
+      expect(existing.has(block)).toBe(false);
     }
   });
 
-  it('los proyectos citados son reales y no se les atribuye ubicacion', () => {
-    // Son clientes del portafolio; no consta que esten en Zapopan, asi que la pagina
-    // no lo afirma.
+  it('cited projects are real and are not attributed a location', () => {
+    // They are portfolio clients; there's no record of them being in Zapopan, so the
+    // page doesn't claim it.
     expect(ZAPOPAN_WEB.proof.items.length).toBeGreaterThan(0);
     expect(ZAPOPAN_WEB.proof.description.toLowerCase()).toContain('no todos son de zapopan');
     for (const item of ZAPOPAN_WEB.proof.items) {
@@ -61,7 +61,7 @@ describe('landing de Zapopan', () => {
     }
   });
 
-  it('el horario coincide con el que declara el schema', () => {
+  it('the business hours match the ones declared in the schema', () => {
     expect(ZAPOPAN_WEB.cta.description).toContain('9:00 a 18:00');
     expect(ZAPOPAN_WEB.cta.description).toContain('9:00 a 13:00');
     expect(ZAPOPAN_WEB.cta.description).not.toContain('lunes a viernes');

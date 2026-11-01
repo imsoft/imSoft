@@ -20,7 +20,7 @@ export default async function NewTechnologyPage({ params }: {
     redirect(`/${lang}/login`)
   }
 
-  // Verificar que sea admin
+  // Make sure the user is an admin
   if (!isAdmin(user)) {
     redirect(`/${lang}/dashboard/client`)
   }

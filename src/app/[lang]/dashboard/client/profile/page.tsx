@@ -35,7 +35,7 @@ export default async function ClientProfilePage({ params }: {
                      : null)
   const role = metadata.role || 'client'
   
-  // Formatear fecha de creación
+  // Format the creation date
   const createdAt = user.created_at 
     ? new Date(user.created_at).toLocaleDateString(lang === 'en' ? 'en-US' : 'es-MX', {
         year: 'numeric',

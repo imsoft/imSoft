@@ -17,12 +17,12 @@ export async function createClient() {
             cookiesToSet.forEach(({ name, value, options }) => {
               cookieStore.set(name, value, {
                 ...options,
-                // Asegurar que las cookies persistan
+                // Make sure the cookies persist
                 path: options?.path || '/',
                 sameSite: options?.sameSite || 'lax',
                 secure: options?.secure ?? process.env.NODE_ENV === 'production',
                 httpOnly: options?.httpOnly ?? false,
-                maxAge: options?.maxAge || 60 * 60 * 24 * 7, // 7 días por defecto
+                maxAge: options?.maxAge || 60 * 60 * 24 * 7, // 7 days by default
               })
             })
           } catch {

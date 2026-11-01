@@ -8,23 +8,23 @@ interface NumberInputProps extends Omit<ComponentProps<typeof Input>, 'value' | 
   onValueChange: (n: number) => void
 }
 
-const formatear = (n: number) => (Number.isFinite(n) && n !== 0 ? String(n) : '')
+const formatNumber = (n: number) => (Number.isFinite(n) && n !== 0 ? String(n) : '')
 
 /**
- * Campo numerico que guarda lo tecleado como texto y entrega un numero.
+ * Numeric field that keeps what was typed as text and hands back a number.
  *
- * Con <input type="number" value={numero}> el navegador conserva lo escrito ("01000")
- * mientras React manda otro valor, el cursor salta al inicio y un estado en 0 pinta un
- * "0" que luego hay que borrar. Aqui el texto es del usuario y el numero es derivado.
+ * With <input type="number" value={number}> the browser keeps what was typed ("01000")
+ * while React sends another value, the cursor jumps to the start, and a state of 0 paints
+ * a "0" you then have to delete. Here the text belongs to the user and the number is derived.
  */
 export function NumberInput({ value, onValueChange, ...props }: NumberInputProps) {
-  const [text, setText] = useState(() => formatear(value))
+  const [text, setText] = useState(() => formatNumber(value))
   const [prev, setPrev] = useState(value)
-  // Si el valor cambia desde fuera (cargar una cotizacion, restaurar localStorage), se
-  // vuelve a derivar el texto. Ajuste de estado durante el render, no en un efecto.
+  // If the value changes from outside (loading a quote, restoring localStorage), the
+  // text is derived again. State adjusted during render, not in an effect.
   if (value !== prev) {
     setPrev(value)
-    if (Number(text || 0) !== value) setText(formatear(value))
+    if (Number(text || 0) !== value) setText(formatNumber(value))
   }
   return (
     <Input

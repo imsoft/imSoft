@@ -46,7 +46,7 @@ interface User {
     full_name?: string
     role?: string
   }
-  /** De aqui sale el rol: solo el servidor puede escribirlo (ver src/lib/roles.ts). */
+  /** The role comes from here: only the server can write it (see src/lib/roles.ts). */
   app_metadata?: Record<string, unknown>
   created_at?: string
 }

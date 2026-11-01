@@ -14,15 +14,15 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io';
 const ES_URL = `${SITE_URL}/es/zapopan/paginas-web`;
 
 /**
- * Landing de paginas web en Zapopan.
+ * Websites landing for Zapopan.
  *
- * Es una ruta estatica dentro de [lang], asi que gana a la dinamica [city]/[service]:
- * Next da precedencia al segmento literal. Por eso `zapopan` no necesita entrar en
- * `landingPagesData`, que es para las combinaciones ciudad + industria.
+ * It is a static route inside [lang], so it wins over the dynamic [city]/[service]:
+ * Next gives precedence to the literal segment. That is why `zapopan` doesn't need to be
+ * in `landingPagesData`, which is for city + industry combinations.
  *
- * Solo existe en español. El contenido apunta a busquedas locales ("desarrollo web
- * Zapopan") que en ingles no tienen volumen, asi que /en canonicaliza a /es y se queda
- * fuera del sitemap en ingles, igual que las landings sin traducir.
+ * Spanish only. The content targets local searches ("desarrollo web Zapopan") that have
+ * no volume in English, so /en canonicalizes to /es and stays out of the English
+ * sitemap, like the untranslated landings.
  */
 
 export function generateStaticParams() {
@@ -41,7 +41,7 @@ export async function generateMetadata({
     title: ZAPOPAN_WEB.seoTitle,
     description: ZAPOPAN_WEB.seoDescription,
     alternates: {
-      // Sin version en ingles: /en apunta al español para no registrar un duplicado.
+      // No English version: /en points to Spanish to avoid registering a duplicate.
       canonical: isEs ? ES_URL : ES_URL,
     },
     robots: { index: true, follow: true },

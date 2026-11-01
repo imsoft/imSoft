@@ -36,8 +36,8 @@ const createFormSchema = (dict: Dictionary) => {
   const val = formValidation(dict);
   return z.object({
     firstName: z.string().min(2, { message: val.firstNameMin }),
-    // Opcional a proposito: para un primer contacto el apellido no aporta nada y cada
-    // campo obligatorio de mas cuesta envios.
+    // Optional on purpose: for a first contact the last name adds nothing and every
+    // extra required field costs submissions.
     lastName: z.string().optional(),
     email: z.string().email({ message: val.emailInvalid }),
     phoneNumber: z.string().optional(),
@@ -90,7 +90,7 @@ export default function ContactForm({ dict }: ContactFormProps) {
       }
 
       setSubmitStatus('success')
-      // Lo escucha CtaTracker para registrar el envio en analitica.
+      // CtaTracker listens for this to log the submission in analytics.
       window.dispatchEvent(new CustomEvent(LEAD_EVENT))
       form.reset()
       captchaRef.current?.reset()
@@ -101,7 +101,7 @@ export default function ContactForm({ dict }: ContactFormProps) {
       }, 5000)
     } catch (error) {
       console.error('Error:', error)
-      // El token se consume en cada intento: regenerar uno nuevo.
+      // The token is consumed on every attempt: get a new one.
       captchaRef.current?.reset()
       setCaptchaToken(undefined)
       setSubmitStatus('error')

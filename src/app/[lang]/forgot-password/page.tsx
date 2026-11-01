@@ -22,7 +22,7 @@ export default async function ForgotPasswordPage({ params }: {
   const dict = await getDictionary(lang);
   const supabase = await createClient();
   
-  // Obtener datos de contacto
+  // Fetch contact info
   const { data: contactData } = await supabase
     .from('contact')
     .select('*')

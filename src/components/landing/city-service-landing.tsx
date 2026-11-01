@@ -7,15 +7,15 @@ interface Props {
   lang: string;
   content: CityServiceContent;
   breadcrumb: Array<{ name: string; href?: string }>;
-  /** Enlaces a otras landings de la misma ciudad o servicio, al pie. */
+  /** Links to other landings for the same city or service, at the bottom. */
   related?: Array<{ name: string; href: string }>;
-  /** Articulos del blog ya publicados que responden lo que busca quien llega. */
+  /** Already-published blog articles that answer what the visitor is looking for. */
   posts?: Array<{ title: string; href: string }>;
 }
 
 /**
- * Cuerpo de una landing de ciudad + servicio (y de la de Zapopan, que comparte diseño).
- * Sin hero ni footer: los pone la pagina, que es quien conoce el idioma y los datos de contacto.
+ * Body of a city + service landing (and of the Zapopan one, which shares the design).
+ * No hero or footer: the page adds them, since it knows the language and contact data.
  */
 export function CityServiceLanding({ lang, content, breadcrumb, related = [], posts = [] }: Props) {
   const c = content;

@@ -23,7 +23,7 @@ export default async function ClientCompaniesPage({ params }: {
     redirect(`/${lang}/login`)
   }
 
-  // Obtener empresas del usuario
+  // Fetch the user's companies
   const { data: companies, error } = await supabase
     .from('companies')
     .select('*')

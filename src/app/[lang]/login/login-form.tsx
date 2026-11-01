@@ -72,7 +72,7 @@ export default function LoginForm({ dict, lang }: LoginFormProps) {
       })
 
       if (signInError) {
-        // El token se consume en cada intento: regenerar uno nuevo.
+        // The token is consumed on every attempt: get a new one.
         captchaRef.current?.reset()
         setCaptchaToken(undefined)
         setError(dict.auth.login.errors.invalidCredentials)
@@ -80,19 +80,19 @@ export default function LoginForm({ dict, lang }: LoginFormProps) {
         return
       }
 
-      // Esperar un momento para que las cookies se establezcan
+      // Wait a moment for the cookies to be set
       await new Promise(resolve => setTimeout(resolve, 100))
       
-      // Obtener el usuario para verificar su rol
+      // Get the user to check their role
       const { data: { user } } = await supabase.auth.getUser()
       
       if (user) {
-        // TODO: Verificar el rol del usuario desde la base de datos
-        // Por ahora, redirigimos a un dashboard por defecto
-        // En producción, deberías verificar el rol desde user_metadata o una tabla de usuarios
+        // TODO: check the user's role from the database
+        // For now, redirect to a default dashboard
+        // In production, check the role from user_metadata or a users table
         const userRole = roleOf(user)
         
-        // Usar window.location para forzar una recarga completa y asegurar que las cookies se lean
+        // Use window.location to force a full reload so the cookies are read
         if (userRole === 'admin') {
           window.location.href = `/${lang}/dashboard/admin`
         } else {

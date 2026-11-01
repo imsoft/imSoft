@@ -39,13 +39,13 @@ export default async function AdminDashboardPage({ params }: {
     redirect(`/${lang}/login`)
   }
 
-  // Obtener el nombre completo del usuario
+  // Get the user's full name
   const fullName = user.user_metadata?.full_name ||
                    (user.user_metadata?.first_name && user.user_metadata?.last_name
                      ? `${user.user_metadata.first_name} ${user.user_metadata.last_name}`
                      : user.email?.split('@')[0] || user.email)
 
-  // Obtener estadísticas del dashboard en paralelo
+  // Fetch dashboard stats in parallel
   const [
     portfolioCount,
     contactMessagesCount,
@@ -81,7 +81,7 @@ export default async function AdminDashboardPage({ params }: {
   const recentProjects = recentProjectsRes.data || []
   const recentMessages = recentMessagesRes.data || []
 
-  // Desglose de proyectos por estado
+  // Project breakdown by status
   const projectStatuses = (projectStatusesRes.data || []) as { status: string }[]
   const projectsByStatus = projectStatuses.reduce<Record<string, number>>((acc, p) => {
     acc[p.status] = (acc[p.status] || 0) + 1
@@ -89,7 +89,7 @@ export default async function AdminDashboardPage({ params }: {
   }, {})
   const activeProjects = projectsByStatus['in_progress'] || 0
 
-  // Finanzas: sumar pagos por moneda y estado
+  // Finance: sum payments by currency and status
   const payments = (paymentsRes.data || []) as { amount: number; currency: string | null; status: string }[]
   const money = payments.reduce<Record<string, { completed: number; pending: number }>>((acc, p) => {
     const cur = p.currency || 'MXN'
@@ -110,7 +110,7 @@ export default async function AdminDashboardPage({ params }: {
     projects: projectsCount.count || 0,
   }
 
-  // Helper para formatear fechas
+  // Date formatting helper
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
     return date.toLocaleDateString(lang === 'en' ? 'en-US' : 'es-MX', {
@@ -127,7 +127,7 @@ export default async function AdminDashboardPage({ params }: {
       maximumFractionDigits: 0,
     }).format(amount)
 
-  // Helper para obtener badge de estado de proyecto
+  // Helper for the project status badge
   const getProjectStatusBadge = (status: string) => {
     const statusMap: { [key: string]: { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' } } = {
       planning: { label: lang === 'en' ? 'Planning' : 'Planeación', variant: 'secondary' },
@@ -140,7 +140,7 @@ export default async function AdminDashboardPage({ params }: {
 
   const t = (en: string, es: string) => (lang === 'en' ? en : es)
 
-  // Etiquetas de estado de mensaje
+  // Message status labels
   const messageStatusBadge = (status: string) => {
     const map: { [key: string]: { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' } } = {
       unread: { label: t('Unread', 'No leído'), variant: 'default' },
@@ -162,9 +162,9 @@ export default async function AdminDashboardPage({ params }: {
         </p>
       </div>
 
-      {/* KPIs principales */}
+      {/* Main KPIs */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {/* Proyectos */}
+        {/* Projects */}
         <Link
           href={`/${lang}/dashboard/admin/projects`}
           className="rounded-lg border bg-card p-6 hover:bg-muted/50 transition-colors"
@@ -179,7 +179,7 @@ export default async function AdminDashboardPage({ params }: {
           </p>
         </Link>
 
-        {/* Ingresos cobrados */}
+        {/* Revenue collected */}
         <div className="rounded-lg border bg-card p-6">
           <div className="flex items-center justify-between">
             <p className="text-sm text-muted-foreground">{t('Collected', 'Cobrado')}</p>
@@ -200,7 +200,7 @@ export default async function AdminDashboardPage({ params }: {
           <p className="text-xs text-muted-foreground mt-1">{t('Completed payments', 'Pagos completados')}</p>
         </div>
 
-        {/* Por cobrar */}
+        {/* Receivable */}
         <div className="rounded-lg border bg-card p-6">
           <div className="flex items-center justify-between">
             <p className="text-sm text-muted-foreground">{t('Outstanding', 'Por cobrar')}</p>
@@ -221,7 +221,7 @@ export default async function AdminDashboardPage({ params }: {
           <p className="text-xs text-muted-foreground mt-1">{t('Pending payments', 'Pagos pendientes')}</p>
         </div>
 
-        {/* Mensajes sin leer */}
+        {/* Unread messages */}
         <Link
           href={`/${lang}/dashboard/admin/contact-messages`}
           className="rounded-lg border bg-card p-6 hover:bg-muted/50 transition-colors"
@@ -237,7 +237,7 @@ export default async function AdminDashboardPage({ params }: {
         </Link>
       </div>
 
-      {/* Métricas secundarias */}
+      {/* Secondary metrics */}
       <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
         {[
           { href: 'crm', icon: Users, label: t('CRM Contacts', 'Contactos CRM'), value: stats.contacts },
@@ -261,7 +261,7 @@ export default async function AdminDashboardPage({ params }: {
         ))}
       </div>
 
-      {/* Desglose de proyectos por estado */}
+      {/* Project breakdown by status */}
       {stats.projects > 0 && (
         <Card>
           <CardHeader>
@@ -292,9 +292,9 @@ export default async function AdminDashboardPage({ params }: {
         </Card>
       )}
 
-      {/* Proyectos y mensajes recientes */}
+      {/* Recent projects and messages */}
       <div className="grid gap-6 lg:grid-cols-2">
-        {/* Proyectos Recientes */}
+        {/* Recent projects */}
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
@@ -352,7 +352,7 @@ export default async function AdminDashboardPage({ params }: {
           </CardContent>
         </Card>
 
-        {/* Mensajes Recientes */}
+        {/* Recent messages */}
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">

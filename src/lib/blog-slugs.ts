@@ -1,15 +1,15 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 /**
- * Resolucion de slugs del blog por idioma.
+ * Per-language blog slug resolution.
  *
- * `blog.slug` se genera desde `title_en`, asi que las URLs en espanol quedaban en ingles
- * (/es/blog/why-your-business-is-still-losing-customers-in-2026 con contenido en espanol).
- * `blog.slug_es` anade el slug en espanol; /es usa ese y /en sigue usando `slug`.
+ * `blog.slug` is generated from `title_en`, so the Spanish URLs ended up in English
+ * (/es/blog/why-your-business-is-still-losing-customers-in-2026 with Spanish content).
+ * `blog.slug_es` adds the Spanish slug; /es uses it and /en keeps using `slug`.
  *
- * Un post se puede pedir por cualquiera de sus dos slugs: si el que llega no es el del
- * idioma de la URL, la pagina hace un 301 al correcto. Asi las URLs ya indexadas siguen
- * funcionando y consolidan hacia la nueva.
+ * A post can be requested by either of its two slugs: if the incoming one isn't the one
+ * for the URL's language, the page does a 301 to the right one. That way already indexed
+ * URLs keep working and consolidate towards the new one.
  */
 
 export interface BlogSlugRow {
@@ -17,21 +17,21 @@ export interface BlogSlugRow {
   slug_es?: string | null;
 }
 
-/** El slug que le corresponde a este post en el idioma dado. */
+/** The slug that belongs to this post in the given language. */
 export function canonicalBlogSlug(post: BlogSlugRow, lang: string): string {
   if (lang === 'es') return post.slug_es || post.slug || '';
   return post.slug || post.slug_es || '';
 }
 
 /**
- * Busca un post por cualquiera de sus dos slugs.
+ * Finds a post by either of its two slugs.
  *
- * La migracion que crea `slug_es` la aplica el equipo a mano en Supabase, asi que el
- * codigo puede desplegarse antes que ella: si la columna todavia no existe, PostgREST
- * responde 42703 y caemos a la consulta de siempre por `slug` en vez de romper el blog.
+ * The migration that creates `slug_es` is applied by hand in Supabase, so the
+ * code may be deployed before it: if the column doesn't exist yet, PostgREST
+ * answers 42703 and we fall back to the usual query by `slug` instead of breaking the blog.
  */
-// El resto de la pagina lee campos del post sin un tipo generado (title_es, content_en,
-// author_name...), asi que se devuelve la fila tal cual la da PostgREST.
+// The rest of the page reads post fields without a generated type (title_es, content_en,
+// author_name...), so the row is returned as PostgREST gives it.
 export async function findBlogPostBySlug(
   supabase: SupabaseClient,
   slug: string,

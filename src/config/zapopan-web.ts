@@ -1,18 +1,18 @@
 /**
- * Contenido de la landing de desarrollo web en Zapopan.
+ * Content for the Zapopan web development landing.
  *
- * Zapopan es mercado real —corporativo de la zona Andares / Puerta de Hierro y PyME—,
- * no aspiracional, y el servicio que mas pesa ahi es web. Por eso tiene pagina propia y
- * no un parrafo dentro de la de Guadalajara.
+ * Zapopan is a real market (corporate clients around Andares / Puerta de Hierro, and SMBs),
+ * not an aspirational one, and web is the service that matters most there. That's why it
+ * has its own page instead of a paragraph inside the Guadalajara one.
  *
- * El texto es especifico de Zapopan a proposito: si fuera la pagina de Guadalajara con
- * el nombre cambiado, Google la trataria como duplicado y no rankearia ninguna de las
- * dos. Los proyectos que se citan son reales y estan en el portafolio; lo que NO se
- * afirma es que esos clientes esten en Zapopan, porque ese dato no se tiene.
+ * The copy is Zapopan-specific on purpose: if it were the Guadalajara page with the name
+ * swapped, Google would treat it as a duplicate and rank neither. The projects cited are
+ * real and in the portfolio; what we do NOT claim is that those clients are in Zapopan,
+ * because we don't know that.
  *
- * Se apunta a "paginas web zapopan", no a "desarrollo web zapopan". El autocompletado
- * de Google (es-MX) sugiere la primera y no devuelve nada para la segunda: quien
- * contrata escribe "paginas web", "desarrollo web" lo escribe quien las programa.
+ * It targets "paginas web zapopan", not "desarrollo web zapopan". Google autocomplete
+ * (es-MX) suggests the first and returns nothing for the second: buyers type
+ * "paginas web", developers type "desarrollo web".
  */
 
 export const ZAPOPAN_WEB = {
@@ -78,8 +78,8 @@ export const ZAPOPAN_WEB = {
   },
 
   /**
-   * Proyectos reales del portafolio. Se citan como muestra del tipo de trabajo, sin
-   * afirmar que esos clientes esten en Zapopan.
+   * Real portfolio projects. Cited as examples of the kind of work, without claiming
+   * those clients are in Zapopan.
    */
   proof: {
     title: 'Trabajo que ya está en línea',
@@ -114,8 +114,8 @@ export const ZAPOPAN_WEB = {
 } as const;
 
 /**
- * Preguntas frecuentes propias de Zapopan. Van aparte de ZAPOPAN_WEB para no tocar
- * las pruebas del texto original; la pagina las une al renderizar.
+ * Zapopan-specific FAQs. Kept separate from ZAPOPAN_WEB so the original copy's tests stay
+ * untouched; the page merges them when rendering.
  */
 export const ZAPOPAN_FAQ: { title: string; items: Array<{ question: string; answer: string }> } = {
   title: 'Preguntas frecuentes',

@@ -12,13 +12,13 @@ import { cityServiceHref, cityServiceTitle } from '@/config/city-services';
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io';
 
-/** Landing de ciudad que corresponde a cada guia: quien pregunta el precio suele ser de GDL. */
-const LANDING_DE_GUIA: Record<PriceGuideSlug, 'empresas-de-software' | 'tiendas-en-linea'> = {
+/** City landing that matches each guide: whoever asks about price is usually from GDL. */
+const GUIDE_LANDING: Record<PriceGuideSlug, 'empresas-de-software' | 'tiendas-en-linea'> = {
   'software-a-la-medida': 'empresas-de-software',
   'tienda-en-linea': 'tiendas-en-linea',
 };
 
-// Solo en español: son busquedas de Mexico ("cuanto cuesta una pagina web en mexico").
+// Spanish only: these are searches from Mexico ("cuanto cuesta una pagina web en mexico").
 export const dynamicParams = false;
 export function generateStaticParams() {
   return PRICE_GUIDE_SLUGS.map((slug) => ({ lang: 'es', slug }));
@@ -38,7 +38,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
   };
 }
 
-export default async function GuiaPrecio({ params }: { params: Promise<{ lang: string; slug: string }> }) {
+export default async function PriceGuidePage({ params }: { params: Promise<{ lang: string; slug: string }> }) {
   const { lang, slug } = await params;
   const g = priceGuide(slug);
   if (lang !== 'es' || !g) notFound();
@@ -55,15 +55,15 @@ export default async function GuiaPrecio({ params }: { params: Promise<{ lang: s
 
   const s = slug as PriceGuideSlug;
   const related = [
-    { name: cityServiceTitle('guadalajara', LANDING_DE_GUIA[s]), href: cityServiceHref('es', 'guadalajara', LANDING_DE_GUIA[s]) },
-    // Las otras preguntas de precio.
+    { name: cityServiceTitle('guadalajara', GUIDE_LANDING[s]), href: cityServiceHref('es', 'guadalajara', GUIDE_LANDING[s]) },
+    // The other pricing questions.
     ...Object.values(SERVICE_PRICE_GUIDE).filter((p) => p.href !== `/es/cuanto-cuesta/${s}`),
   ];
 
   return (
     <div>
-      <StructuredData data={faqSchema} id="guia-precio-faq-schema" />
-      <StructuredData data={breadcrumbSchema} id="guia-precio-breadcrumb-schema" />
+      <StructuredData data={faqSchema} id="price-guide-faq-schema" />
+      <StructuredData data={breadcrumbSchema} id="price-guide-breadcrumb-schema" />
       <HeroHeader dict={dict} lang="es" />
       <CityServiceLanding
         lang="es"

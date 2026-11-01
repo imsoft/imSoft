@@ -60,7 +60,7 @@ export function TestimonialForm({ dict, lang, testimonial }: TestimonialFormProp
     },
   })
 
-  // Cargar empresas desde la API
+  // Load companies from the API
   useEffect(() => {
     async function fetchCompanies() {
       try {
@@ -91,13 +91,13 @@ export function TestimonialForm({ dict, lang, testimonial }: TestimonialFormProp
     setIsSubmitting(true)
     try {
       const supabase = createClient()
-      // Obtener el nombre de la empresa para mantener compatibilidad con el campo company
+      // Get the company name to stay compatible with the company field
       const selectedCompany = companies.find(c => c.value === values.company_id)
       const companyName = selectedCompany?.label || ''
 
       const data = {
         company_id: values.company_id,
-        company: companyName, // Mantener para compatibilidad
+        company: companyName, // Kept for compatibility
         content_es: values.content_es,
         content_en: values.content_en,
       }

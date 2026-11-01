@@ -42,8 +42,8 @@ export function AdminSidebar({ dict, lang }: AdminSidebarProps) {
   const nav = dict.dashboard.admin.nav
   const g = nav.groups
 
-  // Agrupado por flujo de trabajo: vender, atender clientes, mantener el sitio, medir.
-  const grupos: { label: string | null; items: { title: string; url: string; icon: typeof Users }[] }[] = [
+  // Grouped by workflow: sell, serve clients, maintain the site, measure.
+  const groups: { label: string | null; items: { title: string; url: string; icon: typeof Users }[] }[] = [
     {
       label: null,
       items: [{ title: nav.overview, url: base, icon: LayoutDashboard }],
@@ -90,16 +90,16 @@ export function AdminSidebar({ dict, lang }: AdminSidebarProps) {
     },
   ]
 
-  // Función para verificar si una ruta está activa
-  // Compara si el pathname actual coincide exactamente o comienza con la URL del item
+  // Checks whether a route is active
+  // Matches if the current pathname is exactly the item URL or starts with it
   const isRouteActive = (itemUrl: string) => {
-    // Si es la ruta overview (/dashboard/admin), solo activar si coincide exactamente
+    // For the overview route (/dashboard/admin), only active on an exact match
     if (itemUrl === `/${lang}/dashboard/admin`) {
       return pathname === itemUrl
     }
-    // Para otras rutas, activar si el pathname coincide exactamente
-    // o si comienza con la URL del item seguida de "/"
-    // Esto evita que /contact se active cuando estamos en /contact-messages
+    // For other routes, active if the pathname matches exactly
+    // or starts with the item URL followed by "/"
+    // This keeps /contact from activating while on /contact-messages
     return pathname === itemUrl || pathname.startsWith(itemUrl + '/')
   }
 
@@ -134,12 +134,12 @@ export function AdminSidebar({ dict, lang }: AdminSidebarProps) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        {grupos.map((grupo, i) => (
-          <SidebarGroup key={grupo.label ?? i} className={grupo.label ? '' : 'py-1'}>
-            {grupo.label && !isCollapsed && <SidebarGroupLabel>{grupo.label}</SidebarGroupLabel>}
+        {groups.map((group, i) => (
+          <SidebarGroup key={group.label ?? i} className={group.label ? '' : 'py-1'}>
+            {group.label && !isCollapsed && <SidebarGroupLabel>{group.label}</SidebarGroupLabel>}
             <SidebarGroupContent>
               <SidebarMenu>
-                {grupo.items.map((item) => (
+                {group.items.map((item) => (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton
                       asChild

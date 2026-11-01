@@ -3,12 +3,12 @@ import 'server-only'
 const SITEVERIFY_URL = 'https://challenges.cloudflare.com/turnstile/v0/siteverify'
 
 /**
- * Verifica un token de Cloudflare Turnstile contra el endpoint de siteverify.
+ * Verifies a Cloudflare Turnstile token against the siteverify endpoint.
  *
- * Se usa en formularios que NO pasan por Supabase Auth (p. ej. el de contacto),
- * donde la validación del captcha debe hacerse manualmente en el servidor.
+ * Used on forms that do NOT go through Supabase Auth (e.g. the contact form),
+ * where the captcha must be validated manually on the server.
  *
- * @returns true si el token es válido; false si es inválido o falta config.
+ * @returns true if the token is valid; false if it's invalid or config is missing.
  */
 export async function verifyTurnstileToken(
   token: string | undefined | null,

@@ -1,6 +1,6 @@
 /**
- * Contenido por defecto cuando la fila no existe en `services` (p. ej. seed no aplicado en producción).
- * Debe coincidir con `scripts/seed-services.sql`.
+ * Default content when the row doesn't exist in `services` (e.g. seed not applied in production).
+ * Must match `scripts/seed-services.sql`.
  */
 export type ServiceFallback = {
   slug: string;
@@ -276,7 +276,7 @@ export function getServiceFallback(slug: string): ServiceFallback | undefined {
   return bySlug.get(slug);
 }
 
-/** Forma mínima que usa `services/[slug]/page.tsx` (fila Supabase o fallback). */
+/** Minimal shape used by `services/[slug]/page.tsx` (Supabase row or fallback). */
 export type ResolvedServiceContent = {
   title?: string | null;
   title_es?: string | null;

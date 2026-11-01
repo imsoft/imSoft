@@ -4,13 +4,13 @@ import { ZAPOPAN_WEB } from './zapopan-web';
 import { landingPagesData } from './landing-pages-data';
 
 /**
- * Las 31 landings de industria con plantilla suman 0 clics en 90 dias (Search Console,
- * sep-2026). La causa es que son la misma pagina con otra ciudad. Estas pruebas evitan
- * repetirlo: cada landing de ciudad + servicio tiene que ser distinta de todas las demas.
+ * The 31 templated industry landings add up to 0 clicks in 90 days (Search Console,
+ * Sep 2026) because they are the same page with another city. These tests prevent a
+ * repeat: every city + service landing must differ from all the others.
  */
-const paginas = cityServicePages().map(({ city, slug }) => ({ city, slug, c: CITY_SERVICES[city][slug]! }));
+const pages = cityServicePages().map(({ city, slug }) => ({ city, slug, c: CITY_SERVICES[city][slug]! }));
 
-const bloques = (c: (typeof paginas)[number]['c']) =>
+const blocks = (c: (typeof pages)[number]['c']) =>
   [
     c.heroSubtitle,
     ...c.audience.items.map((i) => i.description),
@@ -19,14 +19,14 @@ const bloques = (c: (typeof paginas)[number]['c']) =>
     ...c.faq.items.map((i) => i.answer),
   ].map((t) => t.toLowerCase().trim());
 
-describe('landings de ciudad + servicio', () => {
-  it('existen las cuatro de Guadalajara, Monterrey, Queretaro y Puebla, tres de CDMX, y se resuelven por ruta', () => {
-    expect(paginas.filter((p) => p.city === 'guadalajara').map((p) => p.slug).sort()).toEqual([...CITY_SERVICE_SLUGS].sort());
-    expect(paginas.filter((p) => p.city === 'monterrey').map((p) => p.slug).sort()).toEqual([...CITY_SERVICE_SLUGS].sort());
-    // En CDMX el autocompletado no sugiere "desarrollo de apps cdmx": esa pagina no se hace.
-    expect(paginas.filter((p) => p.city === 'cdmx').map((p) => p.slug).sort()).toEqual(['empresas-de-software', 'paginas-web', 'tiendas-en-linea']);
+describe('city + service landings', () => {
+  it('has all four for Guadalajara, Monterrey, Queretaro and Puebla, three for CDMX, and resolves them by route', () => {
+    expect(pages.filter((p) => p.city === 'guadalajara').map((p) => p.slug).sort()).toEqual([...CITY_SERVICE_SLUGS].sort());
+    expect(pages.filter((p) => p.city === 'monterrey').map((p) => p.slug).sort()).toEqual([...CITY_SERVICE_SLUGS].sort());
+    // In CDMX autocomplete doesn't suggest "desarrollo de apps cdmx": that page isn't built.
+    expect(pages.filter((p) => p.city === 'cdmx').map((p) => p.slug).sort()).toEqual(['empresas-de-software', 'paginas-web', 'tiendas-en-linea']);
     expect(cityServiceContent('cdmx', 'desarrollo-de-apps')).toBeNull();
-    for (const city of ['queretaro', 'puebla'] as const) expect(paginas.filter((p) => p.city === city).map((p) => p.slug).sort()).toEqual([...CITY_SERVICE_SLUGS].sort());
+    for (const city of ['queretaro', 'puebla'] as const) expect(pages.filter((p) => p.city === city).map((p) => p.slug).sort()).toEqual([...CITY_SERVICE_SLUGS].sort());
     expect(cityServiceContent('guadalajara', 'paginas-web')?.h1).toBe('Páginas Web en Guadalajara');
     expect(cityServiceContent('guadalajara', 'software-para-clinicas')).toBeNull();
     expect(cityServiceContent('monterrey', 'paginas-web')?.h1).toBe('Páginas Web en Monterrey');
@@ -34,22 +34,22 @@ describe('landings de ciudad + servicio', () => {
     expect(cityServiceTitle('guadalajara', 'desarrollo-de-apps')).toBe('Desarrollo de apps en Guadalajara');
   });
 
-  it('cada pagina nombra la ciudad en titulo, h1 y descripcion, y la descripcion cabe en Google', () => {
-    for (const { city, c } of paginas) {
-      const nombres = city === 'cdmx' ? ['CDMX', 'Ciudad de México'] : [CITY_SERVICE_CITY_LABELS[city]];
-      const menciona = (t: string) => nombres.some((n) => t.includes(n));
-      expect(menciona(c.seoTitle), `${city}: titulo sin ciudad`).toBe(true);
-      expect(menciona(c.h1), `${city}: h1 sin ciudad`).toBe(true);
-      expect(menciona(c.seoDescription), `${city}: descripcion sin ciudad`).toBe(true);
+  it('every page names the city in the title, h1 and description, and the description fits in Google', () => {
+    for (const { city, c } of pages) {
+      const names = city === 'cdmx' ? ['CDMX', 'Ciudad de México'] : [CITY_SERVICE_CITY_LABELS[city]];
+      const mentions = (t: string) => names.some((n) => t.includes(n));
+      expect(mentions(c.seoTitle), `${city}: title without city`).toBe(true);
+      expect(mentions(c.h1), `${city}: h1 without city`).toBe(true);
+      expect(mentions(c.seoDescription), `${city}: description without city`).toBe(true);
       expect(c.seoDescription.length).toBeLessThanOrEqual(160);
       expect(c.seoTitle.length).toBeLessThanOrEqual(65);
     }
   });
 
-  it('apuntan a lo que la gente teclea, no a como lo llama quien programa', () => {
-    // Autocompletado de Google (es-MX, 21-sep-2026): "paginas web guadalajara",
+  it('targets what people type, not what developers call it', () => {
+    // Google autocomplete (es-MX, 2026-09-21): "paginas web guadalajara",
     // "empresas de desarrollo de software guadalajara", "tienda en linea guadalajara",
-    // "desarrollo de apps guadalajara". Nadie busca "software a la medida guadalajara".
+    // "desarrollo de apps guadalajara". Nobody searches "software a la medida guadalajara".
     const g = CITY_SERVICES.guadalajara;
     expect(g['paginas-web']!.h1.toLowerCase()).toContain('páginas web');
     expect(g['empresas-de-software']!.h1.toLowerCase()).toContain('empresa de desarrollo de software');
@@ -57,59 +57,59 @@ describe('landings de ciudad + servicio', () => {
     expect(g['desarrollo-de-apps']!.h1.toLowerCase()).toContain('desarrollo de apps');
   });
 
-  it('ningun parrafo se repite entre paginas, ni con Zapopan, ni con las landings de industria', () => {
-    // Lo ya existente se registra sin comprobar (las landings de industria SI se repiten
-    // entre ciudades: es justo el problema que estas paginas no deben heredar).
-    const existentes = new Map<string, string>();
-    for (const t of [ZAPOPAN_WEB.heroSubtitle, ...ZAPOPAN_WEB.problems.items, ...ZAPOPAN_WEB.solutions.items.map((s) => s.description)]) existentes.set(t.toLowerCase().trim(), 'zapopan');
-    for (const [city, porIndustria] of Object.entries(landingPagesData)) {
-      for (const [ind, l] of Object.entries(porIndustria)) {
-        for (const t of [...l.problems.items, ...l.solutions.items.map((s) => s.description)]) existentes.set(t.toLowerCase().trim(), `${city}/${ind}`);
+  it('no paragraph repeats across pages, with Zapopan, or with the industry landings', () => {
+    // Existing copy is registered without checking (industry landings DO repeat across
+    // cities: that's exactly the problem these pages must not inherit).
+    const existing = new Map<string, string>();
+    for (const t of [ZAPOPAN_WEB.heroSubtitle, ...ZAPOPAN_WEB.problems.items, ...ZAPOPAN_WEB.solutions.items.map((s) => s.description)]) existing.set(t.toLowerCase().trim(), 'zapopan');
+    for (const [city, byIndustry] of Object.entries(landingPagesData)) {
+      for (const [ind, l] of Object.entries(byIndustry)) {
+        for (const t of [...l.problems.items, ...l.solutions.items.map((s) => s.description)]) existing.set(t.toLowerCase().trim(), `${city}/${ind}`);
       }
     }
-    const nuevos = new Map<string, string>();
-    for (const p of paginas) {
-      for (const t of bloques(p.c)) {
+    const seen = new Map<string, string>();
+    for (const p of pages) {
+      for (const t of blocks(p.c)) {
         if (t.length < 25) continue;
-        expect(existentes.get(t), `"${t.slice(0, 60)}" ya existe en ${existentes.get(t)}`).toBeUndefined();
-        expect(nuevos.get(t), `"${t.slice(0, 60)}" se repite en ${nuevos.get(t)} y ${p.city}/${p.slug}`).toBeUndefined();
-        nuevos.set(t, `${p.city}/${p.slug}`);
+        expect(existing.get(t), `"${t.slice(0, 60)}" already exists in ${existing.get(t)}`).toBeUndefined();
+        expect(seen.get(t), `"${t.slice(0, 60)}" repeats in ${seen.get(t)} and ${p.city}/${p.slug}`).toBeUndefined();
+        seen.set(t, `${p.city}/${p.slug}`);
       }
     }
   });
 
-  it('Monterrey y CDMX dicen que se atiende a distancia desde Guadalajara, sin inventar oficina', () => {
-    for (const { city, c } of paginas.filter((p) => p.city !== 'guadalajara')) {
-      const texto = JSON.stringify(c).toLowerCase();
-      expect(texto, `${city}/${c.h1}`).toMatch(/a distancia|videollamada/);
-      expect(texto, `${city}/${c.h1}`).toContain('guadalajara');
-      expect(texto).not.toMatch(/nuestra oficina en (monterrey|cdmx|la ciudad de méxico|querétaro|puebla)/);
+  it('Monterrey and CDMX say they are served remotely from Guadalajara, without inventing an office', () => {
+    for (const { city, c } of pages.filter((p) => p.city !== 'guadalajara')) {
+      const text = JSON.stringify(c).toLowerCase();
+      expect(text, `${city}/${c.h1}`).toMatch(/a distancia|videollamada/);
+      expect(text, `${city}/${c.h1}`).toContain('guadalajara');
+      expect(text).not.toMatch(/nuestra oficina en (monterrey|cdmx|la ciudad de méxico|querétaro|puebla)/);
     }
   });
 
-  it('los proyectos citados existen en el portafolio y no se les atribuye ciudad', () => {
-    // Slugs reales de la tabla portfolio (sep-2026).
-    const reales = new Set(['lc-suplements', 'aduvanta', 'carsbybran', 'steridantal-order-generator', 'jtp-logistics-inventory', 'starfilters-report-generator', 'starfilters', 'the-podstore', 'bemastra-dental', 'rm-construction', 'the-paste-house', 'wellpoint', 'omnitria', 'tuxcacuesco', 'brangarciaramos', 'cursumi', 'intelligent-construction', 'business-and-customs-infinity', 'profibra', 'ortiz-and-co', 'ferreacabados-jalisco', 'jtp-logistics', 'national-gold']);
-    for (const { c } of paginas) {
+  it('cited projects exist in the portfolio and are not attributed a city', () => {
+    // Real slugs from the portfolio table (Sep 2026).
+    const realSlugs = new Set(['lc-suplements', 'aduvanta', 'carsbybran', 'steridantal-order-generator', 'jtp-logistics-inventory', 'starfilters-report-generator', 'starfilters', 'the-podstore', 'bemastra-dental', 'rm-construction', 'the-paste-house', 'wellpoint', 'omnitria', 'tuxcacuesco', 'brangarciaramos', 'cursumi', 'intelligent-construction', 'business-and-customs-infinity', 'profibra', 'ortiz-and-co', 'ferreacabados-jalisco', 'jtp-logistics', 'national-gold']);
+    for (const { c } of pages) {
       expect(c.proof.items.length).toBeGreaterThanOrEqual(3);
       for (const item of c.proof.items) {
-        expect(reales.has(item.slug ?? ''), `slug ${item.slug} no existe en el portafolio`).toBe(true);
+        expect(realSlugs.has(item.slug ?? ''), `slug ${item.slug} is not in the portfolio`).toBe(true);
         expect(item.description.toLowerCase()).not.toMatch(/en guadalajara|de guadalajara|en zapopan|en monterrey|en cdmx|ciudad de méxico|en querétaro|en puebla/);
       }
     }
   });
 
-  it('los precios "desde" son los publicados en el sitio', () => {
-    const publicados = ['Desde $5,000 MXN', 'Desde $15,000 MXN', 'Desde $60,000 MXN', 'Desde $150,000 MXN', 'Desde $9,999 MXN'];
-    for (const { c } of paginas) {
-      for (const item of c.pricing?.items ?? []) expect(publicados).toContain(item.price);
+  it('"from" prices are the ones published on the site', () => {
+    const published = ['Desde $5,000 MXN', 'Desde $15,000 MXN', 'Desde $60,000 MXN', 'Desde $150,000 MXN', 'Desde $9,999 MXN'];
+    for (const { c } of pages) {
+      for (const item of c.pricing?.items ?? []) expect(published).toContain(item.price);
     }
-    // Tiendas en linea: minimo de $9,999 fijado por Brandon (28-sep-2026) para una tienda basica.
-    for (const { c, slug } of paginas) if (slug === 'tiendas-en-linea') expect(c.pricing?.items.map((i) => i.price)).toEqual(['Desde $9,999 MXN']);
+    // Online stores: $9,999 minimum set by Brandon (2026-09-28) for a basic store.
+    for (const { c, slug } of pages) if (slug === 'tiendas-en-linea') expect(c.pricing?.items.map((i) => i.price)).toEqual(['Desde $9,999 MXN']);
   });
 
-  it('cada pagina tiene preguntas frecuentes y el horario coincide con el del schema', () => {
-    for (const { c } of paginas) {
+  it('every page has FAQs and the business hours match the schema', () => {
+    for (const { c } of pages) {
       expect(c.faq.items.length).toBeGreaterThanOrEqual(4);
       expect(c.cta.description).toContain('9:00 a 18:00');
       expect(c.cta.description).toContain('9:00 a 13:00');

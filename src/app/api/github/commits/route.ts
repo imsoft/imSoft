@@ -4,17 +4,17 @@ import type { GitHubCommit } from '@/types/github'
 /**
  * GET /api/github/commits
  *
- * Obtiene los commits de un repositorio de GitHub
+ * Fetches the commits of a GitHub repository
  *
  * Query params:
- * - owner: Propietario del repositorio (requerido)
- * - repo: Nombre del repositorio (requerido)
- * - per_page: Número de commits a obtener (opcional, default: 30, max: 100)
- * - page: Número de página (opcional, default: 1)
+ * - owner: repository owner (required)
+ * - repo: repository name (required)
+ * - per_page: number of commits to fetch (optional, default: 30, max: 100)
+ * - page: page number (optional, default: 1)
  *
- * Autenticación:
- * - Si GITHUB_ACCESS_TOKEN está configurado en .env, se usa para acceder a repos privados
- * - Sin token, solo funciona con repositorios públicos
+ * Authentication:
+ * - If GITHUB_ACCESS_TOKEN is set in .env, it's used to access private repos
+ * - Without a token, only public repositories work
  */
 export async function GET(request: NextRequest) {
   try {
@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
     const perPage = searchParams.get('per_page') || '30'
     const page = searchParams.get('page') || '1'
 
-    // Validar parámetros requeridos
+    // Validate required params
     if (!owner || !repo) {
       return NextResponse.json(
         { error: 'Owner and repo parameters are required' },
@@ -32,28 +32,28 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Construir URL de la API de GitHub
+    // Build the GitHub API URL
     const githubApiUrl = `https://api.github.com/repos/${owner}/${repo}/commits?per_page=${perPage}&page=${page}`
 
-    // Construir headers
+    // Build headers
     const headers: HeadersInit = {
       'Accept': 'application/vnd.github+json',
       'X-GitHub-Api-Version': '2022-11-28',
     }
 
-    // Agregar token si está disponible (permite acceso a repos privados)
+    // Add the token if available (allows access to private repos)
     if (process.env.GITHUB_ACCESS_TOKEN) {
       headers['Authorization'] = `Bearer ${process.env.GITHUB_ACCESS_TOKEN}`
     }
 
-    // Hacer la solicitud a GitHub
+    // Make the request to GitHub
     const response = await fetch(githubApiUrl, {
       headers,
-      // Cachear por 5 minutos
+      // Cache for 5 minutes
       next: { revalidate: 300 }
     })
 
-    // Manejar errores de GitHub
+    // Handle GitHub errors
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}))
 
@@ -79,7 +79,7 @@ export async function GET(request: NextRequest) {
 
     const commits: GitHubCommit[] = await response.json()
 
-    // Transformar datos para enviar solo lo necesario al cliente
+    // Transform the data to send only what the client needs
     const simplifiedCommits = commits.map(commit => ({
       sha: commit.sha,
       message: commit.commit.message,

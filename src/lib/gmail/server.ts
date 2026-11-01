@@ -1,25 +1,25 @@
 /**
- * Gmail por OAuth (solo servidor). Sin dependencias: token endpoint y API REST con fetch.
- * Alcances: enviar correo y leer hilos (para saber si contestaron).
+ * Gmail via OAuth (server only). No dependencies: token endpoint and REST API with fetch.
+ * Scopes: send email and read threads (to know whether they replied).
  */
 import { serviceClient, SITE_URL } from '@/lib/quotes/server'
 import { failedRecipient, foreignMessageType } from '@/lib/outreach'
 import { isRateLimitResponse, GMAIL_RATE_LIMIT_MESSAGE } from '@/lib/batch-send'
 
 /**
- * Ritmo de las lecturas en lote (revision de respuestas y rebotes): cada consulta tarda al
- * menos este tiempo, para que una revision no se coma el limite por minuto de Gmail y deje
- * sin cupo a los envios. threads.get cuesta 10 unidades y messages.get 5: asi quedan en
- * unas 60 unidades por segundo, menos de la mitad del limite.
+ * Pace of batch reads (reply and bounce checks): each query takes at least
+ * this long, so a check doesn't eat Gmail's per-minute limit and leave
+ * the sends without quota. threads.get costs 10 units and messages.get 5: that keeps it at
+ * about 60 units per second, less than half the limit.
  */
 const THREAD_PACE_MS = 170
 const MESSAGE_PACE_MS = 85
 
 async function paced<T>(minMs: number, f: () => Promise<T>): Promise<T> {
-  const inicio = Date.now()
+  const start = Date.now()
   const r = await f()
-  const falta = minMs - (Date.now() - inicio)
-  if (falta > 0) await new Promise((ok) => setTimeout(ok, falta))
+  const remaining = minMs - (Date.now() - start)
+  if (remaining > 0) await new Promise((ok) => setTimeout(ok, remaining))
   return r
 }
 
@@ -57,12 +57,12 @@ async function tokenRequest(params: Record<string, string>): Promise<TokenRespon
   return r.json()
 }
 
-/** Intercambia el codigo del consentimiento y guarda la cuenta. */
+/** Exchanges the consent code and stores the account. */
 export async function connectAccount(userId: string, code: string): Promise<string> {
   const t = await tokenRequest({ code, grant_type: 'authorization_code', redirect_uri: REDIRECT_URI })
   if (!t.refresh_token) throw new Error('Google no devolvió refresh_token; vuelve a conectar con prompt=consent.')
-  const perfil = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/profile', { headers: { Authorization: `Bearer ${t.access_token}` } }).then((r) => r.json())
-  const email: string = perfil.emailAddress
+  const profile = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/profile', { headers: { Authorization: `Bearer ${t.access_token}` } }).then((r) => r.json())
+  const email: string = profile.emailAddress
   const db = serviceClient()
   const { error } = await db.from('gmail_accounts').upsert({
     user_id: userId,
@@ -91,7 +91,7 @@ export async function disconnectAccount(userId: string): Promise<void> {
   await db.from('gmail_accounts').delete().eq('user_id', userId)
 }
 
-/** Access token vigente para el usuario, renovandolo si hace falta. */
+/** Valid access token for the user, refreshing it if needed. */
 export async function accessToken(userId: string): Promise<{ token: string; email: string }> {
   const db = serviceClient()
   const { data } = await db.from('gmail_accounts').select('*').eq('user_id', userId).maybeSingle()
@@ -112,14 +112,14 @@ export async function sendRaw(userId: string, raw: string, threadId?: string | n
     body: JSON.stringify(threadId ? { raw, threadId } : { raw }),
   })
   if (!r.ok) {
-    const cuerpo = await r.text()
-    if (isRateLimitResponse(r.status, cuerpo)) throw new Error(GMAIL_RATE_LIMIT_MESSAGE)
-    throw new Error(`Gmail send ${r.status}: ${cuerpo.slice(0, 300)}`)
+    const body = await r.text()
+    if (isRateLimitResponse(r.status, body)) throw new Error(GMAIL_RATE_LIMIT_MESSAGE)
+    throw new Error(`Gmail send ${r.status}: ${body.slice(0, 300)}`)
   }
   return r.json()
 }
 
-/** Message-ID del correo enviado, para que los seguimientos vayan en el mismo hilo. */
+/** Message-ID of the sent email, so follow-ups go in the same thread. */
 export async function messageIdHeader(userId: string, messageId: string): Promise<string | null> {
   const { token } = await accessToken(userId)
   const r = await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/messages/${messageId}?format=metadata&metadataHeaders=Message-ID`, { headers: { Authorization: `Bearer ${token}` } })
@@ -129,57 +129,57 @@ export async function messageIdHeader(userId: string, messageId: string): Promis
 }
 
 /**
- * Que hay en el hilo aparte de lo que mandamos: una respuesta del prospecto, un aviso de
- * rebote o nada. Si hay respuesta real, gana aunque tambien haya rebotes. Los avisos de
- * demora no cuentan: Gmail reintenta hasta 48 h y el correo todavia puede llegar. Las
- * respuestas automaticas (fuera de la oficina) tampoco: nadie leyo el correo.
+ * What's in the thread besides what we sent: a reply from the prospect, a bounce
+ * notice or nothing. A real reply wins even if there are bounces too. Delay notices
+ * don't count: Gmail retries for up to 48 h and the email may still arrive. Automatic
+ * replies (out of office) don't either: nobody read the email.
  */
 export async function threadStatus(userId: string, threadId: string): Promise<'reply' | 'bounce' | null> {
   const { token, email } = await accessToken(userId)
   const r = await paced(THREAD_PACE_MS, () => fetch(`https://gmail.googleapis.com/gmail/v1/users/me/threads/${threadId}?format=metadata&metadataHeaders=From&metadataHeaders=Subject&metadataHeaders=Auto-Submitted`, { headers: { Authorization: `Bearer ${token}` } }))
   if (!r.ok) return null
   const j = await r.json()
-  const mios = email.toLowerCase()
-  const tipos = (j.messages ?? []).map((m: { payload?: { headers?: Array<{ name: string; value: string }> } }) => {
+  const ownAddress = email.toLowerCase()
+  const kinds = (j.messages ?? []).map((m: { payload?: { headers?: Array<{ name: string; value: string }> } }) => {
     const h = (n: string) => m.payload?.headers?.find((x) => x.name.toLowerCase() === n)?.value ?? ''
     const from = h('from')
-    if (!from || from.toLowerCase().includes(mios)) return null
+    if (!from || from.toLowerCase().includes(ownAddress)) return null
     return foreignMessageType(from, h('subject'), h('auto-submitted'))
   })
-  if (tipos.includes('reply')) return 'reply'
-  if (tipos.includes('bounce')) return 'bounce'
+  if (kinds.includes('reply')) return 'reply'
+  if (kinds.includes('bounce')) return 'bounce'
   return null
 }
 
 /**
- * Correos que rebotaron de forma definitiva en los ultimos `dias`, leyendo los avisos de
- * mailer-daemon de toda la bandeja. Cubre los que llegan fuera del hilo del envio y los de
- * correos mandados a mano, que `threadStatus` no ve.
+ * Emails that bounced permanently in the last `days`, reading the mailer-daemon notices
+ * across the whole inbox. Covers those that arrive outside the send's thread and those for
+ * emails sent by hand, which `threadStatus` doesn't see.
  */
-export async function recentBounces(userId: string, dias = 30): Promise<string[]> {
+export async function recentBounces(userId: string, days = 30): Promise<string[]> {
   const { token } = await accessToken(userId)
   const auth = { headers: { Authorization: `Bearer ${token}` } }
   const ids: string[] = []
-  let pagina: string | undefined
+  let pageToken: string | undefined
   for (let i = 0; i < 5; i += 1) {
-    const q = encodeURIComponent(`from:mailer-daemon newer_than:${dias}d`)
-    const r = await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/messages?q=${q}&maxResults=100${pagina ? `&pageToken=${pagina}` : ''}`, auth)
+    const q = encodeURIComponent(`from:mailer-daemon newer_than:${days}d`)
+    const r = await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/messages?q=${q}&maxResults=100${pageToken ? `&pageToken=${pageToken}` : ''}`, auth)
     if (!r.ok) break
     const j = await r.json()
     ids.push(...((j.messages ?? []) as Array<{ id: string }>).map((m) => m.id))
-    pagina = j.nextPageToken
-    if (!pagina) break
+    pageToken = j.nextPageToken
+    if (!pageToken) break
   }
-  const fallidos = new Set<string>()
+  const failed = new Set<string>()
   for (const id of ids) {
     const r = await paced(MESSAGE_PACE_MS, () => fetch(`https://gmail.googleapis.com/gmail/v1/users/me/messages/${id}?format=metadata&metadataHeaders=Subject&metadataHeaders=From&metadataHeaders=X-Failed-Recipients`, auth))
     if (!r.ok) continue
     const m = await r.json()
     const h = (n: string) => (m.payload?.headers as Array<{ name: string; value: string }> | undefined)?.find((x) => x.name.toLowerCase() === n)?.value ?? ''
-    // Solo fallos definitivos: los avisos de demora no cuentan.
+    // Permanent failures only: delay notices don't count.
     if (foreignMessageType(h('from'), h('subject')) !== 'bounce') continue
     const email = failedRecipient(h('x-failed-recipients'), m.snippet as string)
-    if (email) fallidos.add(email)
+    if (email) failed.add(email)
   }
-  return [...fallidos]
+  return [...failed]
 }

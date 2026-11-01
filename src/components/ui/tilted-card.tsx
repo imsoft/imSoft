@@ -103,9 +103,9 @@ export default function TiltedCard({
           scale
         }}
       >
-        {/* motion.img se mantiene aquí intencionalmente: el contexto 3D preserve-3d
-            es incompatible con el wrapper extra que inyecta next/image, lo cual
-            hace que la imagen desaparezca. loading="lazy" aporta la carga diferida. */}
+        {/* motion.img is kept here on purpose: the preserve-3d 3D context
+            is incompatible with the extra wrapper next/image injects, which
+            makes the image disappear. loading="lazy" provides lazy loading. */}
         <motion.img
           src={typeof imageSrc === 'string' ? imageSrc : undefined}
           alt={altText}

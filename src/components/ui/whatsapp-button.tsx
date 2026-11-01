@@ -12,11 +12,11 @@ interface WhatsAppButtonProps {
 export function WhatsAppButton({ lang }: WhatsAppButtonProps) {
   const pathname = usePathname()
 
-  // Ni en el panel ni en los documentos que ve un cliente (cotizacion / contrato).
+  // Not in the panel, nor in documents a client sees (quote / contract).
   if (/\/(dashboard|cotizacion|contrato)\//.test(pathname) || pathname.includes('/dashboard')) return null
 
-  // El mensaje lleva el contexto de la pagina: asi cada conversacion llega sabiendo
-  // de donde venia el interes, sin depender de analitica.
+  // The message carries the page context: that way each conversation arrives knowing
+  // where the interest came from, without relying on analytics.
   const message = whatsAppMessage(pathname, lang)
   const href = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`
 

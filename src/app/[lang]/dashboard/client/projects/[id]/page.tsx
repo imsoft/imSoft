@@ -35,14 +35,14 @@ export default async function ClientProjectDetailPage({ params }: {
     redirect(`/${lang}/login`)
   }
 
-  // Obtener la empresa del usuario
+  // Fetch the user's company
   const { data: company } = await supabase
     .from('companies')
     .select('id')
     .eq('user_id', user.id)
     .single()
 
-  // Obtener el proyecto
+  // Fetch the project
   const { data: project } = await supabase
     .from('projects')
     .select('*')

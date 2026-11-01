@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { MAIN_SERVICES, showcaseCase, startingPriceOf, marketingServices, secondaryServices } from './main-services'
 import { PRICE_FLOORS, withTransferDiscount, startingPriceLabel } from '@/config/pricing'
 
-const servicios = [
+const services = [
   { id: '1', slug: 'web-pages', title_es: 'Páginas Web', title_en: 'Web Pages', icon: '🖥️', category: 'technology' },
   { id: '2', slug: 'data-analysis', title_es: 'Análisis de Datos', title_en: 'Data Analysis', icon: '📊', category: 'technology' },
   { id: '3', slug: 'software-a-medida', title_es: 'Software a Medida', title_en: 'Custom Software', icon: '💻', category: 'technology' },
@@ -11,8 +11,8 @@ const servicios = [
   { id: '6', slug: 'sin-categoria', title_es: 'Viejo', title: 'Legacy', icon: '' },
 ]
 
-describe('servicios principales de la portada', () => {
-  it('son cinco, todos con enlace a un servicio existente y tres entregables', () => {
+describe('main services on the home page', () => {
+  it('there are five, all linking to an existing service and with three deliverables', () => {
     expect(MAIN_SERVICES).toHaveLength(5)
     for (const s of MAIN_SERVICES) {
       expect(s.slug).toMatch(/^[a-z-]+$/)
@@ -22,35 +22,35 @@ describe('servicios principales de la portada', () => {
     }
   })
 
-  it('cada tarjeta muestra el piso de precio de la fuente única, en pesos o en dólares', () => {
-    const desde = Object.fromEntries(MAIN_SERVICES.map((s) => [s.slug, startingPriceOf(s, 'es')]))
-    // Lista con la comision de tarjeta incluida (31-oct-2026); por transferencia, 5 % menos.
-    expect(desde['web-pages']).toBe('Desde $16,000 MXN')
-    expect(desde['tiendas-en-linea']).toBe('Desde $32,000 MXN')
-    expect(desde['software-a-medida']).toBe('Desde $63,000 MXN')
-    expect(desde['aplicaciones-moviles']).toBe('Desde $95,000 MXN')
-    expect(desde['desarrollo-de-mvp']).toBe('Desde $63,000 MXN')
+  it('each card shows the price floor from the single source, in pesos or dollars', () => {
+    const startingPrices = Object.fromEntries(MAIN_SERVICES.map((s) => [s.slug, startingPriceOf(s, 'es')]))
+    // List price with the card fee included (2026-10-31); by transfer, 5 % less.
+    expect(startingPrices['web-pages']).toBe('Desde $16,000 MXN')
+    expect(startingPrices['tiendas-en-linea']).toBe('Desde $32,000 MXN')
+    expect(startingPrices['software-a-medida']).toBe('Desde $63,000 MXN')
+    expect(startingPrices['aplicaciones-moviles']).toBe('Desde $95,000 MXN')
+    expect(startingPrices['desarrollo-de-mvp']).toBe('Desde $63,000 MXN')
     expect(startingPriceOf(MAIN_SERVICES[0], 'en')).toBe('From $3,400 USD')
     expect(withTransferDiscount(PRICE_FLOORS['software-a-medida'].mxn)).toBe(59850)
-    // Software a la medida ya no arranca en el nivel de las plataformas completas.
+    // Custom software no longer starts at the level of full platforms.
     expect(PRICE_FLOORS['software-a-medida'].mxn).toBeLessThan(PRICE_FLOORS['plataforma-completa'].mxn)
     expect(startingPriceLabel('plataforma-completa', 'es')).toBe('Desde $158,000 MXN')
   })
 
-  it('toma la imagen del caso desde el portafolio y no truena si el proyecto no está', () => {
-    const portafolio = [{ slug: 'cijj', image_url: 'https://x/cijj.png' }, { slug: 'urbans', image_url: null }]
+  it('takes the case image from the portfolio and does not break if the project is missing', () => {
+    const portfolio = [{ slug: 'cijj', image_url: 'https://x/cijj.png' }, { slug: 'urbans', image_url: null }]
     const web = MAIN_SERVICES.find((s) => s.slug === 'web-pages')!
-    expect(showcaseCase(web, portafolio)).toEqual({ slug: 'cijj', name: 'Ingenieros Jóvenes de Jalisco', image: 'https://x/cijj.png' })
+    expect(showcaseCase(web, portfolio)).toEqual({ slug: 'cijj', name: 'Ingenieros Jóvenes de Jalisco', image: 'https://x/cijj.png' })
     const mvp = MAIN_SERVICES.find((s) => s.slug === 'desarrollo-de-mvp')!
-    expect(showcaseCase(mvp, portafolio)).toBeNull()
+    expect(showcaseCase(mvp, portfolio)).toBeNull()
     const app = MAIN_SERVICES.find((s) => s.slug === 'aplicaciones-moviles')!
-    expect(showcaseCase(app, portafolio)).toBeNull()
+    expect(showcaseCase(app, portfolio)).toBeNull()
   })
 
-  it('la lista compacta trae la tecnología que no es principal, en el idioma pedido; el marketing va aparte', () => {
-    expect(secondaryServices(servicios as never, 'es').map((s) => s.slug)).toEqual(['data-analysis', 'desarrollo-seguro', 'sin-categoria'])
-    expect(secondaryServices(servicios as never, 'en')[0].title).toBe('Data Analysis')
-    expect(secondaryServices(servicios as never, 'en')[2].title).toBe('Legacy')
-    expect(marketingServices(servicios as never, 'es')).toEqual([{ slug: 'paid-media', title: 'Paid Media', icon: '💰' }])
+  it('the compact list has the non-main technology services, in the requested language; marketing goes separately', () => {
+    expect(secondaryServices(services as never, 'es').map((s) => s.slug)).toEqual(['data-analysis', 'desarrollo-seguro', 'sin-categoria'])
+    expect(secondaryServices(services as never, 'en')[0].title).toBe('Data Analysis')
+    expect(secondaryServices(services as never, 'en')[2].title).toBe('Legacy')
+    expect(marketingServices(services as never, 'es')).toEqual([{ slug: 'paid-media', title: 'Paid Media', icon: '💰' }])
   })
 })

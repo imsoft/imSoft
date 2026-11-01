@@ -6,7 +6,7 @@ import { notifyClient, taskCompletedNotice } from '@/lib/mobile-app/notification
 
 /**
  * PATCH /api/projects/[id]/tasks/[taskId]
- * Actualiza una tarea (título, descripción, completada, orden)
+ * Updates a task (title, description, completed, order)
  */
 export async function PATCH(
   request: NextRequest,
@@ -22,7 +22,7 @@ export async function PATCH(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Verificar que el usuario es admin
+    // Check the user is admin
     const role = roleOf(user)
     if (role !== 'admin') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
@@ -31,7 +31,7 @@ export async function PATCH(
     const body = await request.json()
     const { title, description, completed, order_index, priority, category } = body
 
-    // Obtener el estado anterior de la tarea
+    // Get the task's previous state
     const { data: previousTask } = await supabase
       .from('project_tasks')
       .select('completed, title')
@@ -48,7 +48,7 @@ export async function PATCH(
       if (completed) {
         updateData.completed_at = new Date().toISOString()
       } else {
-        // Si se desmarca como completada, limpiar completed_at
+        // If it's unchecked as completed, clear completed_at
         updateData.completed_at = null
       }
     }
@@ -63,14 +63,14 @@ export async function PATCH(
 
     if (error) throw error
 
-    // Si la tarea se marcó como completada (cambió de false a true), enviar notificación
+    // If the task was marked completed (changed from false to true), send a notification
     if (completed === true && previousTask && !previousTask.completed) {
-      // Aviso en el telefono (app de clientes). Espera a que salga: el envio tarda menos que el correo.
-      const { data: todas } = await supabase.from('project_tasks').select('completed').eq('project_id', projectId)
-      const total = todas?.length ?? 0
-      const hechas = todas?.filter((t) => t.completed).length ?? 0
-      await notifyClient(serviceClient(), projectId, (project) => taskCompletedNotice({ project, task: task.title, done: hechas, total, projectId }))
-      // Enviar email de notificación de manera asíncrona (no bloqueante)
+      // Phone notice (client app). Waits for it to go out: sending takes less than the email.
+      const { data: allTasks } = await supabase.from('project_tasks').select('completed').eq('project_id', projectId)
+      const total = allTasks?.length ?? 0
+      const doneCount = allTasks?.filter((t) => t.completed).length ?? 0
+      await notifyClient(serviceClient(), projectId, (project) => taskCompletedNotice({ project, task: task.title, done: doneCount, total, projectId }))
+      // Send the notification email asynchronously (non-blocking)
       fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/notifications/task-completed`, {
         method: 'POST',
         headers: {
@@ -84,7 +84,7 @@ export async function PATCH(
         }),
       }).catch(emailError => {
         console.error('Failed to send email notification:', emailError)
-        // No falla la operación si el email falla
+        // The operation doesn't fail if the email fails
       })
     }
 
@@ -100,7 +100,7 @@ export async function PATCH(
 
 /**
  * DELETE /api/projects/[id]/tasks/[taskId]
- * Elimina una tarea
+ * Deletes a task
  */
 export async function DELETE(
   request: NextRequest,
@@ -116,7 +116,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Verificar que el usuario es admin
+    // Check the user is admin
     const role = roleOf(user)
     if (role !== 'admin') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })

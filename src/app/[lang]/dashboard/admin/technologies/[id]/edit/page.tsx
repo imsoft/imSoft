@@ -20,12 +20,12 @@ export default async function EditTechnologyPage({ params }: {
     redirect(`/${lang}/login`)
   }
 
-  // Verificar que sea admin
+  // Make sure the user is an admin
   if (!isAdmin(user)) {
     redirect(`/${lang}/dashboard/client`)
   }
 
-  // Obtener la tecnología con sus empresas asociadas
+  // Fetch the technology with its related companies
   const { data: technology, error } = await supabase
     .from('technologies')
     .select(`

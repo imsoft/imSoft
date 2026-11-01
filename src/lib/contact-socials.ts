@@ -2,7 +2,7 @@ import type { Contact, SocialLink } from '@/types/database'
 
 export type Platform = SocialLink['platform']
 
-/** Opciones del filtro "Redes sociales" de la tabla del CRM. */
+/** Options of the "Redes sociales" filter in the CRM table. */
 export type SocialFilter = 'all' | 'any' | 'none' | Platform
 
 export const PLATFORMS: Platform[] = ['instagram', 'facebook', 'linkedin', 'tiktok', 'whatsapp', 'twitter', 'youtube', 'website']
@@ -19,8 +19,8 @@ export const PLATFORM_LABEL: Record<Platform, string> = {
 }
 
 /**
- * Redes del contacto: la lista `social_links` mas el campo suelto `instagram_url`
- * (lo que importan el CSV y el buscador de prospectos), sin repetir Instagram.
+ * Socials of the contact: the `social_links` list plus the loose `instagram_url` field
+ * (what the CSV import and the prospect search fill in), without repeating Instagram.
  */
 export function socialsOf(c: Pick<Contact, 'social_links' | 'instagram_url'>): SocialLink[] {
   const socials = (Array.isArray(c.social_links) ? c.social_links : []).filter((s) => s && s.url && s.url.trim())
@@ -29,7 +29,7 @@ export function socialsOf(c: Pick<Contact, 'social_links' | 'instagram_url'>): S
   return socials
 }
 
-/** Decide si el contacto pasa el filtro de redes elegido en la tabla. */
+/** Whether the contact passes the socials filter picked in the table. */
 export function matchesSocialFilter(c: Pick<Contact, 'social_links' | 'instagram_url'>, filter: SocialFilter | '' | undefined): boolean {
   if (!filter || filter === 'all') return true
   const socials = socialsOf(c)
@@ -39,8 +39,8 @@ export function matchesSocialFilter(c: Pick<Contact, 'social_links' | 'instagram
 }
 
 /**
- * Formas de contactar a alguien: correo, red social o telefono (que da WhatsApp).
- * Un prospecto sin ninguna no sirve en el CRM: no hay por donde escribirle.
+ * Ways to reach someone: email, social network or phone (which gives WhatsApp).
+ * A prospect with none is useless in the CRM: there's no way to write to them.
  */
 export function contactMethods(c: Pick<Contact, 'social_links' | 'instagram_url'> & { email?: string | null; phone?: string | null }): Array<'email' | 'social' | 'phone'> {
   const out: Array<'email' | 'social' | 'phone'> = []

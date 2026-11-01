@@ -33,7 +33,7 @@ export default async function AdminAnalyticsPage({ params }: {
     redirect(`/${lang}/login`)
   }
 
-  // Obtener todas las métricas del sistema
+  // Fetch all system metrics
   const [
     usersData,
     projectsData,
@@ -43,7 +43,7 @@ export default async function AdminAnalyticsPage({ params }: {
     testimonialsData,
     translationData,
   ] = await Promise.all([
-    // Usuarios (solo clientes, excluyendo admins)
+    // Users (clients only, excluding admins)
     (async () => {
       try {
         const supabaseAdmin = createAdminClient()
@@ -56,9 +56,9 @@ export default async function AdminAnalyticsPage({ params }: {
         return { count: 0, data: [] }
       }
     })(),
-    // Proyectos
+    // Projects
     supabase.from('projects').select('*', { count: 'exact' }),
-    // Servicios
+    // Services
     supabase.from('services').select('*', { count: 'exact' }),
     // Portfolio
     supabase.from('portfolio').select('*', { count: 'exact' }),
@@ -66,7 +66,7 @@ export default async function AdminAnalyticsPage({ params }: {
     supabase.from('blog').select('*', { count: 'exact' }),
     // Testimonials
     supabase.from('testimonials').select('*', { count: 'exact' }),
-    // Translation logs del mes actual
+    // Translation logs for the current month
     (async () => {
       const firstDayOfMonth = new Date()
       firstDayOfMonth.setDate(1)
@@ -98,11 +98,11 @@ export default async function AdminAnalyticsPage({ params }: {
   const totalTranslationCharacters = translationData.totalCharacters
   const totalTranslations = translationData.translationCount
 
-  // Límite mensual de Google Cloud Translation API (gratis: 500,000 caracteres/mes)
+  // Google Cloud Translation API monthly limit (free: 500,000 characters/month)
   const MONTHLY_LIMIT = 500000
   const usagePercentage = (totalTranslationCharacters / MONTHLY_LIMIT) * 100
 
-  // Estadísticas de proyectos por estado
+  // Project stats by status
   const projects = projectsData.data || []
   const projectsByStatus = {
     planning: projects.filter((p: any) => p.status === 'planning').length,
@@ -112,7 +112,7 @@ export default async function AdminAnalyticsPage({ params }: {
     cancelled: projects.filter((p: any) => p.status === 'cancelled').length,
   }
 
-  // Actividad reciente (últimos 7 días)
+  // Recent activity (last 7 days)
   const sevenDaysAgo = new Date()
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
 
@@ -135,7 +135,7 @@ export default async function AdminAnalyticsPage({ params }: {
         </p>
       </div>
 
-      {/* Métricas principales */}
+      {/* Main metrics */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -279,7 +279,7 @@ export default async function AdminAnalyticsPage({ params }: {
         </Card>
       </div>
 
-      {/* Estadísticas de proyectos por estado */}
+      {/* Project stats by status */}
       {totalProjects > 0 && (
         <Card>
           <CardHeader>
@@ -325,7 +325,7 @@ export default async function AdminAnalyticsPage({ params }: {
         </Card>
       )}
 
-      {/* Resumen general */}
+      {/* Overview */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">

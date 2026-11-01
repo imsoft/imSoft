@@ -103,7 +103,7 @@ export function ContactMessagesTable({ messages, lang }: ContactMessagesTablePro
   const handleViewMessage = async (message: ContactMessage) => {
     setSelectedMessage(message)
 
-    // Marcar como leído si no está leído
+    // Mark as read if unread
     if (message.status === 'unread') {
       await handleUpdateStatus(message.id, 'read')
     }
@@ -274,7 +274,7 @@ export function ContactMessagesTable({ messages, lang }: ContactMessagesTablePro
         </div>
       </div>
 
-      {/* Dialog para ver el mensaje completo */}
+      {/* Dialog to view the full message */}
       <Dialog open={!!selectedMessage} onOpenChange={() => setSelectedMessage(null)}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
@@ -398,7 +398,7 @@ export function ContactMessagesTable({ messages, lang }: ContactMessagesTablePro
         </DialogContent>
       </Dialog>
 
-      {/* Confirmación de borrado */}
+      {/* Delete confirmation */}
       <AlertDialog
         open={!!messageToDelete}
         onOpenChange={(open) => !open && setMessageToDelete(null)}

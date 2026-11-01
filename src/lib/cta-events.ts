@@ -1,9 +1,9 @@
 /**
- * Que evento de analitica corresponde a un clic o a un envio. Logica pura: el
- * componente CtaTracker la conecta al DOM y la manda a GA4 y a Vercel Analytics.
+ * Which analytics event a click or a submission maps to. Pure logic: the
+ * CtaTracker component wires it to the DOM and sends it to GA4 and Vercel Analytics.
  *
- * Sin esto GA solo registraba paginas vistas: no habia forma de saber que boton
- * convierte. Los nombres son estables porque se vuelven informes en GA.
+ * Without this GA only recorded page views: there was no way to know which button
+ * converts. The names are stable because they become reports in GA.
  */
 
 export interface CtaEvent {
@@ -13,15 +13,15 @@ export interface CtaEvent {
 
 const WA_HOSTS = ['wa.me', 'api.whatsapp.com', 'web.whatsapp.com'];
 
-function limpiar(texto: string | null | undefined): string {
-  return (texto ?? '').replace(/\s+/g, ' ').trim().slice(0, 60);
+function cleanText(text: string | null | undefined): string {
+  return (text ?? '').replace(/\s+/g, ' ').trim().slice(0, 60);
 }
 
-/** Evento para un enlace, o null si el enlace no es de contacto. */
+/** Event for a link, or null if the link isn't a contact one. */
 export function ctaEventFor(input: { href: string; text?: string | null; pathname: string }): CtaEvent | null {
   const href = (input.href ?? '').trim();
   if (!href) return null;
-  const params = { page: input.pathname, cta_text: limpiar(input.text) };
+  const params = { page: input.pathname, cta_text: cleanText(input.text) };
 
   if (/^tel:/i.test(href)) return { name: 'contact_phone', params };
   if (/^mailto:/i.test(href)) return { name: 'contact_email', params };
@@ -40,7 +40,7 @@ export function ctaEventFor(input: { href: string; text?: string | null; pathnam
   return null;
 }
 
-/** El formulario de contacto avisa con este evento del DOM cuando el envio tuvo exito. */
+/** The contact form fires this DOM event when the submission succeeded. */
 export const LEAD_EVENT = 'imsoft:lead';
 
 export function leadEvent(pathname: string): CtaEvent {

@@ -48,7 +48,7 @@ export function ProjectsTable({ projects, dict, lang }: ProjectsTableProps) {
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
 
-  // Función helper para extraer el path del storage desde la URL pública
+  // Extracts the storage path from the public URL
   function getStoragePathFromUrl(url: string, bucketName: string): string | null {
     try {
       const urlParts = url.split(`/storage/v1/object/public/${bucketName}/`)
@@ -58,7 +58,7 @@ export function ProjectsTable({ projects, dict, lang }: ProjectsTableProps) {
     }
   }
 
-  // Función para eliminar imagen del storage
+  // Deletes an image from storage
   async function deleteImageFromStorage(imageUrl: string) {
     try {
       const supabase = createClient()
@@ -86,7 +86,7 @@ export function ProjectsTable({ projects, dict, lang }: ProjectsTableProps) {
     try {
       const supabase = createClient()
 
-      // Primero obtener el proyecto para acceder a su image_url
+      // First fetch the project to get its image_url
       const { data: project, error: fetchError } = await supabase
         .from('projects')
         .select('image_url')
@@ -95,12 +95,12 @@ export function ProjectsTable({ projects, dict, lang }: ProjectsTableProps) {
 
       if (fetchError) throw fetchError
 
-      // Eliminar la imagen del storage si existe
+      // Delete the image from storage if any
       if (project?.image_url) {
         await deleteImageFromStorage(project.image_url)
       }
 
-      // Luego eliminar el registro de la base de datos
+      // Then delete the database row
       const { error: deleteError } = await supabase
         .from('projects')
         .delete()

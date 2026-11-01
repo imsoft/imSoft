@@ -10,10 +10,10 @@ import {
 import { cityServiceHref, cityServicePages, cityServiceTitle } from '@/config/city-services';
 
 /**
- * Indice de las landings ciudad + industria.
+ * Index of the city + industry landings.
  *
- * Es la unica ruta de enlaces internos hacia esas 30 paginas: sin esto Google las
- * descubre por el sitemap pero no las rastrea.
+ * It's the only internal link path to those 30 pages: without it Google
+ * discovers them through the sitemap but doesn't crawl them.
  */
 export function IndustryLinksSection({ lang }: { lang: string }) {
   const l = lang === 'en' ? 'en' : 'es';

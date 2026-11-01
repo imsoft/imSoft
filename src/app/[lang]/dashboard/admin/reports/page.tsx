@@ -23,7 +23,7 @@ export default async function AdminReportsPage({ params }: {
     redirect(`/${lang}/login`)
   }
 
-  // Obtener reportes guardados
+  // Fetch saved reports
   const { data: savedReports, error: reportsError } = await supabase
     .from('reports')
     .select('*')
@@ -44,7 +44,7 @@ export default async function AdminReportsPage({ params }: {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
-        {/* Generador de reportes */}
+        {/* Report generator */}
         <Card className="bg-white dark:bg-card">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -57,7 +57,7 @@ export default async function AdminReportsPage({ params }: {
           </CardContent>
         </Card>
 
-        {/* Lista de reportes generados */}
+        {/* Generated reports list */}
         <Card className="bg-white dark:bg-card">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">

@@ -37,14 +37,14 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover'
 
-// Función para generar slug desde un texto
+// Builds a slug from a text
 function generateSlug(text: string): string {
   return text
     .toLowerCase()
     .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '') // Eliminar acentos
-    .replace(/[^a-z0-9]+/g, '-') // Reemplazar caracteres especiales con guiones
-    .replace(/^-+|-+$/g, '') // Eliminar guiones al inicio y final
+    .replace(/[\u0300-\u036f]/g, '') // Strip accents
+    .replace(/[^a-z0-9]+/g, '-') // Replace special characters with dashes
+    .replace(/^-+|-+$/g, '') // Trim leading and trailing dashes
 }
 
 const companySchema = z.object({
@@ -112,7 +112,7 @@ export function AdminCompanyForm({ dict, lang, initialData }: AdminCompanyFormPr
     try {
       const supabase = createClient()
 
-      // Obtener el nombre actual del formulario
+      // Get the current name from the form
       const companyName = form.getValues('name')
 
       if (!companyName) {
@@ -121,17 +121,17 @@ export function AdminCompanyForm({ dict, lang, initialData }: AdminCompanyFormPr
         return
       }
 
-      // Generar slug desde el nombre de la empresa
+      // Build the slug from the company name
       const companySlug = generateSlug(companyName)
 
-      // Nueva estructura: /<slug>/nombre-original.ext
+      // New layout: /<slug>/original-name.ext
       const filePath = `${companySlug}/${file.name}`
 
       const { error: uploadError } = await supabase.storage
         .from('company-logos')
         .upload(filePath, file, {
           cacheControl: '3600',
-          upsert: true // Permitir sobrescribir el logo existente
+          upsert: true // Allow overwriting the existing logo
         })
 
       if (uploadError) throw uploadError
@@ -390,7 +390,7 @@ export function AdminCompanyForm({ dict, lang, initialData }: AdminCompanyFormPr
                       disabled={isUploading}
                     />
 
-                    {/* Área de drag & drop mejorada */}
+                    {/* Improved drag & drop area */}
                     <Card
                       className={cn(
                         "relative overflow-hidden transition-all duration-200",
@@ -405,7 +405,7 @@ export function AdminCompanyForm({ dict, lang, initialData }: AdminCompanyFormPr
                     >
                       <div className="p-8">
                         <div className="flex flex-col items-center gap-6">
-                          {/* Vista previa del logo */}
+                          {/* Logo preview */}
                           <div className="relative">
                             {previewImage ? (
                               <div className="relative group">
@@ -441,7 +441,7 @@ export function AdminCompanyForm({ dict, lang, initialData }: AdminCompanyFormPr
                             )}
                           </div>
 
-                          {/* Contenido del área de carga */}
+                          {/* Upload area content */}
                           <div className="text-center space-y-2">
                             {isUploading ? (
                               <>
@@ -476,7 +476,7 @@ export function AdminCompanyForm({ dict, lang, initialData }: AdminCompanyFormPr
                             )}
                           </div>
 
-                          {/* Botón de acción opcional */}
+                          {/* Optional action button */}
                           {!isUploading && (
                             <Button
                               type="button"

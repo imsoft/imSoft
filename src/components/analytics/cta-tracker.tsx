@@ -11,23 +11,23 @@ declare global {
   }
 }
 
-function enviar(evento: CtaEvent) {
+function sendEvent(event: CtaEvent) {
   try {
-    window.gtag?.('event', evento.name, evento.params);
+    window.gtag?.('event', event.name, event.params);
   } catch {
-    // GA bloqueado por el navegador: no es motivo para romper el clic.
+    // GA blocked by the browser: no reason to break the click.
   }
   try {
-    track(evento.name, evento.params);
+    track(event.name, event.params);
   } catch {
-    // idem
+    // same
   }
 }
 
 /**
- * Registra en GA4 y Vercel Analytics los clics en WhatsApp, telefono, correo y
- * "Agenda una llamada", y los envios exitosos del formulario. Un solo listener en
- * el documento: no hay que tocar cada boton.
+ * Logs WhatsApp, phone, email and "Agenda una llamada" clicks, plus successful
+ * form submissions, to GA4 and Vercel Analytics. A single listener on the
+ * document: no need to touch each button.
  */
 export function CtaTracker() {
   const pathname = usePathname();
@@ -36,14 +36,14 @@ export function CtaTracker() {
     const onClick = (e: MouseEvent) => {
       const a = (e.target as Element | null)?.closest?.('a[href]');
       if (!a) return;
-      const evento = ctaEventFor({
+      const event = ctaEventFor({
         href: a.getAttribute('href') ?? '',
         text: a.getAttribute('aria-label') || a.textContent,
         pathname,
       });
-      if (evento) enviar(evento);
+      if (event) sendEvent(event);
     };
-    const onLead = () => enviar(leadEvent(pathname));
+    const onLead = () => sendEvent(leadEvent(pathname));
 
     document.addEventListener('click', onClick, { capture: true });
     window.addEventListener(LEAD_EVENT, onLead);

@@ -1,29 +1,29 @@
 /**
- * Datos del negocio para schema.org. Fuente unica de verdad.
+ * Business data for schema.org. Single source of truth.
  *
- * Regla: aqui solo entran datos confirmados. Nada de coordenadas aproximadas ni rangos
- * de precio a ojo — schema.org es una declaracion sobre el negocio y un dato inventado
- * que no coincide con Google Business Profile resta confianza en vez de sumarla. Si
- * falta un campo, se omite: un schema corto y cierto vale mas que uno largo y a medias.
+ * Rule: only confirmed data goes here. No approximate coordinates or guessed price
+ * ranges: schema.org is a statement about the business, and a made-up value that doesn't
+ * match Google Business Profile costs trust instead of adding it. If a field is missing,
+ * it's omitted: a short, true schema beats a long, half-true one.
  *
- * imSoft NO tiene local donde reciba clientes: es un negocio de area de servicio. Por
- * eso el domicilio llega solo a ciudad/estado y no hay `geo` ni `hasMap`. Declarar una
- * direccion visitable que no existe es justo lo que Google penaliza en las fichas
- * locales, y ademas tiene que cuadrar con como este dado de alta en Business Profile
- * (ahi se registra ocultando el domicilio y declarando zona de servicio).
+ * imSoft has NO premises where it receives clients: it's a service-area business. So the
+ * address only goes down to city/state and there's no `geo` or `hasMap`. Declaring a
+ * visitable address that doesn't exist is exactly what Google penalizes in local
+ * listings, and it also has to match how it's registered in Business Profile (there the
+ * address is hidden and a service area is declared).
  */
 
 export const BUSINESS = {
   name: 'imSoft',
   legalName: 'imSoft',
   email: 'contacto@imsoft.io',
-  /** Alias por funcion (Workspace, 15-sep-2026); todos llegan a la misma bandeja. */
+  /** Per-role aliases (Workspace, 2026-09-15); all land in the same inbox. */
   contactEmails: {
     sales: 'hola@imsoft.io',
     billing: 'facturacion@imsoft.io',
     support: 'soporte@imsoft.io',
   },
-  /** E.164, que es lo que espera schema.org. */
+  /** E.164, which is what schema.org expects. */
   telephone: '+523325365558',
   address: {
     locality: 'Guadalajara',
@@ -31,8 +31,8 @@ export const BUSINESS = {
     country: 'MX',
   },
   /**
-   * Perfiles publicos. LinkedIn va en su forma canonica `www.` y no en el espejo
-   * regional `mx.`: es la misma pagina, pero `sameAs` debe apuntar a la URL global.
+   * Public profiles. LinkedIn uses its canonical `www.` form, not the regional `mx.`
+   * mirror: same page, but `sameAs` must point to the global URL.
    */
   sameAs: [
     'https://www.facebook.com/weareimsoft',
@@ -45,9 +45,9 @@ export const BUSINESS = {
   ],
   languages: ['Spanish', 'English'],
   /**
-   * Horario tal y como esta declarado en Google Business Profile. El domingo cierra
-   * antes, asi que son dos tramos y no uno: si el schema dijera 18:00 los siete dias
-   * contradiria a la ficha, y Google compara ambas fuentes.
+   * Hours exactly as declared in Google Business Profile. Sunday closes earlier, so
+   * there are two ranges, not one: if the schema said 18:00 all seven days it would
+   * contradict the listing, and Google compares both sources.
    */
   openingHours: [
     {
@@ -64,9 +64,9 @@ export const BUSINESS = {
 } as const;
 
 /**
- * Zona de servicio declarada. Debe coincidir con las areas que declara Google Business
- * Profile: la ZMG completa, mas Ciudad de Mexico y Monterrey, que son las otras dos
- * ciudades con landing propia.
+ * Declared service area. Must match the areas declared in Google Business Profile: the
+ * whole Guadalajara metro area, plus Mexico City and Monterrey, the other two cities
+ * with their own landing.
  */
 export const BUSINESS_AREA_SERVED = [
   { '@type': 'City', name: 'Guadalajara' },
@@ -80,7 +80,7 @@ export const BUSINESS_AREA_SERVED = [
   { '@type': 'Country', name: 'Mexico' },
 ] as const;
 
-/** Identificadores estables para poder referenciar las entidades entre bloques JSON-LD. */
+/** Stable identifiers so entities can be referenced across JSON-LD blocks. */
 export function businessIds(siteUrl: string) {
   return {
     organization: `${siteUrl}/#organization`,

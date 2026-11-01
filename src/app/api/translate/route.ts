@@ -32,7 +32,7 @@ export async function POST(request: Request) {
       body: JSON.stringify({
         q: text,
         target: targetLanguage,
-        source: 'es', // Asumimos que siempre traducimos de español a inglés
+        source: 'es', // We always translate from Spanish to English
       }),
     })
 
@@ -56,7 +56,7 @@ export async function POST(request: Request) {
 
     const translatedText = data.data.translations[0].translatedText
 
-    // Registrar el uso de caracteres en la base de datos
+    // Log character usage in the database
     try {
       const supabase = await createClient()
       const { data: { user } } = await supabase.auth.getUser()
@@ -74,7 +74,7 @@ export async function POST(request: Request) {
           })
       }
     } catch (logError) {
-      // No fallar la traducción si hay error al registrar el log
+      // Don't fail the translation if logging fails
       console.error('Error logging translation usage:', logError)
     }
 

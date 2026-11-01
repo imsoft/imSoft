@@ -24,11 +24,11 @@ export default async function AdminUsersPage({ params }: {
     redirect(`/${lang}/login`)
   }
 
-  // Obtener todos los usuarios usando el admin client
+  // Fetch all users with the admin client
   const supabaseAdmin = createAdminClient()
   const { data: usersData } = await supabaseAdmin.auth.admin.listUsers()
   
-  // Mapear los usuarios de Supabase a nuestro formato
+  // Map Supabase users to our shape
   const users = (usersData?.users || []).map(user => ({
     id: user.id,
     email: user.email || '',
