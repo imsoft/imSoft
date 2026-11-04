@@ -135,7 +135,22 @@ export function defaultQuestion(segment?: string | null, offer?: 'app' | 'store'
 
 /** Cleans the opener without trimming it: only quotes, exclamation marks and whitespace. */
 export function cleanOpener(raw: unknown): string {
-  return String((raw as { hook?: unknown })?.hook ?? raw ?? '').trim().replace(/^["“”']+|["“”']+$/g, '').replace(/!/g, '.').replace(/\s+/g, ' ');
+  const text = String((raw as { hook?: unknown })?.hook ?? raw ?? '').trim().replace(/^["“”']+|["“”']+$/g, '').replace(/!/g, '.').replace(/\s+/g, ' ');
+  return text.split(/(?<=[.?])\s+/).map(openQuestion).join(' ');
+}
+
+/**
+ * The model sometimes drops the opening "¿" ("Una duda: los pedidos… ¿" is missing). A
+ * sentence that ends in "?" with no "¿" gets one where the question starts: after "Una
+ * duda:", after a ";" (which becomes a new sentence), or at the start.
+ */
+function openQuestion(sentence: string): string {
+  if (!sentence.endsWith('?') || sentence.includes('¿')) return sentence;
+  const colon = sentence.lastIndexOf(': ');
+  if (colon >= 0) return `${sentence.slice(0, colon + 2)}¿${sentence.slice(colon + 2)}`;
+  const semi = sentence.lastIndexOf('; ');
+  if (semi >= 0) { const q = sentence.slice(semi + 2); return `${sentence.slice(0, semi)}. ¿${q.charAt(0).toUpperCase()}${q.slice(1)}`; }
+  return `¿${sentence}`;
 }
 
 /**

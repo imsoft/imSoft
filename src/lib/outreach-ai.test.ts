@@ -63,6 +63,9 @@ describe('AI hook', () => {
     expect(openerPrompt({ company: 'Fruvecas', segment: 'wholesale-market', offer: 'app' })).toContain('clientes de tienda y ruta');
     expect(openerPrompt({ company: 'Malka', segment: 'jewelry', offer: 'store' })).toContain('piezas por foto');
     // The opener isn't trimmed to two sentences (the question is often the third) and there's a fallback question per industry.
+    expect(cleanOpener('Hola, vi que tienen 4.3 en Google. Una duda: los pedidos les entran por WhatsApp o por apps de reparto?')).toBe('Hola, vi que tienen 4.3 en Google. Una duda: ¿los pedidos les entran por WhatsApp o por apps de reparto?')
+    expect(cleanOpener('Hola, vi que tienen 40 reseñas en Los Eucaliptos; los pedidos les entran por WhatsApp o por apps?')).toBe('Hola, vi que tienen 40 reseñas en Los Eucaliptos. ¿Los pedidos les entran por WhatsApp o por apps?')
+    expect(cleanOpener('Hola, vi que están en Tlajomulco. Una duda: las cotizaciones de obra, ¿las hacen en Excel?')).toBe('Hola, vi que están en Tlajomulco. Una duda: las cotizaciones de obra, ¿las hacen en Excel?')
     expect(cleanOpener({ hook: '"Hola, vi que están en Av. Hidalgo. Una duda: ¿las citas las confirman a mano o ya tienen algo?"' })).toBe('Hola, vi que están en Av. Hidalgo. Una duda: ¿las citas las confirman a mano o ya tienen algo?');
     expect(defaultQuestion('hardware-stores')).toMatch(/cotizaciones/);
     expect(defaultQuestion('restaurants', 'app')).toMatch(/clientes frecuentes/);
