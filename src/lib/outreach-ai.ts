@@ -102,6 +102,18 @@ export function openerPrompt(i: OpenerInput): string {
       ? 'como le contestan al cliente donde va su embarque'
       : (i.segment ?? '').startsWith('corporate')
       ? 'que proyecto de sistemas traen formado que no sale por falta de manos'
+      : (i.segment ?? '').startsWith('food-distributors')
+      ? 'como les llegan los pedidos de sus clientes y como arman las rutas de reparto (WhatsApp, libreta, preventa en papel)'
+      : (i.segment ?? '').startsWith('furniture')
+      ? 'como llevan los pedidos sobre medida, los anticipos y en que va cada mueble en el taller'
+      : (i.segment ?? '').startsWith('equipment-rental')
+      ? 'como controlan que equipo esta rentado, con quien, hasta cuando y los depositos'
+      : (i.segment ?? '').startsWith('bakeries-florists')
+      ? 'como les llegan los pedidos con fecha y hora de entrega y los anticipos (WhatsApp, libreta)'
+      : (i.segment ?? '').startsWith('used-cars')
+      ? 'como llevan el inventario de autos y el seguimiento a los interesados que les escriben por Marketplace, WhatsApp o su pagina'
+      : (i.segment ?? '').startsWith('academies')
+      ? 'como llevan inscripciones, pagos mensuales y alumnos que dejan de venir'
       : 'el proceso que probablemente llevan a mano o en Excel (agenda y confirmaciones, cotizaciones, seguimiento de pedidos, avance de obra, prospectos)';
   return `Escribes el primer mensaje de WhatsApp o Instagram que imSoft (software a la medida, Guadalajara) le manda en frío a un negocio local. El mensaje NO vende: abre conversación. Después de tu texto se agrega, en otra línea, "Soy Brandon, de imSoft; hacemos …", así que no te presentes ni menciones imSoft.
 
@@ -114,7 +126,7 @@ Escribe exactamente dos partes, en un solo párrafo de máximo 50 palabras:
 1) Una observación concreta del negocio tomada SOLO de los datos reales ("vi que tienen 4.8 en Google con 200 reseñas", "vi que tienen dos sucursales", "vi que atienden ortodoncia"). Empieza con "Hola, vi que". Si no hay datos, empieza con "Hola, pregunta rápida:" y salta a la pregunta.
 2) Una pregunta corta, fácil de contestar en cinco palabras, sobre ${problem}. Que ofrezca dos opciones ("¿lo hacen a mano o ya tienen algo?") para que sea fácil responder.
 
-Reglas: la observación y la pregunta son obligatorias y la pregunta cierra el texto con "?". Si la calificación tiene menos de 10 reseñas, no la menciones: usa el tipo de negocio o la zona. Trato de usted en plural ("tienen", "hacen"), nunca "tú". Español de México, natural, sin signos de exclamación, sin halagos ("felicidades", "me encanta"), sin adjetivos de venta, sin precios, sin enlaces, sin proponer llamada ni reunión. No inventes datos: si los datos reales no dicen sucursales, no digas sucursales. Devuelve solo el texto.`;
+Reglas: la observación y la pregunta son obligatorias y la pregunta cierra el texto con "?". Una sola pregunta, de máximo 20 palabras: no juntes dos procesos con "y" en preguntas separadas. WhatsApp no es un sistema: la segunda opción es "ya tienen un sistema" o "ya tienen algo", nunca "algo en WhatsApp". Si la calificación tiene menos de 10 reseñas, no la menciones: usa el tipo de negocio o la zona. Trato de usted en plural ("tienen", "hacen"), nunca "tú". Español de México, natural, sin signos de exclamación, sin halagos ("felicidades", "me encanta"), sin adjetivos de venta, sin precios, sin enlaces, sin proponer llamada ni reunión. No inventes datos: si los datos reales no dicen sucursales, no digas sucursales. Devuelve solo el texto.`;
 }
 
 /** Fallback question per industry, in case the AI returns the observation without a question. */
@@ -130,6 +142,12 @@ export function defaultQuestion(segment?: string | null, offer?: 'app' | 'store'
   if (g.startsWith('construction')) return '¿El avance de obra les llega en fotos por WhatsApp o ya tienen algo donde se registre?';
   if (g.startsWith('logistics')) return '¿Cuando el cliente pregunta dónde va su embarque, se lo contestan al momento o alguien tiene que buscarlo?';
   if (g.startsWith('agro')) return '¿Los pesajes y lotes los llevan en libreta o ya tienen algo?';
+  if (g.startsWith('food-distributors')) return '¿Los pedidos de sus clientes y las rutas los arman a mano o ya tienen un sistema?';
+  if (g.startsWith('furniture')) return '¿Los pedidos sobre medida y los anticipos los llevan en libreta o ya tienen un sistema?';
+  if (g.startsWith('equipment-rental')) return '¿Qué equipo está rentado y hasta cuándo, lo llevan a mano o ya tienen un sistema?';
+  if (g.startsWith('bakeries-florists')) return '¿Los pedidos con fecha de entrega les llegan por WhatsApp o ya tienen tienda en línea?';
+  if (g.startsWith('used-cars')) return '¿El seguimiento a los interesados lo lleva cada vendedor por su cuenta o ya tienen un sistema?';
+  if (g.startsWith('academies')) return '¿Las inscripciones y los pagos de cada mes los llevan en Excel o ya tienen un sistema?';
   return '¿Lo que llevan a mano o en Excel hoy, ya tienen algo que lo ordene o siguen así?';
 }
 

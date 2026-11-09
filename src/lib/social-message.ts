@@ -100,7 +100,7 @@ export type Offer = 'app' | 'store'
  * those with an email template, so the introduction for gyms or agro never reached the
  * message: the segment for social is taken from here (2026-10-27).
  */
-const INDUSTRIES_WITH_PITCH = ['logistics', 'fitness', 'wholesale-market', 'agro', 'jewelry', 'dental', 'health', 'hardware-stores', 'restaurants', 'automotive', 'real-estate', 'construction', 'schools', 'law-firms', 'accounting', 'ecommerce', 'corporate']
+const INDUSTRIES_WITH_PITCH = ['logistics', 'fitness', 'wholesale-market', 'agro', 'jewelry', 'dental', 'health', 'hardware-stores', 'restaurants', 'automotive', 'real-estate', 'construction', 'schools', 'law-firms', 'accounting', 'ecommerce', 'corporate', 'food-distributors', 'furniture', 'equipment-rental', 'bakeries-florists', 'used-cars', 'academies']
 
 export function socialIndustry(tags: string[] | null | undefined): string | null {
   const lower = (tags ?? []).map((t) => t.toLowerCase())
@@ -126,6 +126,12 @@ export function whatWeDo(segment?: string | null, offer?: Offer | null): string 
   if (g.startsWith('schools')) return 'software para colegios'
   if (g.startsWith('law-firms')) return 'software para despachos jurídicos'
   if (g.startsWith('accounting')) return 'software para despachos contables'
+  if (g.startsWith('food-distributors')) return 'apps de pedidos y rutas para distribuidoras'
+  if (g.startsWith('furniture')) return 'software para mueblerías y fábricas de muebles'
+  if (g.startsWith('equipment-rental')) return 'software para renta de maquinaria y equipo'
+  if (g.startsWith('bakeries-florists')) return 'tiendas en línea con agenda de entregas para pastelerías y florerías'
+  if (g.startsWith('used-cars')) return 'software para agencias de seminuevos'
+  if (g.startsWith('academies')) return 'software para escuelas de idiomas y academias'
   return 'software a la medida para negocios'
 }
 
@@ -279,6 +285,7 @@ export function socialQueue(contacts: QueueContact[]): QueueRow[] {
   const rows: QueueRow[] = []
   for (const c of contacts) {
     if ((c.tags ?? []).includes(SOCIAL_DISCARDED_TAG)) continue
+    if (hasIndustry((c.tags ?? []).map((t) => t.toLowerCase()), PAUSED_INDUSTRIES)) continue
     const available = channelsOf(c).map((x) => x.channel)
     const channels = QUEUE_CHANNELS.filter((x) => available.includes(x))
     if (!channels.length) continue
@@ -292,6 +299,23 @@ export function socialQueue(contacts: QueueContact[]): QueueRow[] {
       contact: c,
     })
   }
-  const weight = (f: QueueRow) => (f.noEmail ? 0 : 4) + (f.channels.includes('whatsapp') ? 0 : 2) + (f.premiumZone ? 0 : 1)
+  const weight = (f: QueueRow) => industryRank(f.contact.tags) * 10 + (f.noEmail ? 0 : 4) + (f.channels.includes('whatsapp') ? 0 : 2) + (f.premiumZone ? 0 : 1)
   return rows.sort((a, b) => weight(a) - weight(b))
+}
+
+/**
+ * Industries left out of the social queue (2026-11-09): clinics, dentists and spas were a
+ * third of what was sent and almost all replied that they already have a booking system.
+ * They stay in the CRM; they just stop showing up in the queue.
+ */
+export const PAUSED_INDUSTRIES = ['health', 'dental']
+/** New industries go first, then the ones that got real replies; everything else after. */
+const NEW_INDUSTRIES = ['food-distributors', 'furniture', 'equipment-rental', 'bakeries-florists', 'used-cars', 'academies']
+const PROVEN_INDUSTRIES = ['fitness', 'hardware-stores', 'wholesale-market', 'construction', 'accounting']
+
+function industryRank(tags: string[] | null | undefined): number {
+  const lower = (tags ?? []).map((t) => t.toLowerCase())
+  if (hasIndustry(lower, NEW_INDUSTRIES)) return 0
+  if (hasIndustry(lower, PROVEN_INDUSTRIES)) return 1
+  return 2
 }

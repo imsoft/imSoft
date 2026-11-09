@@ -178,3 +178,23 @@ describe('social queue', () => {
     expect(f.channels).toEqual(['whatsapp', 'instagram'])
   })
 })
+
+describe('socialQueue: paused and prioritized industries (2026-11-09)', () => {
+  const c = (id: string, tags: string[]) => ({ id, company: id, phone: '33 1234 5678', tags })
+
+  it('leaves clinics, dentists and spas out of the queue', () => {
+    const rows = socialQueue([c('clinic', ['google-places', 'health']), c('gym', ['fitness'])])
+    expect(rows.map((r) => r.id)).toEqual(['gym'])
+  })
+
+  it('puts the new industries first, then the proven ones, then the rest', () => {
+    const rows = socialQueue([c('law', ['law-firms']), c('gym', ['fitness']), c('furniture', ['furniture'])])
+    expect(rows.map((r) => r.id)).toEqual(['furniture', 'gym', 'law'])
+  })
+
+  it('has an introduction for each new industry', () => {
+    expect(whatWeDo('food-distributors')).toBe('apps de pedidos y rutas para distribuidoras')
+    expect(whatWeDo('bakeries-florists')).toContain('pastelerías y florerías')
+    expect(socialIndustry(['google-places', 'used-cars'])).toBe('used-cars')
+  })
+})

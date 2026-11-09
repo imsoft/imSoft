@@ -14,6 +14,9 @@ export const MUNICIPALITIES: Record<string, { name: string; lat: number; lng: nu
   tlajomulco: { name: 'Tlajomulco de Zúñiga', lat: 20.4738, lng: -103.4433, radius: 12000 },
   elsalto: { name: 'El Salto', lat: 20.5199, lng: -103.1808, radius: 8000 },
   zmg: { name: 'Zona metropolitana de Guadalajara', lat: 20.6597, lng: -103.3496, radius: 30000 },
+  // Premium zones (2026-11-09): searching around them brings businesses with budget for a custom project.
+  providencia: { name: 'Providencia, Americana y Chapultepec', lat: 20.6845, lng: -103.3800, radius: 3500 },
+  'puerta-de-hierro': { name: 'Puerta de Hierro, Andares y Valle Real', lat: 20.7115, lng: -103.4155, radius: 3500 },
   // Los Altos: national capital of eggs and pork; 80 km away, but its farms and packers aren't in the metro area.
   tepatitlan: { name: 'Tepatitlán de Morelos', lat: 20.8167, lng: -102.7667, radius: 25000 },
 }
@@ -42,6 +45,14 @@ export const INDUSTRIES: { key: string; name: string; query: string; segment: st
   { key: 'schools', name: 'Escuelas privadas', query: 'colegio privado escuela particular', segment: 'schools' },
   { key: 'auto-repair-shops', name: 'Talleres y refaccionarias', query: 'taller mecánico refaccionaria', segment: 'automotive' },
   { key: 'aesthetic-clinics', name: 'Clínicas de estética y spa', query: 'clínica de estética spa', segment: 'health' },
+  // Added 2026-11-09 to replace health in the rotation: clear pains (orders, routes, rentals, deliveries) and rarely a system.
+  { key: 'food-distributors', name: 'Distribuidoras de alimentos y bebidas', query: 'distribuidora de alimentos bebidas abarrotes', segment: 'food-distributors' },
+  { key: 'furniture', name: 'Mueblerías y fábricas de muebles', query: 'fábrica de muebles mueblería', segment: 'furniture' },
+  { key: 'equipment-rental', name: 'Renta de maquinaria, andamios y equipo', query: 'renta de maquinaria andamios equipo para construcción', segment: 'equipment-rental' },
+  { key: 'bakeries', name: 'Pastelerías con entrega', query: 'pastelería pasteles por encargo a domicilio', segment: 'bakeries-florists' },
+  { key: 'florists', name: 'Florerías con entrega', query: 'florería arreglos florales a domicilio', segment: 'bakeries-florists' },
+  { key: 'used-cars', name: 'Agencias de seminuevos', query: 'agencia de autos seminuevos', segment: 'used-cars' },
+  { key: 'academies', name: 'Escuelas de idiomas y academias', query: 'escuela de idiomas academia de inglés', segment: 'academies' },
   // To look up large companies by name ("Grupo Dalton") with the custom search.
   { key: 'corporate', name: 'Empresas grandes y corporativos', query: 'corporativo oficinas corporativas', segment: 'corporate' },
 ]
@@ -282,7 +293,7 @@ export function extractEmail(html: string, domain: string | null): string | null
  * many site templates ship with: 7 of 24 prospects came in with that profile on
  * 2026-10-23. The first link that really is a profile is taken.
  */
-const NON_PROFILE_INSTAGRAM_PATHS = ['p', 'reel', 'reels', 'explore', 'accounts', 'share', 'stories', 'tv', 'instagram', 'about', 'legal', 'developer', 'direct', 'web']
+const NON_PROFILE_INSTAGRAM_PATHS = ['p', 'reel', 'reels', 'explore', 'accounts', 'share', 'stories', 'tv', 'instagram', 'about', 'legal', 'developer', 'direct', 'web', 'whatsapp', 'facebook', '_n', '_u']
 
 /**
  * Business Instagram from the results of a web search ("Name City instagram"). Most small
@@ -291,7 +302,7 @@ const NON_PROFILE_INSTAGRAM_PATHS = ['p', 'reel', 'reels', 'explore', 'accounts'
  * a post) and its username or title contain some distinctive word of the name; "clinica"
  * or "taller" alone don't count.
  */
-const GENERIC_WORDS = new Set(['clinica', 'dental', 'consultorio', 'taller', 'mecanico', 'automotriz', 'refaccionaria', 'restaurante', 'restaurant', 'cafe', 'cafeteria', 'ferreteria', 'ferretera', 'grupo', 'servicio', 'servicios', 'centro', 'casa', 'bienes', 'raices', 'inmobiliaria', 'constructora', 'construccion', 'construcciones', 'despacho', 'abogados', 'contadores', 'contable', 'spa', 'gym', 'fitness', 'estetica', 'belleza', 'salon', 'tienda', 'boutique', 'joyeria', 'distribuidora', 'comercializadora', 'industrial', 'contador', 'contadores', 'publico', 'publicos', 'hospital', 'abarrotes', 'carniceria', 'cremeria', 'guadalajara', 'zapopan', 'tlaquepaque', 'tonala', 'tlajomulco', 'jalisco', 'mexico', 'sucursal', 'plaza', 'oficial', 'the', 'and', 'para', 'con', 'del', 'los', 'las', 'una', 'por'])
+const GENERIC_WORDS = new Set(['clinica', 'dental', 'consultorio', 'taller', 'mecanico', 'automotriz', 'refaccionaria', 'restaurante', 'restaurant', 'cafe', 'cafeteria', 'ferreteria', 'ferretera', 'grupo', 'servicio', 'servicios', 'centro', 'casa', 'bienes', 'raices', 'inmobiliaria', 'constructora', 'construccion', 'construcciones', 'despacho', 'abogados', 'contadores', 'contable', 'spa', 'gym', 'fitness', 'estetica', 'belleza', 'salon', 'tienda', 'boutique', 'joyeria', 'distribuidora', 'comercializadora', 'industrial', 'contador', 'contadores', 'publico', 'publicos', 'hospital', 'abarrotes', 'carniceria', 'cremeria', 'muebleria', 'muebles', 'pasteleria', 'pasteles', 'floreria', 'flores', 'seminuevos', 'autos', 'academia', 'idiomas', 'renta', 'maquinaria', 'andamios', 'alimentos', 'bebidas', 'guadalajara', 'zapopan', 'tlaquepaque', 'tonala', 'tlajomulco', 'jalisco', 'mexico', 'sucursal', 'plaza', 'oficial', 'the', 'and', 'para', 'con', 'del', 'los', 'las', 'una', 'por'])
 
 export function distinctiveTokens(name: string): string[] {
   return normalizedName(name).split(' ').filter((t) => t.length >= 4 && !GENERIC_WORDS.has(t))
@@ -450,7 +461,7 @@ export function contactLinks(html: string, base: string): string[] {
  * Neighborhoods and malls in the metro area where the average business has a bigger
  * budget. Used to prioritize, not to discard: a good prospect outside the list still gets in.
  */
-const PREMIUM_ZONES = /puerta de hierro|andares|valle real|colinas de san javier|san javier|providencia|country club|lomas del valle|virreyes|royal country|zona real|jardines universidad|ciudad del sol|chapalita|vallarta norte|vallarta san jorge|monraz|terranova|lafayette|colonia americana|col\.? americana|bugambilias|santa anita|el palomar|rinconada del bosque|plaza patria|midtown|la rioja|solares/i
+const PREMIUM_ZONES = /puerta de hierro|andares|valle real|colinas de san javier|san javier|providencia|country club|lomas del valle|virreyes|royal country|zona real|jardines universidad|ciudad del sol|chapalita|vallarta norte|vallarta san jorge|monraz|terranova|lafayette|colonia americana|col\.? americana|bugambilias|santa anita|el palomar|rinconada del bosque|plaza patria|midtown|la rioja|solares|ladr[oó]n de guevara|chapultepec|minerva|el baj[ií]o|zona estadio|ciudad granja|jocot[aá]n/i
 
 export function isPremiumZone(address: string | null | undefined): boolean {
   return PREMIUM_ZONES.test(address ?? '')
