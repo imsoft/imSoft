@@ -1,6 +1,6 @@
 {
   "_comment": "Searches run by scripts/find-prospects.mjs (industry from src/lib/places.ts x municipality). Runs on Mondays, Wednesdays and Fridays; each run takes a different slice of the list (see searchSlice). 2026-11-09: health, dental and aesthetic-clinics paused; six industries added, with searches in premium zones (providencia, puerta-de-hierro).",
-  "_commentUs": "US pilot (2026-11-10): run only with --market us, outside the rotation. Hispanic businesses in Los Angeles and Chicago, email only.",
+  "_commentUs": "US pilot (2026-11-10): run with --market us (the workflow does it after the Mexican searches), a slice per run. Hispanic businesses in Los Angeles, Chicago and nearby areas, email only.",
   "searches": [
     {
       "industry": "wholesale-market",
@@ -393,40 +393,120 @@
       "municipality": "los-angeles"
     },
     {
+      "industry": "us-florists",
+      "municipality": "los-angeles"
+    },
+    {
+      "industry": "us-food-distributors",
+      "municipality": "los-angeles"
+    },
+    {
+      "industry": "us-meat-markets",
+      "municipality": "los-angeles"
+    },
+    {
+      "industry": "us-taquerias",
+      "municipality": "los-angeles"
+    },
+    {
       "industry": "us-bakeries",
       "municipality": "chicago"
     },
     {
       "industry": "us-florists",
-      "municipality": "los-angeles"
+      "municipality": "chicago"
+    },
+    {
+      "industry": "us-food-distributors",
+      "municipality": "chicago"
+    },
+    {
+      "industry": "us-meat-markets",
+      "municipality": "chicago"
+    },
+    {
+      "industry": "us-taquerias",
+      "municipality": "chicago"
+    },
+    {
+      "industry": "us-bakeries",
+      "municipality": "santa-ana"
     },
     {
       "industry": "us-florists",
-      "municipality": "chicago"
+      "municipality": "santa-ana"
     },
     {
       "industry": "us-food-distributors",
-      "municipality": "los-angeles"
+      "municipality": "santa-ana"
+    },
+    {
+      "industry": "us-meat-markets",
+      "municipality": "santa-ana"
+    },
+    {
+      "industry": "us-taquerias",
+      "municipality": "santa-ana"
+    },
+    {
+      "industry": "us-bakeries",
+      "municipality": "cicero"
+    },
+    {
+      "industry": "us-florists",
+      "municipality": "cicero"
     },
     {
       "industry": "us-food-distributors",
-      "municipality": "chicago"
+      "municipality": "cicero"
     },
     {
       "industry": "us-meat-markets",
-      "municipality": "los-angeles"
+      "municipality": "cicero"
+    },
+    {
+      "industry": "us-taquerias",
+      "municipality": "cicero"
+    },
+    {
+      "industry": "us-bakeries",
+      "municipality": "san-fernando-valley"
+    },
+    {
+      "industry": "us-florists",
+      "municipality": "san-fernando-valley"
+    },
+    {
+      "industry": "us-food-distributors",
+      "municipality": "san-fernando-valley"
     },
     {
       "industry": "us-meat-markets",
-      "municipality": "chicago"
+      "municipality": "san-fernando-valley"
     },
     {
       "industry": "us-taquerias",
-      "municipality": "los-angeles"
+      "municipality": "san-fernando-valley"
+    },
+    {
+      "industry": "us-bakeries",
+      "municipality": "aurora-il"
+    },
+    {
+      "industry": "us-florists",
+      "municipality": "aurora-il"
+    },
+    {
+      "industry": "us-food-distributors",
+      "municipality": "aurora-il"
+    },
+    {
+      "industry": "us-meat-markets",
+      "municipality": "aurora-il"
     },
     {
       "industry": "us-taquerias",
-      "municipality": "chicago"
+      "municipality": "aurora-il"
     }
   ]
 }

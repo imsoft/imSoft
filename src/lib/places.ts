@@ -27,6 +27,11 @@ export const MUNICIPALITIES: Record<string, { name: string; lat: number; lng: nu
   // East LA / Boyle Heights / Huntington Park and on Pilsen / Little Village.
   'los-angeles': { name: 'Los Angeles', region: 'California', country: 'US', lat: 34.0200, lng: -118.2000, radius: 15000 },
   chicago: { name: 'Chicago', region: 'Illinois', country: 'US', lat: 41.8480, lng: -87.6900, radius: 12000 },
+  // More Hispanic areas so the automatic runs keep finding new businesses.
+  'santa-ana': { name: 'Santa Ana', region: 'California', country: 'US', lat: 33.7455, lng: -117.8677, radius: 9000 },
+  'san-fernando-valley': { name: 'Van Nuys y Pacoima, Los Angeles', region: 'California', country: 'US', lat: 34.2300, lng: -118.4300, radius: 12000 },
+  cicero: { name: 'Cicero y Berwyn', region: 'Illinois', country: 'US', lat: 41.8456, lng: -87.7700, radius: 6000 },
+  'aurora-il': { name: 'Aurora', region: 'Illinois', country: 'US', lat: 41.7606, lng: -88.3201, radius: 9000 },
 }
 
 /** True for the US pilot areas: there prospects are written to by email only. */
@@ -284,7 +289,7 @@ export function dedupe(candidates: Candidate[]): Candidate[] {
 }
 
 const EMAIL_RE = /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/gi
-const JUNK_EMAILS = /(noreply|no-reply|donotreply|example|sentry|wixpress|godaddy|squarespace|shopify|wordpress|@2x|\.png$|\.jpg$|\.svg$|\.webp$|\.gif$|^(usuario|correo|email|nombre|tu-?correo|tu-?email|ejemplo|test|john\.?doe|jane\.?doe|lorem|ipsum|your-?name|your-?email|someone|user|username|mail|sample|demo|name|your-?mail|prueba|placeholder|abc|xyz|first\.?last|firstname\.?lastname)@|@(dominio|tudominio|ejemplo|correo|email|test|sitio|demoagency|yourdomain|yoursite|yourcompany|domain|company|mysite|website)\.)/i
+const JUNK_EMAILS = /(noreply|no-reply|donotreply|example|sentry|wixpress|godaddy|squarespace|shopify|wordpress|@2x|\.png$|\.jpg$|\.svg$|\.webp$|\.gif$|^(usuario|correo|email|nombre|tu-?correo|tu-?email|ejemplo|test|john\.?doe|jane\.?doe|lorem|ipsum|your-?name|your-?email|someone|user|username|mail|sample|demo|name|your-?mail|prueba|placeholder|abc|xyz|first\.?last|firstname\.?lastname)@|@(dominio|tudominio|ejemplo|correo|email|test|sitio|demoagency|yourdomain|yoursite|yourcompany|domain|company|mysite|website)\.|\.(comp|import|local|invalid)$|@reviews\.)/i
 const PREFERRED_PREFIXES = ['contacto', 'ventas', 'info', 'hola', 'informes', 'atencion', 'admin', 'direccion', 'gerencia']
 
 /** Best email in an HTML page: same domain first, then the one with the most useful prefix. */
@@ -322,7 +327,7 @@ const NON_PROFILE_INSTAGRAM_PATHS = ['p', 'reel', 'reels', 'explore', 'accounts'
  * a post) and its username or title contain some distinctive word of the name; "clinica"
  * or "taller" alone don't count.
  */
-const GENERIC_WORDS = new Set(['clinica', 'dental', 'consultorio', 'taller', 'mecanico', 'automotriz', 'refaccionaria', 'restaurante', 'restaurant', 'cafe', 'cafeteria', 'ferreteria', 'ferretera', 'grupo', 'servicio', 'servicios', 'centro', 'casa', 'bienes', 'raices', 'inmobiliaria', 'constructora', 'construccion', 'construcciones', 'despacho', 'abogados', 'contadores', 'contable', 'spa', 'gym', 'fitness', 'estetica', 'belleza', 'salon', 'tienda', 'boutique', 'joyeria', 'distribuidora', 'comercializadora', 'industrial', 'contador', 'contadores', 'publico', 'publicos', 'hospital', 'abarrotes', 'carniceria', 'cremeria', 'muebleria', 'muebles', 'pasteleria', 'pasteles', 'floreria', 'flores', 'seminuevos', 'autos', 'academia', 'idiomas', 'renta', 'maquinaria', 'andamios', 'alimentos', 'bebidas', 'guadalajara', 'zapopan', 'tlaquepaque', 'tonala', 'tlajomulco', 'jalisco', 'mexico', 'sucursal', 'plaza', 'oficial', 'the', 'and', 'para', 'con', 'del', 'los', 'las', 'una', 'por'])
+const GENERIC_WORDS = new Set(['clinica', 'dental', 'consultorio', 'taller', 'mecanico', 'automotriz', 'refaccionaria', 'restaurante', 'restaurant', 'cafe', 'cafeteria', 'ferreteria', 'ferretera', 'grupo', 'servicio', 'servicios', 'centro', 'casa', 'bienes', 'raices', 'inmobiliaria', 'constructora', 'construccion', 'construcciones', 'despacho', 'abogados', 'contadores', 'contable', 'spa', 'gym', 'fitness', 'estetica', 'belleza', 'salon', 'tienda', 'boutique', 'joyeria', 'distribuidora', 'comercializadora', 'industrial', 'contador', 'contadores', 'publico', 'publicos', 'hospital', 'abarrotes', 'carniceria', 'cremeria', 'muebleria', 'muebles', 'pasteleria', 'pasteles', 'floreria', 'flores', 'seminuevos', 'autos', 'academia', 'idiomas', 'renta', 'maquinaria', 'andamios', 'alimentos', 'bebidas', 'guadalajara', 'zapopan', 'tlaquepaque', 'tonala', 'tlajomulco', 'jalisco', 'mexico', 'sucursal', 'bakery', 'flower', 'flowers', 'shop', 'taqueria', 'tacos', 'market', 'food', 'foods', 'wholesale', 'distributors', 'mexican', 'chicago', 'angeles', 'california', 'illinois', 'inc', 'llc', 'plaza', 'oficial', 'the', 'and', 'para', 'con', 'del', 'los', 'las', 'una', 'por'])
 
 export function distinctiveTokens(name: string): string[] {
   return normalizedName(name).split(' ').filter((t) => t.length >= 4 && !GENERIC_WORDS.has(t))

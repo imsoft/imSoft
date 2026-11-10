@@ -14,8 +14,10 @@
  *   node --env-file=.env --experimental-strip-types scripts/find-prospects.mjs --market us [--max 80] [--dry-run]
  *
  * --market us runs the US pilot searches (usSearches in the JSON: Hispanic businesses in
- * Los Angeles and Chicago). They're outside the rotation, keep only businesses with an
- * email (written to by email only) and get the market-us tag for the US email template.
+ * Los Angeles, Chicago and nearby areas), a different slice each run like the Mexican
+ * ones (--searches, 10 by default). They keep only businesses with an email (written to
+ * by email only) and get the market-us tag for the US email template. The workflow runs
+ * it after the Mexican searches.
  *
  * --industries runs every search of those industries instead of today's slice (to try a
  * new industry without waiting for the rotation). The old flags --giros and --busquedas
@@ -50,8 +52,8 @@ const run = runNumber()
 const industriesArg = args.industries ?? args.giros
 const onlyIndustries = typeof industriesArg === 'string' ? industriesArg.split(',') : null
 const usMarket = args.market === 'us'
-const searches = usMarket ? config.usSearches : onlyIndustries ? config.searches.filter((s) => onlyIndustries.includes(s.industry)) : searchSlice(config.searches, run, SEARCHES_PER_RUN)
-console.log(usMarket ? `Piloto EE. UU.: ${searches.length} busquedas` : `Corrida ${run}: ${searches.length} busquedas de ${config.searches.length}${onlyIndustries ? ` (solo ${onlyIndustries.join(', ')})` : ''}`)
+const searches = usMarket ? searchSlice(config.usSearches, run, Number(args.searches ?? args.busquedas) || 10) : onlyIndustries ? config.searches.filter((s) => onlyIndustries.includes(s.industry)) : searchSlice(config.searches, run, SEARCHES_PER_RUN)
+console.log(usMarket ? `Piloto EE. UU., corrida ${run}: ${searches.length} busquedas de ${config.usSearches.length}` : `Corrida ${run}: ${searches.length} busquedas de ${config.searches.length}${onlyIndustries ? ` (solo ${onlyIndustries.join(', ')})` : ''}`)
 
 const today = new Date().toISOString().slice(0, 10)
 let total = 0

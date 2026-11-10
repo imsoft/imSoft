@@ -251,3 +251,11 @@ describe('US pilot areas (2026-11-10)', () => {
     expect(industry('us-food-distributors')?.segment).toBe('food-distributors')
   })
 })
+
+describe('junk emails seen in the US pilot (2026-11-10)', () => {
+  it('drops misspelled domains and review-import addresses', () => {
+    expect(extractEmail('cityenchantedgardens@gmail.comp', null)).toBeNull()
+    expect(extractEmail('re1b98bea0aee48cac015@reviews.import', null)).toBeNull()
+    expect(extractEmail('info@panchosbakery.com', 'panchosbakery.com')).toBe('info@panchosbakery.com')
+  })
+})
