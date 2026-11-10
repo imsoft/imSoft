@@ -5,6 +5,7 @@
  */
 import type { SocialLink } from '@/types/database'
 import { socialsOf, type Platform } from '@/lib/contact-socials'
+import { US_MARKET_TAG } from '@/lib/outreach'
 
 export type Channel = 'instagram' | 'whatsapp' | 'facebook' | 'linkedin' | 'tiktok' | 'twitter'
 
@@ -286,6 +287,9 @@ export function socialQueue(contacts: QueueContact[]): QueueRow[] {
   for (const c of contacts) {
     if ((c.tags ?? []).includes(SOCIAL_DISCARDED_TAG)) continue
     if (hasIndustry((c.tags ?? []).map((t) => t.toLowerCase()), PAUSED_INDUSTRIES)) continue
+    // US pilot prospects are written to by email only: the openers are about Guadalajara and
+    // cold WhatsApp abroad puts the business number at risk.
+    if ((c.tags ?? []).includes(US_MARKET_TAG)) continue
     const available = channelsOf(c).map((x) => x.channel)
     const channels = QUEUE_CHANNELS.filter((x) => available.includes(x))
     if (!channels.length) continue

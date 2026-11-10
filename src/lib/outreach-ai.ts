@@ -14,10 +14,12 @@ export interface HookInput {
   jobTitle?: string | null;
   /** 'app': consumer business offered its own app, not fixing its Excel; 'store': online store. */
   offer?: 'app' | 'store' | null;
+  /** 'us': Hispanic business in the US pilot (Los Angeles, Chicago). */
+  market?: 'us' | null;
 }
 
 export function hookPrompt(i: HookInput): string {
-  return `Escribes una sola frase, máximo dos, para el correo de prospección en frío que imSoft (agencia de software a la medida en Guadalajara, México) le manda a un negocio. Va justo después de "Soy Brandon, de imSoft. Desarrollamos software a la medida..." y antes de la propuesta de una llamada de 15 minutos.
+  return `Escribes una sola frase, máximo dos, para el correo de prospección en frío que imSoft (agencia de software a la medida en Guadalajara, México) le manda a un negocio${i.market === 'us' ? ' hispano en Estados Unidos (Los Ángeles o Chicago)' : ''}. Va justo después de "Soy Brandon, de imSoft. Desarrollamos software a la medida..." y antes de la propuesta de una llamada de 15 minutos.
 
 Prospecto:
 - Empresa: ${i.company || '(desconocida)'}
@@ -28,13 +30,14 @@ Prospecto:
 
 Reglas:
 - Habla de un problema operativo concreto y creíble para un negocio de ese sector y tamaño (seguimiento de pedidos, cotizaciones a mano, información repartida en WhatsApp y Excel, clientes que llaman a preguntar el estado de algo...). Elige uno, no una lista.
-- Tuteo, español de México, tono de alguien que conoce el sector; sin halagos vacíos ("me encanta su empresa"), sin signos de exclamación, sin datos inventados sobre la empresa.
+- Tuteo, español de ${i.market === 'us' ? 'neutro' : 'México'}, tono de alguien que conoce el sector; sin halagos vacíos ("me encanta su empresa"), sin signos de exclamación, sin datos inventados sobre la empresa.
 - Habla solo del problema del prospecto. No menciones a imSoft, JTP Logistics, casos de éxito, precios ni lo que ofrecemos: eso ya va en otros párrafos del correo.
 - Si el sector es "agro" (granja, empacadora, distribuidora agrícola), el problema está en el campo y la bodega: pesajes y lotes en libretas que luego se capturan, trazabilidad que se arma a mano cuando la pide una certificación o un cliente de exportación, el inventario de insumos o de parvadas que nadie tiene al día. Elige uno.
 - Si el sector es "corporate", es una empresa grande con área de sistemas propia: el problema no es el Excel sino proyectos que se quedan en la fila de sistemas (integraciones entre sucursales o con proveedores, portales internos, reportes que se arman a mano entre áreas). No supongas que les falta tecnología.
 ${i.offer === 'app' && (i.segment ?? '').startsWith('wholesale-market') ? `- Es un mayorista (Mercado de Abastos o bodega de distribución) y le ofrecemos una app para que sus clientes de tienda y de ruta pidan solos; la presentación ya lo dice. Tu frase habla del pedido del cliente, no de su operación interna: pedidos que llegan por WhatsApp a deshoras y hay que pasar a mano, precios por cliente que cada vendedor trae en la cabeza, el cliente que llama a preguntar si ya salió su pedido. Elige uno. No hables de Excel.
 ` : i.offer === 'app' ? `- A este negocio le ofrecemos su propia app para sus clientes (pedir, juntar puntos, recibir promociones), y la presentación ya lo dice. Tu frase habla del problema del lado del cliente final, no de la operación interna: pedidos que entran por WhatsApp o por apps de terceros que cobran comisión, clientes frecuentes que nadie identifica ni premia, promociones que solo viven en Instagram y no llegan a quien ya compra. Elige uno que cuadre con el giro. No hables de Excel ni de procesos internos.
 ` : i.offer === 'store' ? `- Es una joyería y le ofrecemos su tienda en línea con su marca; la presentación ya lo dice. Tu frase habla de cómo vende hoy: piezas que se muestran por fotos en WhatsApp e Instagram una por una, apartados que se llevan en una libreta, clientes de fuera de la ciudad que no pueden comprar, el precio del oro que cambia y hay que recotizar a mano. Elige uno. No hables de Excel ni de procesos internos.
+` : ''}${i.market === 'us' ? `- El negocio está en Estados Unidos y su dueño probablemente habla español: escribe en español neutro, sin modismos de México ni de España. El problema es de cómo reciben pedidos y venden (pedidos por teléfono o mensaje que se anotan a mano, encargos con fecha de entrega, clientes que no pueden pedir en línea, apps de terceros que cobran comisión), no de Excel ni de sistemas internos. No menciones su país ni su origen.
 ` : ''}- Si las notas del CRM traen un gancho corto escrito por Brandon, respétalo y solo púlelo. Si traen un correo completo, úsalo solo como contexto del sector.
 - Devuelve únicamente el gancho, sin comillas ni explicaciones.`;
 }

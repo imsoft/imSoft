@@ -17,7 +17,7 @@ export async function searchPlaces(query: string, municipality: string, max = 60
   const key = process.env.GOOGLE_PLACES_API_KEY
   if (!key) throw new Error('Falta GOOGLE_PLACES_API_KEY en el entorno.')
   const m = MUNICIPALITIES[municipality] ?? MUNICIPALITIES.zmg
-  const textQuery = `${query} en ${m.name}, Jalisco`
+  const textQuery = `${query} en ${m.name}, ${m.region ?? 'Jalisco'}`
   const out: Candidate[] = []
   let pageToken: string | undefined
   for (let page = 0; page < 3 && out.length < max; page++) {
@@ -27,7 +27,7 @@ export async function searchPlaces(query: string, municipality: string, max = 60
       body: JSON.stringify({
         textQuery,
         languageCode: 'es',
-        regionCode: 'MX',
+        regionCode: m.country ?? 'MX',
         pageSize: 20,
         ...(pageToken ? { pageToken } : {}),
         locationBias: { circle: { center: { latitude: m.lat, longitude: m.lng }, radius: m.radius } },
@@ -35,7 +35,8 @@ export async function searchPlaces(query: string, municipality: string, max = 60
     })
     if (!r.ok) throw new Error(`Places ${r.status}: ${(await r.text()).slice(0, 300)}`)
     const j = (await r.json()) as { places?: PlaceResult[]; nextPageToken?: string }
-    out.push(...(j.places ?? []).map(candidateFrom))
+    // US numbers keep their +1: formatted as Mexican they'd pass for a WhatsApp with 52.
+    out.push(...(j.places ?? []).map((p) => (m.country === 'US' ? { ...candidateFrom(p), phone: p.nationalPhoneNumber ? `+1 ${p.nationalPhoneNumber}` : null } : candidateFrom(p))))
     pageToken = j.nextPageToken
     if (!pageToken) break
   }

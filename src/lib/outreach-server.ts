@@ -11,7 +11,7 @@ import { isNonSalesMailbox } from '@/lib/invalid-email'
 import { searchPlaces, placesConfigured } from '@/lib/places-server'
 import { googleListing, normalizedName } from '@/lib/places'
 import { socialQueue, countByChannel, socialIndustry, SOCIAL_DISCARD_REASONS, offerOf, renderSocialMessage, SOCIAL_DISCARDED_TAG, CHANNEL_DAILY_CAP, type Channel, type SocialDiscardReason, type QueueContact, type QueueRow, type Offer } from '@/lib/social-message'
-import { emailDomain, buildMime, bodyOf, nextStepDate, renderFromBody, renderOutreach, segmentOf, dailyCap, type Step } from '@/lib/outreach'
+import { emailDomain, buildMime, bodyOf, nextStepDate, renderFromBody, renderOutreach, segmentOf, dailyCap, US_MARKET_TAG, type Step } from '@/lib/outreach'
 
 const TZ = 'America/Mexico_City'
 
@@ -76,6 +76,12 @@ async function discardIfUndeliverable(db: SupabaseClient, c: MinContact): Promis
 }
 
 /** Hook from Claude when the contact doesn't have one in its notes. */
+/** Industry for the AI prompts: the email template, or the social industry when the template is the market (US). */
+function industryOf(tags: string[] | null | undefined): string | null {
+  const t = segmentOf(tags)
+  return t && t !== US_MARKET_TAG ? t : socialIndustry(tags)
+}
+
 export async function hookWithAI(c: MinContact, offer: Offer | null = null): Promise<string> {
   const client = new Anthropic()
   const msg = await client.messages.create({
@@ -83,7 +89,7 @@ export async function hookWithAI(c: MinContact, offer: Offer | null = null): Pro
     max_tokens: 300,
     tools: [HOOK_TOOL],
     tool_choice: { type: 'tool', name: HOOK_TOOL.name },
-    messages: [{ role: 'user', content: hookPrompt({ name: firstNameOf(c), company: c.company ?? '', segment: segmentOf(c.tags) ?? socialIndustry(c.tags), website: c.website_url, notes: (c.notes ?? '').slice(0, 1500), jobTitle: c.job_title, offer }) }],
+    messages: [{ role: 'user', content: hookPrompt({ name: firstNameOf(c), company: c.company ?? '', segment: industryOf(c.tags), website: c.website_url, notes: (c.notes ?? '').slice(0, 1500), jobTitle: c.job_title, offer, market: (c.tags ?? []).includes(US_MARKET_TAG) ? 'us' : null }) }],
   })
   const tool = msg.content.find((b) => b.type === 'tool_use')
   return cleanHook(tool && tool.type === 'tool_use' ? tool.input : null)
@@ -309,8 +315,8 @@ export async function editDraft(db: SupabaseClient, id: string, changes: { subje
   const { data: row } = await db.from('outreach_emails').select('id, step, status, subject, text, contact_id').eq('id', id).maybeSingle()
   if (!row) throw new Error('Borrador no encontrado')
   if (row.status !== 'draft') throw new Error('Solo se editan borradores')
-  const { data: c } = await db.from('contacts').select('company').eq('id', row.contact_id).maybeSingle()
-  const r = renderFromBody(row.step as Step, { subject: changes.subject ?? row.subject, body: changes.body ?? bodyOf(row.text), company: c?.company ?? '' })
+  const { data: c } = await db.from('contacts').select('company, tags').eq('id', row.contact_id).maybeSingle()
+  const r = renderFromBody(row.step as Step, { subject: changes.subject ?? row.subject, body: changes.body ?? bodyOf(row.text), company: c?.company ?? '', segment: segmentOf(c?.tags) })
   const upd: Record<string, unknown> = { subject: r.subject, text: r.text, html: r.html, updated_at: new Date().toISOString() }
   if (changes.scheduled_for && /^\d{4}-\d{2}-\d{2}$/.test(changes.scheduled_for)) upd.scheduled_for = changes.scheduled_for
   const { error } = await db.from('outreach_emails').update(upd).eq('id', id)

@@ -3,6 +3,7 @@
  * message for Gmail. Pure logic, tested with vitest; the I/O (Supabase, Gmail, Claude)
  * lives in src/lib/gmail/server.ts and the /api/outreach routes.
  */
+import { ISSUER } from '../config/issuer.ts';
 
 export type Step = 1 | 2 | 3;
 
@@ -75,6 +76,19 @@ export function signatureText(): string {
 /** Legal line: where the contact came from and how to ask not to be written to again. */
 export const LEGAL_LINE = 'Te escribo porque encontré a {{company}} buscando negocios de tu sector en Guadalajara. Si prefieres que no te vuelva a escribir, respóndeme "no" y listo.';
 
+/** Contact tag for prospects in the US pilot (2026-11-10): Hispanic businesses in Los Angeles and Chicago. */
+export const US_MARKET_TAG = 'market-us';
+
+/**
+ * Legal line for the US: CAN-SPAM asks for the sender's physical postal address and a
+ * clear way to opt out, honored within 10 business days.
+ */
+export const US_LEGAL_LINE = `Te escribo porque encontré a {{company}} en Google buscando negocios de tu ramo. Si prefieres que no te vuelva a escribir, respóndeme "no" y te saco de mi lista. imSoft · ${ISSUER.address}, ${ISSUER.city}.`;
+
+function legalLineFor(segment?: string | null): string {
+  return templateFor(segment) === US_MARKET_TAG ? US_LEGAL_LINE : LEGAL_LINE;
+}
+
 interface Template {
   subject: string;
   /** Plain-text paragraphs; {{name}}, {{company}} and {{hook}} are substituted. */
@@ -143,6 +157,37 @@ const TEMPLATES: Record<string, Record<Step, Template>> = {
       ],
     },
   },
+  // US pilot (2026-11-10): Hispanic businesses (bakeries, florists, taquerias, food
+  // distributors) in Los Angeles and Chicago. In Spanish; no clients there yet, so no
+  // claims about the US, only working in Spanish and charging in dollars.
+  [US_MARKET_TAG]: {
+    1: {
+      subject: 'Pedidos en línea para {{company}}',
+      paragraphs: [
+        'Hola {{name}}:',
+        'Soy Brandon, de imSoft. Desarrollamos software a la medida desde Guadalajara: tiendas en línea, apps de pedidos y sistemas para la operación del negocio, y trabajamos todo en español.',
+        '{{hook}}',
+        'Cobramos a precio fijo en dólares, así que sabes desde el día uno cuánto va a costar, y lo que hacemos queda 100 % tuyo, no rentado.',
+        '¿Te doy 15 minutos esta semana por llamada o videollamada? Si no es para ustedes, te lo digo de frente y no te vuelvo a escribir.',
+      ],
+    },
+    2: {
+      subject: 'Re: Pedidos en línea para {{company}}',
+      paragraphs: [
+        'Hola {{name}}, te escribí hace unos días y entiendo que la semana se llena.',
+        '{{hook}}',
+        'Si te sirve, con una llamada de 15 minutos te digo si tiene sentido y cuánto costaría en dólares, sin compromiso. ¿Qué día te acomoda?',
+      ],
+    },
+    3: {
+      subject: 'Re: Pedidos en línea para {{company}}',
+      paragraphs: [
+        'Hola {{name}}, último correo de mi parte para no ser insistente.',
+        'Si más adelante en {{company}} quieren vender en línea o dejar de tomar pedidos a mano, aquí me tienes. Y si conoces a otro negocio a quien le sirva, te agradezco que me lo pases.',
+        'Que te vaya muy bien.',
+      ],
+    },
+  },
   logistics: {
     1: {
       subject: 'Software para la operación de {{company}}',
@@ -192,13 +237,18 @@ export function renderOutreach(step: Step, vars: OutreachVars): RenderedEmail {
   const p = TEMPLATES[templateFor(vars.segment)][step];
   const v = { ...vars, name: vars.name.trim() || 'qué tal', company: vars.company.trim() || 'tu empresa', hook: vars.hook.trim() };
   const body = p.paragraphs.map((x) => substitute(x, v)).filter((x) => x.trim()).join('\n\n');
-  return renderFromBody(step, { subject: substitute(p.subject, v), body, company: v.company });
+  return renderFromBody(step, { subject: substitute(p.subject, v), body, company: v.company, segment: vars.segment });
 }
 
-/** Builds text and HTML from the already edited body (paragraphs separated by a blank line). */
-export function renderFromBody(step: Step, d: { subject: string; body: string; company: string }): RenderedEmail {
+/**
+ * Builds text and HTML from the already edited body (paragraphs separated by a blank line).
+ * The legal line goes on the first email; in the US it goes on every one, because CAN-SPAM
+ * asks for the address and the opt-out in each commercial message.
+ */
+export function renderFromBody(step: Step, d: { subject: string; body: string; company: string; segment?: string | null }): RenderedEmail {
   const paragraphs = d.body.split(/\n\s*\n/).map((x) => x.trim()).filter(Boolean);
-  const legal = step === 1 ? substitute(LEGAL_LINE, { name: '', company: d.company.trim() || 'tu empresa', hook: '' }) : null;
+  const us = templateFor(d.segment) === US_MARKET_TAG;
+  const legal = step === 1 || us ? substitute(legalLineFor(d.segment), { name: '', company: d.company.trim() || 'tu empresa', hook: '' }) : null;
   // No signature: Brandon doesn't want it in the email.
   const text = [...paragraphs, '', `${WHATSAPP_LINE} ${WHATSAPP_URL}`, ...(legal ? ['', legal] : [])].join('\n\n').replace(/\n{3,}/g, '\n\n');
   const [first, ...rest] = paragraphs;
@@ -293,6 +343,8 @@ export function segmentOf(tags: string[] | null | undefined): string | null {
   const known = Object.keys(TEMPLATES).filter((k) => k !== 'default');
   // Importer tags carry a city suffix ("logistics-gdl"): the prefix is enough.
   const lower = (tags ?? []).map((t) => t.toLowerCase());
+  // The market wins over the industry: a US prospect always gets the US template.
+  if (lower.includes(US_MARKET_TAG)) return US_MARKET_TAG;
   return known.find((k) => lower.some((t) => t === k || t.startsWith(`${k}-`))) ?? null;
 }
 

@@ -11,6 +11,11 @@
  *
  * Usage:
  *   node --env-file=.env --experimental-strip-types scripts/find-prospects.mjs [--max 80] [--searches 15] [--industries jewelry,wholesale-market] [--dry-run]
+ *   node --env-file=.env --experimental-strip-types scripts/find-prospects.mjs --market us [--max 80] [--dry-run]
+ *
+ * --market us runs the US pilot searches (usSearches in the JSON: Hispanic businesses in
+ * Los Angeles and Chicago). They're outside the rotation, keep only businesses with an
+ * email (written to by email only) and get the market-us tag for the US email template.
  *
  * --industries runs every search of those industries instead of today's slice (to try a
  * new industry without waiting for the rotation). The old flags --giros and --busquedas
@@ -19,7 +24,8 @@
 import { readFileSync } from 'node:fs'
 import { createClient } from '@supabase/supabase-js'
 import { importCandidates, searchProspects } from '../src/lib/places-server.ts'
-import { isOffProfile, isReachable, matchingBrand, runNumber, searchSlice } from '../src/lib/places.ts'
+import { isOffProfile, isReachable, isUsArea, matchingBrand, runNumber, searchSlice } from '../src/lib/places.ts'
+import { US_MARKET_TAG } from '../src/lib/outreach.ts'
 
 const args = Object.fromEntries(process.argv.slice(2).map((a, i, all) => (a.startsWith('--') ? [a.slice(2), all[i + 1]?.startsWith('--') || all[i + 1] === undefined ? true : all[i + 1]] : [])).filter((x) => x.length))
 // Cap on new contacts per run. With the Google phone counting as WhatsApp (2026-10-26)
@@ -43,24 +49,30 @@ const db = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABA
 const run = runNumber()
 const industriesArg = args.industries ?? args.giros
 const onlyIndustries = typeof industriesArg === 'string' ? industriesArg.split(',') : null
-const searches = onlyIndustries ? config.searches.filter((s) => onlyIndustries.includes(s.industry)) : searchSlice(config.searches, run, SEARCHES_PER_RUN)
-console.log(`Corrida ${run}: ${searches.length} busquedas de ${config.searches.length}${onlyIndustries ? ` (solo ${onlyIndustries.join(', ')})` : ''}`)
+const usMarket = args.market === 'us'
+const searches = usMarket ? config.usSearches : onlyIndustries ? config.searches.filter((s) => onlyIndustries.includes(s.industry)) : searchSlice(config.searches, run, SEARCHES_PER_RUN)
+console.log(usMarket ? `Piloto EE. UU.: ${searches.length} busquedas` : `Corrida ${run}: ${searches.length} busquedas de ${config.searches.length}${onlyIndustries ? ` (solo ${onlyIndustries.join(', ')})` : ''}`)
 
 const today = new Date().toISOString().slice(0, 10)
 let total = 0
 for (const s of searches) {
   if (total >= MAX) break
   const { candidates, segment, newCount } = await searchProspects(db, s.industry, s.municipality, { max: 20, emails: true })
-  const eligible = candidates.filter((c) => !c.inCrm && isReachable(c) && !isOffProfile(c.name)).slice(0, MAX - total)
-  console.log(`${s.industry} / ${s.municipality}: ${candidates.length} encontrados, ${newCount} nuevos, ${eligible.length} con correo, Instagram o WhatsApp`)
+  const us = isUsArea(s.municipality)
+  const eligible = candidates.filter((c) => !c.inCrm && (us ? Boolean(c.email) : isReachable(c)) && !isOffProfile(c.name)).slice(0, MAX - total)
+  console.log(`${s.industry} / ${s.municipality}: ${candidates.length} encontrados, ${newCount} nuevos, ${eligible.length} ${us ? 'con correo' : 'con correo, Instagram o WhatsApp'}`)
   if (dryRun) {
     total += eligible.length
     continue
   }
   if (eligible.length === 0) continue
-  const r = await importCandidates(db, eligible, segment, `Google Places - ${segment} - ${today}`, ['auto-places', `campaign-${today.slice(0, 7)}`])
+  const r = await importCandidates(db, eligible, segment, `Google Places - ${segment} - ${today}`, ['auto-places', `campaign-${today.slice(0, 7)}`, ...(us ? [US_MARKET_TAG, s.municipality] : [])])
   total += r.inserted
   console.log(`  -> ${r.inserted} agregados`)
+}
+if (usMarket) {
+  console.log(`\nTotal ${dryRun ? 'que se agregarian' : 'agregados'}: ${total}${dryRun ? ' (dry run, nada escrito)' : ''}`)
+  process.exit(0)
 }
 // Large companies, by name (content/large-companies.json): 2 per run, outside the cap.
 const largeCompanies = JSON.parse(readFileSync(new URL('../content/large-companies.json', import.meta.url), 'utf8')).companies

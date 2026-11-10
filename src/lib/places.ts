@@ -5,8 +5,12 @@
 import type { CsvRow } from './import-contacts.ts'
 import { isNonSalesMailbox } from './invalid-email.ts'
 
-/** Municipalities of the Guadalajara metro area with their approximate center. */
-export const MUNICIPALITIES: Record<string, { name: string; lat: number; lng: number; radius: number }> = {
+/**
+ * Search areas: municipalities of the Guadalajara metro area with their approximate center,
+ * and the US pilot cities. `region` goes after the name in the Places query (Jalisco when
+ * missing) and `country` is the Places region code (MX when missing).
+ */
+export const MUNICIPALITIES: Record<string, { name: string; lat: number; lng: number; radius: number; region?: string; country?: 'US' }> = {
   guadalajara: { name: 'Guadalajara', lat: 20.6736, lng: -103.344, radius: 9000 },
   zapopan: { name: 'Zapopan', lat: 20.7214, lng: -103.3908, radius: 12000 },
   tlaquepaque: { name: 'San Pedro Tlaquepaque', lat: 20.6402, lng: -103.3117, radius: 8000 },
@@ -19,6 +23,15 @@ export const MUNICIPALITIES: Record<string, { name: string; lat: number; lng: nu
   'puerta-de-hierro': { name: 'Puerta de Hierro, Andares y Valle Real', lat: 20.7115, lng: -103.4155, radius: 3500 },
   // Los Altos: national capital of eggs and pork; 80 km away, but its farms and packers aren't in the metro area.
   tepatitlan: { name: 'Tepatitlán de Morelos', lat: 20.8167, lng: -102.7667, radius: 25000 },
+  // US pilot (2026-11-10): Hispanic businesses, many with owners from Jalisco. Centered on
+  // East LA / Boyle Heights / Huntington Park and on Pilsen / Little Village.
+  'los-angeles': { name: 'Los Angeles', region: 'California', country: 'US', lat: 34.0200, lng: -118.2000, radius: 15000 },
+  chicago: { name: 'Chicago', region: 'Illinois', country: 'US', lat: 41.8480, lng: -87.6900, radius: 12000 },
+}
+
+/** True for the US pilot areas: there prospects are written to by email only. */
+export function isUsArea(key: string): boolean {
+  return MUNICIPALITIES[key]?.country === 'US'
 }
 
 /** Industries that tend to buy custom software, with the query that works best in Places. */
@@ -53,6 +66,13 @@ export const INDUSTRIES: { key: string; name: string; query: string; segment: st
   { key: 'florists', name: 'Florerías con entrega', query: 'florería arreglos florales a domicilio', segment: 'bakeries-florists' },
   { key: 'used-cars', name: 'Agencias de seminuevos', query: 'agencia de autos seminuevos', segment: 'used-cars' },
   { key: 'academies', name: 'Escuelas de idiomas y academias', query: 'escuela de idiomas academia de inglés', segment: 'academies' },
+  // US pilot (2026-11-10): Hispanic businesses in Los Angeles and Chicago, by email only.
+  // Bilingual queries because Places lists them in either language.
+  { key: 'us-bakeries', name: 'EE. UU.: panaderías mexicanas', query: 'panadería mexicana mexican bakery', segment: 'bakeries-florists' },
+  { key: 'us-florists', name: 'EE. UU.: florerías', query: 'florería flower shop', segment: 'bakeries-florists' },
+  { key: 'us-taquerias', name: 'EE. UU.: taquerías y restaurantes mexicanos', query: 'taquería restaurante mexicano', segment: 'restaurants' },
+  { key: 'us-food-distributors', name: 'EE. UU.: distribuidoras de productos mexicanos', query: 'distribuidora de productos mexicanos mexican food distributor', segment: 'food-distributors' },
+  { key: 'us-meat-markets', name: 'EE. UU.: carnicerías y mercados mexicanos', query: 'carnicería mercado mexicano meat market', segment: 'food-distributors' },
   // To look up large companies by name ("Grupo Dalton") with the custom search.
   { key: 'corporate', name: 'Empresas grandes y corporativos', query: 'corporativo oficinas corporativas', segment: 'corporate' },
 ]

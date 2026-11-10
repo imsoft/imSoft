@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { phoneAsWhatsApp, candidateFrom, googleListing, isOffProfile, linkedInContactFromResults, facebookFromResults, distinctiveTokens, instagramFromResults, domainOf, contactLinks, extractEmail, extractInstagram, extractWhatsApp, rowFromCandidate, formatPhone, industryByKey, cleanName, markExisting, normalizedName, isReachable, dedupe, runNumber, searchSlice, matchingBrand, isPremiumZone } from './places'
+import { phoneAsWhatsApp, candidateFrom, googleListing, isOffProfile, linkedInContactFromResults, facebookFromResults, distinctiveTokens, instagramFromResults, domainOf, contactLinks, extractEmail, extractInstagram, extractWhatsApp, rowFromCandidate, formatPhone, industryByKey, cleanName, markExisting, normalizedName, isReachable, dedupe, runNumber, searchSlice, matchingBrand, isPremiumZone, isUsArea, industryByKey as industry } from './places'
 import { mapRowsToContacts } from './import-contacts'
 
 describe('Instagram by web search', () => {
@@ -231,5 +231,23 @@ describe('prospect search (Places)', () => {
     expect(extractEmail('<a href="mailto:johndoe@mail.com">johndoe@mail.com</a>', 'colegiobatiz.edu.mx')).toBeNull()
     // mailto with an encoded space: the %20 is not part of the address.
     expect(extractEmail('<a href="mailto:%20reservaspisosiete@doubletreegdlch.com">Reservas</a>', 'doubletreegdlch.com')).toBe('reservaspisosiete@doubletreegdlch.com')
+  })
+})
+
+describe('US pilot areas (2026-11-10)', () => {
+  it('Los Angeles and Chicago are US areas; Guadalajara is not', () => {
+    expect(isUsArea('los-angeles')).toBe(true)
+    expect(isUsArea('chicago')).toBe(true)
+    expect(isUsArea('guadalajara')).toBe(false)
+    expect(isUsArea('nowhere')).toBe(false)
+  })
+
+  it('a US phone with +1 never passes for a Mexican WhatsApp', () => {
+    expect(phoneAsWhatsApp('+1 (213) 555-0142')).toBeNull()
+  })
+
+  it('the US industries reuse the existing segments', () => {
+    expect(industry('us-bakeries')?.segment).toBe('bakeries-florists')
+    expect(industry('us-food-distributors')?.segment).toBe('food-distributors')
   })
 })

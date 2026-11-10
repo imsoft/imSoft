@@ -182,6 +182,11 @@ describe('social queue', () => {
 describe('socialQueue: paused and prioritized industries (2026-11-09)', () => {
   const c = (id: string, tags: string[]) => ({ id, company: id, phone: '33 1234 5678', tags })
 
+  it('leaves the US pilot out of the queue: email only', () => {
+    const rows = socialQueue([c('us', ['bakeries-florists', 'market-us']), c('gdl', ['bakeries-florists'])])
+    expect(rows.map((r) => r.id)).toEqual(['gdl'])
+  })
+
   it('leaves clinics, dentists and spas out of the queue', () => {
     const rows = socialQueue([c('clinic', ['google-places', 'health']), c('gym', ['fitness'])])
     expect(rows.map((r) => r.id)).toEqual(['gym'])

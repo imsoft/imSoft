@@ -157,3 +157,28 @@ describe('recipient of a bounce notice', () => {
     expect(failedRecipient('', 'Aviso sin dirección')).toBeNull();
   });
 });
+
+describe('US pilot (2026-11-10)', () => {
+  it('the market tag wins over the industry and picks the US template', () => {
+    expect(segmentOf(['google-places', 'bakeries-florists', 'market-us', 'los-angeles'])).toBe('market-us');
+    const e = renderOutreach(1, { name: 'Rosa', company: 'Panadería La Espiga', hook: 'Los encargos de pasteles se anotan a mano.', segment: 'market-us' });
+    expect(e.subject).toBe('Pedidos en línea para Panadería La Espiga');
+    expect(e.text).toContain('en dólares');
+    expect(e.text).not.toContain('Guadalajara para negocios');
+  });
+
+  it('every US email carries the postal address and the opt-out (CAN-SPAM)', async () => {
+    const { renderFromBody } = await import('./outreach');
+    for (const step of [1, 2, 3] as const) {
+      const e = renderOutreach(step, { name: 'Rosa', company: 'La Espiga', hook: 'x.', segment: 'market-us' });
+      expect(e.text).toContain('C.P. 44860');
+      expect(e.text).toContain('respóndeme "no"');
+      expect(e.html).toContain('C.P. 44860');
+    }
+    // Editing a draft keeps the US legal line.
+    expect(renderFromBody(2, { subject: 'Re: x', body: 'Hola.', company: 'La Espiga', segment: 'market-us' }).text).toContain('C.P. 44860');
+    // Mexico is unchanged: legal line only on the first email, without the address.
+    expect(renderOutreach(2, { name: 'Ana', company: 'Acme', hook: 'x.', segment: null }).text).not.toContain('respóndeme');
+    expect(renderOutreach(1, { name: 'Ana', company: 'Acme', hook: 'x.', segment: null }).text).not.toContain('C.P.');
+  });
+});
