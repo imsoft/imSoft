@@ -20,6 +20,14 @@ function getLocale(request: NextRequest): string {
   return match(languages, locales, defaultLocale)
 }
 
+/**
+ * True when the request carries a Supabase auth cookie ("sb-<project>-auth-token",
+ * possibly split into ".0", ".1"... chunks).
+ */
+export function hasSupabaseSession(request: Pick<NextRequest, 'cookies'>): boolean {
+  return request.cookies.getAll().some(({ name }) => name.startsWith('sb-') && name.includes('-auth-token'))
+}
+
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
   const pathnameHasLocale = locales.some(
@@ -32,6 +40,10 @@ export async function proxy(request: NextRequest) {
     ? NextResponse.next({ request })
     : NextResponse.redirect(new URL(`/${getLocale(request)}${pathname}`, request.url))
   let response = createResponse()
+
+  // Visitors without a session (bots, crawlers and almost every public visit) have
+  // nothing to refresh: skip Supabase so they cost as little as possible (2026-11-11).
+  if (!hasSupabaseSession(request)) return response
 
   // Supabase client that refreshes sessions
   const supabase = createServerClient(
