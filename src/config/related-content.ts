@@ -11,7 +11,7 @@ export const RELATED_POSTS_BY_SERVICE: Record<string, string[]> = {
   'aplicaciones-moviles': ['cuanto-cuesta-desarrollar-una-app-en-mexico', 'cuanto-cuesta-mantener-una-app-al-mes'],
   'desarrollo-de-mvp': ['cuanto-cuesta-desarrollar-una-app-en-mexico'],
   'mantenimiento-y-soporte': ['cuanto-cuesta-mantener-una-app-al-mes'],
-  'web-pages': ['cuanto-cuesta-una-pagina-web-en-mexico', 'cuanto-cobra-un-programador-por-hacer-una-pagina-web'],
+  'web-pages': ['cuanto-cuesta-una-pagina-web-en-mexico'],
   // A store's price is answered by the /es/cuanto-cuesta/tienda-en-linea guide, not an article.
   'tiendas-en-linea': ['cuanto-cuesta-una-pagina-web-en-mexico'],
   'software-a-medida': [

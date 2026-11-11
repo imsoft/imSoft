@@ -25,6 +25,7 @@ import {
   MAX_TITLE_OVERLAP,
   normalizeArticle,
   pickNextTopic,
+  sourceExists,
   titleOverlap,
   validateArticle,
 } from "../src/lib/blog-generator.ts";
@@ -189,13 +190,17 @@ async function generateBlogPost(topic, existingTitles, corrections = []) {
   throw new Error("Claude no entregó el artículo tras varias pausas de búsqueda.");
 }
 
-/** Every declared source must respond: a hallucinated URL does not pass. */
+/**
+ * Every declared source must exist: a hallucinated URL does not pass. 401, 403 and 429 mean
+ * the page exists but blocks bots (Clutch and Heraldo de México did on 2026-11-01 and the
+ * article was thrown away), so they count as valid; 404, 410 and 5xx do not.
+ */
 async function verifySources(sources) {
   const failed = [];
   for (const f of sources) {
     try {
-      const r = await fetch(f.url, { method: "GET", redirect: "follow", headers: { "user-agent": "Mozilla/5.0 (imSoft blog source check)" }, signal: AbortSignal.timeout(15000) });
-      if (!r.ok) failed.push(`${f.url} → HTTP ${r.status}`);
+      const r = await fetch(f.url, { method: "GET", redirect: "follow", headers: { "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36", "accept-language": "es-MX,es;q=0.9,en;q=0.8" }, signal: AbortSignal.timeout(15000) });
+      if (!sourceExists(r.status)) failed.push(`${f.url} → HTTP ${r.status}`);
     } catch (err) {
       failed.push(`${f.url} → ${err.message}`);
     }
@@ -456,7 +461,7 @@ async function main() {
   const queue = loadQueue();
   const existing = await fetchExistingPosts();
   const existingSlugs = existing.flatMap((p) => [p.slug, p.slug_es]);
-  const topic = pickNextTopic(queue, existingSlugs);
+  const topic = pickNextTopic(queue, existingSlugs, existing.map((p) => p.title_es).filter(Boolean));
   if (!topic) {
     console.log("Cola de temas agotada: no se publica nada. Agrega búsquedas a content/blog-queue.json.");
     await sendEmail("Blog automático: cola de temas vacía", buildErrorEmail("No quedan temas pendientes en content/blog-queue.json. No se publicó nada."));

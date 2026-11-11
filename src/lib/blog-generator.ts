@@ -30,10 +30,28 @@ export interface GeneratedArticle {
   sources: ArticleSource[];
 }
 
-/** First queue entry whose slug (es or en) doesn't exist yet in the blog table. */
-export function pickNextTopic(queue: QueueTopic[], existingSlugs: Iterable<string>): QueueTopic | null {
+/**
+ * First queue entry not yet covered by the blog: its slug (es or en) doesn't exist and no
+ * published title already answers it. The title check matters because older posts have
+ * other slugs: "cuanto-cuesta-una-pagina-web-en-mexico" was picked twice (2026-10-15 and
+ * 11-01) while "¿Cuánto cuesta una página web en México? Precios reales 2026" already
+ * existed, and both runs failed on the title overlap.
+ */
+export function pickNextTopic(queue: QueueTopic[], existingSlugs: Iterable<string>, existingTitles: string[] = []): QueueTopic | null {
   const used = new Set(Array.from(existingSlugs).filter(Boolean));
-  return queue.find((t) => !used.has(t.slug_es) && !used.has(t.slug_en)) ?? null;
+  return queue.find((t) => !used.has(t.slug_es) && !used.has(t.slug_en) && !existingTitles.some((title) => topicCoveredBy(t, title))) ?? null;
+}
+
+/** Share of the topic's meaningful words (from its Spanish slug) that a published title already contains. */
+const TOPIC_COVERED = 0.8;
+
+export function topicCoveredBy(topic: Pick<QueueTopic, 'slug_es'>, title: string): boolean {
+  const T = titleFingerprint(topic.slug_es.replace(/-/g, ' '));
+  if (!T.size) return false;
+  const B = titleFingerprint(title);
+  let shared = 0;
+  for (const w of T) if (B.has(w)) shared += 1;
+  return shared / T.size >= TOPIC_COVERED;
 }
 
 export function slugify(text: string): string {
@@ -78,6 +96,11 @@ export function titleOverlap(a: string, b: string): number {
   let shared = 0;
   for (const w of A) if (B.has(w)) shared += 1;
   return shared / Math.min(A.size, B.size);
+}
+
+/** HTTP status of a source check that proves the page exists: OK, or blocked for bots (401, 403, 429). */
+export function sourceExists(status: number): boolean {
+  return (status >= 200 && status < 400) || status === 401 || status === 403 || status === 429;
 }
 
 /** Maximum overlap tolerated with an already published title. */

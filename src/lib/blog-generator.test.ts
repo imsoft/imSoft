@@ -3,6 +3,8 @@ import {
   MAX_TITLE_OVERLAP,
   countWords,
   pickNextTopic,
+  sourceExists,
+  topicCoveredBy,
   slugify,
   titleOverlap,
   validateArticle,
@@ -26,6 +28,13 @@ describe('pickNextTopic', () => {
     const queue = [topic('a'), topic('b'), topic('c')];
     expect(pickNextTopic(queue, ['a'])?.slug_es).toBe('b');
     expect(pickNextTopic(queue, ['a', 'b-en'])?.slug_es).toBe('c');
+  });
+
+  it('skips a topic a published title already answers, even with another slug (2026-11-01)', () => {
+    const queue = [topic('cuanto-cuesta-una-pagina-web-en-mexico'), topic('cuanto-cuesta-mantener-una-app-al-mes')]
+    const titles = ['¿Cuánto cuesta una página web en México? Precios reales 2026', '¿Cuánto cuesta una app?']
+    expect(pickNextTopic(queue, [], titles)?.slug_es).toBe('cuanto-cuesta-mantener-una-app-al-mes')
+    expect(topicCoveredBy(topic('cuanto-cuesta-mantener-una-app-al-mes'), '¿Cuánto cuesta una app?')).toBe(false)
   });
 
   it('returns null when the queue is exhausted: better not to publish than to repeat', () => {
@@ -181,5 +190,12 @@ describe('countWords', () => {
   it('counts text, not tags', () => {
     expect(countWords('<p>uno <strong>dos</strong> tres</p>')).toBe(3);
     expect(countWords('')).toBe(0);
+  });
+});
+
+describe('sourceExists', () => {
+  it('pages that block bots exist; missing pages and server errors do not', () => {
+    for (const st of [200, 301, 401, 403, 429]) expect(sourceExists(st)).toBe(true);
+    for (const st of [404, 410, 500, 503]) expect(sourceExists(st)).toBe(false);
   });
 });
