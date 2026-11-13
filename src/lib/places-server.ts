@@ -5,6 +5,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { mapRowsToContacts } from './import-contacts.ts'
 import { MUNICIPALITIES, candidateFrom, linkedInContactFromResults, contactLinks, extractEmail, extractInstagram, extractWhatsApp, facebookFromResults, rowFromCandidate, industryByKey, instagramFromResults, markExisting, phoneAsWhatsApp, isReachable, dedupe, type Candidate, type ExistingContact, type PlaceResult } from './places.ts'
+import { fetchAll } from './supabase/fetch-all.ts'
 
 const FIELD_MASK = 'places.id,places.displayName,places.formattedAddress,places.websiteUri,places.nationalPhoneNumber,places.rating,places.userRatingCount,places.primaryTypeDisplayName,places.googleMapsUri,nextPageToken'
 
@@ -44,8 +45,9 @@ export async function searchPlaces(query: string, municipality: string, max = 60
 }
 
 export async function existingContacts(db: SupabaseClient): Promise<ExistingContact[]> {
-  const [{ data }, { data: portfolio }] = await Promise.all([
-    db.from('contacts').select('company, website_url, phone, email').limit(5000),
+  // Every contact, not only the first 1,000 (see fetchAll): 76 duplicates came in before 2026-11-13.
+  const [data, { data: portfolio }] = await Promise.all([
+    fetchAll<ExistingContact>((from, to) => db.from('contacts').select('company, website_url, phone, email').order('id').range(from, to)),
     db.from('portfolio').select('title_es, title, client, project_url').limit(500),
   ])
   // Portfolio clients count as existing: they're not cold-prospected
@@ -54,7 +56,7 @@ export async function existingContacts(db: SupabaseClient): Promise<ExistingCont
     const name = String(p.title_es ?? p.title ?? '').split(/ [-·] /)[0].trim()
     return [name, String(p.client ?? '').trim()].filter(Boolean).map((company) => ({ company, website_url: (p.project_url as string | null) ?? null, phone: null, email: null }))
   })
-  return [...((data ?? []) as ExistingContact[]), ...clients]
+  return [...data, ...clients]
 }
 
 async function fetchHtml(url: string, ms = 8000): Promise<string | null> {

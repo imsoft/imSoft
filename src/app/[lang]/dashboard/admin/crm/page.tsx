@@ -11,6 +11,8 @@ import { emailStatusOf, type EmailRow } from '@/lib/email-status'
 import { campaignStatus } from '@/lib/outreach-server'
 import { dailyQuota } from '@/lib/batch-send'
 import { isAdmin } from '@/lib/roles'
+import { fetchAll } from '@/lib/supabase/fetch-all'
+import type { Contact } from '@/types/database'
 
 export default async function CRMPage({ params }: {
   params: Promise<{ lang: string }>
@@ -33,25 +35,26 @@ export default async function CRMPage({ params }: {
     redirect(`/${lang}/dashboard/client`)
   }
 
-  // Fetch all contacts
-  const { data: contacts } = await supabase
-    .from('contacts')
-    .select('*')
-    .order('created_at', { ascending: false })
+  // Fetch all contacts, page by page: a plain select stops at 1,000 rows (fetchAll).
+  const contacts = await fetchAll<Contact>((from, to) =>
+    supabase.from('contacts').select('*').order('created_at', { ascending: false }).order('id').range(from, to),
+  )
 
   // Where each contact's email sequence stands, to show it in the table.
   // Only the server reads outreach_emails (service role); the admin is already verified.
   const db = serviceClient()
-  const [{ data: emails }, campaign] = await Promise.all([
-    db.from('outreach_emails').select('id, contact_id, step, status, sent_at, scheduled_for').limit(5000),
+  const [emails, campaign] = await Promise.all([
+    fetchAll<EmailRow & { id: string; contact_id: string; scheduled_for: string | null }>((from, to) =>
+      db.from('outreach_emails').select('id, contact_id, step, status, sent_at, scheduled_for').order('id').range(from, to),
+    ),
     campaignStatus(db),
   ])
   // Daily cap: what was sent today plus the drafts already waiting to go out.
-  const pending = (emails ?? []).filter((f) => f.status === 'draft' && String(f.scheduled_for) <= campaign.today).length
+  const pending = emails.filter((f) => f.status === 'draft' && String(f.scheduled_for) <= campaign.today).length
   const quota = dailyQuota(campaign.cap, campaign.sentToday, pending)
   const byContact = new Map<string, EmailRow[]>()
-  for (const f of (emails ?? []) as Array<EmailRow & { contact_id: string }>) byContact.set(f.contact_id, [...(byContact.get(f.contact_id) ?? []), f])
-  const withEmailStatus = (contacts || []).map((c) => ({ ...c, emailStatus: emailStatusOf(byContact.get(c.id) ?? []) }))
+  for (const f of emails) byContact.set(f.contact_id, [...(byContact.get(f.contact_id) ?? []), f])
+  const withEmailStatus = contacts.map((c) => ({ ...c, emailStatus: emailStatusOf(byContact.get(c.id) ?? []) }))
 
   return (
     <div className="space-y-6">

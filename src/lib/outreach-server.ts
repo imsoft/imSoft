@@ -10,6 +10,7 @@ import { emailStatusOf, shortDate, type EmailRow } from '@/lib/email-status'
 import { isNonSalesMailbox } from '@/lib/invalid-email'
 import { searchPlaces, placesConfigured } from '@/lib/places-server'
 import { googleListing, normalizedName } from '@/lib/places'
+import { fetchAll } from '@/lib/supabase/fetch-all'
 import { socialQueue, countByChannel, socialIndustry, SOCIAL_DISCARD_REASONS, offerOf, renderSocialMessage, SOCIAL_DISCARDED_TAG, CHANNEL_DAILY_CAP, type Channel, type SocialDiscardReason, type QueueContact, type QueueRow, type Offer } from '@/lib/social-message'
 import { emailDomain, buildMime, bodyOf, nextStepDate, renderFromBody, renderOutreach, segmentOf, dailyCap, US_MARKET_TAG, type Step } from '@/lib/outreach'
 
@@ -100,11 +101,12 @@ export async function hookWithAI(c: MinContact, offer: Offer | null = null): Pro
  * from the CRM notes; if there's none, the AI proposes it.
  */
 export async function createStep1Drafts(db: SupabaseClient, limit: number, campaign?: string | null) {
-  const { data: existing } = await db.from('outreach_emails').select('contact_id')
-  const alreadyHave = new Set((existing ?? []).map((r) => r.contact_id as string))
+  const existing = await fetchAll<{ contact_id: string }>((from, to) => db.from('outreach_emails').select('contact_id').order('id').range(from, to))
+  const alreadyHave = new Set(existing.map((r) => r.contact_id))
   const { data: contacts, error } = await db.from('contacts').select(CONTACT_COLUMNS).eq('contact_type', 'prospect').eq('status', 'no_contact').not('email', 'is', null).order('created_at', { ascending: true }).limit(400)
   if (error) throw new Error(error.message)
-  const candidates = ((contacts ?? []) as MinContact[]).filter((c) => !alreadyHave.has(c.id) && c.email && !(c.tags ?? []).includes('invalid-email')).slice(0, limit)
+  // `duplicate`: a second copy of a business already in the CRM (see fetchAll); the original gets the emails.
+  const candidates = ((contacts ?? []) as MinContact[]).filter((c) => !alreadyHave.has(c.id) && c.email && !(c.tags ?? []).some((t) => t === 'invalid-email' || t === DUPLICATE_TAG)).slice(0, limit)
   const created: string[] = []
   const errors: string[] = []
   for (const c of candidates) {
@@ -276,14 +278,17 @@ export async function socialMessageCounts(db: SupabaseClient) {
  * should be handled. `total` is how many are in the queue; `rows` holds at most `limit`.
  */
 export async function socialQueueProspects(db: SupabaseClient, limit = 25): Promise<{ rows: QueueRow[]; total: number }> {
-  const { data } = await db
-    .from('contacts')
-    .select('id, first_name, last_name, company, email, phone, instagram_url, social_links, tags')
-    .eq('contact_type', 'prospect')
-    .eq('status', 'no_contact')
-    .order('created_at', { ascending: true })
-    .limit(1000)
-  const queue = socialQueue((data ?? []) as QueueContact[])
+  const data = await fetchAll<QueueContact>((from, to) =>
+    db
+      .from('contacts')
+      .select('id, first_name, last_name, company, email, phone, instagram_url, social_links, tags')
+      .eq('contact_type', 'prospect')
+      .eq('status', 'no_contact')
+      .order('created_at', { ascending: true })
+      .order('id')
+      .range(from, to),
+  )
+  const queue = socialQueue(data)
   return { rows: queue.slice(0, limit), total: queue.length }
 }
 
@@ -329,11 +334,24 @@ export async function editDraft(db: SupabaseClient, id: string, changes: { subje
  * 2) Creates the follow-up drafts that are already due (4 and 6 business days).
  * 3) Closes those that already got the 3 emails without a reply.
  */
+/** Tag of a contact that repeats a business already in the CRM: kept for reference, never written to. */
+export const DUPLICATE_TAG = 'duplicate'
+
+/** The columns of a sent outreach email that the sync reads. */
+interface SentEmail {
+  contact_id: string
+  step: number
+  sent_at: string
+  gmail_thread_id: string | null
+  hook: string | null
+  campaign: string | null
+}
+
 export async function syncOutreach(db: SupabaseClient, userId: string) {
   const res = { replied: 0, bounced: 0, followUpsCreated: 0, closed: 0, errors: [] as string[] }
-  const { data: sent } = await db.from('outreach_emails').select('*').eq('status', 'sent').order('sent_at', { ascending: true })
+  const sent = await fetchAll<SentEmail>((from, to) => db.from('outreach_emails').select('*').eq('status', 'sent').order('sent_at', { ascending: true }).order('id').range(from, to))
   const byContact = new Map<string, typeof sent>()
-  for (const r of sent ?? []) byContact.set(r.contact_id, [...(byContact.get(r.contact_id) ?? []), r])
+  for (const r of sent) byContact.set(r.contact_id, [...(byContact.get(r.contact_id) ?? []), r])
 
   // Bounces that arrived as a separate email (outside the thread) or from sends made by hand.
   try {
