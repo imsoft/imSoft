@@ -3,13 +3,14 @@ import { describe, expect, it, vi } from 'vitest'
 vi.mock('@/lib/gmail/server', () => ({ sendRaw: vi.fn(), threadStatus: vi.fn(), messageIdHeader: vi.fn(), recentBounces: vi.fn(async () => []) }))
 vi.mock('@anthropic-ai/sdk', () => ({ default: class {} }))
 
-import { createDraftForContact, domainAcceptsMail, markSentManually, markBounce, recordSocialMessage } from './outreach-server'
+import { sendRaw } from '@/lib/gmail/server'
+import { createDraftForContact, domainAcceptsMail, markSentManually, markBounce, recordSocialMessage, sendDraft } from './outreach-server'
 
 /**
  * Fake Supabase: records what was updated/inserted in each table and returns the requested
  * draft. This tests the effect of "Ya lo envié" without a database.
  */
-function fakeDb(draft: Record<string, unknown> | null) {
+function fakeDb(draft: Record<string, unknown> | null, contact: Record<string, unknown> | null = null) {
   const updates: Array<{ table: string; values: Record<string, unknown>; filters: Record<string, unknown> }> = []
   const inserts: Array<{ table: string; values: Record<string, unknown> }> = []
   const from = (table: string) => {
@@ -18,7 +19,7 @@ function fakeDb(draft: Record<string, unknown> | null) {
       select: () => q,
       eq: (col: string, val: unknown) => { filters[col] = val; return q },
       in: (col: string, val: unknown) => { filters[col] = val; return q },
-      maybeSingle: async () => ({ data: table === 'outreach_emails' ? draft : null }),
+      maybeSingle: async () => ({ data: table === 'outreach_emails' ? draft : table === 'contacts' ? contact : null }),
       update: (values: Record<string, unknown>) => { updates.push({ table, values, filters }); return q },
       insert: async (values: Record<string, unknown>) => { inserts.push({ table, values }); return { error: null } },
       then: (ok: (v: unknown) => void) => ok({ error: null }),
@@ -62,6 +63,25 @@ describe('markSentManually', () => {
     await expect(markSentManually(sent.db, 'u1', 'b1')).rejects.toThrow('ya no es un borrador')
     expect(sent.updates).toEqual([])
     expect(sent.inserts).toEqual([])
+  })
+})
+
+describe('sendDraft', () => {
+  const draft = { id: 'b2', contact_id: 'c1', step: 2, status: 'draft', subject: 'Re: Hola', html: '<p>Hola</p>' }
+
+  it('never sends to an address that already bounced: it skips the draft instead', async () => {
+    const contact = { id: 'c1', email: 'henry@gmail.com', tags: ['market-us', 'invalid-email'], invalid_emails: ['henry@gmail.com'] }
+    const { db, updates } = fakeDb(draft, contact)
+    await expect(sendDraft(db, 'u1', 'b2')).rejects.toThrow(/rebotó/)
+    expect(sendRaw).not.toHaveBeenCalled()
+    expect(updates).toEqual([expect.objectContaining({ table: 'outreach_emails', values: expect.objectContaining({ status: 'skipped' }), filters: { id: 'b2', status: 'draft' } })])
+  })
+
+  it('also when the address was marked invalid by hand, without the tag', async () => {
+    const contact = { id: 'c1', email: 'Henry@gmail.com', tags: ['market-us'], invalid_emails: ['henry@gmail.com'] }
+    const { db } = fakeDb(draft, contact)
+    await expect(sendDraft(db, 'u1', 'b2')).rejects.toThrow(/rebotó/)
+    expect(sendRaw).not.toHaveBeenCalled()
   })
 })
 

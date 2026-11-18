@@ -7,7 +7,7 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 import { sendRaw, threadStatus, messageIdHeader, recentBounces } from '@/lib/gmail/server'
 import { HOOK_TOOL, listingFromNotes, hookFromNotes, cleanOpener, cleanHook, notesWithoutListing, defaultQuestion, openerPrompt, hookPrompt } from '@/lib/outreach-ai'
 import { emailStatusOf, shortDate, type EmailRow } from '@/lib/email-status'
-import { isNonSalesMailbox } from '@/lib/invalid-email'
+import { isInvalidEmail, isNonSalesMailbox } from '@/lib/invalid-email'
 import { searchPlaces, placesConfigured } from '@/lib/places-server'
 import { googleListing, normalizedName } from '@/lib/places'
 import { fetchAll } from '@/lib/supabase/fetch-all'
@@ -168,10 +168,15 @@ export async function sendDraft(db: SupabaseClient, userId: string, id: string) 
   const { data: row } = await db.from('outreach_emails').select('*').eq('id', id).maybeSingle()
   if (!row) throw new Error('Borrador no encontrado')
   if (row.status !== 'draft') throw new Error('Este correo ya no es un borrador')
+  const { data: c } = await db.from('contacts').select(`${CONTACT_COLUMNS}, invalid_emails`).eq('id', row.contact_id).maybeSingle()
+  if (!c?.email) throw new Error('El contacto no tiene correo')
+  // A draft can outlive the bounce that invalidated its address (e.g. two syncs at once): it's skipped, never sent.
+  if (isInvalidEmail(c)) {
+    await db.from('outreach_emails').update({ status: 'skipped', updated_at: new Date().toISOString() }).eq('id', id).eq('status', 'draft')
+    throw new Error('El correo de este contacto rebotó; se descartó el borrador')
+  }
   const campaign = await campaignStatus(db)
   if (campaign.remainingToday <= 0) throw new Error(`Ya mandaste ${campaign.sentToday} hoy; el tope de hoy es ${campaign.cap}. Mañana sigues.`)
-  const { data: c } = await db.from('contacts').select(CONTACT_COLUMNS).eq('id', row.contact_id).maybeSingle()
-  if (!c?.email) throw new Error('El contacto no tiene correo')
 
   // Follow-ups: in the same thread as the first email.
   let inReplyTo: string | null = null
@@ -404,6 +409,9 @@ export async function syncOutreach(db: SupabaseClient, userId: string) {
       if (existing) continue
       const c = contactById.get(contactId)
       if (!c) continue
+      // Re-read the tags: another sync running at the same time may have just marked the bounce.
+      const { data: fresh } = await db.from('contacts').select('tags').eq('id', contactId).maybeSingle()
+      if (((fresh?.tags as string[] | null) ?? c.tags ?? []).includes('invalid-email')) continue
       const hook = hookFromNotes(rows![0].hook as string | null) ?? hookFromNotes(c.notes) ?? (await hookWithAI(c))
       const r = renderOutreach(next, { name: firstNameOf(c), company: c.company ?? '', hook, segment: segmentOf(c.tags) })
       const { error } = await db.from('outreach_emails').insert({ contact_id: contactId, step: next, status: 'draft', campaign: rows![0].campaign, hook, subject: r.subject, html: r.html, text: r.text, scheduled_for: due })
