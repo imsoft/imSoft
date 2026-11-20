@@ -124,8 +124,8 @@ describe('prospect search (Places)', () => {
     expect(extractEmail(html, 'escontable.com')).toBe('ventas@escontable.com')
     expect(extractEmail('solo texto', 'x.com')).toBeNull()
     expect(extractEmail('info [at] negocio [dot] mx', 'negocio.mx')).toBe('info@negocio.mx')
-    // Without an email on the domain, it prefers contacto@ over a personal gmail
-    expect(extractEmail('contacto@otro.mx y persona@gmail.com', 'negocio.mx')).toBe('contacto@otro.mx')
+    // An address on someone else's domain is the developer's or a vendor's, not the business: the gmail wins
+    expect(extractEmail('contacto@otro.mx y persona@gmail.com', 'negocio.mx')).toBe('persona@gmail.com')
   })
 
   it('gets the Instagram and the contact links', () => {
@@ -257,5 +257,25 @@ describe('junk emails seen in the US pilot (2026-11-10)', () => {
     expect(extractEmail('cityenchantedgardens@gmail.comp', null)).toBeNull()
     expect(extractEmail('re1b98bea0aee48cac015@reviews.import', null)).toBeNull()
     expect(extractEmail('info@panchosbakery.com', 'panchosbakery.com')).toBe('info@panchosbakery.com')
+  })
+
+  it("drops addresses on someone else's domain, which bounced or reached vendors (2026-11-19)", () => {
+    expect(extractEmail('Website by eben@eyebytes.com', 'eugeniasflowers.com')).toBeNull()
+    expect(extractEmail('Support: support@bloomnation.com', 'vannuysflowers.com')).toBeNull()
+    expect(extractEmail('lemonad@jovanny.ru', null)).toBeNull()
+    expect(extractEmail('black9@qq.com', null)).toBeNull()
+    expect(extractEmail('info@monarcamex.top', 'monarcamex.top')).toBeNull()
+    // Sister domains and the business's own gmail still count.
+    expect(extractEmail('help@palimexinc.com', 'palimexdistributors.com')).toBe('help@palimexinc.com')
+    expect(extractEmail('cg@lasamericasbakery.us', 'lasamericasbakery.com')).toBe('cg@lasamericasbakery.us')
+    expect(extractEmail('marketing@thelaflowermarket.com', 'originallaflowermarket.com')).toBe('marketing@thelaflowermarket.com')
+    expect(extractEmail('eltaqueroguzman@gmail.com', 'eltaquero.com')).toBe('eltaqueroguzman@gmail.com')
+    expect(extractEmail('ventas@negocio.com.mx', 'www.negocio.com.mx')).toBe('ventas@negocio.com.mx')
+    expect(extractEmail('a.obregon@vca.mx', 'vca.com.mx')).toBe('a.obregon@vca.mx')
+    expect(extractEmail('admisiones@itjvallereal.edu.mx', 'itj.edu.mx')).toBe('admisiones@itjvallereal.edu.mx')
+    expect(extractEmail('hola@casamaca.mx', 'macastudio.mx')).toBe('hola@casamaca.mx')
+    expect(extractEmail('avicolaaguaescondida@tepa.com.mx', 'avicolaaguaescondida.com')).toBe('avicolaaguaescondida@tepa.com.mx')
+    expect(extractEmail('hello@favethemes.com', 'grupohoja.com')).toBeNull()
+    expect(extractEmail('matt@pixelspread.com', 'chandanspa.godaddysites.com')).toBeNull()
   })
 })

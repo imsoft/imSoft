@@ -289,8 +289,50 @@ export function dedupe(candidates: Candidate[]): Candidate[] {
 }
 
 const EMAIL_RE = /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/gi
-const JUNK_EMAILS = /(noreply|no-reply|donotreply|example|sentry|wixpress|godaddy|squarespace|shopify|wordpress|@2x|\.png$|\.jpg$|\.svg$|\.webp$|\.gif$|^(usuario|correo|email|nombre|tu-?correo|tu-?email|ejemplo|test|john\.?doe|jane\.?doe|lorem|ipsum|your-?name|your-?email|someone|user|username|mail|sample|demo|name|your-?mail|prueba|placeholder|abc|xyz|first\.?last|firstname\.?lastname)@|@(dominio|tudominio|ejemplo|correo|email|test|sitio|demoagency|yourdomain|yoursite|yourcompany|domain|company|mysite|website)\.|\.(comp|import|local|invalid)$|@reviews\.)/i
+const JUNK_EMAILS = /(noreply|no-reply|donotreply|example|sentry|wixpress|godaddy|squarespace|shopify|wordpress|@2x|\.png$|\.jpg$|\.svg$|\.webp$|\.gif$|^(usuario|correo|email|nombre|tu-?correo|tu-?email|ejemplo|test|john\.?doe|jane\.?doe|lorem|ipsum|your-?name|your-?email|someone|user|username|mail|sample|demo|name|your-?mail|prueba|placeholder|abc|xyz|first\.?last|firstname\.?lastname)@|@(dominio|tudominio|ejemplo|correo|email|test|sitio|demoagency|yourdomain|yoursite|yourcompany|domain|company|mysite|website)\.|\.(comp|import|local|invalid|ru|top|cn)$|@reviews\.|@qq\.com$)/i
 const PREFERRED_PREFIXES = ['contacto', 'ventas', 'info', 'hola', 'informes', 'atencion', 'admin', 'direccion', 'gerencia']
+
+const FREE_MAIL = /^(gmail|googlemail|hotmail|outlook|live|yahoo|ymail|aol|icloud|me|msn|prodigy|comcast|att|sbcglobal)\./
+
+/** Main label of a domain: "lasamericasbakery" for both lasamericasbakery.us and www.lasamericasbakery.com. */
+function domainLabel(d: string): string {
+  const parts = d.toLowerCase().replace(/^www\./, '').split('.')
+  // eugeniasflowers.com → eugeniasflowers; negocio.com.mx → negocio
+  while (parts.length > 1 && (parts[parts.length - 1].length <= 3 || ['com', 'net', 'org', 'edu', 'gob'].includes(parts[parts.length - 1]))) parts.pop()
+  return parts[parts.length - 1] ?? ''
+}
+
+/** Longest substring two labels share, to tell "palimexinc" ~ "palimexdistributors" from "eyebytes" vs "eugeniasflowers". */
+function sharedRun(a: string, b: string): number {
+  let best = 0
+  for (let i = 0; i < a.length; i++) for (let j = 0; j < b.length; j++) {
+    let k = 0
+    while (a[i + k] && a[i + k] === b[j + k]) k++
+    if (k > best) best = k
+  }
+  return best
+}
+
+/**
+ * A company email on someone else's domain is almost never the business: it's the web
+ * developer's credit, the ordering platform's support or a font foundry. In the US pilot
+ * (2026-11-19) 7 of 15 such addresses bounced and others went to BloomNation or Grubbio.
+ * Free mail (a small business's gmail) and sister domains (palimexinc vs palimexdistributors, vca.mx vs vca.com.mx) stay.
+ */
+export function belongsToSite(email: string, domain: string | null): boolean {
+  if (!domain) return true
+  const dom = email.split('@')[1]?.toLowerCase() ?? ''
+  if (FREE_MAIL.test(dom)) return true
+  const site = domain.toLowerCase().replace(/^www\./, '')
+  if (dom === site || dom.endsWith(`.${site}`) || site.endsWith(`.${dom}`)) return true
+  const a = domainLabel(dom)
+  const b = domainLabel(site)
+  // The business's name as the mailbox at its internet provider: avicolaaguaescondida@tepa.com.mx.
+  if (b.length >= 5 && email.split('@')[0].toLowerCase().includes(b)) return true
+  // vca.mx ~ vca.com.mx, itjvallereal ~ itj, casamaca ~ macastudio, grupomedicojoya ~ hospitaljoya.
+  if (a.length >= 3 && b.length >= 3 && (a.includes(b) || b.includes(a))) return true
+  return sharedRun(a, b) >= 4
+}
 
 /** Best email in an HTML page: same domain first, then the one with the most useful prefix. */
 export function extractEmail(html: string, domain: string | null): string | null {
@@ -299,7 +341,7 @@ export function extractEmail(html: string, domain: string | null): string | null
   const text = html.replace(/%20/gi, ' ').replace(/&#64;|&commat;/g, '@').replace(/\s*\[at\]\s*|\s*\(at\)\s*/gi, '@').replace(/\s*\[dot\]\s*|\s*\(dot\)\s*/gi, '.')
   // "placejoys.com@gmail.com" or "33123456@..." are glued text, not mailboxes (bounces of 2026-10-28).
   const oddLocalPart = (e: string) => /\.(com|mx|net|org|io)@/.test(e) || /^\d+@/.test(e)
-  const all = [...new Set((text.match(EMAIL_RE) ?? []).map((e) => e.toLowerCase()))].filter((e) => !JUNK_EMAILS.test(e) && !isNonSalesMailbox(e) && !oddLocalPart(e) && e.length < 80)
+  const all = [...new Set((text.match(EMAIL_RE) ?? []).map((e) => e.toLowerCase()))].filter((e) => !JUNK_EMAILS.test(e) && !isNonSalesMailbox(e) && !oddLocalPart(e) && belongsToSite(e, domain) && e.length < 80)
   if (all.length === 0) return null
   const score = (e: string) => {
     const [local, dom] = e.split('@')
