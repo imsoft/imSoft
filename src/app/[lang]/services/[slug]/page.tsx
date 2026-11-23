@@ -16,10 +16,24 @@ import {
   localizedServiceDescription,
   serviceAreaSentence,
 } from '@/lib/service-seo';
-import { resolveServiceContent } from '@/lib/service-fallbacks';
+import { resolveServiceContent, serviceStaticParams } from '@/lib/service-fallbacks';
 import { StructuredData } from '@/components/seo/structured-data';
 import { BreadcrumbNav } from '@/components/seo/breadcrumb-nav';
 import type { Metadata } from 'next';
+
+// Prerendered and served from Vercel's cache, refreshed hourly (it had no static params,
+// so every visit rendered it from scratch).
+export const revalidate = 3600;
+
+export async function generateStaticParams() {
+  const supabase = createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } }
+  );
+  const { data } = await supabase.from('services').select('slug');
+  return serviceStaticParams((data ?? []).map((r) => r.slug as string | null));
+}
 
 export async function generateMetadata({
   params,

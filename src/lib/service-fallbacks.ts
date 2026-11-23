@@ -276,6 +276,15 @@ export function getServiceFallback(slug: string): ServiceFallback | undefined {
   return bySlug.get(slug);
 }
 
+/**
+ * Params to prerender every service page: the slugs in the `services` table plus the
+ * built-in fallbacks (they render even without a row), in both languages, without repeats.
+ */
+export function serviceStaticParams(dbSlugs: Array<string | null | undefined>): Array<{ lang: string; slug: string }> {
+  const slugs = [...new Set([...dbSlugs.map((s) => (s ?? '').trim()), ...FALLBACKS.map((f) => f.slug)].filter(Boolean))];
+  return ['es', 'en'].flatMap((lang) => slugs.map((slug) => ({ lang, slug })));
+}
+
 /** Minimal shape used by `services/[slug]/page.tsx` (Supabase row or fallback). */
 export type ResolvedServiceContent = {
   title?: string | null;

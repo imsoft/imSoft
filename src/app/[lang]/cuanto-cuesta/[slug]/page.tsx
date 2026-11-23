@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getDictionary } from '@/app/[lang]/dictionaries';
-import { createClient } from '@/lib/supabase/server';
+import { createPublicClient } from '@/lib/supabase/public';
 import { generateStructuredData } from '@/lib/seo';
 import { StructuredData } from '@/components/seo/structured-data';
 import { HeroHeader } from '@/components/blocks/hero-section';
@@ -9,6 +9,9 @@ import { FooterSection } from '@/components/blocks/footer-section';
 import { CityServiceLanding } from '@/components/landing/city-service-landing';
 import { PRICE_GUIDE_SLUGS, SERVICE_PRICE_GUIDE, priceGuide, type PriceGuideSlug } from '@/config/price-guides';
 import { cityServiceHref, cityServiceTitle } from '@/config/city-services';
+
+// Public page: read with the cookie-less client so it's prerendered and cached (ISR).
+export const revalidate = 3600;
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io';
 
@@ -43,7 +46,7 @@ export default async function PriceGuidePage({ params }: { params: Promise<{ lan
   const g = priceGuide(slug);
   if (lang !== 'es' || !g) notFound();
   const dict = await getDictionary('es');
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data: contactData } = await supabase.from('contact').select('*').limit(1).maybeSingle();
   const url = `${SITE}/es/cuanto-cuesta/${slug}`;
 

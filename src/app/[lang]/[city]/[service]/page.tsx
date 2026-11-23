@@ -10,7 +10,7 @@ import { LANDING_CITIES, LANDING_INDUSTRIES } from '@/config/landing-pages-index
 import { resolveLandingContent } from '@/config/landing-pages-i18n';
 import type { City, Industry } from '@/types/landing-pages';
 import { getDictionary } from '@/app/[lang]/dictionaries';
-import { createClient } from '@/lib/supabase/server';
+import { createPublicClient } from '@/lib/supabase/public';
 import { generateStructuredData } from '@/lib/seo';
 import { StructuredData } from '@/components/seo/structured-data';
 import { HeroHeader } from '@/components/blocks/hero-section';
@@ -18,6 +18,9 @@ import { CityServiceLanding } from '@/components/landing/city-service-landing';
 import { CITY_SERVICE_LABELS, cityServiceContent, cityServiceHref, cityServicePages, cityServiceTitle, type CityKey, type CityServiceSlug } from '@/config/city-services';
 import { fetchPublishedPosts } from '@/lib/city-service-posts';
 import { servicePriceGuide } from '@/config/price-guides';
+
+// Public page: read with the cookie-less client so it's prerendered and cached (ISR).
+export const revalidate = 3600;
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io';
 
@@ -168,7 +171,7 @@ export default async function LandingPage({ params }: PageProps) {
 
   const pageData = resolveLandingContent(lang, city as City, service as Industry)!.data;
   const dict = await getDictionary(lang as 'es' | 'en');
-  const supabase = await createClient();
+  const supabase = createPublicClient();
 
   // Fetch contact info for the footer
   const { data: contactData } = await supabase
@@ -259,7 +262,7 @@ export default async function LandingPage({ params }: PageProps) {
 async function CityServicePage({ lang, city, slug }: { lang: string; city: CityKey; slug: CityServiceSlug }) {
   const content = cityServiceContent(city, slug)!;
   const dict = await getDictionary(lang as 'es' | 'en');
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data: contactData } = await supabase.from('contact').select('*').limit(1).maybeSingle();
   const url = `${SITE}/es/${city}/${slug}`;
   const posts = await fetchPublishedPosts(content.relatedPosts ?? []);

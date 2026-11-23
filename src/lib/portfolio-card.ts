@@ -89,3 +89,16 @@ export function portfolioMetaDescription(row: PortfolioRow, lang: string): strin
   const challenge = byLang(lang, row.challenge_es, row.challenge_en);
   return description.length >= 70 || !challenge ? description : `${description.replace(/\.?$/, '.')} ${challenge}`;
 }
+
+/** Languages the public portfolio is prerendered in. */
+export const PORTFOLIO_LOCALES = ['es', 'en'] as const;
+
+/**
+ * Params to prerender every detail page: each project (by its slug, or its id if it has
+ * none, the same segment portfolioLookup accepts) in every language. Empty segments and
+ * repeats are dropped so a bad row can't break the build.
+ */
+export function portfolioStaticParams(rows: Array<Pick<PortfolioRow, 'id' | 'slug'>>): Array<{ lang: string; slug: string }> {
+  const segments = [...new Set(rows.map((r) => (r.slug ?? '').trim() || (r.id ?? '').trim()).filter(Boolean))];
+  return PORTFOLIO_LOCALES.flatMap((lang) => segments.map((slug) => ({ lang, slug })));
+}

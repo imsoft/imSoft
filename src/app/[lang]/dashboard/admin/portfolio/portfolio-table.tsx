@@ -104,6 +104,8 @@ export function PortfolioTable({ portfolio, dict, lang }: PortfolioTableProps) {
 
       if (deleteError) throw deleteError
 
+      // The public pages are cached: refresh them so the deleted project disappears now.
+      await fetch('/api/portfolio/revalidate', { method: 'POST' }).catch(() => {})
       router.refresh()
       setDeleteDialogOpen(false)
       setDeletingId(null)

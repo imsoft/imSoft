@@ -6,9 +6,12 @@ import { CityServiceLanding } from '@/components/landing/city-service-landing';
 import type { CityServiceContent } from '@/config/city-services';
 import { StructuredData } from '@/components/seo/structured-data';
 import { getDictionary, hasLocale } from '@/app/[lang]/dictionaries';
-import { createClient } from '@/lib/supabase/server';
+import { createPublicClient } from '@/lib/supabase/public';
 import { generateStructuredData } from '@/lib/seo';
 import { ZAPOPAN_FAQ, ZAPOPAN_WEB } from '@/config/zapopan-web';
+
+// Public page: read with the cookie-less client so it's prerendered and cached (ISR).
+export const revalidate = 3600;
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io';
 const ES_URL = `${SITE_URL}/es/zapopan/paginas-web`;
@@ -66,7 +69,7 @@ export default async function ZapopanWebPage({
   if (!hasLocale(lang)) notFound();
 
   const dict = await getDictionary(lang);
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data: contactData } = await supabase
     .from('contact')
     .select('*')

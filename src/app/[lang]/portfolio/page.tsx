@@ -3,11 +3,14 @@ import { FooterSection } from "@/components/blocks/footer-section";
 import { HeroHeader } from "@/components/blocks/hero-section";
 import { getDictionary, hasLocale } from '../dictionaries';
 import { notFound } from 'next/navigation';
-import { createClient } from '@/lib/supabase/server';
+import { createPublicClient } from '@/lib/supabase/public';
 import { generateMetadata as generateSEOMetadata, generateStructuredData } from '@/lib/seo';
 import { StructuredData } from '@/components/seo/structured-data';
 import { portfolioCard } from '@/lib/portfolio-card';
 import type { Metadata } from 'next';
+
+// Public page: read with the cookie-less client so it's prerendered and cached (ISR).
+export const revalidate = 3600;
 
 export async function generateMetadata({
   params,
@@ -42,7 +45,7 @@ export default async function PortfolioPage({ params }: {
   if (!hasLocale(lang)) notFound();
 
   const dict = await getDictionary(lang);
-  const supabase = await createClient();
+  const supabase = createPublicClient();
 
   // Fetch contact info
   const { data: contactData } = await supabase

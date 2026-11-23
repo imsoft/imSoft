@@ -4,9 +4,12 @@ import { FooterSection } from "@/components/blocks/footer-section";
 import { HeroHeader } from "@/components/blocks/hero-section";
 import { getDictionary, hasLocale } from '../dictionaries';
 import { notFound } from 'next/navigation';
-import { createClient } from '@/lib/supabase/server';
+import { createPublicClient } from '@/lib/supabase/public';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
 import type { Metadata } from 'next';
+
+// Public page: read with the cookie-less client so it's prerendered and cached (ISR).
+export const revalidate = 3600;
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imsoft.io';
 
@@ -44,7 +47,7 @@ export default async function ServicesPage({ params }: {
   if (!hasLocale(lang)) notFound();
 
   const dict = await getDictionary(lang);
-  const supabase = await createClient();
+  const supabase = createPublicClient();
 
   // Fetch contact info
   const { data: contactData } = await supabase

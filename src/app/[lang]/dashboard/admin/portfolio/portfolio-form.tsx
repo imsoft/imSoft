@@ -317,6 +317,8 @@ export function PortfolioForm({ dict, lang, portfolio }: PortfolioFormProps) {
         toast.success(lang === 'en' ? 'Portfolio item created successfully' : 'Proyecto de portafolio creado exitosamente')
       }
 
+      // The public pages are cached: refresh them so the change shows up now.
+      await fetch('/api/portfolio/revalidate', { method: 'POST' }).catch(() => {})
       router.push(`/${lang}/dashboard/admin/portfolio`)
       router.refresh()
     } catch (error) {

@@ -3,15 +3,26 @@ import { HeroHeader } from "@/components/blocks/hero-section";
 import { getDictionary, hasLocale } from '../../dictionaries';
 import { notFound } from 'next/navigation';
 import Image from "@/components/ui/image";
-import { createClient } from '@/lib/supabase/server';
+import { createPublicClient } from '@/lib/supabase/public';
 import { generateMetadata as generateSEOMetadata, generateStructuredData } from '@/lib/seo';
 import { StructuredData } from '@/components/seo/structured-data';
 import { ArrowLeft, ExternalLink, CheckCircle2, Quote } from 'lucide-react';
 import Link from 'next/link';
 import Magnet from '@/components/ui/magnet';
 import { BreadcrumbNav } from '@/components/seo/breadcrumb-nav';
-import { portfolioLookup, portfolioMetaDescription } from '@/lib/portfolio-card';
+import { portfolioLookup, portfolioMetaDescription, portfolioStaticParams } from '@/lib/portfolio-card';
 import type { Metadata } from 'next';
+
+// Served from Vercel's cache and refreshed hourly; editing a project in the dashboard
+// refreshes it at once (see /api/portfolio/revalidate). It used to render on every
+// request because the Supabase client read cookies, and LinkedIn's preview timed out.
+export const revalidate = 3600;
+
+/** Every published project × language, prerendered at build time. New ones render on first visit. */
+export async function generateStaticParams() {
+  const { data } = await createPublicClient().from('portfolio').select('id, slug');
+  return portfolioStaticParams(data ?? []);
+}
 
 export async function generateMetadata({
   params,
@@ -19,7 +30,7 @@ export async function generateMetadata({
   params: Promise<{ lang: string; slug: string }>;
 }): Promise<Metadata> {
   const { lang, slug } = await params;
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const lookup = portfolioLookup(slug);
 
   const { data } = await supabase
@@ -59,7 +70,7 @@ export default async function PortfolioDetailPage({
   if (!hasLocale(lang)) notFound();
 
   const dict = await getDictionary(lang);
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const lookup = portfolioLookup(slug);
 
   const [{ data: contactData }, { data: project }] = await Promise.all([

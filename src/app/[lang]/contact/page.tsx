@@ -6,12 +6,15 @@ import ContactForm from './contact-form';
 import { Building2, Mail, Phone } from 'lucide-react';
 import { BUSINESS } from '@/config/business';
 import Link from 'next/link';
-import { createClient } from '@/lib/supabase/server';
+import { createPublicClient } from '@/lib/supabase/public';
 import { formatPhoneNumber } from '@/lib/utils/format-phone';
 import { generateMetadata as generateSEOMetadata, generateStructuredData } from '@/lib/seo';
 import { StructuredData } from '@/components/seo/structured-data';
 import type { Metadata } from 'next';
 import { ScrollReveal } from "@/components/animations/scroll-reveal";
+
+// Public page: read with the cookie-less client so it's prerendered and cached (ISR).
+export const revalidate = 3600;
 
 export async function generateMetadata({
   params,
@@ -48,7 +51,7 @@ export default async function ContactPage({ params }: {
   if (!hasLocale(lang)) notFound();
 
   const dict = await getDictionary(lang);
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   
   // Fetch contact info
   const { data: contactData } = await supabase

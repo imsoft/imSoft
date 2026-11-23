@@ -2,7 +2,7 @@ import { FooterSection } from "@/components/blocks/footer-section";
 import { HeroHeader } from "@/components/blocks/hero-section";
 import { getDictionary, hasLocale } from '../dictionaries';
 import { notFound } from 'next/navigation';
-import { createClient } from '@/lib/supabase/server';
+import { createPublicClient } from '@/lib/supabase/public';
 import { generateMetadata as generateSEOMetadata, generateStructuredData } from '@/lib/seo';
 import { StructuredData } from '@/components/seo/structured-data';
 import { Check } from 'lucide-react';
@@ -10,6 +10,9 @@ import Magnet from '@/components/ui/magnet';
 import type { Metadata } from 'next';
 import { ScrollReveal } from "@/components/animations/scroll-reveal";
 import { Counter } from "@/components/animations/counter";
+
+// Public page: read with the cookie-less client so it's prerendered and cached (ISR).
+export const revalidate = 3600;
 
 export async function generateMetadata({
   params,
@@ -44,7 +47,7 @@ export default async function AboutPage({
   if (!hasLocale(lang)) notFound();
 
   const dict = await getDictionary(lang);
-  const supabase = await createClient();
+  const supabase = createPublicClient();
 
   const { data: contactData } = await supabase
     .from('contact')

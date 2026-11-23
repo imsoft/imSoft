@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { MAX_CARD_RESULTS, portfolioCard, portfolioLookup, portfolioMetaDescription, type PortfolioRow } from './portfolio-card';
+import { MAX_CARD_RESULTS, portfolioCard, portfolioLookup, portfolioMetaDescription, portfolioStaticParams, type PortfolioRow } from './portfolio-card';
 
 const row: PortfolioRow = {
   id: '0a15d020-12a3-416e-a175-50bd5c993d7a',
@@ -88,5 +88,40 @@ describe('portfolioMetaDescription', () => {
   it('leaves already complete descriptions alone', () => {
     const long = 'x'.repeat(80);
     expect(portfolioMetaDescription({ id: 'x', description_es: long, challenge_es: 'reto' }, 'es')).toBe(long);
+  });
+});
+
+describe('portfolioStaticParams', () => {
+  it('prerenders every project in both languages, by slug or by id when it has no slug', () => {
+    const params = portfolioStaticParams([
+      { id: 'a1', slug: 'urbans' },
+      { id: 'b2', slug: 'aduvanta' },
+      { id: '0a15d020-12a3-416e-a175-50bd5c993d7a', slug: null },
+    ]);
+    expect(params).toEqual([
+      { lang: 'es', slug: 'urbans' },
+      { lang: 'es', slug: 'aduvanta' },
+      { lang: 'es', slug: '0a15d020-12a3-416e-a175-50bd5c993d7a' },
+      { lang: 'en', slug: 'urbans' },
+      { lang: 'en', slug: 'aduvanta' },
+      { lang: 'en', slug: '0a15d020-12a3-416e-a175-50bd5c993d7a' },
+    ]);
+  });
+
+  it('drops blank slugs and repeats, and returns nothing without projects', () => {
+    expect(portfolioStaticParams([{ id: 'a1', slug: '  ' }, { id: 'b2', slug: 'urbans' }, { id: 'c3', slug: 'urbans' }])).toEqual([
+      { lang: 'es', slug: 'a1' },
+      { lang: 'es', slug: 'urbans' },
+      { lang: 'en', slug: 'a1' },
+      { lang: 'en', slug: 'urbans' },
+    ]);
+    expect(portfolioStaticParams([])).toEqual([]);
+  });
+
+  it('every segment it returns is one the detail page can look up', () => {
+    for (const { slug } of portfolioStaticParams([{ id: '0a15d020-12a3-416e-a175-50bd5c993d7a', slug: null }, { id: 'x', slug: 'urbans' }])) {
+      const lookup = portfolioLookup(slug);
+      expect(lookup.value).toBe(slug);
+    }
   });
 });

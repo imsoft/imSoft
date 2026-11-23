@@ -10,7 +10,7 @@ import { FinalCtaSection } from "@/components/blocks/final-cta-section";
 import { FooterSection } from "@/components/blocks/footer-section";
 import { getDictionary, hasLocale } from './dictionaries';
 import { notFound } from 'next/navigation';
-import { createClient } from '@/lib/supabase/server';
+import { createPublicClient } from '@/lib/supabase/public';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { generateMetadata as generateSEOMetadata, generateStructuredData } from '@/lib/seo';
 import { StructuredData } from '@/components/seo/structured-data';
@@ -57,7 +57,7 @@ export default async function Home({ params }: {
 
   const [dict, supabase] = await Promise.all([
     getDictionary(lang),
-    createClient(),
+    createPublicClient(),
   ]);
 
   // All queries in parallel to avoid a network waterfall
