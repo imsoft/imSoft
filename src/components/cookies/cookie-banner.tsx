@@ -20,8 +20,8 @@ interface CookieBannerProps {
 export function CookieBanner({ lang, dict }: CookieBannerProps) {
   const { hasConsent, acceptAll, openPreferences } = useCookieStore();
   const pathname = usePathname();
-  // On a quote or contract the client shouldn't have to deal with cookies.
-  if (hasConsent || /\/(cotizacion|contrato)\//.test(pathname)) return null;
+  // On a quote, a contract or a sample site the visitor shouldn't have to deal with cookies.
+  if (hasConsent || /\/(cotizacion|contrato|demo)\//.test(pathname)) return null;
 
   const b = dict.cookies?.banner ?? {};
   const isEs = lang === 'es';
