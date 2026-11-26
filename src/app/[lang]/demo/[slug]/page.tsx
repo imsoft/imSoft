@@ -1,8 +1,7 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { DEMO_SITES, isDemoSlug } from '@/lib/demo-sites'
-import { DentalDemo } from '@/components/demo/dental-demo'
-import { GarageDemo } from '@/components/demo/garage-demo'
+import { DemoSite } from '@/components/demo/demo-site'
 
 // Sample sites for prospects: Spanish only, static, never indexed.
 export const dynamicParams = false
@@ -24,5 +23,5 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 export default async function DemoPage({ params }: { params: Promise<{ lang: string; slug: string }> }) {
   const { lang, slug } = await params
   if (lang !== 'es' || !isDemoSlug(slug)) notFound()
-  return slug === 'consultorio-dental' ? <DentalDemo /> : <GarageDemo />
+  return <DemoSite slug={slug} />
 }
